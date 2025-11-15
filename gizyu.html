@@ -3,233 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電気分野 ランダム選択式クイズ</title>
+    <title>電気分野 音声クイズ</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
         }
+
         .quiz-container {
-            max-width: 750px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
+
+        .sound-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 10;
         }
-        .question-block {
-            margin-bottom: 35px;
+
+        .sound-toggle svg {
+            width: 100%;
+            height: 100%;
+            fill: white;
+        }
+
+        #sound-off-icon {
+            display: none;
+        }
+        
+        .quiz-header {
             padding: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #fcfcfc;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
         }
-        .question {
-            font-size: 1.2em;
+
+        .quiz-body {
+            padding: 30px;
+        }
+
+        #start-screen h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        #start-screen p {
+            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        #quiz-screen {
+            display: none;
+        }
+
+        #progress-info {
+            font-size: 0.9rem;
             font-weight: bold;
+            color: #6c757d;
             margin-bottom: 15px;
         }
-        .question-number {
-            display: inline-block;
-            background-color: #3498db;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 15px;
-            margin-right: 10px;
-            font-size: 0.9em;
+
+        #question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            min-height: 5.4rem; /* 3行分の高さを確保 */
         }
-        .options div {
+
+        .options-container {
+            list-style-type: none;
+        }
+
+        .option {
+            background-color: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .option.correct {
+            border-color: var(--correct-color);
+            background-color: #d4edda;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option.incorrect {
+            border-color: var(--incorrect-color);
+            background-color: #f8d7da;
+            color: #721c24;
+            font-weight: bold;
+        }
+        
+        .options-container.answered .option {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .options-container.answered .option.correct,
+        .options-container.answered .option.incorrect {
+            opacity: 1;
+        }
+
+
+        #result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        #score-text {
+            font-size: 1.8rem;
+            font-weight: bold;
             margin-bottom: 10px;
         }
-        .options label {
+
+        #score-comment {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .btn {
             display: block;
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .options label:hover {
-            background-color: #e9f5ff;
-            border-color: #3498db;
-        }
-        .options input[type="radio"] {
-            display: none; /* ラジオボタン自体は非表示 */
-        }
-        /* 選択された時のスタイル */
-        .options input[type="radio"]:checked + label {
-            background-color: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-        .check-btn {
-            display: block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 1em;
-            color: #fff;
-            background-color: #2ecc71;
+            width: 100%;
+            padding: 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
+            margin-top: 20px;
         }
-        .check-btn:hover {
-            background-color: #27ae60;
+
+        .btn:hover:not(:disabled) {
+            background-color: #0056b3;
         }
-        .result {
-            margin-top: 15px;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
+
+        .btn:disabled {
+            background-color: #a0c7ff;
+            cursor: not-allowed;
         }
-        .correct {
-            color: #27ae60;
-            background-color: #eafaf1;
-            border: 1px solid #2ecc71;
-        }
-        .incorrect {
-            color: #c0392b;
-            background-color: #fbeae8;
-            border: 1px solid #e74c3c;
+        
+        #next-btn {
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="quiz-container">
-        <h1>電気分野 ランダム選択式クイズ</h1>
-        
-        <!-- クイズはここに動的に生成されます -->
-        <div id="quiz-area"></div>
+        <!-- サウンドON/OFFボタン -->
+        <div class="sound-toggle" id="sound-toggle">
+            <svg id="sound-on-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>
+            <svg id="sound-off-icon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>
+        </div>
 
+        <div class="quiz-header">
+            <h1>電気の安全クイズ</h1>
+        </div>
+        <div class="quiz-body">
+            <!-- スタート画面 -->
+            <div id="start-screen">
+                <h2>クイズに挑戦しよう！</h2>
+                <p>電気に関する知識を試してみましょう。準備ができたらスタートボタンを押してください。</p>
+                <button id="start-btn" class="btn">スタート</button>
+            </div>
+
+            <!-- クイズ画面 -->
+            <div id="quiz-screen">
+                <div id="progress-info"></div>
+                <h2 id="question-text"></h2>
+                <ul class="options-container" id="options-container"></ul>
+                <button id="next-btn" class="btn" disabled>次へ</button>
+            </div>
+
+            <!-- 結果画面 -->
+            <div id="result-screen">
+                <h2>クイズ終了！</h2>
+                <p id="score-text"></p>
+                <p id="score-comment"></p>
+                <button id="restart-btn" class="btn">もう一度挑戦する</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // クイズのデータ
         const quizData = [
-            {
-                question: "電源プラグとコンセントの隙間にたまったほこりが原因で発火する現象を何というか？",
-                options: ["感電", "漏電", "トラッキング現象", "ショート"],
-                answer: "トラッキング現象"
-            },
-            {
-                question: "電気製品を安全に使用できる「電流」の限度のことを何というか？",
-                options: ["定格電圧", "許容電流", "許容電圧", "定格電流"],
-                answer: "定格電流"
-            },
-            {
-                question: "定められた値以上の電流が流れると熱で溶けて回路を切る部品は何か？",
-                options: ["ブレーカー", "ヒューズ", "PSEマーク", "コンセント"],
-                answer: "ヒューズ"
-            },
-            {
-                question: "電気用品安全法で定められた安全基準を満たしていることを示すマークは何か？",
-                options: ["JISマーク", "エコマーク", "PSEマーク", "SGマーク"],
-                answer: "PSEマーク"
-            },
-            {
-                question: "漏電している部分に人体が触れ、体に電流が流れることを何というか？",
-                options: ["漏電", "感電", "放電", "帯電"],
-                answer: "感電"
-            },
-            {
-                question: "回路に異常があった際に、自動的に電気を遮断する装置を何というか？",
-                options: ["ヒューズ", "定格電流", "ブレーカー", "PSEマーク"],
-                answer: "ブレーカー"
-            },
-            {
-                question: "導線に安全に流すことができる電流の限度を何というか？",
-                options: ["定格電流", "定格電圧", "許容電流", "許容電圧"],
-                answer: "許容電流"
-            }
+            { question: "電源プラグとコンセントの間にほこりが溜まって発火する現象は？", options: ["感電", "漏電", "トラッキング現象", "ショート"], answer: "トラッキング現象" },
+            { question: "電気製品を安全に使える『電流』の限度を何というか？", options: ["定格電圧", "許容電流", "許容電圧", "定格電流"], answer: "定格電流" },
+            { question: "決められた以上の電流が流れると熱で溶けて回路を切る部品は？", options: ["ブレーカー", "ヒューズ", "PSEマーク", "コンセント"], answer: "ヒューズ" },
+            { question: "電気用品安全法の基準を満たした製品に表示されるマークは？", options: ["JISマーク", "エコマーク", "PSEマーク", "SGマーク"], answer: "PSEマーク" },
+            { question: "漏電した部分に人が触れ、体に電気が流れてしまうことを何というか？", options: ["漏電", "感電", "放電", "帯電"], answer: "感電" },
+            { question: "回路に異常があった時、自動的に電気を止める装置は？", options: ["ヒューズ", "定格電流", "ブレーカー", "PSEマーク"], answer: "ブレーカー" },
+            { question: "電線に安全に流せる電流の限度を何というか？", options: ["定格電流", "定格電圧", "許容電流", "許容電圧"], answer: "許容電流" }
         ];
 
-        // 配列をシャッフルする関数 (Fisher-Yatesアルゴリズム)
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        // --- 音声関連の準備 ---
+        let isSoundOn = true;
+        const correctSound = new Audio("data:audio/mp3;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVd1T19OAP/7/x/0//f+e/1f/f/8b/xv/m/+n/3f+3/9//b/7//z/+n/9f/9f/6/+f/7//j/9P/h/+n/6v/h/+H/9v/5//v/4f/f/+n/6//p/+H/4//p/+H/6v/f/9//6f/p/+H/9v/f/9v/p/9//4//b/9v/f/+f/p/9v/6f/5//r/+//l/+f/9v/v/9v/p/9//9v/2/+H/9//p/9v/6//r/+//6v/v/9v/4//f/+//r/9v/2//z/+//6//b/9v/6//v/9//6//b/+//f/+//2/+//4//z//f/+//6//v//f/+//6//v//f//f/+//6//v//f/9v/6//f//f/+//6//f/+//2//v//f//f/6//f/+//v/9v/2//v//f/9v/6//f//f/+//6//f//f/+//2//f//f//f/+//f/9v/+//2//f//f/+//6//f//f//f/+//2//f//f//f/+//f/9v/+//2//f//f/+//6//f//f/9v/2//v//f//f/+//6//f//f/9v/6//f//f/+//6//f//f/9v/6//f//f/+//f/9v/6//f//f/+//f/9v/+//f//f/+//f/9v/+//2//f//f/+//6//f//f//f/9v/+//f//f/+//f/9v/+//f/9//6//f/9v/+//f/+//2//f//f/+//f/+//2//f/9v/+//f/9v/+//f//f/9v/+//f/+//f/9v/+//2//f//f/+//f/9v/+//f/9//6//f/9v/+//f//f/9v/+//f/9//6//f/9v/6//f/9//6//f/9v/6//f//f/+//f/9v/+//f/9//f/9//6//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9v/+//f/9-");
+        const incorrectSound = new Audio("data:audio/mp3;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVd1T19O/vz/7/z/9P/p/+v/4//z/+//6v/z//v/+P/p/+f/7f/l/+v/6//l/+//8//7//r/+//6//z/+f/7//z/+//7//f/+/8A/+f/7f/r/+//9f/z//X/9v8A/9v/8//1/+//6//v/+//7//v/9f/6//r/+3/8//3//v/+f/6//f/+//7//f/+f/7f/r/+//7//f/9v/9//7/9v/5//v/+//8//7//f/8//7/9//9//7/9v/9//7//f/+//7//f/9//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//7//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//7//f/+f/7f/r/+//7//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+f/7f/r/+//3//f/+//3//f/+//3//f/+//7f/r/+//3//f/+//7f/r/+//3//f/+//7f/r/+//3//f/+//7f/r/+//3//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+//7f/r/+//7//f/+-");
 
-        // クイズを生成して表示する関数
-        function generateQuiz() {
-            const quizArea = document.getElementById('quiz-area');
-            const shuffledQuizData = shuffle([...quizData]); // 元の配列を壊さないようにコピーをシャッフル
-
-            let quizHTML = '';
-            shuffledQuizData.forEach((quizItem, index) => {
-                const questionIndex = index;
-                const shuffledOptions = shuffle([...quizItem.options]); // 選択肢もシャッフル
-
-                let optionsHTML = '';
-                shuffledOptions.forEach((option, optionIndex) => {
-                    const optionId = `q${questionIndex}_o${optionIndex}`;
-                    optionsHTML += `
-                        <div>
-                            <input type="radio" name="q${questionIndex}" id="${optionId}" value="${option}">
-                            <label for="${optionId}">${String.fromCharCode(65 + optionIndex)}. ${option}</label>
-                        </div>
-                    `;
-                });
-
-                quizHTML += `
-                    <div class="question-block">
-                        <p class="question"><span class="question-number">問${index + 1}</span>${quizItem.question}</p>
-                        <div class="options">${optionsHTML}</div>
-                        <button class="check-btn" onclick="checkAnswer(${questionIndex}, '${quizItem.answer}')">答え合わせ</button>
-                        <p id="result${questionIndex}" class="result" style="display:none;"></p>
-                    </div>
-                `;
-            });
-
-            quizArea.innerHTML = quizHTML;
-        }
-
-        // 答えをチェックする関数
-        function checkAnswer(questionIndex, correctAnswer) {
-            const resultElement = document.getElementById('result' + questionIndex);
-            const options = document.getElementsByName('q' + questionIndex);
-            let userAnswer = '';
-
-            for (const option of options) {
-                if (option.checked) {
-                    userAnswer = option.value;
-                    break;
-                }
-            }
-
-            if (userAnswer === '') {
-                alert('答えを選択してください。');
+        const speak = (text, callback) => {
+            if (!isSoundOn || !('speechSynthesis' in window)) {
+                if(callback) callback();
                 return;
             }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP';
+            utterance.rate = 1.1; // 少し早口に
+            utterance.onend = () => {
+                if (callback) callback();
+            };
+            window.speechSynthesis.speak(utterance);
+        };
 
-            if (userAnswer === correctAnswer) {
-                resultElement.innerHTML = `正解！ 答えは「${correctAnswer}」です。`;
-                resultElement.className = 'result correct';
-            } else {
-                resultElement.innerHTML = `不正解...。正解は「${correctAnswer}」です。`;
-                resultElement.className = 'result incorrect';
+        const playSound = (sound) => {
+            if (isSoundOn) {
+                sound.currentTime = 0;
+                sound.play();
             }
-            resultElement.style.display = 'block';
-        }
+        };
 
-        // ページが読み込まれたらクイズを生成
-        window.onload = generateQuiz;
+        // --- HTML要素の取得 ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressInfo = document.getElementById('progress-info');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreText = document.getElementById('score-text');
+        const scoreComment = document.getElementById('score-comment');
+        const soundToggle = document.getElementById('sound-toggle');
+        const soundOnIcon = document.getElementById('sound-on-icon');
+        const soundOffIcon = document.getElementById('sound-off-icon');
+
+        let shuffledQuestions, currentQuestionIndex, score;
+
+        const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
+
+        const startQuiz = () => {
+            speak("クイズ、スタート！");
+            startScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            
+            shuffledQuestions = shuffleArray(quizData);
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            showQuestion();
+        };
+
+        const showQuestion = () => {
+            resetState();
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            
+            progressInfo.innerText = `問題 ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            questionText.innerText = currentQuestion.question;
+
+            // 問題文を読み上げ、終わったら選択肢を読み上げる
+            speak(currentQuestion.question, () => {
+                readOptions(shuffledOptions);
+            });
+            
+            const shuffledOptions = shuffleArray(currentQuestion.options);
+            shuffledOptions.forEach(option => {
+                const li = document.createElement('li');
+                li.innerText = option;
+                li.classList.add('option');
+                li.addEventListener('click', selectOption);
+                optionsContainer.appendChild(li);
+            });
+        };
+
+        // 選択肢を順番に読み上げる関数
+        const readOptions = (options) => {
+            let optionIndex = 0;
+            const readNextOption = () => {
+                if (optionIndex < options.length) {
+                    const optionText = options[optionIndex];
+                    speak(`${String.fromCharCode(65 + optionIndex)}、${optionText}`, () => {
+                        optionIndex++;
+                        setTimeout(readNextOption, 200); // 選択肢の間に少し間を空ける
+                    });
+                } else {
+                    // 全ての選択肢を読み上げたらボタンを有効化
+                    nextBtn.disabled = false;
+                }
+            };
+            readNextOption();
+        };
+
+        const resetState = () => {
+            nextBtn.style.display = 'none';
+            nextBtn.disabled = true;
+            optionsContainer.classList.remove('answered');
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        };
+
+        const selectOption = (e) => {
+            window.speechSynthesis.cancel(); // 選択肢読み上げ中に選択されたら停止
+            const selectedOption = e.target;
+            const isCorrect = selectedOption.innerText === shuffledQuestions[currentQuestionIndex].answer;
+            
+            if (isCorrect) {
+                score++;
+                selectedOption.classList.add('correct');
+                playSound(correctSound);
+                speak("正解！");
+            } else {
+                selectedOption.classList.add('incorrect');
+                playSound(incorrectSound);
+                speak(`不正解。正解は、${shuffledQuestions[currentQuestionIndex].answer}、です。`);
+                Array.from(optionsContainer.children).forEach(option => {
+                    if (option.innerText === shuffledQuestions[currentQuestionIndex].answer) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+
+            optionsContainer.classList.add('answered');
+            nextBtn.innerText = (shuffledQuestions.length > currentQuestionIndex + 1) ? "次の問題へ" : "結果を見る";
+            nextBtn.style.display = 'block';
+            nextBtn.disabled = false;
+        };
+
+        const showResult = () => {
+            quizScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            
+            const total = shuffledQuestions.length;
+            const resultString = `${total}問中 ${score}問 正解！`;
+            scoreText.innerText = resultString;
+
+            let comment = "";
+            const percentage = (score / total) * 100;
+            if (percentage === 100) comment = "素晴らしい！全問正解です！";
+            else if (percentage >= 70) comment = "すごい！よくできました！";
+            else if (percentage >= 40) comment = "おしい！もう一度挑戦してみよう！";
+            else comment = "頑張ろう！復習が大切です。";
+            scoreComment.innerText = comment;
+            
+            speak(`結果は、${resultString}。${comment}`);
+        };
+
+        const toggleSound = () => {
+            isSoundOn = !isSoundOn;
+            soundOnIcon.style.display = isSoundOn ? 'block' : 'none';
+            soundOffIcon.style.display = isSoundOn ? 'none' : 'block';
+            if (!isSoundOn) {
+                window.speechSynthesis.cancel(); // 音声をOFFにしたら読み上げを停止
+            }
+        };
+
+        // --- イベントリスナー ---
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        });
+        restartBtn.addEventListener('click', startQuiz);
+        soundToggle.addEventListener('click', toggleSound);
 
     </script>
-
 </body>
 </html>
