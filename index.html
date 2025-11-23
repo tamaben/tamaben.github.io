@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (Play CDN) -->
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Lucide Icons -->
+    <!-- Lucide Icons (CDN) -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- 外部CSS -->
@@ -21,9 +21,8 @@
 </head>
 <body class="min-h-screen selection:bg-lime-300 selection:text-lime-900 transition-colors duration-1000">
 
-    <!-- 背景レイヤー（JSで制御） -->
+    <!-- 背景レイヤー -->
     <div id="ambient-background" class="fixed inset-0 -z-20 overflow-hidden transition-colors duration-1000"></div>
-    <!-- オーバーレイレイヤー（時間帯のフィルター） -->
     <div id="ambient-overlay" class="fixed inset-0 -z-10 transition-colors duration-1000"></div>
 
     <!-- メインコンテナ -->
@@ -32,10 +31,8 @@
         <!-- ヘッダー -->
         <header id="header-container" class="flex items-center justify-between mb-10 px-6 py-4 rounded-[2rem] border shadow-sm transition-all duration-1000">
             <div class="flex items-center gap-3">
-                <!-- ロゴ背景コンテナ -->
                 <div id="logo-bg" class="p-2 rounded-xl transition-colors duration-1000">
-                    <!-- ロゴ (JSで注入) -->
-                    <div id="logo-wrapper" class="w-32 md:w-36"></div>
+                    <div id="logo-wrapper" class="w-28 md:w-36"></div>
                 </div>
             </div>
             <div class="flex items-center gap-4 text-sm font-bold">
@@ -54,7 +51,6 @@
         <section id="hero-section" class="relative rounded-[3rem] overflow-hidden p-8 md:p-16 mb-12 text-center md:text-left shadow-xl transition-all duration-1000">
             <!-- ガラス背景用レイヤー -->
             <div id="hero-glass" class="absolute inset-0 z-0 transition-all duration-1000"></div>
-            <div id="hero-overlay" class="absolute inset-0 z-0 transition-all duration-1000"></div>
 
             <div class="relative z-10 grid md:grid-cols-2 gap-10 items-center">
                 <div class="space-y-6">
@@ -72,10 +68,10 @@
                     </p>
 
                     <div class="flex flex-wrap gap-4 justify-center md:justify-start pt-4">
-                        <button id="btn-primary" onclick="scrollToGrade('e1')" class="px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95">
+                        <button id="btn-primary" onclick="scrollToGrade('e1')" class="px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 cursor-pointer">
                             小学生の教材
                         </button>
-                        <button id="btn-secondary" onclick="scrollToGrade('j1')" class="px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300">
+                        <button id="btn-secondary" onclick="scrollToGrade('j1')" class="px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 cursor-pointer">
                             中学生の教材
                         </button>
                     </div>
@@ -107,9 +103,9 @@
                 <h2 id="subject-heading-text" class="text-3xl font-bold transition-colors duration-1000">教科からさがす</h2>
             </div>
 
-            <!-- 教材リスト (JSONから生成) -->
+            <!-- 教材リスト -->
             <div id="learning-materials-container" class="space-y-16 pb-20">
-                <p class="text-center text-gray-500 py-10">データを読み込んでいます...</p>
+                <!-- JSでここにデータが挿入されます -->
             </div>
         </main>
 
@@ -124,7 +120,10 @@
         </footer>
     </div>
 
-    <!-- 外部JS -->
+    <!-- 外部スクリプトの読み込み -->
+    <!-- 1. データ定義 -->
+    <script src="data.js"></script>
+    <!-- 2. ロジック実行 -->
     <script src="script.js"></script>
 </body>
 </html>
