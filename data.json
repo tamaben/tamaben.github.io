@@ -6,15 +6,13 @@
       { "name": "算数", "color": "lime", "icon": "calculator", "units": [
           { "title": "かずとすうじ", "pdf": "math_1_1.pdf" },
           { "title": "いくつといくつ", "pdf": "math_1_2.pdf" },
-          { "title": "たしざん（１）", "pdf": "math_1_3.pdf" },
-          { "title": "ひきざん（１）", "pdf": "math_1_4.pdf" },
-          { "title": "おおきなかず", "pdf": "math_1_5.pdf" }
+          { "title": "たしざん", "pdf": "math_1_3.pdf" },
+          { "title": "ひきざん", "pdf": "math_1_4.pdf" }
       ]},
       { "name": "国語", "color": "rose", "icon": "pencil", "units": [
-          { "title": "ひらがなのれんしゅう", "pdf": "jp_1_1.pdf" },
-          { "title": "カタカナのれんしゅう", "pdf": "jp_1_2.pdf" },
-          { "title": "かん字のはじまり", "pdf": "jp_1_3.pdf" },
-          { "title": "ぶんをつくろう", "pdf": "jp_1_4.pdf" }
+          { "title": "ひらがな", "pdf": "jp_1_1.pdf" },
+          { "title": "カタカナ", "pdf": "jp_1_2.pdf" },
+          { "title": "かん字", "pdf": "jp_1_3.pdf" }
       ]}
     ]
   },
@@ -23,16 +21,13 @@
     "gradeId": "e2",
     "subjects": [
       { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "ひょうとグラフ", "pdf": "math_2_1.pdf" },
-          { "title": "たし算とひき算のひっ算", "pdf": "math_2_2.pdf" },
-          { "title": "かけ算（九九）", "pdf": "math_2_3.pdf" },
-          { "title": "10000までの数", "pdf": "math_2_4.pdf" },
-          { "title": "はこの形", "pdf": "math_2_5.pdf" }
+          { "title": "たし算とひき算のひっ算", "pdf": "math_2_1.pdf" },
+          { "title": "かけ算（九九）", "pdf": "math_2_2.pdf" },
+          { "title": "10000までの数", "pdf": "math_2_3.pdf" }
       ]},
       { "name": "国語", "color": "rose", "icon": "pencil", "units": [
           { "title": "かん字の書き取り", "pdf": "jp_2_1.pdf" },
-          { "title": "主語と述語", "pdf": "jp_2_2.pdf" },
-          { "title": "なかまのことば", "pdf": "jp_2_3.pdf" }
+          { "title": "主語と述語", "pdf": "jp_2_2.pdf" }
       ]}
     ]
   },
@@ -42,21 +37,17 @@
     "subjects": [
       { "name": "算数", "color": "lime", "icon": "calculator", "units": [
           { "title": "わり算", "pdf": "math_3_1.pdf" },
-          { "title": "大きな数", "pdf": "math_3_2.pdf" },
-          { "title": "小数", "pdf": "math_3_3.pdf" },
-          { "title": "分数", "pdf": "math_3_4.pdf" },
-          { "title": "円と球", "pdf": "math_3_5.pdf" }
+          { "title": "小数と分数", "pdf": "math_3_2.pdf" },
+          { "title": "円と球", "pdf": "math_3_3.pdf" }
       ]},
       { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
           { "title": "植物の育ち方", "pdf": "sci_3_1.pdf" },
           { "title": "昆虫の生態", "pdf": "sci_3_2.pdf" },
-          { "title": "太陽の光", "pdf": "sci_3_3.pdf" },
-          { "title": "磁石の性質", "pdf": "sci_3_4.pdf" }
+          { "title": "磁石の性質", "pdf": "sci_3_3.pdf" }
       ]},
       { "name": "社会", "color": "amber", "icon": "globe", "units": [
           { "title": "わたしたちの町", "pdf": "soc_3_1.pdf" },
-          { "title": "お店の仕事", "pdf": "soc_3_2.pdf" },
-          { "title": "農家の仕事", "pdf": "soc_3_3.pdf" }
+          { "title": "お店の仕事", "pdf": "soc_3_2.pdf" }
       ]}
     ]
   },
@@ -67,15 +58,13 @@
       { "name": "算数", "color": "lime", "icon": "calculator", "units": [
           { "title": "角の大きさ", "pdf": "math_4_1.pdf" },
           { "title": "わり算の筆算", "pdf": "math_4_2.pdf" },
-          { "title": "がい数", "pdf": "math_4_3.pdf" },
-          { "title": "面積", "pdf": "math_4_4.pdf" },
-          { "title": "小数のかけ算・わり算", "pdf": "math_4_5.pdf" }
+          { "title": "面積", "pdf": "math_4_3.pdf" },
+          { "title": "小数のかけ算・わり算", "pdf": "math_4_4.pdf" }
       ]},
       { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-          { "title": "天気と気温", "pdf": "sci_4_1.pdf" },
-          { "title": "電気の働き", "pdf": "sci_4_2.pdf" },
-          { "title": "月と星", "pdf": "sci_4_3.pdf" },
-          { "title": "水の三態", "pdf": "sci_4_4.pdf" }
+          { "title": "電気の働き", "pdf": "sci_4_1.pdf" },
+          { "title": "月と星", "pdf": "sci_4_2.pdf" },
+          { "title": "水の三態", "pdf": "sci_4_3.pdf" }
       ]},
       { "name": "社会", "color": "amber", "icon": "globe", "units": [
           { "title": "都道府県", "pdf": "soc_4_1.pdf" },
@@ -92,14 +81,12 @@
           { "title": "体積", "pdf": "math_5_1.pdf" },
           { "title": "比例", "pdf": "math_5_2.pdf" },
           { "title": "分数と小数", "pdf": "math_5_3.pdf" },
-          { "title": "平均", "pdf": "math_5_4.pdf" },
-          { "title": "割合", "pdf": "math_5_5.pdf" }
+          { "title": "平均・割合", "pdf": "math_5_4.pdf" }
       ]},
       { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
           { "title": "天気の変化", "pdf": "sci_5_1.pdf" },
           { "title": "植物の発芽", "pdf": "sci_5_2.pdf" },
-          { "title": "流れる水", "pdf": "sci_5_3.pdf" },
-          { "title": "電磁石", "pdf": "sci_5_4.pdf" }
+          { "title": "電磁石", "pdf": "sci_5_3.pdf" }
       ]},
       { "name": "社会", "color": "amber", "icon": "globe", "units": [
           { "title": "日本の国土", "pdf": "soc_5_1.pdf" },
@@ -120,21 +107,21 @@
           { "title": "対称な図形", "pdf": "math_6_1.pdf" },
           { "title": "文字と式", "pdf": "math_6_2.pdf" },
           { "title": "分数のかけ算・わり算", "pdf": "math_6_3.pdf" },
-          { "title": "比", "pdf": "math_6_4.pdf" },
-          { "title": "データの活用", "pdf": "math_6_5.pdf" }
+          { "title": "比", "pdf": "math_6_4.pdf" }
       ]},
       { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
           { "title": "物の燃え方", "pdf": "sci_6_1.pdf" },
           { "title": "人体のつくり", "pdf": "sci_6_2.pdf" },
-          { "title": "月と太陽", "pdf": "sci_6_3.pdf" },
-          { "title": "水溶液", "pdf": "sci_6_4.pdf" },
-          { "title": "電気の利用", "pdf": "sci_6_5.pdf" }
+          { "title": "水溶液", "pdf": "sci_6_3.pdf" },
+          { "title": "電気の利用", "pdf": "sci_6_4.pdf" }
       ]},
       { "name": "社会", "color": "amber", "icon": "globe", "units": [
           { "title": "政治のしくみ", "pdf": "soc_6_1.pdf" },
-          { "title": "日本の歴史（１）", "pdf": "soc_6_2.pdf" },
-          { "title": "日本の歴史（２）", "pdf": "soc_6_3.pdf" },
-          { "title": "世界の中の日本", "pdf": "soc_6_4.pdf" }
+          { "title": "日本の歴史", "pdf": "soc_6_2.pdf" }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "自己紹介", "pdf": "eng_6_1.pdf" },
+          { "title": "日常会話", "pdf": "eng_6_2.pdf" }
       ]}
     ]
   },
