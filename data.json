@@ -1,1 +1,153 @@
-
+[
+  {
+    "grade": "小学1年生",
+    "gradeId": "e1",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "かずとすうじ", "pdf": "#", "months": [4, 5] },
+          { "title": "いくつといくつ", "pdf": "#", "months": [5, 6] },
+          { "title": "たしざん（１）", "pdf": "#", "months": [6, 7] },
+          { "title": "ひきざん（１）", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "ひらがなのれんしゅう", "pdf": "#", "months": [4, 5, 6] },
+          { "title": "カタカナのれんしゅう", "pdf": "#", "months": [9, 10] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学2年生",
+    "gradeId": "e2",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "たし算とひき算のひっ算", "pdf": "#", "months": [4, 5] },
+          { "title": "かけ算（九九）", "pdf": "#", "months": [10, 11, 12] }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "かん字の書き取り", "pdf": "#", "months": [4, 5, 6, 9, 10, 11, 1, 2] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学3年生",
+    "gradeId": "e3",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "わり算", "pdf": "#", "months": [5, 6] },
+          { "title": "円と球", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "昆虫の生態", "pdf": "#", "months": [5, 6, 7] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "わたしたちの町", "pdf": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学4年生",
+    "gradeId": "e4",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "角の大きさ", "pdf": "#", "months": [4, 5] },
+          { "title": "面積", "pdf": "#", "months": [10, 11] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "月と星", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "都道府県", "pdf": "#", "months": [4, 5, 6] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学5年生",
+    "gradeId": "e5",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "体積", "pdf": "#", "months": [4, 5] },
+          { "title": "割合", "pdf": "#", "months": [11, 12, 1] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の発芽", "pdf": "#", "months": [4, 5] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の国土", "pdf": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学6年生",
+    "gradeId": "e6",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "対称な図形", "pdf": "#", "months": [4, 5] },
+          { "title": "比", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "人体のつくり", "pdf": "#", "months": [5, 6] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の歴史", "pdf": "#", "months": [5, 6, 9, 10, 11] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学1年生",
+    "gradeId": "j1",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "正の数・負の数", "pdf": "#", "months": [4, 5] },
+          { "title": "方程式", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "be動詞・一般動詞", "pdf": "#", "months": [4, 5, 6] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の分類", "pdf": "#", "months": [4, 5] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "世界の地理", "pdf": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学2年生",
+    "gradeId": "j2",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "連立方程式", "pdf": "#", "months": [5, 6] },
+          { "title": "一次関数", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "過去形・過去進行形", "pdf": "#", "months": [4, 5] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "電気の世界", "pdf": "#", "months": [11, 12] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の諸地域", "pdf": "#", "months": [4, 5, 6] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学3年生",
+    "gradeId": "j3",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "多項式・因数分解", "pdf": "#", "months": [4, 5] },
+          { "title": "三平方の定理", "pdf": "#", "months": [11, 12] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "現在完了形", "pdf": "#", "months": [5, 6] },
+          { "title": "関係代名詞", "pdf": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "天体", "pdf": "#", "months": [11, 12] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "公民", "pdf": "#", "months": [9, 10, 11] }
+      ]}
+    ]
+  }
+]
