@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    /* スクロールバーのスタイル（モダンブラウザ用） */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+/* 浮遊アニメーション */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+.animate-float {
+    animation-name: float;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+/* 背景の固定レイヤー用 */
+.fixed-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -10;
+}
+
+/* カードのホバーエフェクト微調整 */
+.learning-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.learning-card:hover {
+    transform: translateY(-2px);
+}
