@@ -21,18 +21,22 @@
 </head>
 <body class="min-h-screen selection:bg-lime-300 selection:text-lime-900 transition-colors duration-1000">
 
-    <!-- 背景レイヤー（固定・アニメーション用） -->
-    <div id="background-particles" class="fixed-bg overflow-hidden transition-colors duration-1000"></div>
-    <div id="background-overlay" class="fixed-bg transition-colors duration-1000"></div>
+    <!-- 背景レイヤー（JSで制御） -->
+    <div id="ambient-background" class="fixed inset-0 -z-20 overflow-hidden transition-colors duration-1000"></div>
+    <!-- オーバーレイレイヤー（時間帯のフィルター） -->
+    <div id="ambient-overlay" class="fixed inset-0 -z-10 transition-colors duration-1000"></div>
 
-    <!-- メインコンテンツ -->
+    <!-- メインコンテナ -->
     <div class="container mx-auto px-4 py-6 md:py-10 max-w-5xl relative z-10">
         
         <!-- ヘッダー -->
         <header id="header-container" class="flex items-center justify-between mb-10 px-6 py-4 rounded-[2rem] border shadow-sm transition-all duration-1000">
             <div class="flex items-center gap-3">
-                <!-- ロゴ (JSで注入) -->
-                <div id="logo-wrapper" class="w-32 md:w-40 transition-opacity duration-500"></div>
+                <!-- ロゴ背景コンテナ -->
+                <div id="logo-bg" class="p-2 rounded-xl transition-colors duration-1000">
+                    <!-- ロゴ (JSで注入) -->
+                    <div id="logo-wrapper" class="w-32 md:w-36"></div>
+                </div>
             </div>
             <div class="flex items-center gap-4 text-sm font-bold">
                 <span id="header-date" class="hidden md:inline transition-colors duration-1000"></span>
@@ -40,26 +44,55 @@
                     <i id="season-icon" class="w-4 h-4"></i>
                     <span id="season-name"></span>
                 </div>
+                <div id="time-badge" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-1000">
+                   <i id="time-icon" class="w-4 h-4"></i>
+                </div>
             </div>
         </header>
 
         <!-- ヒーローセクション -->
-        <section id="hero-section" class="relative rounded-[3rem] overflow-hidden p-8 md:p-12 mb-16 text-center md:text-left shadow-xl transition-all duration-1000">
+        <section id="hero-section" class="relative rounded-[3rem] overflow-hidden p-8 md:p-16 mb-12 text-center md:text-left shadow-xl transition-all duration-1000">
+            <!-- ガラス背景用レイヤー -->
             <div id="hero-glass" class="absolute inset-0 z-0 transition-all duration-1000"></div>
+            <div id="hero-overlay" class="absolute inset-0 z-0 transition-all duration-1000"></div>
 
-            <div class="relative z-10 flex flex-col md:flex-row gap-10 items-center justify-between">
-                <div class="space-y-6 max-w-lg">
+            <div class="relative z-10 grid md:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
                     <div id="greeting-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm transition-all duration-1000">
                         <i data-lucide="sparkles" width="14" height="14"></i>
                         <span id="greeting-text"></span>
                     </div>
-                    <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tight transition-colors duration-1000" id="hero-title">
-                        登録不要・完全無料。<br>学びを、もっと自由に。
+                    
+                    <h1 id="hero-title" class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight transition-colors duration-1000">
+                        学びを、<br>もっと自由に。
                     </h1>
+                    
+                    <p id="hero-subcopy" class="text-lg md:text-xl font-medium leading-relaxed whitespace-pre-wrap transition-colors duration-1000">
+                        季節と時間に合わせて、<br>あなたの勉強を応援するよ。
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start pt-4">
+                        <button id="btn-primary" onclick="scrollToGrade('e1')" class="px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95">
+                            小学生の教材
+                        </button>
+                        <button id="btn-secondary" onclick="scrollToGrade('j1')" class="px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300">
+                            中学生の教材
+                        </button>
+                    </div>
                 </div>
-                <div class="relative h-48 w-48 md:h-64 md:w-64 flex-shrink-0 flex items-center justify-center">
-                    <div id="illustration-card" class="w-full h-full rounded-[2.5rem] rotate-3 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm">
-                        <i id="main-season-icon" width="100" height="100"></i>
+
+                <!-- イラストエリア -->
+                <div class="relative h-64 md:h-80 flex items-center justify-center">
+                    <div id="illustration-card" class="w-48 h-48 md:w-64 md:h-64 rounded-[3rem] rotate-6 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm">
+                        <i id="main-season-icon" width="120" height="120"></i>
+                    </div>
+                    
+                    <!-- 浮かぶアイテム -->
+                    <div id="float-item-1" class="absolute top-0 right-10 p-4 rounded-2xl shadow-lg -rotate-12 animate-bounce" style="animation-duration: 3s;">
+                        <i data-lucide="pencil" width="32" height="32"></i>
+                    </div>
+                    <div id="float-item-2" class="absolute bottom-0 left-10 p-4 rounded-2xl shadow-lg rotate-12 animate-bounce" style="animation-duration: 4s;">
+                        <i data-lucide="calculator" width="32" height="32"></i>
                     </div>
                 </div>
             </div>
@@ -67,22 +100,22 @@
 
         <!-- コンテンツエリア -->
         <main>
-            <div class="flex items-center gap-3 mb-8 pl-2">
-                <div id="main-heading-icon" class="p-3 rounded-2xl text-white shadow-lg">
-                    <i data-lucide="library" width="24" height="24"></i>
+            <div class="flex items-center gap-4 mb-8 pl-2">
+                <div id="subject-heading-icon" class="p-3 rounded-2xl text-white shadow-lg">
+                    <i data-lucide="star" width="24" height="24"></i>
                 </div>
-                <h2 id="main-heading-text" class="text-2xl md:text-3xl font-bold transition-colors duration-1000">学習プリント一覧</h2>
+                <h2 id="subject-heading-text" class="text-3xl font-bold transition-colors duration-1000">教科からさがす</h2>
             </div>
 
             <!-- 教材リスト (JSONから生成) -->
-            <div id="learning-materials-container" class="space-y-16">
+            <div id="learning-materials-container" class="space-y-16 pb-20">
                 <p class="text-center text-gray-500 py-10">データを読み込んでいます...</p>
             </div>
         </main>
 
         <!-- フッター -->
         <footer id="footer" class="mt-24 py-10 text-center border-t transition-colors duration-1000">
-            <div class="inline-flex items-center justify-center mb-4 opacity-70 w-24 mx-auto">
+            <div class="inline-flex items-center justify-center mb-4 opacity-50 w-24 mx-auto">
                  <div id="footer-logo"></div>
             </div>
             <p class="text-xs font-bold">
