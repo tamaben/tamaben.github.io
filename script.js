@@ -1,321 +1,203 @@
 /* =====================================================================
-   🔧 設定・デザイン管理 (Reactコードの移植)
+   🔧 季節・デザイン設定
    ===================================================================== */
-const SITE_CONFIG = {
-  seasons: {
+const SEASONS = {
     spring: {
-      months: [3, 4, 5],
       name: "春",
-      theme: { primary: "bg-pink-400", bg: "bg-pink-50", accent: "text-pink-500", border: "border-pink-200" },
+      colors: { primary: "bg-emerald-400", secondary: "bg-pink-300", accent: "text-pink-500", gradient: "from-pink-100 to-emerald-50", border: "border-pink-100" },
       icon: "flower-2",
-      particleShape: "cherry-blossom"
+      particleColor: "text-pink-300"
     },
     summer: {
-      months: [6, 7, 8],
       name: "夏",
-      theme: { primary: "bg-sky-500", bg: "bg-sky-50", accent: "text-sky-600", border: "border-sky-200" },
+      colors: { primary: "bg-emerald-500", secondary: "bg-sky-400", accent: "text-sky-500", gradient: "from-sky-100 to-emerald-50", border: "border-sky-100" },
       icon: "sun",
-      particleShape: "sun-ray"
+      particleColor: "text-yellow-300"
     },
     autumn: {
-      months: [9, 10, 11],
       name: "秋",
-      theme: { primary: "bg-orange-500", bg: "bg-orange-50", accent: "text-orange-600", border: "border-orange-200" },
+      colors: { primary: "bg-emerald-600", secondary: "bg-orange-400", accent: "text-orange-500", gradient: "from-orange-100 to-emerald-50", border: "border-orange-100" },
       icon: "leaf",
-      particleShape: "maple"
+      particleColor: "text-orange-300"
     },
     winter: {
-      months: [12, 1, 2],
       name: "冬",
-      theme: { primary: "bg-indigo-400", bg: "bg-indigo-50", accent: "text-indigo-500", border: "border-indigo-200" },
+      colors: { primary: "bg-emerald-400", secondary: "bg-indigo-300", accent: "text-indigo-500", gradient: "from-indigo-50 to-emerald-50", border: "border-indigo-100" },
       icon: "snowflake",
-      particleShape: "snow"
+      particleColor: "text-sky-200"
     }
-  },
-  timeOfDay: {
-    morning: {
-      hours: [5, 6, 7, 8, 9, 10],
-      greeting: "おはよう！",
-      skyGradient: "from-orange-100 via-rose-100 to-sky-100",
-      overlayColor: "bg-orange-50/30"
-    },
-    day: {
-      hours: [11, 12, 13, 14, 15, 16],
-      greeting: "こんにちは！",
-      skyGradient: "from-sky-200 via-sky-100 to-white",
-      overlayColor: "bg-transparent"
-    },
-    evening: {
-      hours: [17, 18],
-      greeting: "こんばんは。",
-      skyGradient: "from-indigo-300 via-purple-300 to-orange-300",
-      overlayColor: "bg-orange-100/40"
-    },
-    night: {
-      hours: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
-      greeting: "今日もおつかれさま。",
-      skyGradient: "from-slate-900 via-indigo-900 to-slate-800",
-      overlayColor: "bg-slate-900/80",
-      isDark: true
-    }
-  }
+};
+
+const getSeason = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 5) return 'spring';
+    if (month >= 6 && month <= 8) return 'summer';
+    if (month >= 9 && month <= 11) return 'autumn';
+    return 'winter';
 };
 
 /* =====================================================================
    🎨 SVGジェネレーター
    ===================================================================== */
-
-// タマベンロゴSVG生成
-const getTamabenLogo = (isDark) => {
-    const strokeColor = isDark ? "#ffffff" : "#324738"; 
-    const highlightColor = isDark ? "#a7f0ba" : "#a7f0ba";
-    
+const getTamabenLogo = () => {
     return `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto">
-        <g transform="translate(-184.9,-165.975)">
-            <g stroke-miterlimit="10">
-                <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
-                <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/>
-                
-                <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
-                <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
-                <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/>
-                
-                <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/>
-                
-                <g fill="none" stroke-linecap="round">
-                    <g> <!-- タ -->
-                        <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M243.09,187.37l-7.14,-6.8" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41" stroke="${highlightColor}" stroke-width="3.5"/>
-                        <path d="M243.09,187.37l-7.14,-6.8" stroke="${highlightColor}" stroke-width="3.5"/>
-                    </g>
-                    <g> <!-- マ -->
-                        <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M219.86,179.89l2.95,2.38" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M219.4,172.62c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29" stroke="${highlightColor}" stroke-width="3.5"/>
-                        <path d="M218.49,175.46c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06" stroke="${highlightColor}" stroke-width="3.5"/>
-                        <path d="M219.85,179.89l2.95,2.38" stroke="${highlightColor}" stroke-width="3.5"/>
-                    </g>
-                    <g> <!-- ベ -->
-                        <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M266.6,177.77l-1.7,-3.1" stroke="${strokeColor}" stroke-width="5"/>
-                        <path d="M267.9,173.77l1.7,3.1" stroke="${strokeColor}" stroke-width="5"/>
-                        <path d="M252.14,183.05c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3" stroke="${highlightColor}" stroke-width="3.5"/>
-                        <path d="M266.62,177.72l-1.7,-3.1" stroke="${highlightColor}" stroke-width="2.5"/>
-                        <path d="M269.62,176.82l-1.7,-3.1" stroke="${highlightColor}" stroke-width="2.5"/>
-                    </g>
-                    <g> <!-- ン -->
-                        <path d="M280.34,177.53l-4.4,-4" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41" stroke="${strokeColor}" stroke-width="6"/>
-                        <path d="M280.34,177.53l-4.4,-4" stroke="${highlightColor}" stroke-width="3.5"/>
-                        <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41" stroke="${highlightColor}" stroke-width="3.5"/>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </svg>`;
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto" aria-label="タマベン">
+    <g transform="translate(-184.9,-165.975)">
+      <path d="M190.659,184.74034c0,-5.43841 1.84671,-9.84711 6.65,-9.84711c4.80329,0 6.65,4.4087 6.65,9.84711c0,5.43841 -2.66537,6.65 -6.65,6.65c-3.98463,0 -6.65,-1.21159 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
+      <path d="M190.659,184.74034c0,-5.43841 1.84671,-9.84711 6.65,-9.84711c4.80329,0 6.65,4.4087 6.65,9.84711c0,5.43841 -2.66537,6.65 -6.65,6.65c-3.98463,0 -6.65,-1.21159 -6.65,-6.65z" fill="none" stroke="#474742" strokeWidth="1"/>
+      <path d="M194.902,181.651c0,-0.757 0.181,-1.516 0.938,-1.516c0.757,0 0.89,0.758 0.89,1.516c0,0.757 -0.133,1.372 -0.89,1.372c-0.757,0 -0.938,-0.614 -0.938,-1.372z" fill="#f7c7b2"/>
+      <path d="M197.886,181.651c0,-0.757 0.181,-1.516 0.938,-1.516c0.757,0 0.89,0.758 0.89,1.516c0,0.757 -0.133,1.372 -0.89,1.372c-0.757,0 -0.938,-0.614 -0.938,-1.372z" fill="#f7c7b2"/>
+      <path d="M196.184,184.923c0,-0.621 0.504,-0.812 1.125,-0.812c0.621,0 1.125,0.191 1.125,0.812c0,0.621 -0.505,1 -1.125,1c-0.62,0 -1.125,-0.379 -1.125,-1z" fill="#f7b2b2" stroke="#474742" strokeWidth="0.5"/>
+      <path d="M192.704,176.589c0.058,-1.593 0,-3.416 0,-3.416h9.187c0,0 0.048,2.7 0,3.416c-0.35,1.5 -2.901,1.959 -4.437,1.959c-1.526,0 -4.504,-0.251 -4.75,-1.959z" fill="#4d4d4d"/>
+      <g stroke="#324738" strokeWidth="3.5" strokeLinecap="round" fill="none">
+        <path d="M233.676,174.321c0,0 13.756,-0.091 14.752,0c1.415,-0.03 -7.944,9.419 -7.944,9.419"/>
+        <path d="M243.095,187.371l-7.149,-6.809"/>
+        <path d="M219.408,172.636c0,0 -1.335,2.931 -2.418,4.4c-1.033,1.402 -2.348,2.295 -2.348,2.295"/>
+        <path d="M218.5,175.473c0,0 7.395,-0.42 8.057,0c0.695,0.693 -1.046,4.669 -3.726,7.398c-3.107,3.165 -5.579,4.063 -5.579,4.063"/>
+        <path d="M219.862,179.898l2.95,2.383"/>
+        <path d="M252.13,183.109c0,0 5.308,-6.602 6.014,-6.582c0.693,-0.492 9.873,9.305 9.873,9.305"/>
+        <path d="M252.364,183.002c0,0 5.308,-6.602 6.014,-6.582c0.693,-0.492 9.873,9.305 9.873,9.305"/>
+        <path d="M266.609,177.779l-1.7,-3.1"/>
+        <path d="M267.909,173.779l1.7,3.1"/>
+        <path d="M280.341,177.534l-4.4,-4"/>
+        <path d="M289.341,177.734c0,0 -3.306,4.509 -5.481,5.98c-2.43,1.643 -8.419,3.42 -8.419,3.42"/>
+      </g>
+    </g>
+  </svg>`;
 };
 
-// パーティクル形状SVG
-const getParticleSvg = (type, isNight) => {
+const getParticleSvg = (seasonKey) => {
     const shapes = {
-        "cherry-blossom": '<path d="M12,2 C12,2 14,5 17,6 C20,7 22,10 21,13 C20,16 17,17 15,16 C13,15.5 12,14 12,14 C12,14 11,15.5 9,16 C7,17 4,16 3,13 C2,10 4,7 7,6 C10,5 12,2 12,2 Z" fill="currentColor"/>',
-        "sun-ray": '<circle cx="12" cy="12" r="8" fill="currentColor"/>',
-        "maple": '<path d="M12,2 L14,8 L20,6 L17,11 L22,14 L16,16 L15,22 L12,18 L9,22 L8,16 L2,14 L7,11 L4,6 L10,8 L12,2 Z" fill="currentColor"/>',
-        "snow": '<circle cx="12" cy="12" r="6" fill="currentColor"/>'
+        "spring": '<path d="M12,2 C12,2 14,5 17,6 C20,7 22,10 21,13 C20,16 17,17 15,16 C13,15.5 12,14 12,14 C12,14 11,15.5 9,16 C7,17 4,16 3,13 C2,10 4,7 7,6 C10,5 12,2 12,2 Z" fill="currentColor"/>',
+        "summer": '<circle cx="12" cy="12" r="6" fill="currentColor"/> <path d="M12,2 L12,4 M12,20 L12,22 M4.93,4.93 L6.34,6.34 M17.66,17.66 L19.07,19.07 M2,12 L4,12 M20,12 L22,12 M4.93,19.07 L6.34,17.66 M17.66,6.34 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" />',
+        "autumn": '<path d="M12,2 L14,8 L20,6 L17,11 L22,14 L16,16 L15,22 L12,18 L9,22 L8,16 L2,14 L7,11 L4,6 L10,8 L12,2 Z" fill="currentColor"/>',
+        "winter": '<path d="M12,2 L12,22 M2,12 L22,12 M4.93,4.93 L19.07,19.07 M4.93,19.07 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
     };
-    const star = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />';
-    return `<svg viewBox="0 0 24 24" class="w-full h-full">${isNight ? star : shapes[type]}</svg>`;
+    return `<svg viewBox="0 0 24 24" class="w-full h-full">${shapes[seasonKey] || shapes.spring}</svg>`;
 };
 
 /* =====================================================================
-   🖥️ メインレンダリングロジック
+   🖥️ メインロジック
    ===================================================================== */
 const render = () => {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const hour = now.getHours();
+    const seasonKey = getSeason();
+    const season = SEASONS[seasonKey];
+    const colors = season.colors;
 
-    // 季節・時間の判定
-    const seasonKey = Object.keys(SITE_CONFIG.seasons).find(key => SITE_CONFIG.seasons[key].months.includes(month)) || 'spring';
-    const timeKey = Object.keys(SITE_CONFIG.timeOfDay).find(key => SITE_CONFIG.timeOfDay[key].hours.includes(hour)) || 'day';
-
-    const season = SITE_CONFIG.seasons[seasonKey];
-    const time = SITE_CONFIG.timeOfDay[timeKey];
-    const isDark = time.isDark || false;
-
-    // 配色定義
-    const textColor = isDark ? "text-slate-100" : "text-slate-700";
-    const glassClass = isDark 
-        ? "bg-slate-900/40 border-slate-700 text-white backdrop-blur-md" 
-        : "bg-white/70 border-white/50 text-slate-800 backdrop-blur-md";
-
-    // 1. 背景制御
-    const bgContainer = document.getElementById('ambient-background');
-    bgContainer.className = `fixed inset-0 -z-20 overflow-hidden transition-colors duration-1000 bg-gradient-to-b ${time.skyGradient}`;
+    // 1. テーマカラー適用
+    document.getElementById('season-name').textContent = season.name;
+    document.getElementById('season-name').className = `inline-block animate-bounce-slow ${colors.accent}`;
+    document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20`;
     
-    // パーティクル生成 (初回または季節変更時)
-    if (!bgContainer.hasChildNodes() || bgContainer.getAttribute('data-season') !== seasonKey) {
-        bgContainer.innerHTML = '';
-        bgContainer.setAttribute('data-season', seasonKey);
-        
-        const particleCount = timeKey === 'night' ? 20 : 12;
-        const particleColor = isDark ? 'text-white' : season.theme.accent;
-        let particlesHtml = '';
-
-        for(let i=0; i<particleCount; i++) {
-            const left = Math.random() * 100;
-            const top = Math.random() * 100;
-            const size = 10 + Math.random() * 20;
-            const duration = 10 + Math.random() * 15;
-            const delay = Math.random() * 5;
-            particlesHtml += `
-                <div class="absolute opacity-30 ${particleColor} animate-float"
-                     style="left:${left}%; top:${top}%; width:${size}px; height:${size}px; animation-duration:${duration}s; animation-delay:${delay}s;">
-                     ${getParticleSvg(season.particleShape, timeKey === 'night')}
-                </div>`;
-        }
-        bgContainer.innerHTML = particlesHtml;
-    }
-
-    // 2. オーバーレイ制御
-    document.getElementById('ambient-overlay').className = `fixed inset-0 -z-10 transition-colors duration-1000 ${time.overlayColor}`;
-
-    // 3. ヘッダー更新
-    const header = document.getElementById('header-container');
-    header.className = `sticky top-4 z-50 flex items-center justify-between mb-10 px-6 py-4 rounded-[2rem] border shadow-sm transition-all duration-1000 ${glassClass}`;
-
-    const logoBg = document.getElementById('logo-bg');
-    logoBg.className = `p-2 rounded-xl transition-colors duration-1000 ${season.theme.bg}`;
-
-    // ロゴ注入
-    const logoSvg = getTamabenLogo(isDark);
-    document.getElementById('logo-wrapper').innerHTML = logoSvg;
-    document.getElementById('footer-logo').innerHTML = logoSvg;
-
-    // 日付
-    const dateEl = document.getElementById('header-date');
-    dateEl.textContent = now.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' });
-    dateEl.className = `${isDark ? 'text-white' : 'text-slate-600'} hidden md:inline transition-colors duration-1000`;
-
-    // 季節バッジ
-    const seasonBadge = document.getElementById('season-badge');
-    seasonBadge.className = `flex items-center gap-2 px-3 py-1 rounded-full border ${isDark ? 'border-slate-600 bg-slate-800' : 'border-slate-200 bg-white'}`;
-    document.getElementById('season-icon').setAttribute('data-lucide', season.icon);
-    document.getElementById('season-icon').className = `w-4 h-4 ${season.theme.accent}`;
-    const seasonName = document.getElementById('season-name');
-    seasonName.textContent = season.name;
-    seasonName.className = isDark ? 'text-slate-200' : 'text-slate-600';
-
-    // 時間バッジ
-    const timeBadge = document.getElementById('time-badge');
-    timeBadge.className = `w-8 h-8 rounded-full flex items-center justify-center border ${isDark ? 'border-slate-600 bg-slate-800' : 'border-slate-200 bg-white'}`;
-    const timeIcon = document.getElementById('time-icon');
-    timeIcon.setAttribute('data-lucide', timeKey === 'night' ? 'moon' : 'sun');
-    timeIcon.className = `w-4 h-4 ${isDark ? 'text-yellow-300' : 'text-orange-400'}`;
-
-    // 4. ヒーローセクション
-    const hero = document.getElementById('hero-section');
-    hero.className = `relative rounded-[3rem] overflow-hidden p-8 md:p-16 mb-12 text-center md:text-left shadow-xl transition-all duration-1000 ${isDark ? 'shadow-black/20' : 'shadow-emerald-900/5'}`;
-    document.getElementById('hero-glass').className = `absolute inset-0 z-0 transition-all duration-1000 ${glassClass} border-0`;
-
-    const greetingBadge = document.getElementById('greeting-badge');
-    greetingBadge.className = `inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm transition-all duration-1000 ${isDark ? 'bg-white/10 border-white/20 text-yellow-200' : 'bg-white/50 border-white/50 text-slate-600'}`;
-    document.getElementById('greeting-text').textContent = time.greeting;
-
-    document.getElementById('hero-title').className = `text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight transition-colors duration-1000 ${textColor}`;
+    // 背景グラデーション
+    document.getElementById('bg-gradient').className = `absolute inset-0 opacity-30 bg-gradient-to-br ${colors.gradient} transition-colors duration-1000`;
+    document.getElementById('footer-line').className = `absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${colors.gradient}`;
     
-    // ボタンのテーマ適用
-    document.getElementById('btn-primary').className = `px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 cursor-pointer ${season.theme.primary}`;
-    document.getElementById('btn-secondary').className = `px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 cursor-pointer ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-700 hover:bg-slate-50'}`;
+    // ロゴ周り
+    document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
+    document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo();
+    document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo();
 
-    // イラストカード
-    const illCard = document.getElementById('illustration-card');
-    illCard.className = `w-48 h-48 md:w-64 md:h-64 rounded-[3rem] rotate-6 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm ${isDark ? 'bg-slate-800/50 border-white/20' : 'bg-white/40 border-white/60'}`;
-    
+    // アイコン
     const mainIcon = document.getElementById('main-season-icon');
     mainIcon.setAttribute('data-lucide', season.icon);
-    mainIcon.className = isDark ? "text-yellow-100 drop-shadow-[0_0_15px_rgba(255,255,0,0.5)]" : season.theme.accent;
-
-    const item1 = document.getElementById('float-item-1');
-    item1.className = `absolute top-0 right-10 p-4 rounded-2xl shadow-lg -rotate-12 animate-bounce ${isDark ? 'bg-slate-700 text-pink-300' : 'bg-white text-pink-500'}`;
-    const item2 = document.getElementById('float-item-2');
-    item2.className = `absolute bottom-0 left-10 p-4 rounded-2xl shadow-lg rotate-12 animate-bounce ${isDark ? 'bg-slate-700 text-sky-300' : 'bg-white text-sky-500'}`;
-
-    // 5. メインコンテンツ
-    document.getElementById('subject-heading-icon').className = `p-3 rounded-2xl ${season.theme.primary} text-white shadow-lg`;
-    document.getElementById('subject-heading-text').className = `text-3xl font-bold transition-colors duration-1000 ${textColor}`;
     
-    const footer = document.getElementById('footer');
-    footer.className = `mt-24 py-10 text-center border-t transition-colors duration-1000 ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200/50 text-slate-400'}`;
+    const subjectIconBg = document.getElementById('subject-icon-bg');
+    subjectIconBg.className = `p-4 rounded-2xl ${colors.primary} text-white shadow-lg rotate-3 transition-colors duration-500`;
 
-    // 6. 教材リスト描画呼び出し (LEARNING_DATAはdata.jsから来る)
-    if (typeof LEARNING_DATA !== 'undefined') {
-        renderMaterials(LEARNING_DATA, isDark);
-    } else {
-        console.error("LEARNING_DATA is not defined. Make sure data.js is loaded.");
+    // 2. パーティクル背景
+    const particlesContainer = document.getElementById('particles-container');
+    if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-season') !== seasonKey) {
+        particlesContainer.innerHTML = '';
+        particlesContainer.setAttribute('data-season', seasonKey);
+        let particlesHtml = '';
+        for(let i=0; i<12; i++) {
+            const left = Math.random() * 100;
+            const isFall = seasonKey === 'autumn' || seasonKey === 'winter';
+            const top = isFall ? '-10vh' : '110vh';
+            const animName = isFall ? 'float-down' : 'float-up';
+            const dur = 10 + Math.random() * 15;
+            const dly = Math.random() * 10;
+            const size = 20 + Math.random() * 30;
+            
+            particlesHtml += `
+                <div class="particle ${season.particleColor}" style="left:${left}%; top:${top}; animation:${animName} ${dur}s ${dly}s infinite; width:${size}px; height:${size}px;">
+                    ${getParticleSvg(seasonKey)}
+                </div>`;
+        }
+        particlesContainer.innerHTML = particlesHtml;
     }
 
+    // 3. 教科グリッド生成
+    const subGrid = document.getElementById('subjects-grid-container');
+    if (!subGrid.hasChildNodes()) {
+        const subjects = [
+            { name: '算数', icon: 'calculator', color: 'bg-lime-400', shadow: 'shadow-lime-200' },
+            { name: '数学', icon: 'calculator', color: 'bg-blue-400', shadow: 'shadow-blue-200' },
+            { name: '国語', icon: 'pencil', color: 'bg-rose-400', shadow: 'shadow-rose-200' },
+            { name: '理科', icon: 'flask-conical', color: 'bg-emerald-400', shadow: 'shadow-emerald-200' },
+            { name: '社会', icon: 'globe', color: 'bg-amber-400', shadow: 'shadow-amber-200' },
+            { name: '英語', icon: 'languages', color: 'bg-violet-400', shadow: 'shadow-violet-200' },
+        ];
+        subGrid.innerHTML = subjects.map(s => `
+            <button class="group relative aspect-square glass-card rounded-[2rem] hover:border-emerald-300 hover:scale-[1.03] transition-all duration-300 overflow-hidden flex flex-col items-center justify-center gap-4">
+                <div class="w-20 h-20 md:w-24 md:h-24 ${s.color} rounded-[1.5rem] flex items-center justify-center text-white shadow-lg ${s.shadow} transform rotate-3 group-hover:rotate-12 transition-transform duration-500">
+                    <i data-lucide="${s.icon}" width="40" height="40" stroke-width="2.5"></i>
+                </div>
+                <span class="font-bold text-xl text-slate-700 group-hover:text-emerald-600 transition-colors">${s.name}</span>
+                <div class="absolute -bottom-10 -right-10 w-24 h-24 ${s.color} opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+            </button>
+        `).join('');
+    }
+
+    // 4. 教材リスト生成
+    renderMaterials();
+    
+    // アイコン更新
     lucide.createIcons();
 };
 
-// 教材リスト描画関数
-const renderMaterials = (data, isDark) => {
-    const materialsContainer = document.getElementById('learning-materials-container');
-    
-    const colorsMap = {
-        lime: { bg: "bg-lime-100", text: "text-lime-700", border: "border-lime-200" },
-        rose: { bg: "bg-rose-100", text: "text-rose-700", border: "border-rose-200" },
-        violet: { bg: "bg-violet-100", text: "text-violet-700", border: "border-violet-200" },
-        emerald: { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200" },
-        amber: { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-200" },
-        pink: { bg: "bg-pink-100", text: "text-pink-700", border: "border-pink-200" },
-    };
+const renderMaterials = () => {
+    const container = document.getElementById('learning-materials-container');
+    if (!container || typeof LEARNING_DATA === 'undefined') return;
 
-    materialsContainer.innerHTML = data.map(gradeData => {
-        const subjectsHtml = gradeData.subjects.map(subject => {
-            const c = colorsMap[subject.color] || colorsMap['lime'];
+    container.innerHTML = LEARNING_DATA.map(data => {
+        const iconColor = data.subjects[0]?.color || 'lime'; // 簡易的に色決定
+        
+        const unitsHtml = data.subjects.map(sub => {
+            const bgClass = `bg-${sub.color}-400`;
+            const shadowClass = `shadow-${sub.color}-200`;
             
-            const unitsHtml = subject.units.map(unit => `
-                <a href="${unit.pdf}" target="_blank" class="flex items-center justify-between p-3 rounded-xl bg-white/80 border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all group cursor-pointer">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full ${c.bg} ${c.text} flex items-center justify-center">
-                            <i data-lucide="file-text" width="14" height="14"></i>
+            return sub.units.map(unit => `
+                <a href="${unit.pdf}" target="_blank" class="text-left group bg-white/60 hover:bg-white p-6 rounded-[2rem] transition-all border border-slate-100 hover:border-emerald-300 hover:shadow-lg flex flex-col justify-between h-full relative overflow-hidden cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            <span class="w-2 h-2 rounded-full bg-${sub.color}-400"></span>
+                            ${sub.name}
                         </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-slate-800">${unit.title}</span>
+                        <h4 class="font-bold text-lg text-slate-700 group-hover:text-emerald-700 mb-2 flex items-center justify-between">
+                            ${unit.title}
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                                <i data-lucide="chevron-right" width="18" height="18"></i>
+                            </div>
+                        </h4>
+                        <p class="text-sm text-slate-500 font-medium line-clamp-2">練習問題と解説PDF</p>
                     </div>
-                    <i data-lucide="download" width="16" height="16" class="text-slate-300 group-hover:text-slate-500"></i>
                 </a>
             `).join('');
-
-            return `
-                <div class="learning-card flex-1 min-w-[300px] md:min-w-[320px] p-6 rounded-[2rem] ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/60 border-white/60'} border backdrop-blur-md shadow-sm">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="p-3 rounded-xl shadow-sm transform -rotate-3 ${c.bg} ${c.text}">
-                            <i data-lucide="${subject.icon}" width="24" height="24"></i>
-                        </div>
-                        <h4 class="font-bold text-xl ${isDark ? 'text-slate-200' : 'text-slate-700'}">${subject.name}</h4>
-                    </div>
-                    <div class="space-y-3">
-                        ${unitsHtml}
-                    </div>
-                </div>
-            `;
         }).join('');
 
         return `
-            <div id="grade-${gradeData.gradeId}" class="scroll-mt-32 space-y-6">
-                <div class="flex items-center gap-3">
-                    <div class="h-8 w-1 ${isDark ? 'bg-yellow-400' : 'bg-slate-400'} rounded-full"></div>
-                    <h3 class="text-2xl font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}">
-                        ${gradeData.grade}
-                    </h3>
+            <div id="grade-${data.gradeId}" class="glass-card rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden scroll-mt-32">
+                <div class="absolute top-0 left-0 w-2 h-full bg-emerald-400"></div>
+                <div class="flex items-center gap-4 mb-8 relative z-10">
+                    <span class="text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm ${data.grade.includes('小学') ? 'bg-orange-400' : 'bg-blue-500'}">
+                        ${data.grade.includes('小学') ? '小学生' : '中学生'}
+                    </span>
+                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">${data.grade}</h3>
                 </div>
-                <div class="flex flex-wrap gap-6">
-                    ${subjectsHtml}
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+                    ${unitsHtml}
                 </div>
             </div>
         `;
@@ -331,5 +213,4 @@ window.scrollToGrade = (gradeId) => {
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     render();
-    setInterval(render, 60000); // 1分ごとに更新
 });
