@@ -19,11 +19,11 @@
     <!-- 外部CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen selection:bg-emerald-200 selection:text-emerald-900 transition-colors duration-1000 font-['Zen_Maru_Gothic'] text-slate-700 relative">
+<body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative transition-colors duration-1000">
 
     <!-- 背景レイヤー -->
     <div id="seasonal-background">
-        <div id="bg-gradient" class="absolute inset-0 opacity-30 transition-colors duration-1000"></div>
+        <div id="bg-gradient" class="absolute inset-0 transition-colors duration-1000"></div>
         <div id="particles-container"></div>
     </div>
 
@@ -46,6 +46,12 @@
                 <button onclick="scrollToGrade('j1')" class="px-6 py-2 rounded-2xl font-bold text-slate-500 hover:bg-slate-100/50 transition-all flex items-center gap-2">
                     <i data-lucide="graduation-cap" class="text-blue-500 w-5 h-5"></i> 中学生
                 </button>
+                
+                <!-- 時間帯表示バッジ -->
+                <div id="time-badge" class="ml-2 px-3 py-1 rounded-full border text-xs font-bold flex items-center gap-2 bg-white/50 backdrop-blur-sm">
+                    <i id="time-icon" class="w-4 h-4"></i>
+                    <span id="time-text"></span>
+                </div>
             </nav>
         </div>
     </header>
@@ -115,7 +121,6 @@
 
         <!-- 教材リストエリア -->
         <div id="learning-materials-container" class="space-y-20">
-            <!-- JSONデータがここにロードされます -->
             <div class="text-center py-20">
                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
                 <p class="mt-4 text-slate-400 font-bold">データを読み込んでいます...</p>
@@ -138,6 +143,7 @@
     </footer>
 
     <!-- 外部スクリプト -->
+    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
