@@ -19,111 +19,122 @@
     <!-- 外部CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen selection:bg-lime-300 selection:text-lime-900 transition-colors duration-1000">
+<body class="min-h-screen selection:bg-emerald-200 selection:text-emerald-900 transition-colors duration-1000 font-['Zen_Maru_Gothic'] text-slate-700 relative">
 
     <!-- 背景レイヤー -->
-    <div id="ambient-background" class="fixed inset-0 -z-20 overflow-hidden transition-colors duration-1000"></div>
-    <div id="ambient-overlay" class="fixed inset-0 -z-10 transition-colors duration-1000"></div>
+    <div id="seasonal-background">
+        <div id="bg-gradient" class="absolute inset-0 opacity-30 transition-colors duration-1000"></div>
+        <div id="particles-container"></div>
+    </div>
 
-    <!-- メインコンテナ -->
-    <div class="container mx-auto px-4 py-6 md:py-10 max-w-5xl relative z-10">
+    <!-- ヘッダー -->
+    <header class="sticky top-0 z-50 glass border-b transition-colors duration-500" id="main-header">
+        <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+            <button onclick="location.reload()" class="flex items-center gap-3 group">
+                <div class="relative">
+                    <div id="logo-glow" class="absolute inset-0 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
+                    <div class="relative bg-white/80 p-2 rounded-xl border border-white/50">
+                        <div id="header-logo-wrapper" class="w-28 md:w-32"></div>
+                    </div>
+                </div>
+            </button>
+
+            <nav class="hidden md:flex items-center gap-4">
+                <button onclick="scrollToGrade('e1')" class="px-6 py-2 rounded-2xl font-bold text-slate-500 hover:bg-slate-100/50 transition-all flex items-center gap-2">
+                    <i data-lucide="sun" class="text-orange-400 w-5 h-5"></i> 小学生
+                </button>
+                <button onclick="scrollToGrade('j1')" class="px-6 py-2 rounded-2xl font-bold text-slate-500 hover:bg-slate-100/50 transition-all flex items-center gap-2">
+                    <i data-lucide="graduation-cap" class="text-blue-500 w-5 h-5"></i> 中学生
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-10 pb-32 relative z-10">
         
-        <!-- ヘッダー -->
-        <header id="header-container" class="flex items-center justify-between mb-10 px-6 py-4 rounded-[2rem] border shadow-sm transition-all duration-1000">
-            <div class="flex items-center gap-3">
-                <div id="logo-bg" class="p-2 rounded-xl transition-colors duration-1000">
-                    <div id="logo-wrapper" class="w-28 md:w-36"></div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4 text-sm font-bold">
-                <span id="header-date" class="hidden md:inline transition-colors duration-1000"></span>
-                <div id="season-badge" class="flex items-center gap-2 px-3 py-1 rounded-full border transition-all duration-1000">
-                    <i id="season-icon" class="w-4 h-4"></i>
-                    <span id="season-name"></span>
-                </div>
-                <div id="time-badge" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-1000">
-                   <i id="time-icon" class="w-4 h-4"></i>
-                </div>
-            </div>
-        </header>
-
         <!-- ヒーローセクション -->
-        <section id="hero-section" class="relative rounded-[3rem] overflow-hidden p-8 md:p-16 mb-12 text-center md:text-left shadow-xl transition-all duration-1000">
-            <!-- ガラス背景用レイヤー -->
-            <div id="hero-glass" class="absolute inset-0 z-0 transition-all duration-1000"></div>
+        <section id="hero-section" class="relative rounded-[3rem] overflow-hidden shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20">
+            <!-- 装飾円 -->
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-20 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow-300 opacity-20 rounded-full -ml-20 -mb-20 blur-2xl"></div>
 
-            <div class="relative z-10 grid md:grid-cols-2 gap-10 items-center">
-                <div class="space-y-6">
-                    <div id="greeting-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm transition-all duration-1000">
-                        <i data-lucide="sparkles" width="14" height="14"></i>
-                        <span id="greeting-text"></span>
+            <div class="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-sm font-bold mb-8 border border-white/30 shadow-sm">
+                        <i data-lucide="sparkles" class="text-yellow-200 w-4 h-4"></i> 登録不要・完全無料
                     </div>
                     
-                    <h1 id="hero-title" class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight transition-colors duration-1000">
-                        学びを、<br>もっと自由に。
+                    <h1 class="text-4xl md:text-5xl lg:text-7xl font-black mb-8 leading-tight drop-shadow-sm tracking-tight">
+                        <span id="season-name" class="inline-block animate-bounce-slow"></span>も、<br/>
+                        タマベンで<br/>
+                        楽しく学ぼう。
                     </h1>
                     
-                    <p id="hero-subcopy" class="text-lg md:text-xl font-medium leading-relaxed whitespace-pre-wrap transition-colors duration-1000">
-                        季節と時間に合わせて、<br>あなたの勉強を応援するよ。
-                    </p>
-
-                    <div class="flex flex-wrap gap-4 justify-center md:justify-start pt-4">
-                        <button id="btn-primary" onclick="scrollToGrade('e1')" class="px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 cursor-pointer">
-                            小学生の教材
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                        <button onclick="scrollToGrade('e1')" class="bg-white text-slate-800 px-8 py-5 rounded-[2rem] font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 group">
+                            <div class="bg-orange-100 p-2 rounded-full"><i data-lucide="sun" class="text-orange-500 w-6 h-6"></i></div>
+                            <span class="text-lg">小学生</span>
                         </button>
-                        <button id="btn-secondary" onclick="scrollToGrade('j1')" class="px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 cursor-pointer">
-                            中学生の教材
+                        <button onclick="scrollToGrade('j1')" class="bg-white/90 text-slate-800 px-8 py-5 rounded-[2rem] font-bold shadow-lg hover:bg-white hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 group">
+                            <div class="bg-blue-100 p-2 rounded-full"><i data-lucide="graduation-cap" class="text-blue-500 w-6 h-6"></i></div>
+                            <span class="text-lg">中学生</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- イラストエリア -->
-                <div class="relative h-64 md:h-80 flex items-center justify-center">
-                    <div id="illustration-card" class="w-48 h-48 md:w-64 md:h-64 rounded-[3rem] rotate-6 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm">
-                        <i id="main-season-icon" width="120" height="120"></i>
+                <!-- ヒーローイラスト -->
+                <div class="h-64 md:h-96 relative flex items-center justify-center">
+                    <div class="w-48 h-48 md:w-72 md:h-72 bg-white/20 backdrop-blur-md rounded-[3rem] rotate-3 flex items-center justify-center border-4 border-white/50 shadow-2xl animate-float-up">
+                        <i id="main-season-icon" class="text-white w-24 h-24 md:w-36 md:h-36 drop-shadow-md"></i>
                     </div>
-                    
-                    <!-- 浮かぶアイテム -->
-                    <div id="float-item-1" class="absolute top-0 right-10 p-4 rounded-2xl shadow-lg -rotate-12 animate-bounce" style="animation-duration: 3s;">
-                        <i data-lucide="pencil" width="32" height="32"></i>
+                    <div class="absolute bottom-0 right-4 bg-white p-5 rounded-3xl shadow-xl rotate-6 animate-float-down">
+                        <i data-lucide="calculator" class="text-emerald-500 w-10 h-10 md:w-14 md:h-14"></i>
                     </div>
-                    <div id="float-item-2" class="absolute bottom-0 left-10 p-4 rounded-2xl shadow-lg rotate-12 animate-bounce" style="animation-duration: 4s;">
-                        <i data-lucide="calculator" width="32" height="32"></i>
+                    <div class="absolute top-0 left-0 bg-white p-5 rounded-3xl shadow-xl -rotate-6 animate-float-up-delay">
+                        <i data-lucide="book-open" class="text-orange-500 w-10 h-10 md:w-14 md:h-14"></i>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- コンテンツエリア -->
-        <main>
-            <div class="flex items-center gap-4 mb-8 pl-2">
-                <div id="subject-heading-icon" class="p-3 rounded-2xl text-white shadow-lg">
-                    <i data-lucide="star" width="24" height="24"></i>
+        <!-- 教科選択エリア -->
+        <div class="mb-20">
+            <div class="flex items-center gap-4 mb-10 pl-2">
+                <div id="subject-icon-bg" class="p-4 rounded-2xl text-white shadow-lg rotate-3 transition-colors duration-500">
+                   <i data-lucide="star" class="fill-current w-6 h-6"></i>
                 </div>
-                <h2 id="subject-heading-text" class="text-3xl font-bold transition-colors duration-1000">教科からさがす</h2>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">教科からさがす</h2>
             </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                <!-- JSで教科カードを生成 -->
+                <div id="subjects-grid-container" class="contents"></div>
+            </div>
+        </div>
 
-            <!-- 教材リスト -->
-            <div id="learning-materials-container" class="space-y-16 pb-20">
-                <!-- JSでここにデータが挿入されます -->
-            </div>
-        </main>
+        <!-- 教材リストエリア -->
+        <div id="learning-materials-container" class="space-y-20">
+            <!-- JSでここにデータが挿入されます -->
+        </div>
 
-        <!-- フッター -->
-        <footer id="footer" class="mt-24 py-10 text-center border-t transition-colors duration-1000">
-            <div class="inline-flex items-center justify-center mb-4 opacity-50 w-24 mx-auto">
-                 <div id="footer-logo"></div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="glass border-t border-slate-200 py-16 relative overflow-hidden">
+        <div id="footer-line" class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r transition-colors duration-1000"></div>
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-flex items-center gap-2 mb-8 opacity-60 hover:opacity-100 transition-opacity transform hover:scale-105 duration-300">
+                <div id="footer-logo-wrapper" class="w-32 grayscale hover:grayscale-0 transition-all duration-500"></div>
             </div>
-            <p class="text-xs font-bold">
+            <p class="text-xs text-slate-300 font-bold">
                 &copy; 2025 Tamaben. All Rights Reserved.
             </p>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
-    <!-- 外部スクリプトの読み込み -->
-    <!-- 1. データ定義 -->
+    <!-- 外部スクリプト -->
     <script src="data.js"></script>
-    <!-- 2. ロジック実行 -->
     <script src="script.js"></script>
 </body>
 </html>
