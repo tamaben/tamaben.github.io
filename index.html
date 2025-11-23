@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -21,6 +22,24 @@
     <div id="sky-background" class="fixed inset-0 -z-20 transition-colors duration-[3000ms]">
         <div id="stars" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
         <div id="clouds" class="absolute inset-0 opacity-80"></div>
+    </div>
+
+    <!-- 🎂 誕生日スペシャル演出用オーバーレイ -->
+    <div id="birthday-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none opacity-0 transition-opacity duration-1000">
+        <div id="birthday-content" class="text-center text-white transform scale-0 transition-transform duration-700">
+            <div class="mb-6 animate-bounce">
+                <i data-lucide="cake" class="w-32 h-32 text-pink-300 drop-shadow-lg mx-auto"></i>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 mb-4 drop-shadow-md filter">
+                HAPPY BIRTHDAY!
+            </h1>
+            <p class="text-xl md:text-2xl font-bold text-white/90 mb-8">
+                今日はあなたが主役の特別な日。<br>素敵な1年になりますように！
+            </p>
+            <button onclick="closeBirthdayMode()" class="pointer-events-auto px-8 py-4 bg-white text-pink-500 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform">
+                ありがとう！
+            </button>
+        </div>
     </div>
 
     <!-- ヘッダー -->
@@ -109,7 +128,7 @@
             </div>
         </div>
 
-        <!-- === 2. 詳細ページ (SPA風切り替え) === -->
+        <!-- === 2. 詳細ページ === -->
         <div id="view-detail" class="hidden animate-in slide-in-from-right-8 duration-500">
             <button onclick="goHome()" class="mb-8 flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-bold bg-white/80 px-5 py-3 rounded-full w-fit hover:bg-white transition-all shadow-sm">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i> もどる
@@ -140,12 +159,10 @@
                                 <span class="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-600 font-black text-xs">LEVEL 1</span>
                                 <h3 class="text-xl font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">基本</h3>
                             </div>
-                            <!-- プレビュー画像 -->
                             <div class="aspect-[3/4] bg-slate-100 rounded-2xl overflow-hidden relative mb-6 border border-slate-200 group-hover:border-emerald-200 transition-colors">
                                 <div class="absolute inset-0 flex items-center justify-center text-slate-300">
                                     <i data-lucide="file-image" class="w-16 h-16 opacity-50"></i>
                                 </div>
-                                <!-- ここに実際のPDFサムネを入れる場合は img タグを使用 -->
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                                     <span class="bg-emerald-500 text-white px-4 py-2 rounded-full font-bold shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all">開く</span>
                                 </div>
@@ -159,7 +176,6 @@
                                 <span class="px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 font-black text-xs">LEVEL 2</span>
                                 <h3 class="text-xl font-bold text-slate-700 group-hover:text-orange-600 transition-colors">応用</h3>
                             </div>
-                            <!-- プレビュー画像 -->
                             <div class="aspect-[3/4] bg-slate-100 rounded-2xl overflow-hidden relative mb-6 border border-slate-200 group-hover:border-orange-200 transition-colors">
                                 <div class="absolute inset-0 flex items-center justify-center text-slate-300">
                                     <i data-lucide="file-text" class="w-16 h-16 opacity-50"></i>
