@@ -28,6 +28,14 @@ const SEASONS = {
     }
 };
 
+const TIME_OF_DAY = {
+    morning: { hours: [5, 6, 7, 8, 9, 10], label: "おはよう！", icon: "sunrise", overlay: "bg-orange-100/30" },
+    day: { hours: [11, 12, 13, 14, 15, 16], label: "こんにちは！", icon: "sun", overlay: "bg-transparent" },
+    evening: { hours: [17, 18], label: "こんばんは。", icon: "sunset", overlay: "bg-indigo-900/20" },
+    night: { hours: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4], label: "おつかれさま。", icon: "moon", overlay: "bg-slate-900/60", isDark: true }
+};
+
+// 現在の季節を取得
 const getSeason = () => {
     const month = new Date().getMonth() + 1;
     if (month >= 3 && month <= 5) return 'spring';
@@ -36,34 +44,40 @@ const getSeason = () => {
     return 'winter';
 };
 
+// 現在の時間帯を取得
+const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    return Object.entries(TIME_OF_DAY).find(([key, val]) => val.hours.includes(hour))[1];
+};
+
 /* =====================================================================
    🎨 SVGジェネレーター
    ===================================================================== */
 const getTamabenLogo = () => {
     return `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto" aria-label="タマベン">
-    <g transform="translate(-184.9,-165.975)">
-      <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
-      <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" strokeWidth="1"/>
-      <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
-      <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
-      <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" strokeWidth="0.5"/>
-      <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/>
-      <g stroke="#324738" strokeWidth="3.5" strokeLinecap="round" fill="none">
-        <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/>
-        <path d="M243.09,187.37l-7.14,-6.8"/>
-        <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/>
-        <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/>
-        <path d="M219.86,179.89l2.95,2.38"/>
-        <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
-        <path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
-        <path d="M266.6,177.77l-1.7,-3.1"/>
-        <path d="M267.9,173.77l1.7,3.1"/>
-        <path d="M280.34,177.53l-4.4,-4"/>
-        <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/>
-      </g>
-    </g>
-  </svg>`;
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto">
+        <g transform="translate(-184.9,-165.975)">
+            <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb"/>
+            <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/>
+            <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
+            <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
+            <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/>
+            <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/>
+            <g stroke="#324738" stroke-width="3.5" stroke-linecap="round" fill="none">
+                <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/>
+                <path d="M243.09,187.37l-7.14,-6.8"/>
+                <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/>
+                <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/>
+                <path d="M219.86,179.89l2.95,2.38"/>
+                <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
+                <path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
+                <path d="M266.6,177.77l-1.7,-3.1"/>
+                <path d="M267.9,173.77l1.7,3.1"/>
+                <path d="M280.34,177.53l-4.4,-4"/>
+                <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/>
+            </g>
+        </g>
+    </svg>`;
 };
 
 const getParticleSvg = (seasonKey) => {
@@ -79,28 +93,37 @@ const getParticleSvg = (seasonKey) => {
 /* =====================================================================
    🖥️ メインロジック
    ===================================================================== */
-const render = async () => {
+const render = () => {
     const seasonKey = getSeason();
     const season = SEASONS[seasonKey];
     const colors = season.colors;
+    const time = getTimeOfDay();
 
     // 1. テーマカラー適用
     document.getElementById('season-name').textContent = season.name;
     document.getElementById('season-name').className = `inline-block animate-bounce-slow ${colors.accent}`;
     document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20`;
     
-    document.getElementById('bg-gradient').className = `absolute inset-0 opacity-30 bg-gradient-to-br ${colors.gradient} transition-colors duration-1000`;
+    document.getElementById('bg-gradient').className = `absolute inset-0 transition-colors duration-1000 bg-gradient-to-br ${colors.gradient}`;
     document.getElementById('footer-line').className = `absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${colors.gradient}`;
     
+    // ロゴ周り
     document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
     document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo();
     document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo();
 
+    // アイコン
     const mainIcon = document.getElementById('main-season-icon');
     mainIcon.setAttribute('data-lucide', season.icon);
     
     const subjectIconBg = document.getElementById('subject-icon-bg');
     subjectIconBg.className = `p-4 rounded-2xl ${colors.primary} text-white shadow-lg rotate-3 transition-colors duration-500`;
+
+    // 時間帯表示
+    document.getElementById('time-text').textContent = time.label;
+    document.getElementById('time-icon').setAttribute('data-lucide', time.icon);
+    document.getElementById('time-badge').className = `ml-2 px-3 py-1 rounded-full border text-xs font-bold flex items-center gap-2 bg-white/50 backdrop-blur-sm ${time.isDark ? 'text-white bg-slate-800 border-slate-700' : 'text-slate-600 border-slate-200'}`;
+    document.getElementById('bg-gradient').classList.add(time.overlay); // 時間帯によるオーバーレイ適用
 
     // 2. パーティクル背景
     const particlesContainer = document.getElementById('particles-container');
@@ -147,22 +170,14 @@ const render = async () => {
         `).join('');
     }
 
-    // 4. JSONデータをFetchして描画
-    try {
-        const response = await fetch('data.json');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        renderMaterials(data);
-    } catch (error) {
-        console.error('Fetch error:', error);
-        document.getElementById('learning-materials-container').innerHTML = `
-            <div class="text-center py-10 bg-red-50 rounded-[2rem] border border-red-100">
-                <p class="text-red-500 font-bold">データの読み込みに失敗しました。</p>
-                <p class="text-sm text-red-400 mt-2">※ローカル環境ではセキュリティ制限のため、Webサーバー経由で開いてください。<br>(VS CodeのLive Serverなど)</p>
-            </div>
-        `;
+    // 4. 教材リスト生成
+    if (typeof LEARNING_DATA !== 'undefined') {
+        renderMaterials(LEARNING_DATA);
+    } else {
+        console.error("LEARNING_DATAが見つかりません。data.jsが読み込まれているか確認してください。");
     }
     
+    // アイコン更新
     lucide.createIcons();
 };
 
@@ -241,4 +256,6 @@ window.scrollToGrade = (gradeId) => {
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     render();
+    // 時間帯の変化に対応するため1分ごとに再レンダリング
+    setInterval(render, 60000);
 });
