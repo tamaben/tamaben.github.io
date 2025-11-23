@@ -115,7 +115,11 @@
 
         <!-- 教材リストエリア -->
         <div id="learning-materials-container" class="space-y-20">
-            <!-- JSでここにデータが挿入されます -->
+            <!-- JSONデータがここにロードされます -->
+            <div class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
+                <p class="mt-4 text-slate-400 font-bold">データを読み込んでいます...</p>
+            </div>
         </div>
 
     </main>
@@ -134,7 +138,6 @@
     </footer>
 
     <!-- 外部スクリプト -->
-    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
