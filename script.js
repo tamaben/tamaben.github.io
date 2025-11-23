@@ -5,6 +5,7 @@ let userLocation = { lat: 35.6895, lon: 139.6917, name: "東京" };
 let cachedData = [];
 let currentTab = 'elementary';
 let currentUserGradeId = null; 
+let currentDetailUnit = null;
 
 // クッキー操作
 const setCookie = (name, value, days) => {
@@ -25,7 +26,7 @@ const deleteCookie = (name) => {
 };
 
 /* =====================================================================
-   🎂 学年判定 & おすすめ表示
+   🎂 学年判定・誕生日チェック
    ===================================================================== */
 const calculateGrade = (birthDateString) => {
     if (!birthDateString) return null;
@@ -33,6 +34,15 @@ const calculateGrade = (birthDateString) => {
     const today = new Date();
     const birthDate = new Date(birthDateString);
     
+    // 誕生日チェック（月と日が一致する場合のみ発火）
+    if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
+        // まだ今日お祝いしていない場合のみ
+        if (!sessionStorage.getItem('birthday_celebrated')) {
+            triggerBirthdayMode();
+            sessionStorage.setItem('birthday_celebrated', 'true');
+        }
+    }
+
     let schoolYear = today.getFullYear();
     if (today.getMonth() + 1 < 4) schoolYear -= 1;
 
@@ -54,6 +64,44 @@ const calculateGrade = (birthDateString) => {
     }
 };
 
+// 誕生日モード発動
+const triggerBirthdayMode = () => {
+    const overlay = document.getElementById('birthday-overlay');
+    overlay.classList.add('active');
+    
+    // 紙吹雪
+    if (window.confetti) {
+        const duration = 5000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    }
+};
+
+window.closeBirthdayMode = () => {
+    document.getElementById('birthday-overlay').classList.remove('active');
+};
+
+// おすすめ表示
 const renderRecommendations = () => {
     if (!currentUserGradeId || cachedData.length === 0) {
         document.getElementById('recommendation-section').classList.add('hidden');
@@ -71,6 +119,7 @@ const renderRecommendations = () => {
         subject.units.forEach(unit => {
             if (unit.months && unit.months.includes(currentMonth)) {
                 recommendedUnits.push({
+                    grade: gradeData.grade,
                     subjectName: subject.name,
                     color: subject.color,
                     ...unit
@@ -82,8 +131,8 @@ const renderRecommendations = () => {
     const container = document.getElementById('recommendation-container');
     if (recommendedUnits.length > 0) {
         document.getElementById('recommendation-section').classList.remove('hidden');
-        container.innerHTML = recommendedUnits.map(unit => `
-            <a href="${unit.pdf}" target="_blank" class="flex items-center justify-between p-4 bg-white/80 rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all group cursor-pointer backdrop-blur-sm">
+        container.innerHTML = recommendedUnits.map((unit, idx) => `
+            <div onclick='openDetail(${JSON.stringify(unit)})' class="flex items-center justify-between p-4 bg-white/80 rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all group cursor-pointer backdrop-blur-sm">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <div class="w-10 h-10 rounded-xl bg-${unit.color}-100 flex-shrink-0 flex items-center justify-center text-${unit.color}-600 font-bold text-xs">
                         ${unit.subjectName.substring(0,1)}
@@ -94,7 +143,7 @@ const renderRecommendations = () => {
                     </div>
                 </div>
                 <i data-lucide="sparkles" class="w-4 h-4 text-yellow-400 flex-shrink-0"></i>
-            </a>
+            </div>
         `).join('');
         lucide.createIcons();
     } else {
@@ -103,7 +152,7 @@ const renderRecommendations = () => {
 };
 
 /* =====================================================================
-   🌞 空のグラデーション
+   🌞 空のグラデーション生成 (SunCalc連動)
    ===================================================================== */
 const SEASONS = {
     spring: { name: "春", colors: { primary: "bg-emerald-400", secondary: "bg-pink-300", accent: "text-pink-500", gradient: "from-pink-100 to-emerald-50", border: "border-pink-100" }, icon: "flower-2", particleColor: "text-pink-300" },
@@ -275,14 +324,21 @@ const renderMaterials = () => {
             };
             const theme = colorMap[sub.color] || colorMap.lime;
 
-            const unitsList = sub.units.map(unit => `
-                <a href="${unit.pdf}" target="_blank" class="block p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200">
+            const unitsList = sub.units.map(unit => {
+                const unitData = {
+                    grade: data.grade,
+                    subjectName: sub.name,
+                    color: sub.color,
+                    ...unit
+                };
+                return `
+                <div onclick='openDetail(${JSON.stringify(unitData)})' class="block p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200 cursor-pointer">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-bold text-slate-600 group-hover:text-emerald-600 transition-colors line-clamp-1">${unit.title}</span>
-                        <i data-lucide="download" class="w-4 h-4 text-slate-300 group-hover:text-emerald-500"></i>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-emerald-500"></i>
                     </div>
-                </a>
-            `).join('');
+                </div>
+            `}).join('');
 
             return `
                 <div class="mb-6 last:mb-0">
@@ -317,8 +373,42 @@ const renderMaterials = () => {
 };
 
 /* =====================================================================
-   🛠️ UI操作
+   🛠️ UI操作・詳細ページ
    ===================================================================== */
+window.openDetail = (unitData) => {
+    currentDetailUnit = unitData;
+    
+    // 詳細情報をセット
+    document.getElementById('detail-title').textContent = unitData.title;
+    document.getElementById('detail-grade').textContent = unitData.grade;
+    document.getElementById('detail-subject').textContent = unitData.subjectName;
+    
+    // ヘッダー色変更
+    const colorMap = { lime: '#84cc16', rose: '#f43f5e', violet: '#8b5cf6', emerald: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
+    document.getElementById('detail-header').style.backgroundColor = colorMap[unitData.color] || '#10b981';
+
+    // 画面切り替え
+    document.getElementById('view-home').classList.add('hidden');
+    document.getElementById('view-detail').classList.remove('hidden');
+    window.scrollTo(0,0);
+};
+
+window.goHome = () => {
+    document.getElementById('view-detail').classList.add('hidden');
+    document.getElementById('view-home').classList.remove('hidden');
+    window.scrollTo(0,0);
+};
+
+window.openPdf = (type) => {
+    if(!currentDetailUnit) return;
+    const url = type === 'basic' ? currentDetailUnit.pdfBasic : currentDetailUnit.pdfAdv;
+    if(url && url !== '#') {
+        window.open(url, '_blank');
+    } else {
+        alert('PDFは準備中です');
+    }
+};
+
 window.switchTab = (tab) => {
     currentTab = tab;
     document.getElementById('tab-elementary').className = tab === 'elementary' ? "tab-active px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
@@ -375,9 +465,7 @@ const fetchIpLocation = async () => {
         const data = await response.json();
         if(data.success) userLocation = { lat: data.latitude, lon: data.longitude, name: data.city };
         updateSky();
-    } catch (e) {
-        console.log("Location Default");
-    }
+    } catch (e) { console.log("Location Default"); }
 };
 
 // 初期化
