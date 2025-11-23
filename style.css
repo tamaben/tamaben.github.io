@@ -9,7 +9,7 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-/* グラスモーフィズム強化版 */
+/* グラスモーフィズム */
 .glass {
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(16px);
@@ -77,6 +77,15 @@ body::-webkit-scrollbar {
     pointer-events: auto !important;
 }
 .modal-open #settings-modal-content {
+    transform: scale(1) !important;
+}
+
+/* 誕生日モーダル */
+#birthday-overlay.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+#birthday-overlay.active #birthday-content {
     transform: scale(1) !important;
 }
 
