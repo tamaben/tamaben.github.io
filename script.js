@@ -1,94 +1,89 @@
 /* =====================================================================
-   🔧 デザイン・環境設定
+   🔧 設定・データ管理 (Reactコードの移植)
    ===================================================================== */
-const UI_CONFIG = {
-    seasons: {
-        spring: {
-            months: [3, 4, 5],
-            name: "春",
-            theme: { primary: "bg-pink-400", bg: "bg-pink-50", accent: "text-pink-500", border: "border-pink-200" },
-            icon: "flower-2",
-            particleShape: "cherry-blossom"
-        },
-        summer: {
-            months: [6, 7, 8],
-            name: "夏",
-            theme: { primary: "bg-sky-500", bg: "bg-sky-50", accent: "text-sky-600", border: "border-sky-200" },
-            icon: "sun",
-            particleShape: "sun-ray"
-        },
-        autumn: {
-            months: [9, 10, 11],
-            name: "秋",
-            theme: { primary: "bg-orange-500", bg: "bg-orange-50", accent: "text-orange-600", border: "border-orange-200" },
-            icon: "leaf",
-            particleShape: "maple"
-        },
-        winter: {
-            months: [12, 1, 2],
-            name: "冬",
-            theme: { primary: "bg-indigo-400", bg: "bg-indigo-50", accent: "text-indigo-500", border: "border-indigo-200" },
-            icon: "snowflake",
-            particleShape: "snow"
-        }
+const SITE_CONFIG = {
+  seasons: {
+    spring: {
+      months: [3, 4, 5],
+      name: "春",
+      theme: { primary: "bg-pink-400", bg: "bg-pink-50", accent: "text-pink-500", border: "border-pink-200" },
+      icon: "flower-2",
+      particleShape: "cherry-blossom"
     },
-    timeOfDay: {
-        morning: {
-            hours: [5, 6, 7, 8, 9, 10],
-            greeting: "おはよう！",
-            skyGradient: "from-orange-100 via-rose-100 to-sky-100",
-            overlayColor: "bg-orange-50/30"
-        },
-        day: {
-            hours: [11, 12, 13, 14, 15, 16],
-            greeting: "こんにちは！",
-            skyGradient: "from-sky-200 via-sky-100 to-white",
-            overlayColor: "bg-transparent"
-        },
-        evening: {
-            hours: [17, 18],
-            greeting: "こんばんは。",
-            skyGradient: "from-indigo-300 via-purple-300 to-orange-300",
-            overlayColor: "bg-orange-100/40"
-        },
-        night: {
-            hours: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
-            greeting: "今日もおつかれさま。",
-            skyGradient: "from-slate-900 via-indigo-900 to-slate-800",
-            overlayColor: "bg-slate-900/80",
-            isDark: true
-        }
+    summer: {
+      months: [6, 7, 8],
+      name: "夏",
+      theme: { primary: "bg-sky-500", bg: "bg-sky-50", accent: "text-sky-600", border: "border-sky-200" },
+      icon: "sun",
+      particleShape: "sun-ray"
+    },
+    autumn: {
+      months: [9, 10, 11],
+      name: "秋",
+      theme: { primary: "bg-orange-500", bg: "bg-orange-50", accent: "text-orange-600", border: "border-orange-200" },
+      icon: "leaf",
+      particleShape: "maple"
+    },
+    winter: {
+      months: [12, 1, 2],
+      name: "冬",
+      theme: { primary: "bg-indigo-400", bg: "bg-indigo-50", accent: "text-indigo-500", border: "border-indigo-200" },
+      icon: "snowflake",
+      particleShape: "snow"
     }
+  },
+  timeOfDay: {
+    morning: {
+      hours: [5, 6, 7, 8, 9, 10],
+      greeting: "おはよう！",
+      skyGradient: "from-orange-100 via-rose-100 to-sky-100",
+      overlayColor: "bg-orange-50/30"
+    },
+    day: {
+      hours: [11, 12, 13, 14, 15, 16],
+      greeting: "こんにちは！",
+      skyGradient: "from-sky-200 via-sky-100 to-white",
+      overlayColor: "bg-transparent"
+    },
+    evening: {
+      hours: [17, 18],
+      greeting: "こんばんは。",
+      skyGradient: "from-indigo-300 via-purple-300 to-orange-300",
+      overlayColor: "bg-orange-100/40"
+    },
+    night: {
+      hours: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
+      greeting: "今日もおつかれさま。",
+      skyGradient: "from-slate-900 via-indigo-900 to-slate-800",
+      overlayColor: "bg-slate-900/80",
+      isDark: true
+    }
+  }
 };
 
 /* =====================================================================
-   🎨 SVGジェネレーター（ロゴ＆パーティクル）
+   🎨 SVGジェネレーター
    ===================================================================== */
 
-// タマベンロゴSVG生成（夜モードに対応）
+// タマベンロゴSVG生成 (提供されたSVGコードを使用・色変化対応)
 const getTamabenLogo = (isDark) => {
-    // ダークモード時の色設定
-    const strokeColor = isDark ? "#ffffff" : "#324738";  // メインの線（白/深緑）
-    const highlightColor = isDark ? "#a7f0ba" : "#a7f0ba"; // アクセントの緑（維持）
+    // 夜(isDark=true)なら線を白く、ハイライトを調整
+    const strokeColor = isDark ? "#ffffff" : "#324738"; 
+    const highlightColor = isDark ? "#a7f0ba" : "#a7f0ba";
     
-    // SVG文字列（提供されたコードをベースに色を変数化）
     return `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto">
         <g transform="translate(-184.9,-165.975)">
             <g stroke-miterlimit="10">
-                <!-- 背景図形 -->
                 <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
                 <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/>
                 
-                <!-- 顔のパーツ -->
                 <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
                 <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
                 <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/>
                 
-                <!-- 帽子 -->
                 <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/>
                 
-                <!-- タマベン文字部分 (Stroke色を変数化) -->
                 <g fill="none" stroke-linecap="round">
                     <g> <!-- タ -->
                         <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41" stroke="${strokeColor}" stroke-width="6"/>
@@ -138,7 +133,7 @@ const getParticleSvg = (type, isNight) => {
 };
 
 /* =====================================================================
-   🖥️ メインレンダリングロジック
+   🖥️ レンダリングロジック
    ===================================================================== */
 
 const render = async () => {
@@ -147,11 +142,11 @@ const render = async () => {
     const hour = now.getHours();
 
     // 季節・時間の判定
-    const seasonKey = Object.keys(UI_CONFIG.seasons).find(key => UI_CONFIG.seasons[key].months.includes(month)) || 'spring';
-    const timeKey = Object.keys(UI_CONFIG.timeOfDay).find(key => UI_CONFIG.timeOfDay[key].hours.includes(hour)) || 'day';
+    const seasonKey = Object.keys(SITE_CONFIG.seasons).find(key => SITE_CONFIG.seasons[key].months.includes(month)) || 'spring';
+    const timeKey = Object.keys(SITE_CONFIG.timeOfDay).find(key => SITE_CONFIG.timeOfDay[key].hours.includes(hour)) || 'day';
 
-    const season = UI_CONFIG.seasons[seasonKey];
-    const time = UI_CONFIG.timeOfDay[timeKey];
+    const season = SITE_CONFIG.seasons[seasonKey];
+    const time = SITE_CONFIG.timeOfDay[timeKey];
     const isDark = time.isDark || false;
 
     // 配色定義
@@ -160,14 +155,14 @@ const render = async () => {
         ? "bg-slate-900/40 border-slate-700 text-white backdrop-blur-md" 
         : "bg-white/70 border-white/50 text-slate-800 backdrop-blur-md";
 
-    // 1. 全体背景（Body）
-    document.body.className = `min-h-screen selection:bg-lime-300 selection:text-lime-900 bg-gradient-to-b ${time.skyGradient} transition-colors duration-1000`;
+    // 1. 背景制御
+    const bgContainer = document.getElementById('ambient-background');
+    bgContainer.className = `fixed inset-0 -z-20 overflow-hidden transition-colors duration-1000 bg-gradient-to-b ${time.skyGradient}`;
     
-    // 2. パーティクル背景
-    const particleContainer = document.getElementById('background-particles');
-    if (!particleContainer.hasChildNodes() || particleContainer.getAttribute('data-season') !== seasonKey) {
-        particleContainer.innerHTML = ''; // リセット
-        particleContainer.setAttribute('data-season', seasonKey);
+    // パーティクル生成 (初回または季節変更時)
+    if (!bgContainer.hasChildNodes() || bgContainer.getAttribute('data-season') !== seasonKey) {
+        bgContainer.innerHTML = '';
+        bgContainer.setAttribute('data-season', seasonKey);
         
         const particleCount = timeKey === 'night' ? 20 : 12;
         const particleColor = isDark ? 'text-white' : season.theme.accent;
@@ -185,17 +180,20 @@ const render = async () => {
                      ${getParticleSvg(season.particleShape, timeKey === 'night')}
                 </div>`;
         }
-        particleContainer.innerHTML = particlesHtml;
+        bgContainer.innerHTML = particlesHtml;
     }
 
-    // 3. オーバーレイレイヤー
-    document.getElementById('background-overlay').className = `fixed-bg ${time.overlayColor}`;
+    // 2. オーバーレイ制御
+    document.getElementById('ambient-overlay').className = `fixed inset-0 -z-10 transition-colors duration-1000 ${time.overlayColor}`;
 
-    // 4. ヘッダー
+    // 3. ヘッダー更新
     const header = document.getElementById('header-container');
     header.className = `sticky top-4 z-50 flex items-center justify-between mb-10 px-6 py-4 rounded-[2rem] border shadow-sm transition-all duration-1000 ${glassClass}`;
-    
-    // ロゴ注入 (夜は線が白くなる)
+
+    const logoBg = document.getElementById('logo-bg');
+    logoBg.className = `p-2 rounded-xl transition-colors duration-1000 ${season.theme.bg}`;
+
+    // ロゴ注入
     const logoSvg = getTamabenLogo(isDark);
     document.getElementById('logo-wrapper').innerHTML = logoSvg;
     document.getElementById('footer-logo').innerHTML = logoSvg;
@@ -214,78 +212,88 @@ const render = async () => {
     seasonName.textContent = season.name;
     seasonName.className = isDark ? 'text-slate-200' : 'text-slate-600';
 
-    // 5. ヒーローセクション
+    // 時間バッジ
+    const timeBadge = document.getElementById('time-badge');
+    timeBadge.className = `w-8 h-8 rounded-full flex items-center justify-center border ${isDark ? 'border-slate-600 bg-slate-800' : 'border-slate-200 bg-white'}`;
+    const timeIcon = document.getElementById('time-icon');
+    timeIcon.setAttribute('data-lucide', timeKey === 'night' ? 'moon' : 'sun');
+    timeIcon.className = `w-4 h-4 ${isDark ? 'text-yellow-300' : 'text-orange-400'}`;
+
+    // 4. ヒーローセクション
     const hero = document.getElementById('hero-section');
-    hero.className = `relative rounded-[3rem] overflow-hidden p-8 md:p-12 mb-16 text-center md:text-left shadow-xl transition-all duration-1000 ${isDark ? 'shadow-black/20' : 'shadow-emerald-900/5'}`;
+    hero.className = `relative rounded-[3rem] overflow-hidden p-8 md:p-16 mb-12 text-center md:text-left shadow-xl transition-all duration-1000 ${isDark ? 'shadow-black/20' : 'shadow-emerald-900/5'}`;
     document.getElementById('hero-glass').className = `absolute inset-0 z-0 transition-all duration-1000 ${glassClass} border-0`;
 
     const greetingBadge = document.getElementById('greeting-badge');
     greetingBadge.className = `inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-sm transition-all duration-1000 ${isDark ? 'bg-white/10 border-white/20 text-yellow-200' : 'bg-white/50 border-white/50 text-slate-600'}`;
     document.getElementById('greeting-text').textContent = time.greeting;
 
-    document.getElementById('hero-title').className = `text-3xl md:text-5xl font-black leading-tight tracking-tight transition-colors duration-1000 ${textColor}`;
+    document.getElementById('hero-title').className = `text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight transition-colors duration-1000 ${textColor}`;
+    
+    // ボタンのテーマ適用
+    document.getElementById('btn-primary').className = `px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 ${season.theme.primary}`;
+    document.getElementById('btn-secondary').className = `px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-700 hover:bg-slate-50'}`;
 
     // イラストカード
     const illCard = document.getElementById('illustration-card');
-    illCard.className = `w-full h-full rounded-[2.5rem] rotate-3 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm ${isDark ? 'bg-slate-800/50 border-white/20' : 'bg-white/40 border-white/60'}`;
+    illCard.className = `w-48 h-48 md:w-64 md:h-64 rounded-[3rem] rotate-6 border-4 shadow-2xl flex items-center justify-center transform transition-transform duration-500 hover:rotate-0 backdrop-blur-sm ${isDark ? 'bg-slate-800/50 border-white/20' : 'bg-white/40 border-white/60'}`;
+    
     const mainIcon = document.getElementById('main-season-icon');
     mainIcon.setAttribute('data-lucide', season.icon);
     mainIcon.className = isDark ? "text-yellow-100 drop-shadow-[0_0_15px_rgba(255,255,0,0.5)]" : season.theme.accent;
 
-    // 6. メインコンテンツ（教材リスト）のスタイル適用
-    document.getElementById('main-heading-icon').className = `p-3 rounded-2xl ${season.theme.primary} text-white shadow-lg`;
-    document.getElementById('main-heading-text').className = `text-2xl md:text-3xl font-bold transition-colors duration-1000 ${textColor}`;
+    const item1 = document.getElementById('float-item-1');
+    item1.className = `absolute top-0 right-10 p-4 rounded-2xl shadow-lg -rotate-12 animate-bounce ${isDark ? 'bg-slate-700 text-pink-300' : 'bg-white text-pink-500'}`;
+    const item2 = document.getElementById('float-item-2');
+    item2.className = `absolute bottom-0 left-10 p-4 rounded-2xl shadow-lg rotate-12 animate-bounce ${isDark ? 'bg-slate-700 text-sky-300' : 'bg-white text-sky-500'}`;
+
+    // 5. メインコンテンツ
+    document.getElementById('subject-heading-icon').className = `p-3 rounded-2xl ${season.theme.primary} text-white shadow-lg`;
+    document.getElementById('subject-heading-text').className = `text-3xl font-bold transition-colors duration-1000 ${textColor}`;
     
-    // 7. フッター
     const footer = document.getElementById('footer');
     footer.className = `mt-24 py-10 text-center border-t transition-colors duration-1000 ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200/50 text-slate-400'}`;
 
-    // 8. 教材リストの生成（初回のみ）
+    // 6. JSONデータ読み込みと描画
     const materialsContainer = document.getElementById('learning-materials-container');
-    if (materialsContainer.children.length <= 1) { // ローディング表示のみの場合
+    if (materialsContainer.children.length <= 1) { // まだ読み込まれていない場合
         try {
             const response = await fetch('data.json');
             if (!response.ok) throw new Error("JSON load failed");
             const data = await response.json();
-            
-            // JSON読み込み成功後の描画
             renderMaterials(data, isDark);
         } catch (e) {
             console.error(e);
             materialsContainer.innerHTML = `
                 <div class="text-center p-10 bg-red-50 rounded-3xl text-red-600 border border-red-100">
                     <p class="font-bold">データの読み込みに失敗しました。</p>
-                    <p class="text-sm mt-2">※ローカルで開く場合は、セキュリティ制限によりJSONが読み込めないことがあります。<br>Webサーバー経由で開くか、Firefoxを使用してみてください。</p>
+                    <p class="text-sm mt-2">※ローカル環境では、ブラウザのセキュリティ制限によりJSONが読み込めない場合があります。<br>VS CodeのLive Server拡張機能などを使用してください。</p>
                 </div>`;
         }
     } else {
-        // すでに描画済みならダークモードの色だけ更新したい場合はここでクラス操作を行う
-        // 今回はシンプルに再描画はせず、コンテナ自体のクラス調整はCSS変数や親クラス依存にするのが理想ですが、
-        // JSでstyleを当てているので、簡易的に中身を更新する関数を呼ぶ
-        // ※パフォーマンス考慮のため今回はリロード時のみ反映とします（色はTailwindのクラス依存なので再描画しないと変わらない部分があるため）
-        // 完全なリアクティブにするにはReact等が必要ですが、ここではDOMを再構築します
-        try {
+        // すでに描画済みなら、ダークモード等のスタイル更新のために再描画（簡易実装）
+        // パフォーマンス重視ならクラス置換のみを行うべきだが、今回は再構築する
+         try {
             const response = await fetch('data.json');
             const data = await response.json();
             renderMaterials(data, isDark);
-        } catch (e) { /* ignore */ }
+        } catch(e) {}
     }
 
-    // Lucideアイコン適用
     lucide.createIcons();
 };
 
-// 教材リスト描画関数
+// 教材リスト描画
 const renderMaterials = (data, isDark) => {
     const materialsContainer = document.getElementById('learning-materials-container');
     
     const colorsMap = {
-        lime: { bg: "bg-lime-100", text: "text-lime-700", hover: "hover:bg-lime-50" },
-        rose: { bg: "bg-rose-100", text: "text-rose-700", hover: "hover:bg-rose-50" },
-        violet: { bg: "bg-violet-100", text: "text-violet-700", hover: "hover:bg-violet-50" },
-        emerald: { bg: "bg-emerald-100", text: "text-emerald-700", hover: "hover:bg-emerald-50" },
-        amber: { bg: "bg-amber-100", text: "text-amber-700", hover: "hover:bg-amber-50" },
-        pink: { bg: "bg-pink-100", text: "text-pink-700", hover: "hover:bg-pink-50" },
+        lime: { bg: "bg-lime-100", text: "text-lime-700", border: "border-lime-200" },
+        rose: { bg: "bg-rose-100", text: "text-rose-700", border: "border-rose-200" },
+        violet: { bg: "bg-violet-100", text: "text-violet-700", border: "border-violet-200" },
+        emerald: { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200" },
+        amber: { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-200" },
+        pink: { bg: "bg-pink-100", text: "text-pink-700", border: "border-pink-200" },
     };
 
     materialsContainer.innerHTML = data.map(gradeData => {
@@ -305,7 +313,7 @@ const renderMaterials = (data, isDark) => {
             `).join('');
 
             return `
-                <div class="learning-card flex-1 min-w-[300px] p-6 rounded-[2rem] ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/60 border-white/60'} border backdrop-blur-md shadow-sm">
+                <div class="learning-card flex-1 min-w-[300px] md:min-w-[320px] p-6 rounded-[2rem] ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/60 border-white/60'} border backdrop-blur-md shadow-sm">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="p-3 rounded-xl shadow-sm transform -rotate-3 ${c.bg} ${c.text}">
                             <i data-lucide="${subject.icon}" width="24" height="24"></i>
@@ -320,7 +328,7 @@ const renderMaterials = (data, isDark) => {
         }).join('');
 
         return `
-            <div class="space-y-6">
+            <div id="grade-${gradeData.gradeId}" class="scroll-mt-32 space-y-6">
                 <div class="flex items-center gap-3">
                     <div class="h-8 w-1 ${isDark ? 'bg-yellow-400' : 'bg-slate-400'} rounded-full"></div>
                     <h3 class="text-2xl font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}">
@@ -337,9 +345,16 @@ const renderMaterials = (data, isDark) => {
     lucide.createIcons();
 };
 
-// 初期化とタイマー
+// スクロール関数
+window.scrollToGrade = (gradeId) => {
+    const element = document.getElementById(`grade-${gradeId}`);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+};
+
+// 初期化
 document.addEventListener('DOMContentLoaded', () => {
     render();
-    // 1分ごとに更新（時間帯変化に対応）
-    setInterval(render, 60000);
+    setInterval(render, 60000); // 1分ごとに更新
 });
