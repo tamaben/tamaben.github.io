@@ -1,5 +1,5 @@
 /* =====================================================================
-   🔧 設定・データ管理 (Reactコードの移植)
+   🔧 設定・デザイン管理 (Reactコードの移植)
    ===================================================================== */
 const SITE_CONFIG = {
   seasons: {
@@ -65,9 +65,8 @@ const SITE_CONFIG = {
    🎨 SVGジェネレーター
    ===================================================================== */
 
-// タマベンロゴSVG生成 (提供されたSVGコードを使用・色変化対応)
+// タマベンロゴSVG生成
 const getTamabenLogo = (isDark) => {
-    // 夜(isDark=true)なら線を白く、ハイライトを調整
     const strokeColor = isDark ? "#ffffff" : "#324738"; 
     const highlightColor = isDark ? "#a7f0ba" : "#a7f0ba";
     
@@ -133,10 +132,9 @@ const getParticleSvg = (type, isNight) => {
 };
 
 /* =====================================================================
-   🖥️ レンダリングロジック
+   🖥️ メインレンダリングロジック
    ===================================================================== */
-
-const render = async () => {
+const render = () => {
     const now = new Date();
     const month = now.getMonth() + 1;
     const hour = now.getHours();
@@ -231,8 +229,8 @@ const render = async () => {
     document.getElementById('hero-title').className = `text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight transition-colors duration-1000 ${textColor}`;
     
     // ボタンのテーマ適用
-    document.getElementById('btn-primary').className = `px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 ${season.theme.primary}`;
-    document.getElementById('btn-secondary').className = `px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-700 hover:bg-slate-50'}`;
+    document.getElementById('btn-primary').className = `px-8 py-4 rounded-[2rem] font-bold text-white shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 cursor-pointer ${season.theme.primary}`;
+    document.getElementById('btn-secondary').className = `px-8 py-4 rounded-[2rem] font-bold shadow-lg transform transition-transform hover:-translate-y-1 active:scale-95 transition-colors duration-300 cursor-pointer ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-700 hover:bg-slate-50'}`;
 
     // イラストカード
     const illCard = document.getElementById('illustration-card');
@@ -254,36 +252,17 @@ const render = async () => {
     const footer = document.getElementById('footer');
     footer.className = `mt-24 py-10 text-center border-t transition-colors duration-1000 ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200/50 text-slate-400'}`;
 
-    // 6. JSONデータ読み込みと描画
-    const materialsContainer = document.getElementById('learning-materials-container');
-    if (materialsContainer.children.length <= 1) { // まだ読み込まれていない場合
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error("JSON load failed");
-            const data = await response.json();
-            renderMaterials(data, isDark);
-        } catch (e) {
-            console.error(e);
-            materialsContainer.innerHTML = `
-                <div class="text-center p-10 bg-red-50 rounded-3xl text-red-600 border border-red-100">
-                    <p class="font-bold">データの読み込みに失敗しました。</p>
-                    <p class="text-sm mt-2">※ローカル環境では、ブラウザのセキュリティ制限によりJSONが読み込めない場合があります。<br>VS CodeのLive Server拡張機能などを使用してください。</p>
-                </div>`;
-        }
+    // 6. 教材リスト描画呼び出し (LEARNING_DATAはdata.jsから来る)
+    if (typeof LEARNING_DATA !== 'undefined') {
+        renderMaterials(LEARNING_DATA, isDark);
     } else {
-        // すでに描画済みなら、ダークモード等のスタイル更新のために再描画（簡易実装）
-        // パフォーマンス重視ならクラス置換のみを行うべきだが、今回は再構築する
-         try {
-            const response = await fetch('data.json');
-            const data = await response.json();
-            renderMaterials(data, isDark);
-        } catch(e) {}
+        console.error("LEARNING_DATA is not defined. Make sure data.js is loaded.");
     }
 
     lucide.createIcons();
 };
 
-// 教材リスト描画
+// 教材リスト描画関数
 const renderMaterials = (data, isDark) => {
     const materialsContainer = document.getElementById('learning-materials-container');
     
@@ -341,16 +320,12 @@ const renderMaterials = (data, isDark) => {
             </div>
         `;
     }).join('');
-    
-    lucide.createIcons();
 };
 
 // スクロール関数
 window.scrollToGrade = (gradeId) => {
-    const element = document.getElementById(`grade-${gradeId}`);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-    }
+    const el = document.getElementById(`grade-${gradeId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
 };
 
 // 初期化
