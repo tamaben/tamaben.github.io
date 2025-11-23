@@ -1,5 +1,5 @@
 /* =====================================================================
-   🔧 季節・デザイン設定
+   🔧 設定・デザイン管理
    ===================================================================== */
 const SEASONS = {
     spring: {
@@ -43,24 +43,24 @@ const getTamabenLogo = () => {
     return `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto" aria-label="タマベン">
     <g transform="translate(-184.9,-165.975)">
-      <path d="M190.659,184.74034c0,-5.43841 1.84671,-9.84711 6.65,-9.84711c4.80329,0 6.65,4.4087 6.65,9.84711c0,5.43841 -2.66537,6.65 -6.65,6.65c-3.98463,0 -6.65,-1.21159 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
-      <path d="M190.659,184.74034c0,-5.43841 1.84671,-9.84711 6.65,-9.84711c4.80329,0 6.65,4.4087 6.65,9.84711c0,5.43841 -2.66537,6.65 -6.65,6.65c-3.98463,0 -6.65,-1.21159 -6.65,-6.65z" fill="none" stroke="#474742" strokeWidth="1"/>
-      <path d="M194.902,181.651c0,-0.757 0.181,-1.516 0.938,-1.516c0.757,0 0.89,0.758 0.89,1.516c0,0.757 -0.133,1.372 -0.89,1.372c-0.757,0 -0.938,-0.614 -0.938,-1.372z" fill="#f7c7b2"/>
-      <path d="M197.886,181.651c0,-0.757 0.181,-1.516 0.938,-1.516c0.757,0 0.89,0.758 0.89,1.516c0,0.757 -0.133,1.372 -0.89,1.372c-0.757,0 -0.938,-0.614 -0.938,-1.372z" fill="#f7c7b2"/>
-      <path d="M196.184,184.923c0,-0.621 0.504,-0.812 1.125,-0.812c0.621,0 1.125,0.191 1.125,0.812c0,0.621 -0.505,1 -1.125,1c-0.62,0 -1.125,-0.379 -1.125,-1z" fill="#f7b2b2" stroke="#474742" strokeWidth="0.5"/>
-      <path d="M192.704,176.589c0.058,-1.593 0,-3.416 0,-3.416h9.187c0,0 0.048,2.7 0,3.416c-0.35,1.5 -2.901,1.959 -4.437,1.959c-1.526,0 -4.504,-0.251 -4.75,-1.959z" fill="#4d4d4d"/>
+      <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/>
+      <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" strokeWidth="1"/>
+      <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
+      <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/>
+      <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" strokeWidth="0.5"/>
+      <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/>
       <g stroke="#324738" strokeWidth="3.5" strokeLinecap="round" fill="none">
-        <path d="M233.676,174.321c0,0 13.756,-0.091 14.752,0c1.415,-0.03 -7.944,9.419 -7.944,9.419"/>
-        <path d="M243.095,187.371l-7.149,-6.809"/>
-        <path d="M219.408,172.636c0,0 -1.335,2.931 -2.418,4.4c-1.033,1.402 -2.348,2.295 -2.348,2.295"/>
-        <path d="M218.5,175.473c0,0 7.395,-0.42 8.057,0c0.695,0.693 -1.046,4.669 -3.726,7.398c-3.107,3.165 -5.579,4.063 -5.579,4.063"/>
-        <path d="M219.862,179.898l2.95,2.383"/>
-        <path d="M252.13,183.109c0,0 5.308,-6.602 6.014,-6.582c0.693,-0.492 9.873,9.305 9.873,9.305"/>
-        <path d="M252.364,183.002c0,0 5.308,-6.602 6.014,-6.582c0.693,-0.492 9.873,9.305 9.873,9.305"/>
-        <path d="M266.609,177.779l-1.7,-3.1"/>
-        <path d="M267.909,173.779l1.7,3.1"/>
-        <path d="M280.341,177.534l-4.4,-4"/>
-        <path d="M289.341,177.734c0,0 -3.306,4.509 -5.481,5.98c-2.43,1.643 -8.419,3.42 -8.419,3.42"/>
+        <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/>
+        <path d="M243.09,187.37l-7.14,-6.8"/>
+        <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/>
+        <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/>
+        <path d="M219.86,179.89l2.95,2.38"/>
+        <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
+        <path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/>
+        <path d="M266.6,177.77l-1.7,-3.1"/>
+        <path d="M267.9,173.77l1.7,3.1"/>
+        <path d="M280.34,177.53l-4.4,-4"/>
+        <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/>
       </g>
     </g>
   </svg>`;
@@ -79,7 +79,7 @@ const getParticleSvg = (seasonKey) => {
 /* =====================================================================
    🖥️ メインロジック
    ===================================================================== */
-const render = () => {
+const render = async () => {
     const seasonKey = getSeason();
     const season = SEASONS[seasonKey];
     const colors = season.colors;
@@ -89,16 +89,13 @@ const render = () => {
     document.getElementById('season-name').className = `inline-block animate-bounce-slow ${colors.accent}`;
     document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20`;
     
-    // 背景グラデーション
     document.getElementById('bg-gradient').className = `absolute inset-0 opacity-30 bg-gradient-to-br ${colors.gradient} transition-colors duration-1000`;
     document.getElementById('footer-line').className = `absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${colors.gradient}`;
     
-    // ロゴ周り
     document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
     document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo();
     document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo();
 
-    // アイコン
     const mainIcon = document.getElementById('main-season-icon');
     mainIcon.setAttribute('data-lucide', season.icon);
     
@@ -150,29 +147,57 @@ const render = () => {
         `).join('');
     }
 
-    // 4. 教材リスト生成
-    renderMaterials();
+    // 4. JSONデータをFetchして描画
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        renderMaterials(data);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        document.getElementById('learning-materials-container').innerHTML = `
+            <div class="text-center py-10 bg-red-50 rounded-[2rem] border border-red-100">
+                <p class="text-red-500 font-bold">データの読み込みに失敗しました。</p>
+                <p class="text-sm text-red-400 mt-2">※ローカル環境ではセキュリティ制限のため、Webサーバー経由で開いてください。<br>(VS CodeのLive Serverなど)</p>
+            </div>
+        `;
+    }
     
-    // アイコン更新
     lucide.createIcons();
 };
 
-const renderMaterials = () => {
+const renderMaterials = (learningData) => {
     const container = document.getElementById('learning-materials-container');
-    if (!container || typeof LEARNING_DATA === 'undefined') return;
+    
+    container.innerHTML = learningData.map(data => {
+        // 教材がない場合（subjectsが空）
+        if (!data.subjects || data.subjects.length === 0) {
+            return `
+                <div id="grade-${data.gradeId}" class="glass-card rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden scroll-mt-32 opacity-80">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-slate-300"></div>
+                    <div class="flex items-center gap-4 mb-4 relative z-10">
+                        <span class="text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm bg-slate-400">
+                            その他
+                        </span>
+                        <h3 class="text-3xl font-black text-slate-500 tracking-tight">${data.grade}</h3>
+                    </div>
+                    <div class="bg-slate-50 rounded-2xl p-8 text-center border-2 border-dashed border-slate-200">
+                        <p class="text-slate-400 font-bold">現在、教材はありません。</p>
+                    </div>
+                </div>
+            `;
+        }
 
-    container.innerHTML = LEARNING_DATA.map(data => {
-        const iconColor = data.subjects[0]?.color || 'lime'; // 簡易的に色決定
-        
+        // 教材がある場合
         const unitsHtml = data.subjects.map(sub => {
-            const bgClass = `bg-${sub.color}-400`;
-            const shadowClass = `shadow-${sub.color}-200`;
+            // sub.colorが定義されていれば使用、なければlime
+            const colorName = sub.color || 'lime'; 
             
             return sub.units.map(unit => `
                 <a href="${unit.pdf}" target="_blank" class="text-left group bg-white/60 hover:bg-white p-6 rounded-[2rem] transition-all border border-slate-100 hover:border-emerald-300 hover:shadow-lg flex flex-col justify-between h-full relative overflow-hidden cursor-pointer">
                     <div class="relative z-10">
                         <div class="flex items-center gap-2 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                            <span class="w-2 h-2 rounded-full bg-${sub.color}-400"></span>
+                            <span class="w-2 h-2 rounded-full bg-${colorName}-400"></span>
                             ${sub.name}
                         </div>
                         <h4 class="font-bold text-lg text-slate-700 group-hover:text-emerald-700 mb-2 flex items-center justify-between">
@@ -202,6 +227,9 @@ const renderMaterials = () => {
             </div>
         `;
     }).join('');
+    
+    // 新しく挿入された要素のアイコンをレンダリング
+    lucide.createIcons();
 };
 
 // スクロール関数
