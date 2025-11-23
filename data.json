@@ -1,0 +1,236 @@
+[
+  {
+    "grade": "小学1年生",
+    "gradeId": "e1",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "かずとすうじ", "pdf": "math_1_1.pdf" },
+          { "title": "いくつといくつ", "pdf": "math_1_2.pdf" },
+          { "title": "たしざん（１）", "pdf": "math_1_3.pdf" },
+          { "title": "ひきざん（１）", "pdf": "math_1_4.pdf" },
+          { "title": "おおきなかず", "pdf": "math_1_5.pdf" }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "ひらがなのれんしゅう", "pdf": "jp_1_1.pdf" },
+          { "title": "カタカナのれんしゅう", "pdf": "jp_1_2.pdf" },
+          { "title": "かん字のはじまり", "pdf": "jp_1_3.pdf" },
+          { "title": "ぶんをつくろう", "pdf": "jp_1_4.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学2年生",
+    "gradeId": "e2",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "ひょうとグラフ", "pdf": "math_2_1.pdf" },
+          { "title": "たし算とひき算のひっ算", "pdf": "math_2_2.pdf" },
+          { "title": "かけ算（九九）", "pdf": "math_2_3.pdf" },
+          { "title": "10000までの数", "pdf": "math_2_4.pdf" },
+          { "title": "はこの形", "pdf": "math_2_5.pdf" }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "かん字の書き取り", "pdf": "jp_2_1.pdf" },
+          { "title": "主語と述語", "pdf": "jp_2_2.pdf" },
+          { "title": "なかまのことば", "pdf": "jp_2_3.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学3年生",
+    "gradeId": "e3",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "わり算", "pdf": "math_3_1.pdf" },
+          { "title": "大きな数", "pdf": "math_3_2.pdf" },
+          { "title": "小数", "pdf": "math_3_3.pdf" },
+          { "title": "分数", "pdf": "math_3_4.pdf" },
+          { "title": "円と球", "pdf": "math_3_5.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の育ち方", "pdf": "sci_3_1.pdf" },
+          { "title": "昆虫の生態", "pdf": "sci_3_2.pdf" },
+          { "title": "太陽の光", "pdf": "sci_3_3.pdf" },
+          { "title": "磁石の性質", "pdf": "sci_3_4.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "わたしたちの町", "pdf": "soc_3_1.pdf" },
+          { "title": "お店の仕事", "pdf": "soc_3_2.pdf" },
+          { "title": "農家の仕事", "pdf": "soc_3_3.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学4年生",
+    "gradeId": "e4",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "角の大きさ", "pdf": "math_4_1.pdf" },
+          { "title": "わり算の筆算", "pdf": "math_4_2.pdf" },
+          { "title": "がい数", "pdf": "math_4_3.pdf" },
+          { "title": "面積", "pdf": "math_4_4.pdf" },
+          { "title": "小数のかけ算・わり算", "pdf": "math_4_5.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "天気と気温", "pdf": "sci_4_1.pdf" },
+          { "title": "電気の働き", "pdf": "sci_4_2.pdf" },
+          { "title": "月と星", "pdf": "sci_4_3.pdf" },
+          { "title": "水の三態", "pdf": "sci_4_4.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "都道府県", "pdf": "soc_4_1.pdf" },
+          { "title": "ごみの処理", "pdf": "soc_4_2.pdf" },
+          { "title": "自然災害", "pdf": "soc_4_3.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学5年生",
+    "gradeId": "e5",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "体積", "pdf": "math_5_1.pdf" },
+          { "title": "比例", "pdf": "math_5_2.pdf" },
+          { "title": "分数と小数", "pdf": "math_5_3.pdf" },
+          { "title": "平均", "pdf": "math_5_4.pdf" },
+          { "title": "割合", "pdf": "math_5_5.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "天気の変化", "pdf": "sci_5_1.pdf" },
+          { "title": "植物の発芽", "pdf": "sci_5_2.pdf" },
+          { "title": "流れる水", "pdf": "sci_5_3.pdf" },
+          { "title": "電磁石", "pdf": "sci_5_4.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の国土", "pdf": "soc_5_1.pdf" },
+          { "title": "農業・水産業", "pdf": "soc_5_2.pdf" },
+          { "title": "工業", "pdf": "soc_5_3.pdf" }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "アルファベット", "pdf": "eng_5_1.pdf" },
+          { "title": "あいさつ", "pdf": "eng_5_2.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学6年生",
+    "gradeId": "e6",
+    "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "対称な図形", "pdf": "math_6_1.pdf" },
+          { "title": "文字と式", "pdf": "math_6_2.pdf" },
+          { "title": "分数のかけ算・わり算", "pdf": "math_6_3.pdf" },
+          { "title": "比", "pdf": "math_6_4.pdf" },
+          { "title": "データの活用", "pdf": "math_6_5.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "物の燃え方", "pdf": "sci_6_1.pdf" },
+          { "title": "人体のつくり", "pdf": "sci_6_2.pdf" },
+          { "title": "月と太陽", "pdf": "sci_6_3.pdf" },
+          { "title": "水溶液", "pdf": "sci_6_4.pdf" },
+          { "title": "電気の利用", "pdf": "sci_6_5.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "政治のしくみ", "pdf": "soc_6_1.pdf" },
+          { "title": "日本の歴史（１）", "pdf": "soc_6_2.pdf" },
+          { "title": "日本の歴史（２）", "pdf": "soc_6_3.pdf" },
+          { "title": "世界の中の日本", "pdf": "soc_6_4.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学1年生",
+    "gradeId": "j1",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "正の数・負の数", "pdf": "math_j1_1.pdf" },
+          { "title": "文字と式", "pdf": "math_j1_2.pdf" },
+          { "title": "方程式", "pdf": "math_j1_3.pdf" },
+          { "title": "比例と反比例", "pdf": "math_j1_4.pdf" },
+          { "title": "平面図形・空間図形", "pdf": "math_j1_5.pdf" }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "be動詞・一般動詞", "pdf": "eng_j1_1.pdf" },
+          { "title": "疑問詞", "pdf": "eng_j1_2.pdf" },
+          { "title": "三単現のs", "pdf": "eng_j1_3.pdf" },
+          { "title": "現在進行形", "pdf": "eng_j1_4.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の分類", "pdf": "sci_j1_1.pdf" },
+          { "title": "物質の性質", "pdf": "sci_j1_2.pdf" },
+          { "title": "光と音", "pdf": "sci_j1_3.pdf" },
+          { "title": "力と圧力", "pdf": "sci_j1_4.pdf" },
+          { "title": "火山と地震", "pdf": "sci_j1_5.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "世界の地理", "pdf": "soc_j1_1.pdf" },
+          { "title": "日本の地理", "pdf": "soc_j1_2.pdf" },
+          { "title": "古代～中世の歴史", "pdf": "soc_j1_3.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学2年生",
+    "gradeId": "j2",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "式の計算", "pdf": "math_j2_1.pdf" },
+          { "title": "連立方程式", "pdf": "math_j2_2.pdf" },
+          { "title": "一次関数", "pdf": "math_j2_3.pdf" },
+          { "title": "平行と合同", "pdf": "math_j2_4.pdf" },
+          { "title": "確率", "pdf": "math_j2_5.pdf" }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "過去形・過去進行形", "pdf": "eng_j2_1.pdf" },
+          { "title": "未来形", "pdf": "eng_j2_2.pdf" },
+          { "title": "助動詞", "pdf": "eng_j2_3.pdf" },
+          { "title": "不定詞・動名詞", "pdf": "eng_j2_4.pdf" },
+          { "title": "比較", "pdf": "eng_j2_5.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "化学変化と原子・分子", "pdf": "sci_j2_1.pdf" },
+          { "title": "動物の生活と生物の進化", "pdf": "sci_j2_2.pdf" },
+          { "title": "電気の世界", "pdf": "sci_j2_3.pdf" },
+          { "title": "天気とその変化", "pdf": "sci_j2_4.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "近世～近代の歴史", "pdf": "soc_j2_1.pdf" },
+          { "title": "日本の諸地域", "pdf": "soc_j2_2.pdf" }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学3年生",
+    "gradeId": "j3",
+    "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "多項式・因数分解", "pdf": "math_j3_1.pdf" },
+          { "title": "平方根", "pdf": "math_j3_2.pdf" },
+          { "title": "二次方程式", "pdf": "math_j3_3.pdf" },
+          { "title": "関数y=ax^2", "pdf": "math_j3_4.pdf" },
+          { "title": "相似な図形", "pdf": "math_j3_5.pdf" },
+          { "title": "三平方の定理", "pdf": "math_j3_6.pdf" }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "受動態", "pdf": "eng_j3_1.pdf" },
+          { "title": "現在完了形", "pdf": "eng_j3_2.pdf" },
+          { "title": "関係代名詞", "pdf": "eng_j3_3.pdf" },
+          { "title": "仮定法", "pdf": "eng_j3_4.pdf" }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "化学変化とイオン", "pdf": "sci_j3_1.pdf" },
+          { "title": "生命の連続性", "pdf": "sci_j3_2.pdf" },
+          { "title": "運動とエネルギー", "pdf": "sci_j3_3.pdf" },
+          { "title": "地球と宇宙", "pdf": "sci_j3_4.pdf" },
+          { "title": "自然と人間", "pdf": "sci_j3_5.pdf" }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "現代社会と私たち", "pdf": "soc_j3_1.pdf" },
+          { "title": "個人の尊重と日本国憲法", "pdf": "soc_j3_2.pdf" },
+          { "title": "政治のしくみ", "pdf": "soc_j3_3.pdf" },
+          { "title": "経済と生活", "pdf": "soc_j3_4.pdf" },
+          { "title": "国際社会", "pdf": "soc_j3_5.pdf" }
+      ]}
+    ]
+  }
+]
