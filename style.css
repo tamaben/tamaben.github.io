@@ -3,11 +3,10 @@
 /* 基本設定 */
 body {
     font-family: 'Zen Maru Gothic', sans-serif;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none;
 }
 body::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
 }
 
 /* グラスモーフィズム */
