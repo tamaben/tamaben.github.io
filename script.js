@@ -209,8 +209,7 @@ const updateSky = () => {
 
     document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/30 backdrop-blur-sm`;
     document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
-    document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo(time.isDark);
-    document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo(time.isDark);
+    // SVGはHTMLに直接埋め込んだため、JSでの注入処理は削除
 
     document.getElementById('time-text').textContent = time.label;
     document.getElementById('time-icon').setAttribute('data-lucide', time.icon);
@@ -243,14 +242,6 @@ const updateSky = () => {
     lucide.createIcons();
 };
 
-/* =====================================================================
-   🎨 SVGジェネレーター
-   ===================================================================== */
-const getTamabenLogo = (isDark) => {
-    const strokeColor = isDark ? "#ffffff" : "#324738"; 
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto"><g transform="translate(-184.9,-165.975)"><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/><path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/><path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/><g stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/><path d="M243.09,187.37l-7.14,-6.8"/><path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/><path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/><path d="M219.86,179.89l2.95,2.38"/><path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M266.6,177.77l-1.7,-3.1"/><path d="M267.9,173.77l1.7,3.1"/><path d="M280.34,177.53l-4.4,-4"/><path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/></g></g></svg>`;
-};
-
 const getParticleSvg = (seasonKey, isNight) => {
     if (isNight) return '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />';
     const shapes = {
@@ -266,19 +257,20 @@ const getParticleSvg = (seasonKey, isNight) => {
    🖥️ データ取得・描画
    ===================================================================== */
 const fetchAndRender = async () => {
+    const statusEl = document.getElementById('data-load-status');
     if(cachedData.length === 0) {
         try {
             const response = await fetch('data.json');
-            // フォールバック（変数がある場合）
-            if (typeof LEARNING_DATA !== 'undefined') {
-                cachedData = LEARNING_DATA;
-            } else {
-                cachedData = await response.json();
-            }
+            if (!response.ok) throw new Error('Load failed');
+            cachedData = await response.json();
+            statusEl.textContent = "読み込み完了";
         } catch (error) {
-            // エラー時でも変数があればそれを使う
+            console.error("Load Error:", error);
+            statusEl.textContent = "データ読み込みエラー: " + error.message;
+            // data.js がある場合はそちらを使う
             if (typeof LEARNING_DATA !== 'undefined') {
                 cachedData = LEARNING_DATA;
+                statusEl.textContent = "バックアップデータを使用中";
             }
         }
     }
@@ -455,9 +447,6 @@ const fetchIpLocation = async () => {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo();
-    document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo();
-    
     const savedDate = getCookie('tamaben_birthdate');
     if (savedDate) {
         document.getElementById('birthdate-input').value = savedDate;
