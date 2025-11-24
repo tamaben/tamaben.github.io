@@ -24,12 +24,12 @@ body::-webkit-scrollbar {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
 }
 
-/* リアルな空の背景 */
+/* 背景 */
 #sky-background {
     background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
 }
 
-/* 星空アニメーション */
+/* 星空 */
 #stars {
     background-image: 
         radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
@@ -58,7 +58,7 @@ body::-webkit-scrollbar {
     100% { transform: translateX(-5%); }
 }
 
-/* タブスタイル */
+/* タブ */
 .tab-active {
     background-color: white;
     color: #059669;
@@ -71,7 +71,7 @@ body::-webkit-scrollbar {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-/* モーダルアニメーション */
+/* モーダル */
 .modal-open {
     opacity: 1 !important;
     pointer-events: auto !important;
@@ -80,7 +80,7 @@ body::-webkit-scrollbar {
     transform: scale(1) !important;
 }
 
-/* 誕生日モーダル */
+/* 誕生日 */
 #birthday-overlay.active {
     opacity: 1 !important;
     pointer-events: auto !important;
@@ -89,7 +89,7 @@ body::-webkit-scrollbar {
     transform: scale(1) !important;
 }
 
-/* ヒーロー浮遊 */
+/* ヒーロー */
 @keyframes float-hero-up {
     0%, 100% { transform: translateY(0px) rotate(3deg); }
     50% { transform: translateY(-15px) rotate(3deg); }
