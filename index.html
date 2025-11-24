@@ -24,7 +24,7 @@
         <div id="clouds" class="absolute inset-0 opacity-80"></div>
     </div>
 
-    <!-- 🎂 誕生日スペシャル演出用オーバーレイ -->
+    <!-- 誕生日オーバーレイ -->
     <div id="birthday-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none opacity-0 transition-opacity duration-1000">
         <div id="birthday-content" class="text-center text-white transform scale-0 transition-transform duration-700">
             <div class="mb-6 animate-bounce">
@@ -84,16 +84,44 @@
                         <span id="season-name"></span>の空の下で
                     </div>
                     <h1 class="text-3xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight tracking-tight drop-shadow-md">
-                        タマベンで、<br class="md:hidden"/>今日をはじめよう。
+                        キミの気持ちに<br class="md:hidden"/>寄り添う、<br>
+                        新しい学び。
                     </h1>
                     <p class="text-white/90 font-bold text-sm md:text-lg mb-0 leading-relaxed drop-shadow-sm">
-                        登録不要・完全無料。<br class="hidden md:inline"/>
-                        今の空の色とおなじように、学びも自由に。
+                        「わからない」に寄り添う、<br class="md:hidden"/>まったく新しい学習プリント。<br>
+                        登録不要・完全無料で、今日をはじめよう。
                     </p>
                 </div>
                 <div class="relative w-40 h-40 md:w-56 md:h-56 flex-shrink-0">
                     <div class="w-full h-full bg-white/20 backdrop-blur-md rounded-[2.5rem] rotate-3 flex items-center justify-center border-4 border-white/40 shadow-2xl animate-float-up">
                         <i id="main-season-icon" class="text-white w-20 h-20 md:w-28 md:h-28 drop-shadow-lg filter"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- タマベンの特徴セクション -->
+            <section class="mb-16">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 rounded-[2rem] text-center border border-white/50">
+                        <div class="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-500">
+                            <i data-lucide="heart-handshake" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-700 mb-2">気持ちに寄り添う</h3>
+                        <p class="text-sm text-slate-500 font-bold">つまずきやすいポイントを丁寧に。<br>「できた！」の笑顔を増やします。</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-[2rem] text-center border border-white/50">
+                        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-500">
+                            <i data-lucide="sparkles" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-700 mb-2">まったく新しい教材</h3>
+                        <p class="text-sm text-slate-500 font-bold">これまでの教材とは違う、<br>季節を感じる楽しいデザイン。</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-[2rem] text-center border border-white/50">
+                        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500">
+                            <i data-lucide="users" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-700 mb-2">保護者サポート充実</h3>
+                        <p class="text-sm text-slate-500 font-bold">教え方のコツや解答がわかる<br>「指導用プリント」も完備。</p>
                     </div>
                 </div>
             </section>
@@ -120,12 +148,40 @@
             </div>
 
             <!-- 教材リスト -->
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
                 <div class="col-span-full text-center py-20">
                     <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-white/80 border-t-transparent"></div>
                     <p class="mt-4 text-white/80 font-bold text-lg drop-shadow-md">準備しています...</p>
                 </div>
             </div>
+
+            <!-- タマベンチームからのメッセージ -->
+            <section class="glass-card rounded-[2.5rem] p-10 md:p-16 border-4 border-white/60 shadow-xl bg-white/90 backdrop-blur-xl relative overflow-hidden">
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-50"></div>
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+                
+                <div class="relative z-10 text-center max-w-3xl mx-auto">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full text-white shadow-lg mb-6">
+                        <i data-lucide="heart" class="w-8 h-8"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 mb-6">タマベンチームより</h2>
+                    <p class="text-slate-600 font-medium leading-relaxed text-lg mb-8">
+                        勉強でつまずくのは、決して悪いことではありません。<br>
+                        それは「もっと知りたい」という心の合図だからです。<br><br>
+                        タマベンは、そんな皆さんの小さな「？」に<br class="hidden md:inline"/>
+                        とことん寄り添うために生まれました。<br>
+                        他の教材とはちょっと違う、<br>
+                        心が温かくなるような新しい学びをお届けします。<br><br>
+                        保護者の皆様へも、お子様をサポートするための<br>
+                        便利なガイドをご用意しています。<br>
+                        今日という日が、新しい発見の日になりますように。
+                    </p>
+                    <div class="text-sm font-bold text-slate-400">
+                        Produced by Tamaben Project
+                    </div>
+                </div>
+            </section>
+
         </div>
 
         <!-- === 2. 詳細ページ === -->
@@ -144,17 +200,15 @@
                         <h1 id="detail-title" class="text-3xl md:text-5xl font-black mb-4 drop-shadow-sm"></h1>
                         <p class="text-white/90 font-bold">この単元を学習します</p>
                     </div>
-                    <!-- 装飾 -->
                     <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
                     <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                 </div>
 
                 <!-- PDF選択エリア -->
                 <div class="p-8 md:p-12 bg-slate-50/50">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        
-                        <!-- 基本レベル -->
-                        <div class="bg-white rounded-[2.5rem] p-6 shadow-lg hover:shadow-xl transition-all border-2 border-slate-100 hover:border-emerald-400 group cursor-pointer" onclick="openPdf('basic')">
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <!-- 基本 -->
+                        <div class="bg-white rounded-[2.5rem] p-6 shadow-lg hover:shadow-xl transition-all border-2 border-slate-100 hover:border-emerald-400 group cursor-pointer h-full" onclick="openPdf('basic')">
                             <div class="flex items-center gap-3 mb-4">
                                 <span class="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-600 font-black text-xs">LEVEL 1</span>
                                 <h3 class="text-xl font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">基本</h3>
@@ -169,9 +223,8 @@
                             </div>
                             <p class="text-sm text-slate-500 font-bold text-center">まずはここから！<br>基礎をしっかり固めよう</p>
                         </div>
-
-                        <!-- 応用レベル -->
-                        <div class="bg-white rounded-[2.5rem] p-6 shadow-lg hover:shadow-xl transition-all border-2 border-slate-100 hover:border-orange-400 group cursor-pointer" onclick="openPdf('advanced')">
+                        <!-- 応用 -->
+                        <div class="bg-white rounded-[2.5rem] p-6 shadow-lg hover:shadow-xl transition-all border-2 border-slate-100 hover:border-orange-400 group cursor-pointer h-full" onclick="openPdf('advanced')">
                             <div class="flex items-center gap-3 mb-4">
                                 <span class="px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 font-black text-xs">LEVEL 2</span>
                                 <h3 class="text-xl font-bold text-slate-700 group-hover:text-orange-600 transition-colors">応用</h3>
@@ -186,7 +239,21 @@
                             </div>
                             <p class="text-sm text-slate-500 font-bold text-center">ちょっと難しい問題に<br>チャレンジしてみよう</p>
                         </div>
+                    </div>
 
+                    <!-- 保護者用 -->
+                    <div class="bg-blue-50 rounded-[2rem] p-6 border-2 border-blue-100 text-center">
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="text-left">
+                                <h3 class="text-lg font-bold text-blue-800 flex items-center gap-2">
+                                    <i data-lucide="users" class="w-5 h-5"></i> 保護者の方へ
+                                </h3>
+                                <p class="text-sm text-blue-600 font-bold mt-1">解答・解説と指導のポイントはこちら</p>
+                            </div>
+                            <button onclick="openPdf('answer')" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center gap-2">
+                                <i data-lucide="file-check" class="w-4 h-4"></i> 指導用プリントを開く
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
