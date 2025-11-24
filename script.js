@@ -34,9 +34,8 @@ const calculateGrade = (birthDateString) => {
     const today = new Date();
     const birthDate = new Date(birthDateString);
     
-    // 誕生日チェック（月と日が一致する場合のみ発火）
+    // 誕生日チェック
     if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
-        // まだ今日お祝いしていない場合のみ
         if (!sessionStorage.getItem('birthday_celebrated')) {
             triggerBirthdayMode();
             sessionStorage.setItem('birthday_celebrated', 'true');
@@ -64,35 +63,17 @@ const calculateGrade = (birthDateString) => {
     }
 };
 
-// 誕生日モード発動
 const triggerBirthdayMode = () => {
     const overlay = document.getElementById('birthday-overlay');
     overlay.classList.add('active');
     
-    // 紙吹雪
     if (window.confetti) {
         const duration = 5000;
         const end = Date.now() + duration;
-
         (function frame() {
-            confetti({
-                particleCount: 5,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa']
-            });
-            confetti({
-                particleCount: 5,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa']
-            });
-
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
+            confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'] });
+            confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'] });
+            if (Date.now() < end) requestAnimationFrame(frame);
         }());
     }
 };
@@ -101,7 +82,6 @@ window.closeBirthdayMode = () => {
     document.getElementById('birthday-overlay').classList.remove('active');
 };
 
-// おすすめ表示
 const renderRecommendations = () => {
     if (!currentUserGradeId || cachedData.length === 0) {
         document.getElementById('recommendation-section').classList.add('hidden');
@@ -152,7 +132,7 @@ const renderRecommendations = () => {
 };
 
 /* =====================================================================
-   🌞 空のグラデーション生成 (SunCalc連動)
+   🌞 空のグラデーション
    ===================================================================== */
 const SEASONS = {
     spring: { name: "春", colors: { primary: "bg-emerald-400", secondary: "bg-pink-300", accent: "text-pink-500", gradient: "from-pink-100 to-emerald-50", border: "border-pink-100" }, icon: "flower-2", particleColor: "text-pink-300" },
@@ -227,8 +207,7 @@ const updateSky = () => {
     const colors = season.colors;
     const time = getNaturalTimeOfDay();
 
-    // ヘッダーなどの色更新
-    document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20`;
+    document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/30 backdrop-blur-sm`;
     document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
     document.getElementById('header-logo-wrapper').innerHTML = getTamabenLogo(time.isDark);
     document.getElementById('footer-logo-wrapper').innerHTML = getTamabenLogo(time.isDark);
@@ -240,7 +219,6 @@ const updateSky = () => {
         : 'text-slate-600 border-slate-200 bg-white/60';
     document.getElementById('time-badge').className = `hidden md:flex px-4 py-2 rounded-full border text-xs font-bold items-center gap-2 backdrop-blur-sm shadow-sm transition-all duration-500 ${badgeClass}`;
 
-    // パーティクル更新
     const particlesContainer = document.getElementById('particles-container');
     const currentPhaseState = `${seasonKey}-${time.isDark ? 'night' : 'day'}`;
     if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-state') !== currentPhaseState) {
@@ -291,10 +269,17 @@ const fetchAndRender = async () => {
     if(cachedData.length === 0) {
         try {
             const response = await fetch('data.json');
-            cachedData = await response.json();
+            // フォールバック（変数がある場合）
+            if (typeof LEARNING_DATA !== 'undefined') {
+                cachedData = LEARNING_DATA;
+            } else {
+                cachedData = await response.json();
+            }
         } catch (error) {
-            console.error("Load Error:", error);
-            return;
+            // エラー時でも変数があればそれを使う
+            if (typeof LEARNING_DATA !== 'undefined') {
+                cachedData = LEARNING_DATA;
+            }
         }
     }
     renderMaterials();
@@ -377,17 +362,13 @@ const renderMaterials = () => {
    ===================================================================== */
 window.openDetail = (unitData) => {
     currentDetailUnit = unitData;
-    
-    // 詳細情報をセット
     document.getElementById('detail-title').textContent = unitData.title;
     document.getElementById('detail-grade').textContent = unitData.grade;
     document.getElementById('detail-subject').textContent = unitData.subjectName;
     
-    // ヘッダー色変更
     const colorMap = { lime: '#84cc16', rose: '#f43f5e', violet: '#8b5cf6', emerald: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
     document.getElementById('detail-header').style.backgroundColor = colorMap[unitData.color] || '#10b981';
 
-    // 画面切り替え
     document.getElementById('view-home').classList.add('hidden');
     document.getElementById('view-detail').classList.remove('hidden');
     window.scrollTo(0,0);
@@ -401,7 +382,11 @@ window.goHome = () => {
 
 window.openPdf = (type) => {
     if(!currentDetailUnit) return;
-    const url = type === 'basic' ? currentDetailUnit.pdfBasic : currentDetailUnit.pdfAdv;
+    let url;
+    if (type === 'basic') url = currentDetailUnit.pdfBasic;
+    else if (type === 'advanced') url = currentDetailUnit.pdfAdv;
+    else if (type === 'answer') url = currentDetailUnit.pdfAnswer;
+
     if(url && url !== '#') {
         window.open(url, '_blank');
     } else {
