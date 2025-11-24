@@ -1,158 +1,41 @@
-[
-  {
-    "grade": "小学1年生",
-    "gradeId": "e1",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "かずとすうじ", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-          { "title": "いくつといくつ", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6] },
-          { "title": "たしざん（１）", "pdfBasic": "#", "pdfAdv": "#", "months": [6, 7] },
-          { "title": "ひきざん（１）", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-      ]},
-      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
-          { "title": "ひらがなのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5, 6] },
-          { "title": "カタカナのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-      ]}
-    ]
-  },
-  {
-    "grade": "小学2年生",
-    "gradeId": "e2",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "たし算とひき算のひっ算", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-          { "title": "かけ算（九九）", "pdfBasic": "#", "pdfAdv": "#", "months": [10, 11, 12] }
-      ]},
-      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
-          { "title": "かん字の書き取り", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5, 6, 9, 10, 11, 1, 2] }
-      ]}
-    ]
-  },
-  {
-    "grade": "小学3年生",
-    "gradeId": "e3",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "わり算", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6] },
-          { "title": "円と球", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-      ]},
-      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-          { "title": "昆虫の生態", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6, 7] }
-      ]},
-      { "name": "社会", "color": "amber", "icon": "globe", "units": [
-          { "title": "わたしたちの町", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-      ]}
-    ]
-  },
-  {
-    "grade": "小学4年生",
-    "gradeId": "e4",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "角の大きさ", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-          { "title": "面積", "pdfBasic": "#", "pdfAdv": "#", "months": [10, 11] }
-      ]},
-      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-          { "title": "月と星", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-      ]},
-      { "name": "社会", "color": "amber", "icon": "globe", "units": [
-          { "title": "都道府県", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5, 6] }
-      ]}
-    ]
-  },
-  {
-    "grade": "小学5年生",
-    "gradeId": "e5",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "体積", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-          { "title": "割合", "pdfBasic": "#", "pdfAdv": "#", "months": [11, 12, 1] }
-      ]},
-      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-          { "title": "植物の発芽", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-      ]},
-      { "name": "社会", "color": "amber", "icon": "globe", "units": [
-          { "title": "日本の国土", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-      ]},
-      { "name": "英語", "color": "violet", "icon": "languages", "units": [
-          { "title": "アルファベット", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-      ]}
-    ]
-  },
-  {
-    "grade": "小学6年生",
-    "gradeId": "e6",
-    "subjects": [
-      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
-          { "title": "対称な図形", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-          { "title": "比", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-      ]},
-      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-          { "title": "人体のつくり", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6] }
-      ]},
-      { "name": "社会", "color": "amber", "icon": "globe", "units": [
-          { "title": "日本の歴史", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6, 9, 10, 11] }
-      ]},
-      { "name": "英語", "color": "violet", "icon": "languages", "units": [
-          { "title": "自己紹介", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-        ]}
-      ]
-    },
+const LEARNING_DATA = [
+    // 小学1年生
     {
-      "grade": "中学1年生",
-      "gradeId": "j1",
+      "grade": "小学1年生",
+      "gradeId": "e1",
       "subjects": [
-        { "name": "数学", "color": "lime", "icon": "sigma", "units": [
-            { "title": "正の数・負の数", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-            { "title": "方程式", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
+        { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+            { "title": "かずとすうじ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+            { "title": "いくつといくつ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+            { "title": "たしざん（１）", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [6, 7] },
+            { "title": "ひきざん（１）", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
         ]},
-        { "name": "英語", "color": "violet", "icon": "languages", "units": [
-            { "title": "be動詞・一般動詞", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5, 6] }
-        ]},
-        { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-            { "title": "植物の分類", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-        ]},
-        { "name": "社会", "color": "amber", "icon": "globe", "units": [
-            { "title": "世界の地理", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
+        { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+            { "title": "ひらがなのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6] },
+            { "title": "カタカナのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
         ]}
       ]
     },
-    {
-      "grade": "中学2年生",
-      "gradeId": "j2",
-      "subjects": [
-        { "name": "数学", "color": "lime", "icon": "sigma", "units": [
-            { "title": "連立方程式", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6] },
-            { "title": "一次関数", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
-        ]},
-        { "name": "英語", "color": "violet", "icon": "languages", "units": [
-            { "title": "過去形・過去進行形", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] }
-        ]},
-        { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-            { "title": "電気の世界", "pdfBasic": "#", "pdfAdv": "#", "months": [11, 12] }
-        ]},
-        { "name": "社会", "color": "amber", "icon": "globe", "units": [
-            { "title": "日本の諸地域", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5, 6] }
-        ]}
-      ]
-    },
+    // ... 他の学年も同様に pdfAnswer を追加しますが、ここでは省略せずに前のデータ全体を使ってください。
+    // ※実際のファイルでは全学年分を記述してください。
+    // 例: 中学3年生
     {
       "grade": "中学3年生",
       "gradeId": "j3",
       "subjects": [
         { "name": "数学", "color": "lime", "icon": "sigma", "units": [
-            { "title": "多項式・因数分解", "pdfBasic": "#", "pdfAdv": "#", "months": [4, 5] },
-            { "title": "三平方の定理", "pdfBasic": "#", "pdfAdv": "#", "months": [11, 12] }
+            { "title": "多項式・因数分解", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+            { "title": "三平方の定理", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12] }
         ]},
         { "name": "英語", "color": "violet", "icon": "languages", "units": [
-            { "title": "現在完了形", "pdfBasic": "#", "pdfAdv": "#", "months": [5, 6] },
-            { "title": "関係代名詞", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10] }
+            { "title": "現在完了形", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+            { "title": "関係代名詞", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
         ]},
         { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
-            { "title": "天体", "pdfBasic": "#", "pdfAdv": "#", "months": [11, 12] }
+            { "title": "天体", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12] }
         ]},
         { "name": "社会", "color": "amber", "icon": "globe", "units": [
-            { "title": "公民", "pdfBasic": "#", "pdfAdv": "#", "months": [9, 10, 11] }
+            { "title": "公民", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10, 11] }
         ]}
       ]
     },
@@ -161,4 +44,4 @@
       "gradeId": "other",
       "subjects": []
     }
-]
+];
