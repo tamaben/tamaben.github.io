@@ -1,4 +1,154 @@
 /* =====================================================================
+   📚 バックアップ用データ (JSON読み込み失敗時に使用)
+   ===================================================================== */
+const BACKUP_DATA = [
+  {
+    "grade": "小学1年生", "gradeId": "e1", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "かずとすうじ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "いくつといくつ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+          { "title": "たしざん（１）", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [6, 7] },
+          { "title": "ひきざん（１）", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "ひらがなのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6] },
+          { "title": "カタカナのれんしゅう", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学2年生", "gradeId": "e2", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "たし算とひき算のひっ算", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "かけ算（九九）", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [10, 11, 12] }
+      ]},
+      { "name": "国語", "color": "rose", "icon": "pencil", "units": [
+          { "title": "かん字の書き取り", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6, 9, 10, 11, 1, 2] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学3年生", "gradeId": "e3", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "わり算", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+          { "title": "円と球", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "昆虫の生態", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6, 7] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "わたしたちの町", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学4年生", "gradeId": "e4", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "角の大きさ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "面積", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [10, 11] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "月と星", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "都道府県", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学5年生", "gradeId": "e5", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "体積", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "割合", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12, 1] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の発芽", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の国土", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "アルファベット", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "小学6年生", "gradeId": "e6", "subjects": [
+      { "name": "算数", "color": "lime", "icon": "calculator", "units": [
+          { "title": "対称な図形", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "比", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "人体のつくり", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の歴史", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6, 9, 10, 11] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "自己紹介", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学1年生", "gradeId": "j1", "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "正の数・負の数", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "方程式", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "be動詞・一般動詞", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "植物の分類", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "世界の地理", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学2年生", "gradeId": "j2", "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "連立方程式", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+          { "title": "一次関数", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "過去形・過去進行形", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "電気の世界", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "日本の諸地域", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5, 6] }
+      ]}
+    ]
+  },
+  {
+    "grade": "中学3年生", "gradeId": "j3", "subjects": [
+      { "name": "数学", "color": "lime", "icon": "sigma", "units": [
+          { "title": "多項式・因数分解", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] },
+          { "title": "三平方の定理", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12] }
+      ]},
+      { "name": "英語", "color": "violet", "icon": "languages", "units": [
+          { "title": "現在完了形", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [5, 6] },
+          { "title": "関係代名詞", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10] }
+      ]},
+      { "name": "理科", "color": "emerald", "icon": "flask-conical", "units": [
+          { "title": "天体", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [11, 12] }
+      ]},
+      { "name": "社会", "color": "amber", "icon": "globe", "units": [
+          { "title": "公民", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [9, 10, 11] }
+      ]}
+    ]
+  },
+  {
+    "grade": "その他",
+    "gradeId": "other",
+    "subjects": []
+  }
+];
+
+/* =====================================================================
    🔧 設定・状態管理
    ===================================================================== */
 let userLocation = { lat: 35.6895, lon: 139.6917, name: "東京" };
@@ -25,27 +175,16 @@ const deleteCookie = (name) => {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
 };
 
-// 履歴保存 (CookieにJSON文字列で保存)
-const saveHistory = (unit) => {
-    let history = JSON.parse(getCookie('tamaben_history') || '[]');
-    // 重複削除
-    history = history.filter(h => h.title !== unit.title);
-    // 先頭に追加
-    history.unshift(unit);
-    // 最大4件
-    if(history.length > 4) history.pop();
-    setCookie('tamaben_history', JSON.stringify(history), 365);
-    renderHistory();
-};
-
 /* =====================================================================
    🎂 学年判定・誕生日チェック
    ===================================================================== */
 const calculateGrade = (birthDateString) => {
     if (!birthDateString) return null;
+    
     const today = new Date();
     const birthDate = new Date(birthDateString);
     
+    // 誕生日チェック
     if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
         if (!sessionStorage.getItem('birthday_celebrated')) {
             triggerBirthdayMode();
@@ -76,7 +215,7 @@ const calculateGrade = (birthDateString) => {
 
 const triggerBirthdayMode = () => {
     const overlay = document.getElementById('birthday-overlay');
-    overlay.classList.add('active');
+    if(overlay) overlay.classList.add('active');
     if (window.confetti) {
         const duration = 5000;
         const end = Date.now() + duration;
@@ -89,40 +228,54 @@ const triggerBirthdayMode = () => {
 };
 
 window.closeBirthdayMode = () => {
-    document.getElementById('birthday-overlay').classList.remove('active');
+    const overlay = document.getElementById('birthday-overlay');
+    if(overlay) overlay.classList.remove('active');
 };
 
-// おすすめ表示
 const renderRecommendations = () => {
+    const section = document.getElementById('recommendation-section');
+    const container = document.getElementById('recommendation-container');
+    
     if (!currentUserGradeId || cachedData.length === 0) {
-        document.getElementById('recommendation-section').classList.add('hidden');
+        if (section) section.classList.add('hidden');
         return;
     }
+
     const currentMonth = new Date().getMonth() + 1;
-    document.getElementById('recommend-month').textContent = currentMonth;
+    const monthEl = document.getElementById('recommend-month');
+    if (monthEl) monthEl.textContent = currentMonth;
+
     const gradeData = cachedData.find(d => d.gradeId === currentUserGradeId);
     if (!gradeData) return;
 
     let recommendedUnits = [];
-    gradeData.subjects.forEach(subject => {
-        subject.units.forEach(unit => {
-            if (unit.months && unit.months.includes(currentMonth)) {
-                recommendedUnits.push({ grade: gradeData.grade, subjectName: subject.name, color: subject.color, ...unit });
+    if (gradeData.subjects) {
+        gradeData.subjects.forEach(subject => {
+            if (subject.units) {
+                subject.units.forEach(unit => {
+                    if (unit.months && unit.months.includes(currentMonth)) {
+                        recommendedUnits.push({
+                            grade: gradeData.grade,
+                            subjectName: subject.name,
+                            color: subject.color,
+                            ...unit
+                        });
+                    }
+                });
             }
         });
-    });
+    }
 
-    const container = document.getElementById('recommendation-container');
-    if (recommendedUnits.length > 0) {
-        document.getElementById('recommendation-section').classList.remove('hidden');
+    if (recommendedUnits.length > 0 && container) {
+        if (section) section.classList.remove('hidden');
         container.innerHTML = recommendedUnits.map((unit, idx) => `
             <div onclick='openDetail(${JSON.stringify(unit)})' class="flex items-center justify-between p-4 bg-white/80 rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all group cursor-pointer backdrop-blur-sm">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-10 h-10 rounded-xl bg-${unit.color}-100 flex-shrink-0 flex items-center justify-center text-${unit.color}-600 font-bold text-xs">
+                    <div class="w-10 h-10 rounded-xl bg-${unit.color || 'lime'}-100 flex-shrink-0 flex items-center justify-center text-${unit.color || 'lime'}-600 font-bold text-xs">
                         ${unit.subjectName.substring(0,1)}
                     </div>
                     <div>
-                        <span class="block text-[10px] font-bold text-slate-400 mb-0.5">おすすめ！</span>
+                        <span class="block text-xs font-bold text-slate-400 mb-0.5">おすすめ！</span>
                         <span class="block text-sm font-bold text-slate-700 group-hover:text-emerald-700 truncate">${unit.title}</span>
                     </div>
                 </div>
@@ -131,39 +284,14 @@ const renderRecommendations = () => {
         `).join('');
         lucide.createIcons();
     } else {
-        document.getElementById('recommendation-section').classList.add('hidden');
+        if (section) section.classList.add('hidden');
     }
 };
-
-// 履歴表示
-const renderHistory = () => {
-    const history = JSON.parse(getCookie('tamaben_history') || '[]');
-    const container = document.getElementById('history-container');
-    const section = document.getElementById('history-section');
-    
-    if(history.length === 0) {
-        section.classList.add('hidden');
-        return;
-    }
-    section.classList.remove('hidden');
-    
-    container.innerHTML = history.map(unit => `
-        <div onclick='openDetail(${JSON.stringify(unit)})' class="flex items-center justify-between p-3 bg-white/60 rounded-2xl border border-slate-100 hover:border-blue-300 shadow-sm transition-all group cursor-pointer">
-            <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center text-slate-500 font-bold text-xs">
-                    <i data-lucide="history" class="w-4 h-4"></i>
-                </div>
-                <span class="block text-sm font-bold text-slate-600 group-hover:text-blue-600 truncate">${unit.title}</span>
-            </div>
-        </div>
-    `).join('');
-    lucide.createIcons();
-}
 
 /* =====================================================================
    🌞 空のグラデーション
    ===================================================================== */
-const SEASONS = { spring: { name: "春", colors: { primary: "bg-emerald-400", secondary: "bg-pink-300" }, icon: "flower-2" }, summer: { name: "夏", colors: { primary: "bg-emerald-500", secondary: "bg-sky-400" }, icon: "sun" }, autumn: { name: "秋", colors: { primary: "bg-emerald-600", secondary: "bg-orange-400" }, icon: "leaf" }, winter: { name: "冬", colors: { primary: "bg-emerald-400", secondary: "bg-indigo-300" }, icon: "snowflake" } };
+const SEASONS = { spring: { name: "春", colors: { primary: "bg-emerald-400", secondary: "bg-pink-300", accent: "text-pink-500", gradient: "from-pink-100 to-emerald-50", border: "border-pink-100" }, icon: "flower-2", particleColor: "text-pink-300" }, summer: { name: "夏", colors: { primary: "bg-emerald-500", secondary: "bg-sky-400", accent: "text-sky-500", gradient: "from-sky-100 to-emerald-50", border: "border-sky-100" }, icon: "sun", particleColor: "text-yellow-300" }, autumn: { name: "秋", colors: { primary: "bg-emerald-600", secondary: "bg-orange-400", accent: "text-orange-500", gradient: "from-orange-100 to-emerald-50", border: "border-orange-100" }, icon: "leaf", particleColor: "text-orange-300" }, winter: { name: "冬", colors: { primary: "bg-emerald-400", secondary: "bg-indigo-300", accent: "text-indigo-500", gradient: "from-indigo-50 to-emerald-50", border: "border-indigo-100" }, icon: "snowflake", particleColor: "text-sky-200" } };
 const TIME_THEMES = { morning: { label: "おはよう！", icon: "sunrise", overlay: "bg-orange-100/30", isDark: false }, day: { label: "こんにちは！", icon: "sun", overlay: "bg-transparent", isDark: false }, evening: { label: "こんばんは。", icon: "sunset", overlay: "bg-indigo-900/20", isDark: false }, night: { label: "おつかれさま。", icon: "moon", overlay: "bg-slate-900/80", isDark: true } };
 
 const getSeason = () => {
@@ -189,47 +317,124 @@ const updateSky = () => {
     const now = new Date();
     const times = SunCalc.getTimes(now, userLocation.lat, userLocation.lon);
     const sky = document.getElementById('sky-background');
+    const stars = document.getElementById('stars');
     
     const gradients = { night: "linear-gradient(to bottom, #0f172a, #1e293b)", dawn: "linear-gradient(to bottom, #312e81, #f472b6, #fbbf24)", day: "linear-gradient(to bottom, #38bdf8, #bae6fd, #e0f2fe)", dusk: "linear-gradient(to bottom, #1e3a8a, #c026d3, #f97316)" };
     let currentGradient = gradients.night;
-    if (now < times.nightEnd) currentGradient = gradients.night;
-    else if (now < times.goldenHourEnd) currentGradient = gradients.dawn;
-    else if (now < times.goldenHour) currentGradient = gradients.day;
-    else if (now < times.night) currentGradient = gradients.dusk;
-    sky.style.background = currentGradient;
+    let starOpacity = 1;
+    let seasonName = "冬";
+    let seasonIcon = "snowflake";
+    const month = now.getMonth() + 1;
+    if (month >= 3 && month <= 5) { seasonName = "春"; seasonIcon = "flower-2"; }
+    else if (month >= 6 && month <= 8) { seasonName = "夏"; seasonIcon = "sun"; }
+    else if (month >= 9 && month <= 11) { seasonName = "秋"; seasonIcon = "leaf"; }
+
+    if (now < times.nightEnd) { currentGradient = gradients.night; starOpacity = 1; }
+    else if (now < times.goldenHourEnd) { currentGradient = gradients.dawn; starOpacity = 0; }
+    else if (now < times.goldenHour) { currentGradient = gradients.day; starOpacity = 0; }
+    else if (now < times.night) { currentGradient = gradients.dusk; starOpacity = 0.3; }
+    else { currentGradient = gradients.night; starOpacity = 1; }
+
+    if (sky) sky.style.background = currentGradient;
+    if (stars) stars.style.opacity = starOpacity;
     
-    const season = SEASONS[getSeason()];
+    const sn = document.getElementById('season-name');
+    if (sn) sn.textContent = seasonName;
+    const mi = document.getElementById('main-season-icon');
+    if (mi) mi.setAttribute('data-lucide', seasonIcon);
+    
+    const seasonKey = getSeason();
+    const season = SEASONS[seasonKey];
+    const colors = season.colors;
     const time = getNaturalTimeOfDay();
-    document.getElementById('season-name').textContent = season.name;
-    document.getElementById('main-season-icon').setAttribute('data-lucide', season.icon);
-    document.getElementById('hero-section').className = `relative rounded-[2rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : season.colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-6 md:p-12 text-center md:text-left transition-colors duration-700 mb-10 flex flex-col md:flex-row items-center justify-between gap-6 border-4 border-white/20 backdrop-blur-md`;
+
+    const hero = document.getElementById('hero-section');
+    if (hero) hero.className = `relative rounded-[2rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-6 md:p-12 text-center md:text-left transition-colors duration-700 mb-10 flex flex-col md:flex-row items-center justify-between gap-6 border-4 border-white/20 backdrop-blur-md`;
     
-    // ロゴSVG生成
-    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto"><g transform="translate(-184.9,-165.975)"><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/><path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/><path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/><g stroke="${time.isDark?'#fff':'#324738'}" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/><path d="M243.09,187.37l-7.14,-6.8"/><path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/><path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/><path d="M219.86,179.89l2.95,2.38"/><path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M266.6,177.77l-1.7,-3.1"/><path d="M267.9,173.77l1.7,3.1"/><path d="M280.34,177.53l-4.4,-4"/><path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/></g></g></svg>`;
-    document.getElementById('header-logo-wrapper').innerHTML = logoSvg;
-    document.getElementById('footer-logo-wrapper').innerHTML = logoSvg;
+    const glow = document.getElementById('logo-glow');
+    if (glow) glow.className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
+
+    const logoSvg = getTamabenLogo(time.isDark);
+    const hl = document.getElementById('header-logo-wrapper');
+    const fl = document.getElementById('footer-logo-wrapper');
+    if(hl) hl.innerHTML = logoSvg;
+    if(fl) fl.innerHTML = logoSvg;
+
+    const timeText = document.getElementById('time-text');
+    if (timeText) timeText.textContent = time.label;
+    const timeIcon = document.getElementById('time-icon');
+    if (timeIcon) timeIcon.setAttribute('data-lucide', time.icon);
+    
+    const badgeClass = time.isDark 
+        ? 'text-yellow-200 bg-slate-800 border-slate-700' 
+        : 'text-slate-600 border-slate-200 bg-white/60';
+    const timeBadge = document.getElementById('time-badge');
+    if (timeBadge) timeBadge.className = `hidden md:flex px-4 py-2 rounded-full border text-xs font-bold items-center gap-2 backdrop-blur-sm shadow-sm transition-all duration-500 ${badgeClass}`;
+
+    const particlesContainer = document.getElementById('particles-container');
+    if (particlesContainer) {
+        const currentPhaseState = `${seasonKey}-${time.isDark ? 'night' : 'day'}`;
+        if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-state') !== currentPhaseState) {
+            particlesContainer.innerHTML = '';
+            particlesContainer.setAttribute('data-state', currentPhaseState);
+            let particlesHtml = '';
+            const pCount = time.isDark ? 20 : 12;
+            for(let i=0; i<pCount; i++) {
+                const left = Math.random() * 100;
+                const isFall = seasonKey === 'autumn' || seasonKey === 'winter';
+                const top = isFall ? '-10vh' : '110vh';
+                const animName = isFall ? 'float-down' : 'float-up';
+                const dur = 10 + Math.random() * 15;
+                const dly = Math.random() * 10;
+                const size = 15 + Math.random() * 25;
+                const pColor = time.isDark ? 'text-white opacity-40' : season.particleColor;
+                particlesHtml += `<div class="particle ${pColor}" style="left:${left}%; top:${top}; animation:${animName} ${dur}s ${dly}s infinite; width:${size}px; height:${size}px;">${getParticleSvg(seasonKey, time.isDark)}</div>`;
+            }
+            particlesContainer.innerHTML = particlesHtml;
+        }
+    }
 
     lucide.createIcons();
 };
 
 /* =====================================================================
-   🖥️ データ取得・描画
+   🎨 SVGジェネレーター
+   ===================================================================== */
+const getTamabenLogo = (isDark) => {
+    const strokeColor = isDark ? "#ffffff" : "#324738"; 
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto"><g transform="translate(-184.9,-165.975)"><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/><path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/><path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/><g stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/><path d="M243.09,187.37l-7.14,-6.8"/><path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/><path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/><path d="M219.86,179.89l2.95,2.38"/><path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M266.6,177.77l-1.7,-3.1"/><path d="M267.9,173.77l1.7,3.1"/><path d="M280.34,177.53l-4.4,-4"/><path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/></g></g></svg>`;
+};
+
+const getParticleSvg = (seasonKey, isNight) => {
+    if (isNight) return '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />';
+    const shapes = {
+        "spring": '<path d="M12,2 C12,2 14,5 17,6 C20,7 22,10 21,13 C20,16 17,17 15,16 C13,15.5 12,14 12,14 C12,14 11,15.5 9,16 C7,17 4,16 3,13 C2,10 4,7 7,6 C10,5 12,2 12,2 Z" fill="currentColor"/>',
+        "summer": '<circle cx="12" cy="12" r="6" fill="currentColor"/> <path d="M12,2 L12,4 M12,20 L12,22 M4.93,4.93 L6.34,6.34 M17.66,17.66 L19.07,19.07 M2,12 L4,12 M20,12 L22,12 M4.93,19.07 L6.34,17.66 M17.66,6.34 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" />',
+        "autumn": '<path d="M12,2 L14,8 L20,6 L17,11 L22,14 L16,16 L15,22 L12,18 L9,22 L8,16 L2,14 L7,11 L4,6 L10,8 L12,2 Z" fill="currentColor"/>',
+        "winter": '<path d="M12,2 L12,22 M2,12 L22,12 M4.93,4.93 L19.07,19.07 M4.93,19.07 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+    };
+    return `<svg viewBox="0 0 24 24" class="w-full h-full">${shapes[seasonKey] || shapes.spring}</svg>`;
+};
+
+/* =====================================================================
+   🖥️ データ取得・描画 (JSON取得 + フォールバック)
    ===================================================================== */
 const fetchAndRender = async () => {
     const statusEl = document.getElementById('data-load-status');
-    if(cachedData.length === 0) {
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error('Load failed');
-            cachedData = await response.json();
-            if(statusEl) statusEl.textContent = "読み込み完了";
-        } catch (error) {
-            console.error("Load Error:", error);
-            if(statusEl) statusEl.textContent = "Error: " + error.message;
-            // data.jsフォールバック
-            if (typeof LEARNING_DATA !== 'undefined') cachedData = LEARNING_DATA;
-        }
+    
+    try {
+        // まずJSONファイルの読み込みを試みる
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('Load failed');
+        cachedData = await response.json();
+        if(statusEl) statusEl.textContent = "読み込み完了";
+    } catch (error) {
+        console.warn("JSON fetch failed. Using backup data.", error);
+        // JSON読み込み失敗時はバックアップデータを使用
+        cachedData = BACKUP_DATA; 
+        if(statusEl) statusEl.textContent = "オフラインモードで起動中";
     }
+    
     renderMaterials();
     renderRecommendations();
 };
@@ -320,7 +525,6 @@ window.openPdf = (type) => {
     else if (type === 'answer') url = currentDetailUnit.pdfAnswer;
 
     if(url && url !== '#') {
-        saveHistory(currentDetailUnit); // 履歴保存
         window.open(url, '_blank');
     } else {
         alert('PDFは準備中です');
@@ -339,10 +543,12 @@ window.switchTab = (tab) => {
 };
 
 window.openSettingsModal = () => {
-    document.getElementById('settings-modal').classList.add('modal-open');
+    const modal = document.getElementById('settings-modal');
+    if(modal) modal.classList.add('modal-open');
 };
 window.closeSettingsModal = () => {
-    document.getElementById('settings-modal').classList.remove('modal-open');
+    const modal = document.getElementById('settings-modal');
+    if(modal) modal.classList.remove('modal-open');
 };
 
 window.saveBirthDate = () => {
@@ -356,8 +562,10 @@ window.saveBirthDate = () => {
 
 window.clearBirthDate = () => {
     deleteCookie('tamaben_birthdate');
-    document.getElementById('current-grade-badge').classList.add('hidden');
-    document.getElementById('user-grade-label').textContent = '未設定';
+    const badge = document.getElementById('current-grade-badge');
+    const label = document.getElementById('user-grade-label');
+    if(badge) badge.classList.add('hidden');
+    if(label) label.textContent = '未設定';
     currentUserGradeId = null;
     renderRecommendations();
     closeSettingsModal();
@@ -394,11 +602,11 @@ const fetchIpLocation = async () => {
 document.addEventListener('DOMContentLoaded', () => {
     const savedDate = getCookie('tamaben_birthdate');
     if (savedDate) {
-        document.getElementById('birthdate-input').value = savedDate;
+        const input = document.getElementById('birthdate-input');
+        if(input) input.value = savedDate;
         applyUserGrade(savedDate);
     }
     
-    renderHistory();
     updateSky();
     fetchIpLocation();
     fetchAndRender();
