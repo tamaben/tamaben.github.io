@@ -1,263 +1,464 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タマベン - 学びを、もっと自由に。</title>
+/* =====================================================================
+   🔧 設定・状態管理
+   ===================================================================== */
+let userLocation = { lat: 35.6895, lon: 139.6917, name: "東京" };
+let cachedData = [];
+let currentTab = 'elementary';
+let currentUserGradeId = null; 
+let currentDetailUnit = null;
+
+// クッキー操作
+const setCookie = (name, value, days) => {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+};
+
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+};
+
+const deleteCookie = (name) => {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+};
+
+/* =====================================================================
+   🎂 学年判定・誕生日チェック
+   ===================================================================== */
+const calculateGrade = (birthDateString) => {
+    if (!birthDateString) return null;
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    // 誕生日チェック
+    if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
+        if (!sessionStorage.getItem('birthday_celebrated')) {
+            triggerBirthdayMode();
+            sessionStorage.setItem('birthday_celebrated', 'true');
+        }
+    }
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative transition-colors duration-1000 overflow-x-hidden bg-slate-50">
+    let schoolYear = today.getFullYear();
+    if (today.getMonth() + 1 < 4) schoolYear -= 1;
 
-    <!-- 背景レイヤー -->
-    <div id="sky-background" class="fixed inset-0 -z-20 transition-colors duration-[3000ms]">
-        <div id="stars" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
-        <div id="clouds" class="absolute inset-0 opacity-80"></div>
-    </div>
+    let birthYear = birthDate.getFullYear();
+    if (birthDate.getMonth() + 1 < 4 || (birthDate.getMonth() + 1 === 4 && birthDate.getDate() === 1)) {
+        birthYear -= 1;
+    }
 
-    <!-- 誕生日演出 -->
-    <div id="birthday-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none opacity-0 transition-opacity duration-1000">
-        <div id="birthday-content" class="text-center text-white transform scale-0 transition-transform duration-700">
-            <div class="mb-6 animate-bounce">
-                <i data-lucide="cake" class="w-32 h-32 text-pink-300 drop-shadow-lg mx-auto"></i>
+    const ageInSchoolYears = schoolYear - birthYear;
+
+    if (ageInSchoolYears >= 6 && ageInSchoolYears <= 11) {
+        const grade = ageInSchoolYears - 5;
+        return { type: 'elementary', gradeId: `e${grade}`, label: `小学${grade}年生` };
+    } else if (ageInSchoolYears >= 12 && ageInSchoolYears <= 14) {
+        const grade = ageInSchoolYears - 11;
+        return { type: 'junior', gradeId: `j${grade}`, label: `中学${grade}年生` };
+    } else {
+        return { type: 'other', label: '対象外' };
+    }
+};
+
+const triggerBirthdayMode = () => {
+    const overlay = document.getElementById('birthday-overlay');
+    overlay.classList.add('active');
+    
+    if (window.confetti) {
+        const duration = 5000;
+        const end = Date.now() + duration;
+        (function frame() {
+            confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'] });
+            confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'] });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+    }
+};
+
+window.closeBirthdayMode = () => {
+    document.getElementById('birthday-overlay').classList.remove('active');
+};
+
+const renderRecommendations = () => {
+    if (!currentUserGradeId || cachedData.length === 0) {
+        document.getElementById('recommendation-section').classList.add('hidden');
+        return;
+    }
+
+    const currentMonth = new Date().getMonth() + 1;
+    document.getElementById('recommend-month').textContent = currentMonth;
+
+    const gradeData = cachedData.find(d => d.gradeId === currentUserGradeId);
+    if (!gradeData) return;
+
+    let recommendedUnits = [];
+    gradeData.subjects.forEach(subject => {
+        subject.units.forEach(unit => {
+            if (unit.months && unit.months.includes(currentMonth)) {
+                recommendedUnits.push({
+                    grade: gradeData.grade,
+                    subjectName: subject.name,
+                    color: subject.color,
+                    ...unit
+                });
+            }
+        });
+    });
+
+    const container = document.getElementById('recommendation-container');
+    if (recommendedUnits.length > 0) {
+        document.getElementById('recommendation-section').classList.remove('hidden');
+        container.innerHTML = recommendedUnits.map((unit, idx) => `
+            <div onclick='openDetail(${JSON.stringify(unit)})' class="flex items-center justify-between p-4 bg-white/80 rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all group cursor-pointer backdrop-blur-sm">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-10 h-10 rounded-xl bg-${unit.color}-100 flex-shrink-0 flex items-center justify-center text-${unit.color}-600 font-bold text-xs">
+                        ${unit.subjectName.substring(0,1)}
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 mb-0.5">おすすめ！</span>
+                        <span class="block text-sm font-bold text-slate-700 group-hover:text-emerald-700 truncate">${unit.title}</span>
+                    </div>
+                </div>
+                <i data-lucide="sparkles" class="w-4 h-4 text-yellow-400 flex-shrink-0"></i>
             </div>
-            <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 mb-4 drop-shadow-md filter">HAPPY BIRTHDAY!</h1>
-            <p class="text-xl md:text-2xl font-bold text-white/90 mb-8">今日はあなたが主役の特別な日。<br>素敵な1年になりますように！</p>
-            <button onclick="closeBirthdayMode()" class="pointer-events-auto px-8 py-4 bg-white text-pink-500 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform">ありがとう！</button>
-        </div>
-    </div>
+        `).join('');
+        lucide.createIcons();
+    } else {
+        document.getElementById('recommendation-section').classList.add('hidden');
+    }
+};
 
-    <!-- ヘッダー -->
-    <header class="sticky top-0 z-50 glass border-b border-white/20 transition-colors duration-500 shadow-sm">
-        <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
-            <button onclick="goHome()" class="flex items-center gap-3 group transition-transform active:scale-95">
-                <div class="relative">
-                    <div id="logo-glow" class="absolute inset-0 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
-                    <div class="relative bg-white/90 p-2 rounded-xl border border-white/50 shadow-sm">
-                        <div id="header-logo-wrapper" class="w-28 md:w-32 flex items-center justify-center">
-                             <!-- ロゴSVG -->
-                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto"><g transform="translate(-184.9,-165.975)"><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/><path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/><path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/><g stroke="#324738" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/><path d="M243.09,187.37l-7.14,-6.8"/><path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/><path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/><path d="M219.86,179.89l2.95,2.38"/><path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M266.6,177.77l-1.7,-3.1"/><path d="M267.9,173.77l1.7,3.1"/><path d="M280.34,177.53l-4.4,-4"/><path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/></g></g></svg>
+/* =====================================================================
+   🌞 空のグラデーション
+   ===================================================================== */
+const SEASONS = {
+    spring: { name: "春", colors: { primary: "bg-emerald-400", secondary: "bg-pink-300", accent: "text-pink-500", gradient: "from-pink-100 to-emerald-50", border: "border-pink-100" }, icon: "flower-2", particleColor: "text-pink-300" },
+    summer: { name: "夏", colors: { primary: "bg-emerald-500", secondary: "bg-sky-400", accent: "text-sky-500", gradient: "from-sky-100 to-emerald-50", border: "border-sky-100" }, icon: "sun", particleColor: "text-yellow-300" },
+    autumn: { name: "秋", colors: { primary: "bg-emerald-600", secondary: "bg-orange-400", accent: "text-orange-500", gradient: "from-orange-100 to-emerald-50", border: "border-orange-100" }, icon: "leaf", particleColor: "text-orange-300" },
+    winter: { name: "冬", colors: { primary: "bg-emerald-400", secondary: "bg-indigo-300", accent: "text-indigo-500", gradient: "from-indigo-50 to-emerald-50", border: "border-indigo-100" }, icon: "snowflake", particleColor: "text-sky-200" }
+};
+
+const TIME_THEMES = {
+    morning: { label: "おはよう！", icon: "sunrise", overlay: "bg-orange-100/30", isDark: false },
+    day: { label: "こんにちは！", icon: "sun", overlay: "bg-transparent", isDark: false },
+    evening: { label: "こんばんは。", icon: "sunset", overlay: "bg-indigo-900/20", isDark: false },
+    night: { label: "おつかれさま。", icon: "moon", overlay: "bg-slate-900/80", isDark: true }
+};
+
+const getSeason = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 5) return 'spring';
+    if (month >= 6 && month <= 8) return 'summer';
+    if (month >= 9 && month <= 11) return 'autumn';
+    return 'winter';
+};
+
+const getNaturalTimeOfDay = () => {
+    const now = new Date();
+    const times = SunCalc.getTimes(now, userLocation.lat, userLocation.lon);
+    if (now < times.dawn) return TIME_THEMES.night;
+    if (now >= times.dawn && now < times.goldenHourEnd) return TIME_THEMES.morning;
+    const oneHourBeforeSunset = new Date(times.sunset.getTime() - 60 * 60 * 1000);
+    if (now >= times.goldenHourEnd && now < oneHourBeforeSunset) return TIME_THEMES.day;
+    if (now >= oneHourBeforeSunset && now < times.dusk) return TIME_THEMES.evening;
+    return TIME_THEMES.night;
+};
+
+const updateSky = () => {
+    const now = new Date();
+    const times = SunCalc.getTimes(now, userLocation.lat, userLocation.lon);
+    const sky = document.getElementById('sky-background');
+    const stars = document.getElementById('stars');
+    
+    const gradients = {
+        night: "linear-gradient(to bottom, #0f172a, #1e293b)", 
+        dawn: "linear-gradient(to bottom, #312e81, #f472b6, #fbbf24)", 
+        day: "linear-gradient(to bottom, #38bdf8, #bae6fd, #e0f2fe)", 
+        dusk: "linear-gradient(to bottom, #1e3a8a, #c026d3, #f97316)", 
+    };
+
+    let currentGradient = gradients.night;
+    let starOpacity = 1;
+    let seasonName = "冬";
+    let seasonIcon = "snowflake";
+
+    const month = now.getMonth() + 1;
+    if (month >= 3 && month <= 5) { seasonName = "春"; seasonIcon = "flower-2"; }
+    else if (month >= 6 && month <= 8) { seasonName = "夏"; seasonIcon = "sun"; }
+    else if (month >= 9 && month <= 11) { seasonName = "秋"; seasonIcon = "leaf"; }
+
+    if (now < times.nightEnd) { currentGradient = gradients.night; starOpacity = 1; }
+    else if (now < times.goldenHourEnd) { currentGradient = gradients.dawn; starOpacity = 0; }
+    else if (now < times.goldenHour) { currentGradient = gradients.day; starOpacity = 0; }
+    else if (now < times.night) { currentGradient = gradients.dusk; starOpacity = 0.3; }
+    else { currentGradient = gradients.night; starOpacity = 1; }
+
+    sky.style.background = currentGradient;
+    stars.style.opacity = starOpacity;
+    
+    document.getElementById('season-name').textContent = seasonName;
+    document.getElementById('main-season-icon').setAttribute('data-lucide', seasonIcon);
+    
+    const seasonKey = getSeason();
+    const season = SEASONS[seasonKey];
+    const colors = season.colors;
+    const time = getNaturalTimeOfDay();
+
+    document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/30 backdrop-blur-sm`;
+    document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
+    // SVGはHTMLに直接埋め込んだため、JSでの注入処理は削除
+
+    document.getElementById('time-text').textContent = time.label;
+    document.getElementById('time-icon').setAttribute('data-lucide', time.icon);
+    const badgeClass = time.isDark 
+        ? 'text-yellow-200 bg-slate-800 border-slate-700' 
+        : 'text-slate-600 border-slate-200 bg-white/60';
+    document.getElementById('time-badge').className = `hidden md:flex px-4 py-2 rounded-full border text-xs font-bold items-center gap-2 backdrop-blur-sm shadow-sm transition-all duration-500 ${badgeClass}`;
+
+    const particlesContainer = document.getElementById('particles-container');
+    const currentPhaseState = `${seasonKey}-${time.isDark ? 'night' : 'day'}`;
+    if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-state') !== currentPhaseState) {
+        particlesContainer.innerHTML = '';
+        particlesContainer.setAttribute('data-state', currentPhaseState);
+        let particlesHtml = '';
+        const pCount = time.isDark ? 20 : 12;
+        for(let i=0; i<pCount; i++) {
+            const left = Math.random() * 100;
+            const isFall = seasonKey === 'autumn' || seasonKey === 'winter';
+            const top = isFall ? '-10vh' : '110vh';
+            const animName = isFall ? 'float-down' : 'float-up';
+            const dur = 10 + Math.random() * 15;
+            const dly = Math.random() * 10;
+            const size = 15 + Math.random() * 25;
+            const pColor = time.isDark ? 'text-white opacity-40' : season.particleColor;
+            particlesHtml += `<div class="particle ${pColor}" style="left:${left}%; top:${top}; animation:${animName} ${dur}s ${dly}s infinite; width:${size}px; height:${size}px;">${getParticleSvg(seasonKey, time.isDark)}</div>`;
+        }
+        particlesContainer.innerHTML = particlesHtml;
+    }
+
+    lucide.createIcons();
+};
+
+const getParticleSvg = (seasonKey, isNight) => {
+    if (isNight) return '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />';
+    const shapes = {
+        "spring": '<path d="M12,2 C12,2 14,5 17,6 C20,7 22,10 21,13 C20,16 17,17 15,16 C13,15.5 12,14 12,14 C12,14 11,15.5 9,16 C7,17 4,16 3,13 C2,10 4,7 7,6 C10,5 12,2 12,2 Z" fill="currentColor"/>',
+        "summer": '<circle cx="12" cy="12" r="6" fill="currentColor"/> <path d="M12,2 L12,4 M12,20 L12,22 M4.93,4.93 L6.34,6.34 M17.66,17.66 L19.07,19.07 M2,12 L4,12 M20,12 L22,12 M4.93,19.07 L6.34,17.66 M17.66,6.34 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" />',
+        "autumn": '<path d="M12,2 L14,8 L20,6 L17,11 L22,14 L16,16 L15,22 L12,18 L9,22 L8,16 L2,14 L7,11 L4,6 L10,8 L12,2 Z" fill="currentColor"/>',
+        "winter": '<path d="M12,2 L12,22 M2,12 L22,12 M4.93,4.93 L19.07,19.07 M4.93,19.07 L19.07,4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+    };
+    return `<svg viewBox="0 0 24 24" class="w-full h-full">${shapes[seasonKey] || shapes.spring}</svg>`;
+};
+
+/* =====================================================================
+   🖥️ データ取得・描画 (堅牢化)
+   ===================================================================== */
+const fetchAndRender = async () => {
+    const statusEl = document.getElementById('data-load-status');
+    
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('Load failed');
+        cachedData = await response.json();
+        if(statusEl) statusEl.textContent = "読み込み完了";
+    } catch (error) {
+        console.error("Load Error:", error);
+        if(statusEl) statusEl.textContent = "データ読み込みエラー: " + error.message;
+    }
+    
+    renderMaterials();
+    renderRecommendations();
+};
+
+const renderMaterials = () => {
+    const container = document.getElementById('learning-materials-container');
+    if (!container) return;
+    
+    const filteredData = cachedData.filter(d => {
+        if(currentTab === 'elementary') return d.gradeId.startsWith('e');
+        if(currentTab === 'junior') return d.gradeId.startsWith('j');
+        return false;
+    });
+
+    container.innerHTML = filteredData.map(data => {
+        if (!data.subjects || data.subjects.length === 0) return '';
+
+        const subjectsHtml = data.subjects.map(sub => {
+            const colorMap = {
+                lime: { bg: "bg-lime-100", text: "text-lime-700", iconBg: "bg-lime-500" },
+                rose: { bg: "bg-rose-100", text: "text-rose-700", iconBg: "bg-rose-500" },
+                violet: { bg: "bg-violet-100", text: "text-violet-700", iconBg: "bg-violet-500" },
+                emerald: { bg: "bg-emerald-100", text: "text-emerald-700", iconBg: "bg-emerald-500" },
+                amber: { bg: "bg-amber-100", text: "text-amber-700", iconBg: "bg-amber-500" },
+                blue: { bg: "bg-blue-100", text: "text-blue-700", iconBg: "bg-blue-500" },
+            };
+            const theme = colorMap[sub.color] || colorMap.lime;
+
+            const unitsList = sub.units.map(unit => {
+                const unitData = {
+                    grade: data.grade,
+                    subjectName: sub.name,
+                    color: sub.color,
+                    ...unit
+                };
+                return `
+                <div onclick='openDetail(${JSON.stringify(unitData)})' class="block p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200 cursor-pointer">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 group-hover:text-emerald-600 transition-colors line-clamp-1">${unit.title}</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-emerald-500"></i>
+                    </div>
+                </div>
+            `}).join('');
+
+            return `
+                <div class="mb-6 last:mb-0">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-lg ${theme.iconBg} flex items-center justify-center text-white shadow-sm">
+                            <i data-lucide="${sub.icon}" width="16" height="16"></i>
                         </div>
+                        <h4 class="font-bold text-slate-700">${sub.name}</h4>
+                    </div>
+                    <div class="space-y-1">
+                        ${unitsList}
                     </div>
                 </div>
-            </button>
+            `;
+        }).join('');
 
-            <div class="flex items-center gap-3">
-                <button onclick="openSettingsModal()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-white/60 shadow-sm hover:bg-white hover:shadow-md transition-all group">
-                    <div class="bg-emerald-100 text-emerald-600 p-1 rounded-full">
-                        <i data-lucide="user-cog" class="w-4 h-4"></i>
-                    </div>
-                    <span class="text-xs font-bold text-slate-600 hidden md:inline">設定</span>
-                </button>
-                <div id="current-grade-badge" class="hidden md:flex px-4 py-2 rounded-full border border-emerald-200 bg-emerald-50/90 text-emerald-700 text-xs font-bold items-center gap-2 shadow-sm">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    <span id="user-grade-label"></span>
+        return `
+            <div class="glass-card rounded-[2rem] p-6 md:p-8 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border border-white/60 bg-white/90">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-200 to-slate-100"></div>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">${data.grade}</h3>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500">
+                        ${data.subjects.reduce((acc, curr) => acc + curr.units.length, 0)} 単元
+                    </span>
                 </div>
+                <div>${subjectsHtml}</div>
             </div>
-        </div>
-    </header>
+        `;
+    }).join('');
+    
+    lucide.createIcons();
+};
 
-    <!-- メインコンテンツ -->
-    <main class="container mx-auto px-4 py-8 pb-32 relative z-10 max-w-6xl">
+/* =====================================================================
+   🛠️ UI操作・詳細ページ
+   ===================================================================== */
+window.openDetail = (unitData) => {
+    currentDetailUnit = unitData;
+    document.getElementById('detail-title').textContent = unitData.title;
+    document.getElementById('detail-grade').textContent = unitData.grade;
+    document.getElementById('detail-subject').textContent = unitData.subjectName;
+    
+    const colorMap = { lime: '#84cc16', rose: '#f43f5e', violet: '#8b5cf6', emerald: '#10b981', amber: '#f59e0b', blue: '#3b82f6' };
+    document.getElementById('detail-header').style.backgroundColor = colorMap[unitData.color] || '#10b981';
+
+    document.getElementById('view-home').classList.add('hidden');
+    document.getElementById('view-detail').classList.remove('hidden');
+    window.scrollTo(0,0);
+};
+
+window.goHome = () => {
+    document.getElementById('view-detail').classList.add('hidden');
+    document.getElementById('view-home').classList.remove('hidden');
+    window.scrollTo(0,0);
+};
+
+window.openPdf = (type) => {
+    if(!currentDetailUnit) return;
+    let url;
+    if (type === 'basic') url = currentDetailUnit.pdfBasic;
+    else if (type === 'advanced') url = currentDetailUnit.pdfAdv;
+    else if (type === 'answer') url = currentDetailUnit.pdfAnswer;
+
+    if(url && url !== '#') {
+        window.open(url, '_blank');
+    } else {
+        alert('PDFは準備中です');
+    }
+};
+
+window.switchTab = (tab) => {
+    currentTab = tab;
+    const elBtn = document.getElementById('tab-elementary');
+    const juBtn = document.getElementById('tab-junior');
+    if(elBtn && juBtn) {
+        elBtn.className = tab === 'elementary' ? "tab-active px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
+        juBtn.className = tab === 'junior' ? "tab-active px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
+    }
+    renderMaterials();
+};
+
+window.openSettingsModal = () => {
+    document.getElementById('settings-modal').classList.add('modal-open');
+};
+window.closeSettingsModal = () => {
+    document.getElementById('settings-modal').classList.remove('modal-open');
+};
+
+window.saveBirthDate = () => {
+    const dateVal = document.getElementById('birthdate-input').value;
+    if (!dateVal) return;
+    setCookie('tamaben_birthdate', dateVal, 365);
+    applyUserGrade(dateVal);
+    closeSettingsModal();
+    renderRecommendations();
+};
+
+window.clearBirthDate = () => {
+    deleteCookie('tamaben_birthdate');
+    const badge = document.getElementById('current-grade-badge');
+    const label = document.getElementById('user-grade-label');
+    if(badge) badge.classList.add('hidden');
+    if(label) label.textContent = '未設定';
+    currentUserGradeId = null;
+    renderRecommendations();
+    closeSettingsModal();
+    alert("設定を削除しました");
+};
+
+const applyUserGrade = (dateStr) => {
+    const result = calculateGrade(dateStr);
+    if (result) {
+        const badge = document.getElementById('current-grade-badge');
+        const label = document.getElementById('user-grade-label');
+        if(badge) badge.classList.remove('hidden');
+        if(label) label.textContent = result.label;
         
-        <!-- === 1. ホーム画面 === -->
-        <div id="view-home" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            <!-- ヒーローセクション -->
-            <section id="hero-section" class="relative rounded-[2.5rem] overflow-hidden shadow-2xl text-white p-8 md:p-16 text-center md:text-left transition-all duration-1000 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 border-4 border-white/20 backdrop-blur-md">
-                <div class="relative z-10 max-w-2xl">
-                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold mb-6 border border-white/40 shadow-inner">
-                        <i data-lucide="sparkles" class="text-yellow-200 w-3 h-3"></i> 
-                        <span id="season-name"></span>の空の下で
-                    </div>
-                    <h1 class="text-3xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight tracking-tight drop-shadow-md">
-                        寄り添う、<br class="md:hidden"/>やさしい学び。
-                    </h1>
-                    <p class="text-white/90 font-bold text-sm md:text-lg mb-0 leading-relaxed drop-shadow-sm">
-                        ひとりひとりのペースを大切に。<br>今日も、新しい発見を見つけにいこう。
-                    </p>
-                </div>
-                <div class="relative w-40 h-40 md:w-56 md:h-56 flex-shrink-0">
-                    <div class="w-full h-full bg-white/20 backdrop-blur-md rounded-[2.5rem] rotate-3 flex items-center justify-center border-4 border-white/40 shadow-2xl animate-float-up">
-                        <i id="main-season-icon" class="text-white w-20 h-20 md:w-28 md:h-28 drop-shadow-lg filter"></i>
-                    </div>
-                </div>
-            </section>
+        if (result.type === 'elementary' || result.type === 'junior') {
+            switchTab(result.type);
+            currentUserGradeId = result.gradeId;
+        }
+        lucide.createIcons();
+    }
+};
 
-            <!-- おすすめ (学年設定済みなら表示) -->
-            <div id="recommendation-section" class="hidden mb-16 animate-in slide-in-from-bottom-4 duration-700">
-                <div class="flex items-center gap-3 mb-6 pl-2 border-l-4 border-orange-400">
-                    <h3 class="text-xl font-bold text-slate-700">今の時期のおすすめ (<span id="recommend-month"></span>月)</h3>
-                </div>
-                <div id="recommendation-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
+// IPロケーション
+const fetchIpLocation = async () => {
+    try {
+        const response = await fetch('https://ipwho.is/');
+        const data = await response.json();
+        if(data.success) userLocation = { lat: data.latitude, lon: data.longitude, name: data.city };
+        updateSky();
+    } catch (e) { console.log("Location Default"); }
+};
 
-            <!-- 学年切り替えタブ -->
-            <div class="flex justify-center mb-8 sticky top-20 z-40">
-                <div class="inline-flex bg-white/80 p-1.5 rounded-2xl backdrop-blur-xl border border-white/60 shadow-lg">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2">
-                        <i data-lucide="sun" class="w-4 h-4"></i> 小学生
-                    </button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2">
-                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> 中学生
-                    </button>
-                </div>
-            </div>
+// 初期化
+document.addEventListener('DOMContentLoaded', () => {
+    // ロゴ生成はHTML側で対応済み
+    
+    const savedDate = getCookie('tamaben_birthdate');
+    if (savedDate) {
+        document.getElementById('birthdate-input').value = savedDate;
+        applyUserGrade(savedDate);
+    }
 
-            <!-- 教材リストエリア -->
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
-                <div class="col-span-full text-center py-20 bg-white/50 rounded-[2rem] border border-white/60">
-                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-emerald-400 border-t-transparent"></div>
-                    <p class="mt-4 text-slate-500 font-bold text-lg">データを読み込んでいます...</p>
-                    <p id="data-load-status" class="text-xs text-slate-400 mt-2"></p>
-                </div>
-            </div>
-
-            <!-- チームメッセージ & 注意書き -->
-            <section class="glass-card rounded-[2.5rem] p-8 md:p-12 border-4 border-white/60 shadow-xl bg-white/90 backdrop-blur-xl text-center max-w-4xl mx-auto">
-                <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-200 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
-                    <i data-lucide="heart-handshake" class="w-8 h-8"></i>
-                </div>
-                <h2 class="text-2xl font-black text-slate-800 mb-6">タマベンチームより</h2>
-                <p class="text-slate-600 font-medium leading-relaxed text-base mb-8">
-                    このサイトは、趣味で活動している個人が運営しています。<br>
-                    「もっと楽しく、もっと自由に学びたい」という想いで作成しました。<br>
-                    もし教材に不備や間違いがございましたら、お手数ですがお問い合わせよりご連絡いただけますと幸いです。
-                </p>
-                <a href="mailto:support@example.com" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-colors text-sm">
-                    <i data-lucide="mail" class="w-4 h-4"></i> お問い合わせはこちら
-                </a>
-            </section>
-
-        </div>
-
-        <!-- === 2. 詳細ページ === -->
-        <div id="view-detail" class="hidden animate-in slide-in-from-right-8 duration-500">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="goHome()" class="flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-bold bg-white/80 px-5 py-3 rounded-full hover:bg-white transition-all shadow-sm border border-white">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i> 一覧にもどる
-                </button>
-            </div>
-
-            <div class="glass-card rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl bg-white">
-                <!-- ヘッダー -->
-                <div id="detail-header" class="p-10 md:p-14 text-center relative overflow-hidden text-white bg-emerald-500 transition-colors duration-500">
-                    <div class="relative z-10">
-                        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur border border-white/40 px-4 py-1.5 rounded-full text-xs font-bold mb-4 shadow-sm">
-                            <span id="detail-grade"></span> <span id="detail-subject"></span>
-                        </div>
-                        <h1 id="detail-title" class="text-3xl md:text-4xl font-black mb-2 drop-shadow-sm"></h1>
-                        <p class="text-white/90 font-bold text-sm opacity-90">じっくり取り組んでみよう</p>
-                    </div>
-                    <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-                </div>
-
-                <!-- PDF選択エリア -->
-                <div class="p-8 md:p-12 bg-slate-50/50">
-                    <div class="grid md:grid-cols-2 gap-6 mb-8">
-                        <!-- 基本 (お子様用) -->
-                        <div class="bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all border-2 border-slate-100 hover:border-emerald-400 group cursor-pointer h-full flex flex-col items-center text-center" onclick="openPdf('basic')">
-                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 font-black text-[10px] mb-4 tracking-wider">LEVEL 1</span>
-                            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-4 group-hover:text-emerald-500 group-hover:bg-emerald-50 transition-colors">
-                                <i data-lucide="file-text" class="w-8 h-8"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-700 mb-1">基本問題</h3>
-                            <p class="text-xs text-slate-400 font-bold mb-6">まずはここからスタート！</p>
-                            <span class="w-full py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-sm">開く</span>
-                        </div>
-
-                        <!-- 応用 (お子様用) -->
-                        <div class="bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all border-2 border-slate-100 hover:border-orange-400 group cursor-pointer h-full flex flex-col items-center text-center" onclick="openPdf('advanced')">
-                            <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-600 font-black text-[10px] mb-4 tracking-wider">LEVEL 2</span>
-                            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-4 group-hover:text-orange-500 group-hover:bg-orange-50 transition-colors">
-                                <i data-lucide="file-bar-chart-2" class="w-8 h-8"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-700 mb-1">応用問題</h3>
-                            <p class="text-xs text-slate-400 font-bold mb-6">ちょっと難しい問題に挑戦</p>
-                            <span class="w-full py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm group-hover:bg-orange-500 group-hover:text-white transition-all shadow-sm">挑戦する</span>
-                        </div>
-                    </div>
-
-                    <!-- 保護者用 -->
-                    <div class="bg-blue-50/50 rounded-[2rem] p-6 border border-blue-100 text-center">
-                        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div class="text-left flex items-center gap-4">
-                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-blue-500 shadow-sm border border-blue-50">
-                                    <i data-lucide="users" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-blue-900">保護者・先生方へ</h3>
-                                    <p class="text-xs text-blue-600 font-bold mt-0.5">解答・解説と指導のポイントはこちら</p>
-                                </div>
-                            </div>
-                            <button onclick="openPdf('answer')" class="px-6 py-3 bg-white hover:bg-blue-500 hover:text-white text-blue-600 border-2 border-blue-200 hover:border-blue-500 rounded-xl font-bold transition-all active:scale-95 flex items-center gap-2 text-sm">
-                                <i data-lucide="file-check" class="w-4 h-4"></i> 指導用プリント
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- 設定モーダル -->
-    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 border border-white/50" id="settings-modal-content">
-            <div class="flex justify-end">
-                <button onclick="closeSettingsModal()" class="p-2 rounded-full hover:bg-slate-100 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-                </button>
-            </div>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-500 border-4 border-emerald-100">
-                    <i data-lucide="baby" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-black text-slate-800">学年の設定</h3>
-                <p class="text-xs text-slate-500 mt-2 font-bold">お子様の生年月日を登録すると<br>おすすめ教材が表示されます</p>
-            </div>
-            <div class="space-y-6">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                    <label class="block text-xs font-bold text-emerald-600 mb-2 flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-3 h-3"></i> 生年月日
-                    </label>
-                    <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-200 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 outline-none font-bold text-slate-700 text-center transition-all" />
-                </div>
-                <button onclick="saveBirthDate()" class="w-full py-3.5 rounded-xl font-bold text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
-                    <i data-lucide="check" class="w-4 h-4"></i> 保存して閉じる
-                </button>
-                <div class="pt-4 border-t border-slate-100 text-center">
-                    <button onclick="clearBirthDate()" class="text-xs text-slate-400 hover:text-red-400 font-bold transition-colors flex items-center justify-center gap-1 mx-auto">
-                        <i data-lucide="trash-2" class="w-3 h-3"></i> 設定を削除する
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- フッター -->
-    <footer class="glass border-t border-white/20 py-12 relative overflow-hidden mt-20">
-        <div class="container mx-auto px-4 text-center">
-            <div class="inline-flex items-center gap-2 mb-6 opacity-50 grayscale">
-                 <div id="footer-logo-wrapper" class="w-24"></div>
-            </div>
-            <p class="text-xs text-slate-400 font-bold">
-                &copy; 2025 Tamaben. All Rights Reserved.
-            </p>
-        </div>
-    </footer>
-
-    <!-- 外部スクリプト -->
-    <script src="script.js"></script>
-</body>
-</html>
+    updateSky();
+    fetchIpLocation();
+    fetchAndRender();
+    setInterval(updateSky, 60000);
+});
