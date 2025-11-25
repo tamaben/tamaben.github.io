@@ -1,4 +1,23 @@
 /* =====================================================================
+   📚 バックアップ用データ (JSON読み込み失敗時に使用)
+   ===================================================================== */
+const BACKUP_DATA = [
+    // ... (data.json と同じ内容をここに書いておくと、JSONがなくても動きます) ...
+    // ※長くなるため、運用時は data.json の中身をここにコピー＆ペーストすることを推奨します。
+    // 今回は空配列ではなく、最低限のダミーデータを入れておきます。
+    {
+      "grade": "小学1年生", "gradeId": "e1", "subjects": [
+        { "name": "算数", "color": "lime", "icon": "calculator", "units": [{ "title": "かずとすうじ", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }] }
+      ]
+    },
+    {
+      "grade": "中学1年生", "gradeId": "j1", "subjects": [
+        { "name": "数学", "color": "lime", "icon": "sigma", "units": [{ "title": "正の数・負の数", "pdfBasic": "#", "pdfAdv": "#", "pdfAnswer": "#", "months": [4, 5] }] }
+      ]
+    }
+];
+
+/* =====================================================================
    🔧 設定・状態管理
    ===================================================================== */
 let userLocation = { lat: 35.6895, lon: 139.6917, name: "東京" };
@@ -65,7 +84,7 @@ const calculateGrade = (birthDateString) => {
 
 const triggerBirthdayMode = () => {
     const overlay = document.getElementById('birthday-overlay');
-    overlay.classList.add('active');
+    if (overlay) overlay.classList.add('active');
     
     if (window.confetti) {
         const duration = 5000;
@@ -79,42 +98,50 @@ const triggerBirthdayMode = () => {
 };
 
 window.closeBirthdayMode = () => {
-    document.getElementById('birthday-overlay').classList.remove('active');
+    const overlay = document.getElementById('birthday-overlay');
+    if (overlay) overlay.classList.remove('active');
 };
 
 const renderRecommendations = () => {
+    const section = document.getElementById('recommendation-section');
+    const container = document.getElementById('recommendation-container');
+    
     if (!currentUserGradeId || cachedData.length === 0) {
-        document.getElementById('recommendation-section').classList.add('hidden');
+        if (section) section.classList.add('hidden');
         return;
     }
 
     const currentMonth = new Date().getMonth() + 1;
-    document.getElementById('recommend-month').textContent = currentMonth;
+    const monthEl = document.getElementById('recommend-month');
+    if (monthEl) monthEl.textContent = currentMonth;
 
     const gradeData = cachedData.find(d => d.gradeId === currentUserGradeId);
     if (!gradeData) return;
 
     let recommendedUnits = [];
-    gradeData.subjects.forEach(subject => {
-        subject.units.forEach(unit => {
-            if (unit.months && unit.months.includes(currentMonth)) {
-                recommendedUnits.push({
-                    grade: gradeData.grade,
-                    subjectName: subject.name,
-                    color: subject.color,
-                    ...unit
+    if (gradeData.subjects) {
+        gradeData.subjects.forEach(subject => {
+            if (subject.units) {
+                subject.units.forEach(unit => {
+                    if (unit.months && unit.months.includes(currentMonth)) {
+                        recommendedUnits.push({
+                            grade: gradeData.grade,
+                            subjectName: subject.name,
+                            color: subject.color,
+                            ...unit
+                        });
+                    }
                 });
             }
         });
-    });
+    }
 
-    const container = document.getElementById('recommendation-container');
-    if (recommendedUnits.length > 0) {
-        document.getElementById('recommendation-section').classList.remove('hidden');
+    if (recommendedUnits.length > 0 && container) {
+        if (section) section.classList.remove('hidden');
         container.innerHTML = recommendedUnits.map((unit, idx) => `
             <div onclick='openDetail(${JSON.stringify(unit)})' class="flex items-center justify-between p-4 bg-white/80 rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all group cursor-pointer backdrop-blur-sm">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-10 h-10 rounded-xl bg-${unit.color}-100 flex-shrink-0 flex items-center justify-center text-${unit.color}-600 font-bold text-xs">
+                    <div class="w-10 h-10 rounded-xl bg-${unit.color || 'lime'}-100 flex-shrink-0 flex items-center justify-center text-${unit.color || 'lime'}-600 font-bold text-xs">
                         ${unit.subjectName.substring(0,1)}
                     </div>
                     <div>
@@ -127,7 +154,7 @@ const renderRecommendations = () => {
         `).join('');
         lucide.createIcons();
     } else {
-        document.getElementById('recommendation-section').classList.add('hidden');
+        if (section) section.classList.add('hidden');
     }
 };
 
@@ -196,61 +223,60 @@ const updateSky = () => {
     else if (now < times.night) { currentGradient = gradients.dusk; starOpacity = 0.3; }
     else { currentGradient = gradients.night; starOpacity = 1; }
 
-    sky.style.background = currentGradient;
-    stars.style.opacity = starOpacity;
+    if (sky) sky.style.background = currentGradient;
+    if (stars) stars.style.opacity = starOpacity;
     
-    document.getElementById('season-name').textContent = seasonName;
-    document.getElementById('main-season-icon').setAttribute('data-lucide', seasonIcon);
+    const sn = document.getElementById('season-name');
+    if (sn) sn.textContent = seasonName;
+    const mi = document.getElementById('main-season-icon');
+    if (mi) mi.setAttribute('data-lucide', seasonIcon);
     
     const seasonKey = getSeason();
     const season = SEASONS[seasonKey];
     const colors = season.colors;
     const time = getNaturalTimeOfDay();
 
-    document.getElementById('hero-section').className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/30 backdrop-blur-sm`;
-    document.getElementById('logo-glow').className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
+    const hero = document.getElementById('hero-section');
+    if (hero) hero.className = `relative rounded-[3rem] overflow-hidden ${time.isDark ? 'bg-slate-800' : colors.secondary} shadow-xl shadow-emerald-900/10 text-white p-8 md:p-16 text-center md:text-left transition-colors duration-700 mb-20 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/30 backdrop-blur-sm`;
     
-    // ロゴ生成 (関数経由)
-    const logoSvg = getTamabenLogo(time.isDark);
-    document.getElementById('header-logo-wrapper').innerHTML = logoSvg;
-    document.getElementById('footer-logo-wrapper').innerHTML = logoSvg;
+    const glow = document.getElementById('logo-glow');
+    if (glow) glow.className = `absolute inset-0 ${colors.primary} rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity`;
 
-    // 時間帯表示
-    // document.getElementById('time-text').textContent = time.label;
-    // document.getElementById('time-icon').setAttribute('data-lucide', time.icon);
-    // const badgeClass = time.isDark ? 'text-yellow-200 bg-slate-800 border-slate-700' : 'text-slate-600 border-slate-200 bg-white/60';
-    // document.getElementById('time-badge').className = `hidden md:flex px-4 py-2 rounded-full border text-xs font-bold items-center gap-2 backdrop-blur-sm shadow-sm transition-all duration-500 ${badgeClass}`;
+    const timeText = document.getElementById('time-text');
+    if (timeText) timeText.textContent = time.label;
+    const timeIcon = document.getElementById('time-icon');
+    if (timeIcon) timeIcon.setAttribute('data-lucide', time.icon);
+    
+    const badgeClass = time.isDark 
+        ? 'text-yellow-200 bg-slate-800 border-slate-700' 
+        : 'text-slate-600 border-slate-200 bg-white/60';
+    const timeBadge = document.getElementById('time-badge');
+    if (timeBadge) timeBadge.className = `hidden md:flex px-4 py-2 rounded-full border text-xs font-bold items-center gap-2 backdrop-blur-sm shadow-sm transition-all duration-500 ${badgeClass}`;
 
     const particlesContainer = document.getElementById('particles-container');
-    const currentPhaseState = `${seasonKey}-${time.isDark ? 'night' : 'day'}`;
-    if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-state') !== currentPhaseState) {
-        particlesContainer.innerHTML = '';
-        particlesContainer.setAttribute('data-state', currentPhaseState);
-        let particlesHtml = '';
-        const pCount = time.isDark ? 20 : 12;
-        for(let i=0; i<pCount; i++) {
-            const left = Math.random() * 100;
-            const isFall = seasonKey === 'autumn' || seasonKey === 'winter';
-            const top = isFall ? '-10vh' : '110vh';
-            const animName = isFall ? 'float-down' : 'float-up';
-            const dur = 10 + Math.random() * 15;
-            const dly = Math.random() * 10;
-            const size = 15 + Math.random() * 25;
-            const pColor = time.isDark ? 'text-white opacity-40' : season.particleColor;
-            particlesHtml += `<div class="particle ${pColor}" style="left:${left}%; top:${top}; animation:${animName} ${dur}s ${dly}s infinite; width:${size}px; height:${size}px;">${getParticleSvg(seasonKey, time.isDark)}</div>`;
+    if (particlesContainer) {
+        const currentPhaseState = `${seasonKey}-${time.isDark ? 'night' : 'day'}`;
+        if (!particlesContainer.hasChildNodes() || particlesContainer.getAttribute('data-state') !== currentPhaseState) {
+            particlesContainer.innerHTML = '';
+            particlesContainer.setAttribute('data-state', currentPhaseState);
+            let particlesHtml = '';
+            const pCount = time.isDark ? 20 : 12;
+            for(let i=0; i<pCount; i++) {
+                const left = Math.random() * 100;
+                const isFall = seasonKey === 'autumn' || seasonKey === 'winter';
+                const top = isFall ? '-10vh' : '110vh';
+                const animName = isFall ? 'float-down' : 'float-up';
+                const dur = 10 + Math.random() * 15;
+                const dly = Math.random() * 10;
+                const size = 15 + Math.random() * 25;
+                const pColor = time.isDark ? 'text-white opacity-40' : season.particleColor;
+                particlesHtml += `<div class="particle ${pColor}" style="left:${left}%; top:${top}; animation:${animName} ${dur}s ${dly}s infinite; width:${size}px; height:${size}px;">${getParticleSvg(seasonKey, time.isDark)}</div>`;
+            }
+            particlesContainer.innerHTML = particlesHtml;
         }
-        particlesContainer.innerHTML = particlesHtml;
     }
 
     lucide.createIcons();
-};
-
-/* =====================================================================
-   🎨 SVGジェネレーター
-   ===================================================================== */
-const getTamabenLogo = (isDark) => {
-    const strokeColor = isDark ? "#ffffff" : "#324738"; 
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="w-full h-auto"><g transform="translate(-184.9,-165.975)"><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"/><path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"/><path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"/><path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"/><path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"/><g stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"/><path d="M243.09,187.37l-7.14,-6.8"/><path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"/><path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"/><path d="M219.86,179.89l2.95,2.38"/><path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"/><path d="M266.6,177.77l-1.7,-3.1"/><path d="M267.9,173.77l1.7,3.1"/><path d="M280.34,177.53l-4.4,-4"/><path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"/></g></g></svg>`;
 };
 
 const getParticleSvg = (seasonKey, isNight) => {
@@ -265,32 +291,30 @@ const getParticleSvg = (seasonKey, isNight) => {
 };
 
 /* =====================================================================
-   🖥️ データ取得・描画
+   🖥️ データ取得・描画 (堅牢化)
    ===================================================================== */
 const fetchAndRender = async () => {
     const statusEl = document.getElementById('data-load-status');
-    if(cachedData.length === 0) {
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error('Load failed');
-            cachedData = await response.json();
-            if(statusEl) statusEl.textContent = "読み込み完了";
-        } catch (error) {
-            console.error("Load Error:", error);
-            if(statusEl) statusEl.textContent = "データ読み込みエラー: " + error.message;
-            // data.js がある場合はそちらを使う（今回の場合は変数は使わない想定だが安全策として）
-            if (typeof LEARNING_DATA !== 'undefined') {
-                cachedData = LEARNING_DATA;
-                if(statusEl) statusEl.textContent = "バックアップデータを使用中";
-            }
-        }
+    
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('Load failed');
+        cachedData = await response.json();
+        if(statusEl) statusEl.textContent = "読み込み完了";
+    } catch (error) {
+        console.warn("JSON fetch failed, using backup data.");
+        if(statusEl) statusEl.textContent = "オフラインモードで起動中";
+        // JSON読み込み失敗時はバックアップデータを使用
+        cachedData = BACKUP_DATA;
     }
+    
     renderMaterials();
     renderRecommendations();
 };
 
 const renderMaterials = () => {
     const container = document.getElementById('learning-materials-container');
+    if (!container) return;
     
     const filteredData = cachedData.filter(d => {
         if(currentTab === 'elementary') return d.gradeId.startsWith('e');
@@ -399,8 +423,12 @@ window.openPdf = (type) => {
 
 window.switchTab = (tab) => {
     currentTab = tab;
-    document.getElementById('tab-elementary').className = tab === 'elementary' ? "tab-active px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
-    document.getElementById('tab-junior').className = tab === 'junior' ? "tab-active px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
+    const elBtn = document.getElementById('tab-elementary');
+    const juBtn = document.getElementById('tab-junior');
+    if(elBtn && juBtn) {
+        elBtn.className = tab === 'elementary' ? "tab-active px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
+        juBtn.className = tab === 'junior' ? "tab-active px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2" : "tab-inactive px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2";
+    }
     renderMaterials();
 };
 
@@ -422,8 +450,10 @@ window.saveBirthDate = () => {
 
 window.clearBirthDate = () => {
     deleteCookie('tamaben_birthdate');
-    document.getElementById('current-grade-badge').classList.add('hidden');
-    document.getElementById('user-grade-label').textContent = '未設定';
+    const badge = document.getElementById('current-grade-badge');
+    const label = document.getElementById('user-grade-label');
+    if(badge) badge.classList.add('hidden');
+    if(label) label.textContent = '未設定';
     currentUserGradeId = null;
     renderRecommendations();
     closeSettingsModal();
@@ -435,8 +465,8 @@ const applyUserGrade = (dateStr) => {
     if (result) {
         const badge = document.getElementById('current-grade-badge');
         const label = document.getElementById('user-grade-label');
-        badge.classList.remove('hidden');
-        label.textContent = result.label;
+        if(badge) badge.classList.remove('hidden');
+        if(label) label.textContent = result.label;
         
         if (result.type === 'elementary' || result.type === 'junior') {
             switchTab(result.type);
@@ -458,6 +488,8 @@ const fetchIpLocation = async () => {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
+    // ロゴ生成はHTML側で対応済み
+    
     const savedDate = getCookie('tamaben_birthdate');
     if (savedDate) {
         document.getElementById('birthdate-input').value = savedDate;
