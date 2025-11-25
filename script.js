@@ -267,6 +267,11 @@ const fetchAndRender = async () => {
     } catch (error) {
         console.error("Load Error:", error);
         if(statusEl) statusEl.textContent = "データ読み込みエラー: " + error.message;
+        // data.js がある場合はそちらを使う（今回の場合は変数は使わない想定だが安全策として）
+        if (typeof LEARNING_DATA !== 'undefined') {
+            cachedData = LEARNING_DATA;
+            if(statusEl) statusEl.textContent = "バックアップデータを使用中";
+        }
     }
     
     renderMaterials();
