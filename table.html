@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Ultimate Gyro Ping Pong</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: 'Helvetica Neue', sans-serif; user-select: none; color: white; }
+        
+        /* スコアボード */
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        #scoreboard {
+            position: absolute; top: 20px; width: 100%; display: flex; justify-content: center; gap: 60px;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .score-box { text-align: center; }
+        .score-num { font-size: 5rem; font-weight: 800; line-height: 1; }
+        .p-label { font-size: 1.2rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        
+        /* ガイド表示 */
+        #guide-overlay {
+            position: absolute; bottom: 30px; width: 100%; text-align: center;
+            font-size: 1.5rem; color: #ffeb3b; text-shadow: 1px 1px 2px #000;
+            opacity: 0.8;
+        }
+
+        /* 接続画面 */
+        #setup-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            pointer-events: auto; z-index: 10;
+        }
+        .setup-content { text-align: center; max-width: 600px; }
+        h1 { font-size: 3rem; margin-bottom: 10px; color: #fff; text-shadow: 0 0 20px #00c3e3; }
+        
+        .control-card {
+            background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin: 20px 0;
+            border: 1px solid #555; display: flex; justify-content: space-around;
+        }
+        .c-item { width: 30%; }
+        .icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+        
+        .btn {
+            background: linear-gradient(135deg, #00c3e3, #0056b3);
+            color: white; padding: 15px 50px; font-size: 1.5rem; font-weight: bold;
+            border: none; border-radius: 50px; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 195, 227, 0.5); transition: transform 0.1s;
+        }
+        .btn:hover { transform: scale(1.05); }
+
+        #msg-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 6rem; font-weight: 900; color: #fff;
+            text-shadow: 0 0 30px rgba(255,255,255,0.8);
+            display: none;
+        }
+    </style>
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div id="scoreboard">
+            <div class="score-box">
+                <span class="p-label" style="color:#00c3e3">PLAYER 1</span>
+                <div id="s-p1" class="score-num">0</div>
+            </div>
+            <div class="score-box">
+                <span class="p-label" style="color:#ff5252">PLAYER 2</span>
+                <div id="s-p2" class="score-num">0</div>
+            </div>
+        </div>
+        <div id="msg-overlay">START</div>
+        <div id="guide-overlay">体を左右に傾けて移動！手首で角度調整！</div>
+    </div>
+
+    <div id="setup-screen">
+        <div class="setup-content">
+            <h1>ULTIMATE GYRO PING PONG</h1>
+            <p>スティック不要。全身で操作する次世代卓球。</p>
+            
+            <div class="control-card">
+                <div class="c-item">
+                    <span class="icon">🦵</span>
+                    <h3>移動 (Move)</h3>
+                    <p>体を左右に傾ける<br>(サイドステップ)</p>
+                </div>
+                <div class="c-item">
+                    <span class="icon">↪️</span>
+                    <h3>回転 (Spin)</h3>
+                    <p>手首をひねる<br>(被せる/仰ぐ)</p>
+                </div>
+                <div class="c-item">
+                    <span class="icon">👋</span>
+                    <h3>打つ (Hit)</h3>
+                    <p>Joy-Conを振る</p>
+                </div>
+            </div>
+
+            <button class="btn" id="connect-btn">Joy-Conを接続 (L -> R)</button>
+            <p style="color:#aaa; font-size:0.9rem; margin-top:15px;">※PCのChromeでBluetooth接続してください</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // --- 設定 ---
+        const TABLE_W = 15.25, TABLE_L = 27.4, TABLE_H = 7.6, NET_H = 1.525;
+        // 体の傾きに対する移動感度
+        const MOVE_SENSITIVITY = 0.8; 
+        
+        let scene, camera, renderer;
+        let ball, table;
+        let players = [];
+        let isPlaying = false;
+        
+        // 物理
+        let ballState = { pos: new THREE.Vector3(0,10,0), vel: new THREE.Vector3(0,0,0), spin: new THREE.Vector3(0,0,0), active: false };
+        let scores = [0, 0];
+        let server = 1;
+
+        // 音声
+        const actx = new (window.AudioContext||window.webkitAudioContext)();
+
+        // --- Joy-Con Logic (完全ジャイロ) ---
+        class GyroController {
+            constructor(device, id) {
+                this.device = device;
+                this.id = id;
+                this.color = id===1 ? 0x00c3e3 : 0xff5252;
+                
+                // 状態
+                this.tiltX = 0; // 左右の傾き (移動用: Roll)
+                this.tiltY = 0; // 前後の傾き (ラケット角度用: Pitch)
+                
+                this.swing = 0;
+                this.isSwinging = false;
+                
+                // ゼロ点補正用
+                this.centerTilt = 0;
+                this.calibrated = false;
+            }
+
+            async init() {
+                await this.device.open();
+                await this.send(0x01, [0x00, 0x01, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40]); // Rumble
+                await this.send(0x01, [0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]); // Subcmd setup
+                await this.sub(0x40, [0x01]); // IMU On
+                await this.sub(0x03, [0x30]); // Standard Mode
+                this.device.addEventListener('inputreport', this.handle.bind(this));
+            }
+
+            async send(cmd, d) { if(this.device.opened) await this.device.sendReport(cmd, new Uint8Array([cmd,...d])); }
+            async sub(c, d) { await this.send(0x01, [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,c,...d]); }
+            
+            async rumble() {
+                await this.send(0x10, [0x00,0x01,0x40,0x40,0x00,0x01,0x40,0x40]); 
+                setTimeout(()=>this.send(0x10,[0,0,0,0,0,0,0,0]), 100);
+            }
+
+            handle(e) {
+                const dt = new DataView(e.data.buffer);
+                if(e.reportId!==0x30 && e.reportId!==0x21) return;
+
+                // 加速度 (Gravity vector) を使って「絶対的な傾き」を検出
+                // これにより、ジャイロのドリフト（ズレ）を防ぎ、
+                // 「体が右に傾いている＝右移動」という直感操作を実現する
+                
+                const ax = dt.getInt16(13, true) * 0.000244;
+                const ay = dt.getInt16(15, true) * 0.000244;
+                const az = dt.getInt16(17, true) * 0.000244;
+
+                // P1(L)とP2(R)で座標系が違うため調整
+                // 基本的にJoy-Conの平らな面を上にして水平＝0とする
+                // Roll (左右の傾き) -> 移動
+                // Pitch (前後の傾き) -> ラケット角度
+
+                // 簡易計算 (Joy-Conの持ち方「いいね持ち」想定)
+                // Y軸が長手方向。Z軸がボタン面垂直。
+                // 左右に振る(Roll) -> Z軸重力成分変化
+                // 前後に回す(Pitch) -> X軸重力成分変化
+                
+                let roll = -az; // 左右
+                let pitch = -ax; // 手首のひねり
+                
+                // Rコンは反転
+                if (this.device.productId === 0x2007) {
+                    roll *= -1;
+                    pitch *= -1;
+                }
+
+                // キャリブレーション (初回のみ、現在の持ち方をセンターとする)
+                if (!this.calibrated) {
+                    this.centerTilt = roll;
+                    this.calibrated = true;
+                }
+
+                // 入力値の平滑化 (ジッター除去)
+                const alpha = 0.1;
+                this.tiltX = this.tiltX * (1-alpha) + (roll - this.centerTilt) * alpha;
+                this.tiltY = this.tiltY * (1-alpha) + pitch * alpha;
+
+                // スイング検知 (合成加速度の変化)
+                const mag = Math.sqrt(ax*ax + ay*ay + az*az);
+                if (mag > 2.2) {
+                    this.isSwinging = true;
+                    this.swing = mag;
+                    setTimeout(()=>this.isSwinging=false, 250);
+                }
+            }
+        }
+
+        // --- 3D Scene ---
+        function initGame() {
+            scene = new THREE.Scene();
+            // カメラ位置: 観客席視点
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 200);
+            camera.position.set(-25, 20, 0); 
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // 環境
+            scene.add(new THREE.AmbientLight(0x404040));
+            const spot = new THREE.SpotLight(0xffffff, 1.2);
+            spot.position.set(0, 40, 0);
+            spot.castShadow = true;
+            scene.add(spot);
+
+            // 卓球台
+            const tMat = new THREE.MeshPhongMaterial({ color: 0x1e88e5, specular: 0x111111, shininess: 10 });
+            table = new THREE.Mesh(new THREE.BoxGeometry(TABLE_W, 0.5, TABLE_L), tMat);
+            table.position.y = TABLE_H;
+            table.receiveShadow = true;
+            scene.add(table);
+            
+            // ネット
+            const net = new THREE.Mesh(
+                new THREE.PlaneGeometry(TABLE_W+2, NET_H), 
+                new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent:true, opacity:0.8 })
+            );
+            net.position.y = TABLE_H + NET_H/2;
+            scene.add(net);
+
+            // ボール
+            ball = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffa726 }));
+            ball.castShadow = true;
+            scene.add(ball);
+
+            // プレイヤーラケット
+            createPlayer(1);
+            createPlayer(2);
+
+            resetBall();
+            animate();
+        }
+
+        function createPlayer(id) {
+            const grp = new THREE.Group();
+            
+            // ラケットモデル (簡易)
+            const rMat = new THREE.MeshStandardMaterial({ color: id===1?0xd32f2f:0x212121 });
+            const face = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 0.1, 32), rMat);
+            face.rotation.x = Math.PI/2;
+            const handle = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.5, 0.3), new THREE.MeshStandardMaterial({color:0x8d6e63}));
+            handle.position.y = -1.2;
+            grp.add(face, handle);
+            
+            // 影（プレイヤーの足位置目安）
+            const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:0.3}));
+            shadow.rotation.x = -Math.PI/2;
+            shadow.position.y = -TABLE_H + 0.1; // 地面
+            grp.add(shadow);
+
+            grp.position.set(0, TABLE_H+2, id===1 ? 20 : -20);
+            scene.add(grp);
+            players.push({ id, mesh: grp, x: 0 });
+        }
+
+        // --- ゲームループ ---
+        function update(dt) {
+            // 1. プレイヤー移動 (完全ジャイロ: 傾き -> 位置)
+            players.forEach((p, i) => {
+                const ctrl = (i===0) ? p1Ctrl : p2Ctrl;
+                if(!ctrl) return;
+                
+                // TiltX (-1.0 ~ 1.0) を位置 (-8.0 ~ 8.0) にマッピング
+                // 実際に体を傾けるとJoy-Conが傾く -> それを位置にする
+                // 補間をして滑らかに動かす
+                const targetX = ctrl.tiltX * 15.0; 
+                p.x += (targetX - p.x) * 0.1; // Smooth damp
+                
+                // 範囲制限
+                p.x = Math.max(-10, Math.min(10, p.x));
+                
+                // 位置適用 (P2は逆側)
+                p.mesh.position.x = (p.id===1) ? p.x : -p.x;
+                
+                // ラケット角度 (Pitch -> Rotation X)
+                // 手首のひねりを反映
+                const angle = ctrl.tiltY * 1.5;
+                p.mesh.rotation.x = (p.id===1) ? angle : -angle;
+                
+                // スイング時のラケット演出
+                if(ctrl.isSwinging) {
+                    p.mesh.position.z += (p.id===1?-1:1) * 0.5; // 少し前に出る
+                } else {
+                    const baseZ = p.id===1 ? 20 : -20;
+                    p.mesh.position.z += (baseZ - p.mesh.position.z) * 0.2; // 戻る
+                }
+            });
+
+            // 2. ボール物理
+            if(!ballState.active && (p1Ctrl?.isSwinging || p2Ctrl?.isSwinging)) {
+                // サーブ判定
+                checkHit(server===1?players[0]:players[1], server===1?p1Ctrl:p2Ctrl, true);
+            }
+
+            if(ballState.active) {
+                // 重力 & 空気抵抗
+                ballState.vel.y -= 9.8 * dt;
+                ballState.vel.multiplyScalar(0.995);
+                
+                // マグヌス効果 (回転による曲がり)
+                const lift = new THREE.Vector3().crossVectors(ballState.spin, ballState.vel).multiplyScalar(0.015);
+                ballState.vel.add(lift);
+
+                ballState.pos.add(ballState.vel.clone().multiplyScalar(dt));
+
+                // 衝突: 台
+                if(ballState.pos.y <= TABLE_H && Math.abs(ballState.pos.x)<TABLE_W/2 && Math.abs(ballState.pos.z)<TABLE_L/2) {
+                    if(ballState.vel.y < 0) {
+                        playSound('bounce');
+                        ballState.pos.y = TABLE_H;
+                        ballState.vel.y *= -0.85;
+                        // 回転による加速/減速 (Kick)
+                        ballState.vel.z += ballState.spin.x * 0.05;
+                    }
+                }
+                // 衝突: 床/ミス
+                else if(ballState.pos.y < 0) {
+                    playSound('miss');
+                    scorePoint(ballState.pos.z > 0 ? 2 : 1);
+                }
+
+                // 衝突: ネット
+                if(Math.abs(ballState.pos.z)<0.2 && ballState.pos.y < TABLE_H+NET_H && Math.abs(ballState.pos.x)<TABLE_W/2) {
+                    ballState.vel.z *= -0.1; ballState.vel.y *= 0.5;
+                }
+
+                // 衝突: ラケット
+                checkHit(players[0], p1Ctrl);
+                checkHit(players[1], p2Ctrl);
+            }
+
+            ball.position.copy(ballState.pos);
+            ball.rotation.x += ballState.spin.x * dt; // 回転の見た目
+        }
+
+        function checkHit(player, ctrl, isServe=false) {
+            if(!ctrl) return;
+            const dist = ballState.pos.distanceTo(player.mesh.position);
+            
+            if(dist < 2.5) {
+                if(ctrl.isSwinging || isServe) {
+                    if(!isServe && ballState.lastHit === player.id) return; // 連打防止
+                    
+                    ballState.lastHit = player.id;
+                    ballState.active = true;
+                    playSound('hit');
+                    ctrl.rumble();
+
+                    // 打ち返しベクトル計算
+                    const dirZ = player.id===1 ? -1 : 1;
+                    const power = Math.max(15, Math.min(30, ctrl.swing * 5));
+                    
+                    // 速度決定
+                    // ラケット角度(tiltY)で弾道を制御
+                    // 上向き(マイナス) -> ループ/カット, 下向き(プラス) -> スマッシュ/ドライブ
+                    ballState.vel.z = dirZ * power;
+                    ballState.vel.y = 5 + (ctrl.tiltY * -10); // 角度で高さ調整
+                    ballState.vel.x = (ballState.pos.x - player.mesh.position.x) * 3; // 左右の打ち分け
+
+                    // 回転 (Spin)
+                    // 手首の角度がそのまま回転になる
+                    ballState.spin.x = ctrl.tiltY * 30; // Top/Back spin
+                    ballState.spin.y = ctrl.tiltX * -10; // Side spin (体勢による)
+                }
+            }
+        }
+
+        function scorePoint(winner) {
+            scores[winner-1]++;
+            document.getElementById('s-p1').innerText = scores[0];
+            document.getElementById('s-p2').innerText = scores[1];
+            
+            showMsg(winner===1 ? "P1 POINT" : "P2 POINT");
+            
+            if((scores[0]+scores[1])%2 === 0) server = server===1?2:1;
+            
+            setTimeout(resetBall, 2000);
+        }
+
+        function resetBall() {
+            ballState.active = false;
+            ballState.lastHit = 0;
+            const z = server===1 ? 22 : -22;
+            ballState.pos.set(0, 10, z);
+            ballState.vel.set(0,0,0);
+            ballState.spin.set(0,0,0);
+            showMsg(`P${server} SERVE`);
+        }
+
+        function showMsg(txt) {
+            const el = document.getElementById('msg-overlay');
+            el.innerText = txt; el.style.display='block';
+            setTimeout(()=>el.style.display='none', 1500);
+        }
+
+        function playSound(type) {
+            if(actx.state==='suspended') actx.resume();
+            const o = actx.createOscillator();
+            const g = actx.createGain();
+            o.connect(g); g.connect(actx.destination);
+            const t = actx.currentTime;
+            
+            if(type==='hit') {
+                o.frequency.setValueAtTime(600, t);
+                o.frequency.exponentialRampToValueAtTime(100, t+0.1);
+                g.gain.setValueAtTime(0.5, t); g.gain.linearRampToValueAtTime(0, t+0.1);
+                o.start(t); o.stop(t+0.1);
+            } else if(type==='bounce') {
+                o.frequency.setValueAtTime(300, t);
+                g.gain.setValueAtTime(0.3, t); g.gain.linearRampToValueAtTime(0, t+0.05);
+                o.start(t); o.stop(t+0.05);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            update(0.016);
+            renderer.render(scene, camera);
+        }
+
+        // --- 接続 ---
+        let p1Ctrl, p2Ctrl;
+        document.getElementById('connect-btn').onclick = async () => {
+            const d = await navigator.hid.requestDevice({filters:[{vendorId:0x057e}]});
+            if(d.length) {
+                const gc = new GyroController(d[0], p1Ctrl?2:1);
+                await gc.init();
+                if(gc.id===1) p1Ctrl=gc; else p2Ctrl=gc;
+                
+                if(p1Ctrl && p2Ctrl) {
+                    document.getElementById('setup-screen').style.display='none';
+                    initGame();
+                    isPlaying=true;
+                } else {
+                    document.getElementById('connect-btn').innerText = "PLAYER 2 を接続";
+                }
+            }
+        };
+    </script>
+</body>
+</html>
