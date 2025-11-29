@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Galaxy Pizza Delivery</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+        
+        body { margin: 0; overflow: hidden; background: #111; font-family: 'M PLUS Rounded 1c', sans-serif; user-select: none; }
+
+        /* UIレイヤー */
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        
+        /* 共通スクリーン */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            pointer-events: auto; text-align: center; color: white;
+        }
+        .active { display: flex; }
+
+        h1 { font-size: 3.5rem; margin: 10px; color: #ffeb3b; text-shadow: 4px 4px 0 #000; }
+        p { font-size: 1.2rem; color: #aaa; margin-bottom: 30px; }
+
+        /* 接続画面 */
+        .setup-container {
+            width: 80%; max-width: 800px; min-height: 300px;
+            display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;
+            border-bottom: 2px solid #555; padding-bottom: 40px; margin-bottom: 20px;
+        }
+
+        /* Joy-Con イラスト (CSSで描画) */
+        .jc-illust {
+            width: 60px; height: 140px; border-radius: 30px; 
+            border: 4px solid rgba(255,255,255,0.2);
+            position: relative; display: flex; justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0); /* 最初は非表示 */
+            background: #555; /* デフォルト */
+        }
+        .jc-illust.joined { transform: scale(1); border-color: #fff; }
+        
+        /* 左コンの特徴 */
+        .jc-l .stick { width: 24px; height: 24px; background: #222; border-radius: 50%; position: absolute; top: 25px; left: 18px; }
+        .jc-l .btns { position: absolute; top: 60px; left: 18px; width: 24px; height: 24px; }
+        .jc-l .minus { position: absolute; top: 10px; right: 10px; width: 12px; height: 4px; background: #333; }
+        
+        /* 右コンの特徴 */
+        .jc-r .stick { width: 24px; height: 24px; background: #222; border-radius: 50%; position: absolute; top: 60px; left: 18px; }
+        .jc-r .btns { position: absolute; top: 25px; left: 18px; width: 24px; height: 24px; }
+        .jc-r .plus { position: absolute; top: 8px; left: 10px; width: 12px; height: 12px; }
+        .jc-r .plus::before { content:''; position:absolute; top:4px; left:0; width:12px; height:4px; background:#333; }
+        .jc-r .plus::after { content:''; position:absolute; top:0; left:4px; width:4px; height:12px; background:#333; }
+
+        .btn-dot { width: 8px; height: 8px; background: #222; border-radius: 50%; position: absolute; }
+        .b-u { top: -6px; left: 8px; } .b-d { bottom: -6px; left: 8px; }
+        .b-l { top: 8px; left: -6px; } .b-r { top: 8px; right: -6px; }
+
+        /* レール (SL/SR) */
+        .rail {
+            position: absolute; top: 15px; bottom: 15px; width: 6px; background: #111;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+        }
+        .jc-l .rail { right: -6px; border-radius: 0 4px 4px 0; }
+        .jc-r .rail { left: -6px; border-radius: 4px 0 0 4px; }
+        .sl-btn, .sr-btn { width: 4px; height: 15px; background: #555; margin: 10px 0; }
+
+        /* プレイヤー番号 */
+        .p-tag {
+            position: absolute; bottom: -40px; width: 100%; text-align: center;
+            font-weight: bold; font-size: 1.2rem; color: #fff; text-shadow: 0 0 5px #000;
+        }
+
+        /* 接続ガイドアニメーション */
+        .guide-anim {
+            width: 100px; height: 60px; border: 2px dashed #666; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; color: #666;
+        }
+
+        /* ボタン */
+        .btn {
+            background: #00e676; color: #000; border: none; padding: 15px 50px;
+            font-size: 1.5rem; border-radius: 50px; cursor: pointer;
+            font-family: inherit; font-weight: bold; box-shadow: 0 5px 0 #00b359;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: translateY(5px); box-shadow: none; }
+        .btn:disabled { background: #555; box-shadow: none; color: #888; cursor: not-allowed; }
+
+        /* ゲームHUD */
+        #game-hud {
+            display: none; width: 100%; justify-content: space-between; padding: 20px 40px; box-sizing: border-box;
+            color: #fff; text-shadow: 2px 2px 0 #000;
+        }
+        .dist-meter { font-size: 2rem; font-weight: bold; }
+        
+        #msg-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 5rem; font-weight: bold; text-shadow: 0 0 30px #fff; display: none;
+        }
+        
+    </style>
+    <!-- Three.js -->
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+</head>
+<body>
+
+    <!-- 1. セットアップ画面 -->
+    <div id="screen-setup" class="screen active">
+        <h1>GALAXY PIZZA</h1>
+        <p>Joy-ConをPCにBluetooth接続し、レールにある <strong>SL + SR</strong> を同時に押してください</p>
+        
+        <div class="setup-container" id="player-container">
+            <!-- ここにプレイヤー枠が追加されます -->
+            <div class="guide-anim">Waiting...</div>
+        </div>
+
+        <div>
+            <button class="btn" id="connect-btn">Joy-ConをPCに認識させる</button>
+            <br><br>
+            <button class="btn" id="start-btn" style="background:#ffeb3b; display:none;">DELIVERY START!</button>
+        </div>
+    </div>
+
+    <!-- 2. ゲーム画面 -->
+    <div id="ui-layer">
+        <div id="game-hud">
+            <div>🚀 協力バランスゲーム</div>
+            <div class="dist-meter">GOAL: <span id="dist-val">100</span>m</div>
+        </div>
+        <div id="msg-overlay">GOAL!</div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // --- 音声 (Switchっぽいスナップ音) ---
+        const actx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSnapSound() {
+            if(actx.state==='suspended') actx.resume();
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.connect(gain); gain.connect(actx.destination);
+            osc.frequency.setValueAtTime(800, actx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, actx.currentTime+0.05);
+            gain.gain.setValueAtTime(0.5, actx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime+0.1);
+            osc.start(); osc.stop(actx.currentTime+0.1);
+        }
+
+        // --- グローバル変数 ---
+        let players = []; // 登録済みプレイヤー
+        let scene, camera, renderer;
+        let isPlaying = false;
+        
+        // ゲームオブジェクト
+        let ship, pizza;
+        let obstacles = [];
+        let gameProgress = 0;
+        let shipVelocity = new THREE.Vector3(0,0,0);
+        let pizzaVelocity = new THREE.Vector3(0,0,0);
+
+        // --- Joy-Con Logic ---
+        class JoyCon {
+            constructor(device) {
+                this.device = device;
+                this.isRegistered = false;
+                // 0x2006=L, 0x2007=R
+                this.type = (device.productId === 0x2006) ? 'L' : 'R';
+                // Joy-Conカラー (簡易定義)
+                this.color = this.type === 'L' ? '#00c3e3' : '#ff5252'; 
+                
+                this.tilt = { x: 0, z: 0 }; // ジャイロ値
+            }
+
+            async init() {
+                await this.device.open();
+                // 初期化パケット
+                await this.send(0x01, [0x00, 0x01, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40]); // Rumble Enable
+                await this.send(0x01, [0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]); // Subcmd Setup
+                await this.sub(0x40, [0x01]); // IMU On
+                await this.sub(0x03, [0x30]); // Standard Mode (60Hz)
+                
+                this.device.addEventListener('inputreport', this.handle.bind(this));
+            }
+
+            async send(cmd, data) { if(this.device.opened) await this.device.sendReport(cmd, new Uint8Array([cmd,...data])); }
+            async sub(c, d) { await this.send(0x01, [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,c,...d]); }
+            async rumble() {
+                await this.send(0x10, [0x00,0x01,0x40,0x40,0x00,0x01,0x40,0x40]);
+                setTimeout(()=>this.send(0x10,[0,0,0,0,0,0,0,0]), 150);
+            }
+
+            handle(e) {
+                const dt = new DataView(e.data.buffer);
+                if(e.reportId!==0x30 && e.reportId!==0x21) return;
+
+                // --- 1. SL + SR 判定 (登録用) ---
+                if (!this.isRegistered && !isPlaying) {
+                    // Button Status Byte offsets
+                    // Right(2007): Byte 3 (Shared) -> SL=0x20, SR=0x10
+                    // Left(2006):  Byte 5 (Shared) -> SL=0x20, SR=0x10
+                    
+                    const btnByte = this.type === 'L' ? dt.getUint8(5) : dt.getUint8(3);
+                    const sl = (btnByte & 0x20) !== 0;
+                    const sr = (btnByte & 0x10) !== 0;
+
+                    if (sl && sr) {
+                        this.register();
+                    }
+                }
+
+                // --- 2. ジャイロ (ゲーム用) ---
+                if (isPlaying) {
+                    const ax = dt.getInt16(13, true) * 0.000244;
+                    const ay = dt.getInt16(15, true) * 0.000244;
+                    const az = dt.getInt16(17, true) * 0.000244;
+
+                    // 傾き計算 (水平持ち想定)
+                    // X軸: 左右の傾き (Roll)
+                    // Z軸: 前後の傾き (Pitch)
+                    // ※Joy-Conの座標系に合わせて調整
+                    
+                    let tx = -az; // 左右
+                    let tz = -ay; // 前後
+                    
+                    // Rコンは座標系が一部反転
+                    if(this.type === 'R') { tx *= -1; tz *= -1; }
+
+                    this.tilt.x = tx;
+                    this.tilt.z = tz;
+                }
+            }
+
+            register() {
+                this.isRegistered = true;
+                this.rumble();
+                playSnapSound();
+                addPlayerUI(this);
+                players.push(this);
+                
+                // スタートボタン表示
+                document.getElementById('start-btn').style.display = 'inline-block';
+                document.getElementById('connect-btn').style.display = 'none';
+            }
+        }
+
+        // --- UI構築 ---
+        function addPlayerUI(jc) {
+            const container = document.getElementById('player-container');
+            const guide = container.querySelector('.guide-anim');
+            if(guide) guide.style.display = 'none';
+
+            // Joy-Con DOM生成
+            const div = document.createElement('div');
+            // 色はプレイヤー番号順で変えてみる (Switchっぽい色)
+            const colors = ['#ff5252', '#00c3e3', '#ffeb3b', '#d500f9'];
+            jc.color = colors[(players.length) % 4];
+
+            div.className = `jc-illust jc-${jc.type.toLowerCase()}`;
+            div.style.backgroundColor = jc.color;
+            div.innerHTML = `
+                <div class="rail"><div class="sl-btn"></div><div class="sr-btn"></div></div>
+                <div class="minus"></div><div class="plus"></div>
+                <div class="stick"></div>
+                <div class="btns">
+                    <div class="btn-dot b-u"></div><div class="btn-dot b-d"></div>
+                    <div class="btn-dot b-l"></div><div class="btn-dot b-r"></div>
+                </div>
+                <div class="p-tag">P${players.length + 1}</div>
+            `;
+            
+            container.appendChild(div);
+            // アニメーション用ウェイト
+            requestAnimationFrame(() => div.classList.add('joined'));
+        }
+
+        // --- 接続ボタン ---
+        document.getElementById('connect-btn').onclick = async () => {
+            const devs = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x057e }] });
+            for (const d of devs) {
+                // 重複防止
+                // (簡易実装: JoyConクラスはインスタンス化するがinitはループ外でやるべきだがデモなので都度)
+                const jc = new JoyCon(d);
+                await jc.init();
+                // 待機リストに入れる等の処理が必要だが、
+                // ここでは「接続＝監視開始」とする
+            }
+        };
+
+        document.getElementById('start-btn').onclick = () => {
+            document.getElementById('screen-setup').style.display = 'none';
+            document.getElementById('game-hud').style.display = 'flex';
+            init3D();
+            isPlaying = true;
+        };
+
+
+        // --- 3Dゲームシステム ---
+        function init3D() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x16213e, 0.02);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+            camera.position.set(0, 10, 12);
+            camera.lookAt(0, 0, -5);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // ライト
+            const amb = new THREE.AmbientLight(0x606060);
+            scene.add(amb);
+            const dir = new THREE.DirectionalLight(0xffffff, 1);
+            dir.position.set(5, 15, 5);
+            dir.castShadow = true;
+            scene.add(dir);
+
+            // 宇宙背景 (星)
+            const starGeo = new THREE.BufferGeometry();
+            const stars = [];
+            for(let i=0; i<1000; i++) {
+                stars.push((Math.random()-0.5)*100, (Math.random()-0.5)*100, (Math.random()-0.5)*200 - 50);
+            }
+            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(stars, 3));
+            const starMat = new THREE.PointsMaterial({color:0xffffff, size:0.2});
+            scene.add(new THREE.Points(starGeo, starMat));
+
+            // 宇宙船 (ピザの箱 = プレイヤーが傾ける床)
+            const shipGeo = new THREE.BoxGeometry(8, 0.5, 8);
+            const shipMat = new THREE.MeshStandardMaterial({ color: 0x333344, roughness: 0.4 });
+            ship = new THREE.Mesh(shipGeo, shipMat);
+            ship.receiveShadow = true;
+            scene.add(ship);
+            
+            // 装飾: エンジンなど
+            const engGeo = new THREE.CylinderGeometry(0.5, 0.2, 2);
+            const engMat = new THREE.MeshBasicMaterial({color:0x00aaff});
+            const engL = new THREE.Mesh(engGeo, engMat); engL.position.set(-3,0,4); engL.rotation.x=Math.PI/2;
+            const engR = new THREE.Mesh(engGeo, engMat); engR.position.set(3,0,4); engR.rotation.x=Math.PI/2;
+            ship.add(engL, engR);
+
+            // ピザ (運ぶ対象)
+            const pizzaGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.2, 32);
+            const pizzaMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 }); // 生地
+            pizza = new THREE.Mesh(pizzaGeo, pizzaMat);
+            // トッピング
+            const pep = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.22,8), new THREE.MeshBasicMaterial({color:0xcc0000}));
+            pep.position.set(0.5,0,0.5); pizza.add(pep);
+            const pep2 = pep.clone(); pep2.position.set(-0.5,0,-0.5); pizza.add(pep2);
+            
+            pizza.position.y = 1;
+            pizza.castShadow = true;
+            scene.add(pizza);
+
+            // 障害物生成
+            for(let i=0; i<20; i++) {
+                const obs = new THREE.Mesh(new THREE.DodecahedronGeometry(Math.random()*1.5+0.5), new THREE.MeshStandardMaterial({color:0x666666}));
+                obs.position.set(
+                    (Math.random()-0.5)*30,
+                    Math.random()*5 - 2,
+                    -30 - (i * 15) // 奥に配置
+                );
+                scene.add(obs);
+                obstacles.push(obs);
+            }
+
+            animate();
+        }
+
+        function updateGame() {
+            if(!isPlaying) return;
+
+            // 1. 全プレイヤーのジャイロ入力を平均化 (協力要素)
+            let avgTiltX = 0;
+            let avgTiltZ = 0;
+            
+            if (players.length > 0) {
+                players.forEach(p => {
+                    avgTiltX += p.tilt.x;
+                    avgTiltZ += p.tilt.z;
+                });
+                avgTiltX /= players.length;
+                avgTiltZ /= players.length;
+            }
+
+            // 船の傾き適用 (感度調整)
+            ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, -avgTiltX * 1.5, 0.1);
+            ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, -avgTiltZ * 1.5, 0.1);
+
+            // 2. ピザの物理 (滑る)
+            // 船の傾きに応じてピザに加速を加える
+            pizzaVelocity.x += ship.rotation.z * -0.02; // 右に傾くと右へ滑る
+            pizzaVelocity.z += ship.rotation.x * 0.02;  // 前に傾くと前へ滑る
+            
+            // 摩擦
+            pizzaVelocity.multiplyScalar(0.98);
+
+            // 位置更新 (船のローカル座標的な動き + ワールド移動)
+            // 簡易的にピザのワールド座標を更新
+            pizza.position.x += pizzaVelocity.x;
+            pizza.position.z += pizzaVelocity.z;
+            
+            // 船の上に乗っているように見せる高さ調整 (簡易)
+            // 船の中心(0,0,0)からの距離と傾きでYを決める
+            const dx = pizza.position.x - ship.position.x;
+            const dz = pizza.position.z - ship.position.z;
+            pizza.position.y = ship.position.y + 0.5 - (dx * Math.sin(ship.rotation.z)) + (dz * Math.sin(ship.rotation.x));
+            pizza.rotation.copy(ship.rotation); // ピザも傾く
+
+            // 3. ゲーム進行 (前進)
+            const speed = 0.2;
+            gameProgress += speed;
+            document.getElementById('dist-val').innerText = Math.floor(100 - gameProgress/5);
+
+            // 船は少し揺れながらその場にいる演出、障害物が手前に来る
+            obstacles.forEach(obs => {
+                obs.position.z += speed;
+                obs.rotation.x += 0.02;
+                obs.rotation.y += 0.02;
+
+                // 衝突判定
+                if (obs.position.distanceTo(pizza.position) < 2.5) {
+                    // 当たったら跳ねる
+                    pizzaVelocity.y += 0.5;
+                    pizzaVelocity.x += (Math.random()-0.5);
+                    players.forEach(p => p.rumble()); // 振動
+                }
+
+                // リサイクル
+                if(obs.position.z > 10) {
+                    obs.position.z = -300;
+                    obs.position.x = (Math.random()-0.5)*30;
+                }
+            });
+
+            // 4. ゲームオーバー/クリア判定
+            // 落ちた？ (船の範囲 4x4 からはみ出たら)
+            if (Math.abs(dx) > 4.5 || Math.abs(dz) > 4.5) {
+                gameOver("PIZZA LOST...");
+            }
+            
+            // ゴール？
+            if (gameProgress > 500) {
+                gameOver("DELIVERY COMPLETE!");
+            }
+        }
+
+        function gameOver(msg) {
+            isPlaying = false;
+            const el = document.getElementById('msg-overlay');
+            el.innerText = msg;
+            el.style.display = 'block';
+            el.style.color = msg.includes("LOST") ? "#ff5252" : "#00e676";
+            
+            if(msg.includes("LOST")) {
+                // 落下演出
+                pizza.position.y -= 1;
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateGame();
+            renderer.render(scene, camera);
+        }
+
+    </script>
+</body>
+</html>
