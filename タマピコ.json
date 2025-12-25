@@ -1,0 +1,35 @@
+{
+  "name": "タマピコ",
+  "subtitle": "",
+  "description": "",
+  "iconURL": "https://i.imgur.com/pL63y1d.png",
+  "website": "https://altstudio.app",
+  "patreonURL": "https://patreon.com/altstudio",
+  "tintColor": "#71e256",
+  "featuredApps": [
+    "com.99nxhs0t3z.3nkcvukx37"
+  ],
+  "apps": [
+    {
+      "name": "早押しくん",
+      "bundleIdentifier": "com.99nxhs0t3z.3nkcvukx37",
+      "marketplaceID": "12340622",
+      "developerName": "たま",
+      "subtitle": "早押しk",
+      "localizedDescription": "早押しクイズなどで使える早押しボタンです",
+      "iconURL": "https://i.imgur.com/QpaOtSj.png",
+      "tintColor": "#e26756",
+      "category": "other",
+      "screenshots": [],
+      "versions": [],
+      "appPermissions": {
+        "entitlements": [
+          "com.99nxhs0t3z.3nkcvukx37"
+        ],
+        "privacy": {}
+      },
+      "patreon": {}
+    }
+  ],
+  "news": []
+}
