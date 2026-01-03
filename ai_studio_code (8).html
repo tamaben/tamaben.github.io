@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Offline Block Puzzle</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #1a2639; /* 画像に近い濃紺の背景 */
+        color: #fff;
+        font-family: sans-serif;
+        overflow: hidden; /* スクロール禁止 */
+        touch-action: none; /* スマホ操作最適化 */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    #game-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* UIヘッダー */
+    .header {
+        width: 90%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    #score-box {
+        color: #fff;
+    }
+
+    canvas {
+        touch-action: none;
+        background: transparent;
+    }
+
+    /* ゲームオーバー画面 */
+    #game-over {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        border-radius: 10px;
+    }
+    
+    button {
+        background: #e67e22;
+        border: none;
+        color: white;
+        padding: 15px 30px;
+        font-size: 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 0 #d35400;
+        margin-top: 20px;
+    }
+    button:active {
+        transform: translateY(4px);
+        box-shadow: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <div id="score-box">0</div>
+        <div style="font-size:16px; color:#aaa;">OFFLINE MODE</div>
+    </div>
+
+    <!-- ゲーム描画エリア -->
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="game-over">
+        <h1 style="color:#e74c3c;">GAME OVER</h1>
+        <h2 id="final-score">Score: 0</h2>
+        <button onclick="resetGame()">RETRY</button>
+    </div>
+</div>
+
+<script>
+/**
+ * 設定と定数
+ */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score-box');
+const gameOverEl = document.getElementById('game-over');
+const finalScoreEl = document.getElementById('final-score');
+
+// グリッド設定 (8x8)
+const ROWS = 8;
+const COLS = 8;
+let CELL_SIZE = 40; // 後で画面サイズに合わせて調整
+let GRID_OFFSET_X = 0;
+let GRID_OFFSET_Y = 0;
+
+// 色設定 (Block Blast風)
+const COLORS = {
+    bg: '#1a2639',       // 背景
+    gridInfo: '#24344d', // グリッドの空マス
+    blocks: [
+        '#f1c40f', // 黄色
+        '#e74c3c', // 赤
+        '#9b59b6', // 紫
+        '#3498db', // 青
+        '#2ecc71', // 緑
+        '#e67e22'  // オレンジ
+    ]
+};
+
+// ゲームの状態
+let grid = []; // 8x8の配列
+let score = 0;
+let hand = []; // 下に表示される選択肢（最大3つ）
+let draggingShape = null; // 現在ドラッグ中のシェイプ
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+/**
+ * 初期化処理
+ */
+function init() {
+    resize();
+    resetGame();
+    window.addEventListener('resize', resize);
+    
+    // タッチ・マウスイベント登録
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('touchstart', (e) => onPointerDown(e.touches[0]), {passive: false});
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); onPointerMove(e.touches[0]); }, {passive: false});
+    canvas.addEventListener('touchend', onPointerUp);
+
+    requestAnimationFrame(loop);
+}
+
+function resetGame() {
+    // グリッドを空にする
+    grid = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+    score = 0;
+    scoreEl.innerText = score;
+    gameOverEl.style.display = 'none';
+    spawnShapes();
+    draggingShape = null;
+}
+
+function resize() {
+    // 画面幅に合わせてキャンバスサイズを調整
+    const width = Math.min(window.innerWidth, 500);
+    const height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    // グリッドのサイズ計算
+    const margin = 20;
+    const availableWidth = width - (margin * 2);
+    CELL_SIZE = Math.floor(availableWidth / COLS);
+    
+    // グリッドを中央配置
+    GRID_OFFSET_X = (width - (CELL_SIZE * COLS)) / 2;
+    GRID_OFFSET_Y = 100; // 上部の余白
+}
+
+/**
+ * シェイプ（ブロックの塊）の定義
+ */
+const SHAPE_DEFS = [
+    [[1]], // 1x1
+    [[1,1]], // 2x1
+    [[1,1,1]], // 3x1
+    [[1,1,1,1]], // 4x1
+    [[1,1],[1,1]], // 2x2
+    [[1,0],[1,1]], // L小
+    [[1,1,1],[1,0,0]], // L大
+    [[1,1,0],[0,1,1]], // Z
+    [[0,1,0],[1,1,1]], // T
+    [[1,1,1],[1,1,1],[1,1,1]] // 3x3
+];
+
+function createShape() {
+    const def = SHAPE_DEFS[Math.floor(Math.random() * SHAPE_DEFS.length)];
+    const color = COLORS.blocks[Math.floor(Math.random() * COLORS.blocks.length)];
+    
+    // 行列のコピーを作成
+    const matrix = def.map(row => [...row]);
+    
+    // ランダムに回転（90度刻み）
+    const rotations = Math.floor(Math.random() * 4);
+    let finalMatrix = matrix;
+    for(let i=0; i<rotations; i++) {
+        finalMatrix = rotateMatrix(finalMatrix);
+    }
+
+    return {
+        matrix: finalMatrix,
+        color: color,
+        x: 0, y: 0, // 描画位置
+        w: finalMatrix[0].length * CELL_SIZE,
+        h: finalMatrix.length * CELL_SIZE,
+        isDragging: false
+    };
+}
+
+function rotateMatrix(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    let newMatrix = Array(cols).fill(null).map(() => Array(rows).fill(0));
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            newMatrix[x][rows - 1 - y] = matrix[y][x];
+        }
+    }
+    return newMatrix;
+}
+
+function spawnShapes() {
+    hand = [];
+    for(let i=0; i<3; i++) {
+        hand.push(createShape());
+    }
+    positionHandShapes();
+    checkGameOver();
+}
+
+function positionHandShapes() {
+    // 下部に等間隔で配置
+    const areaY = GRID_OFFSET_Y + (ROWS * CELL_SIZE) + 50;
+    const step = canvas.width / 3;
+    
+    hand.forEach((shape, i) => {
+        if (!shape) return;
+        // プレビュー用に少し小さく表示する計算などは描画時に行う
+        // ここでは中心座標を設定
+        const centerX = step * i + (step / 2);
+        const centerY = areaY + 60;
+        
+        // シェイプの中心を合わせる
+        shape.x = centerX - (shape.matrix[0].length * CELL_SIZE * 0.6) / 2;
+        shape.y = centerY - (shape.matrix.length * CELL_SIZE * 0.6) / 2;
+        shape.baseScale = 0.6; // 手札にあるときは小さく
+    });
+}
+
+/**
+ * 入力処理
+ */
+function onPointerDown(e) {
+    if(gameOverEl.style.display === 'flex') return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // 手札のシェイプをタップしたか判定
+    for(let i=0; i<hand.length; i++) {
+        const s = hand[i];
+        if(!s) continue;
+        
+        // 簡易的な当たり判定（手札表示サイズで判定）
+        const displaySize = CELL_SIZE * s.baseScale;
+        const sw = s.matrix[0].length * displaySize;
+        const sh = s.matrix.length * displaySize;
+        
+        // 判定エリアを少し広めに取る
+        if(x >= s.x - 20 && x <= s.x + sw + 20 &&
+           y >= s.y - 20 && y <= s.y + sh + 20) {
+            
+            draggingShape = s;
+            // ドラッグ開始時は指の少し上に表示＆等倍に戻す
+            dragOffsetX = (s.matrix[0].length * CELL_SIZE) / 2;
+            dragOffsetY = (s.matrix.length * CELL_SIZE) + 40; // 指の上に表示
+            
+            s.isDragging = true;
+            s.currentX = x - dragOffsetX;
+            s.currentY = y - dragOffsetY;
+            return;
+        }
+    }
+}
+
+function onPointerMove(e) {
+    if (!draggingShape) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    draggingShape.currentX = x - dragOffsetX;
+    draggingShape.currentY = y - dragOffsetY;
+}
+
+function onPointerUp() {
+    if (!draggingShape) return;
+
+    // ドロップ判定
+    const gridX = Math.round((draggingShape.currentX - GRID_OFFSET_X) / CELL_SIZE);
+    const gridY = Math.round((draggingShape.currentY - GRID_OFFSET_Y) / CELL_SIZE);
+
+    if (canPlace(draggingShape.matrix, gridX, gridY)) {
+        placeShape(draggingShape, gridX, gridY);
+        // 手札から削除
+        const idx = hand.indexOf(draggingShape);
+        hand[idx] = null;
+        
+        // 全部使ったら補充
+        if (hand.every(s => s === null)) {
+            spawnShapes();
+        } else {
+            // ゲームオーバー判定
+            checkGameOver();
+        }
+    } else {
+        // 元に戻すアニメーション（今回は即座に戻す）
+        draggingShape.isDragging = false;
+    }
+    
+    draggingShape = null;
+}
+
+/**
+ * ロジック
+ */
+function canPlace(matrix, gx, gy) {
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix[r].length; c++) {
+            if (matrix[r][c] === 1) {
+                const tx = gx + c;
+                const ty = gy + r;
+                // 範囲外 or 既にブロックがある
+                if (tx < 0 || tx >= COLS || ty < 0 || ty >= ROWS || grid[ty][tx] !== null) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+function placeShape(shape, gx, gy) {
+    const matrix = shape.matrix;
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix[r].length; c++) {
+            if (matrix[r][c] === 1) {
+                grid[gy + r][gx + c] = shape.color;
+            }
+        }
+    }
+    score += matrix.flat().filter(v => v===1).length; // 置いた分のスコア
+    checkLines();
+    scoreEl.innerText = score;
+}
+
+function checkLines() {
+    let linesCleared = 0;
+    let rowsToClear = [];
+    let colsToClear = [];
+
+    // 横列チェック
+    for (let y = 0; y < ROWS; y++) {
+        if (grid[y].every(cell => cell !== null)) {
+            rowsToClear.push(y);
+        }
+    }
+    // 縦列チェック
+    for (let x = 0; x < COLS; x++) {
+        let full = true;
+        for (let y = 0; y < ROWS; y++) {
+            if (grid[y][x] === null) full = false;
+        }
+        if (full) colsToClear.push(x);
+    }
+
+    // 削除処理
+    if (rowsToClear.length > 0 || colsToClear.length > 0) {
+        // 本来はここでアニメーションを入れるが軽量化のため即削除
+        rowsToClear.forEach(y => {
+            for(let x=0; x<COLS; x++) grid[y][x] = null;
+        });
+        colsToClear.forEach(x => {
+            for(let y=0; y<ROWS; y++) grid[y][x] = null;
+        });
+        
+        // コンボボーナス計算
+        const totalLines = rowsToClear.length + colsToClear.length;
+        score += totalLines * 100;
+        if (totalLines > 1) score += totalLines * 50; // ボーナス
+    }
+}
+
+function checkGameOver() {
+    // 手札に残っているすべてのシェイプについて、置ける場所が1つでもあるか確認
+    const remainingShapes = hand.filter(s => s !== null);
+    if (remainingShapes.length === 0) return;
+
+    let canMove = false;
+    for (let s of remainingShapes) {
+        for (let y = 0; y < ROWS; y++) {
+            for (let x = 0; x < COLS; x++) {
+                if (canPlace(s.matrix, x, y)) {
+                    canMove = true;
+                    break;
+                }
+            }
+            if(canMove) break;
+        }
+        if(canMove) break;
+    }
+
+    if (!canMove) {
+        finalScoreEl.innerText = "Score: " + score;
+        gameOverEl.style.display = 'flex';
+    }
+}
+
+/**
+ * 描画ループ
+ */
+function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. グリッド描画
+    drawGrid();
+
+    // 2. ブロック描画
+    drawPlacedBlocks();
+
+    // 3. 手札描画
+    drawHand();
+
+    // 4. ドラッグ中のシェイプ描画（最前面）
+    if (draggingShape) {
+        drawShape(
+            ctx, 
+            draggingShape.matrix, 
+            draggingShape.currentX, 
+            draggingShape.currentY, 
+            CELL_SIZE, 
+            draggingShape.color,
+            true // 影をつける
+        );
+    }
+
+    requestAnimationFrame(loop);
+}
+
+function drawGrid() {
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+            const px = GRID_OFFSET_X + x * CELL_SIZE;
+            const py = GRID_OFFSET_Y + y * CELL_SIZE;
+            
+            // 空のマス
+            ctx.fillStyle = COLORS.gridInfo;
+            ctx.fillRect(px + 1, py + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+        }
+    }
+}
+
+function drawPlacedBlocks() {
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+            if (grid[y][x] !== null) {
+                const px = GRID_OFFSET_X + x * CELL_SIZE;
+                const py = GRID_OFFSET_Y + y * CELL_SIZE;
+                drawSingleBlock(ctx, px, py, CELL_SIZE, grid[y][x]);
+            }
+        }
+    }
+}
+
+function drawHand() {
+    hand.forEach(s => {
+        if (!s || s.isDragging) return;
+        drawShape(ctx, s.matrix, s.x, s.y, CELL_SIZE * s.baseScale, s.color, false);
+    });
+}
+
+function drawShape(ctx, matrix, ox, oy, size, color, shadow) {
+    if (shadow) {
+        // 影
+        ctx.save();
+        ctx.translate(10, 20); // 少し右下にずらす
+        ctx.globalAlpha = 0.5;
+        for (let r = 0; r < matrix.length; r++) {
+            for (let c = 0; c < matrix[r].length; c++) {
+                if (matrix[r][c] === 1) {
+                    ctx.fillStyle = "#000";
+                    ctx.fillRect(ox + c * size, oy + r * size, size, size);
+                }
+            }
+        }
+        ctx.restore();
+    }
+
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix[r].length; c++) {
+            if (matrix[r][c] === 1) {
+                drawSingleBlock(ctx, ox + c * size, oy + r * size, size, color);
+            }
+        }
+    }
+}
+
+// 立体的なブロックを1つ描画する関数
+function drawSingleBlock(ctx, x, y, size, color) {
+    const pad = 1;
+    const innerSize = size - (pad * 2);
+    x += pad; 
+    y += pad;
+
+    // ベース色
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, innerSize, innerSize);
+
+    // 光（左と上）
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.beginPath();
+    ctx.moveTo(x, y + innerSize);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + innerSize, y);
+    ctx.lineTo(x + innerSize - 4, y + 4);
+    ctx.lineTo(x + 4, y + 4);
+    ctx.lineTo(x + 4, y + innerSize - 4);
+    ctx.fill();
+
+    // 影（右と下）
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.beginPath();
+    ctx.moveTo(x, y + innerSize);
+    ctx.lineTo(x + innerSize, y + innerSize);
+    ctx.lineTo(x + innerSize, y);
+    ctx.lineTo(x + innerSize - 4, y + 4);
+    ctx.lineTo(x + innerSize - 4, y + innerSize - 4);
+    ctx.lineTo(x + 4, y + innerSize - 4);
+    ctx.fill();
+
+    // 内側の四角（より立体的に見せる）
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.fillRect(x + innerSize * 0.2, y + innerSize * 0.2, innerSize * 0.6, innerSize * 0.6);
+}
+
+// ゲーム開始
+init();
+
+</script>
+</body>
+</html>
