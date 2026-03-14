@@ -54,70 +54,97 @@
                     <img src="manabi.png" alt="Manabi Baton アイコン" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200x200/e0e7ff/4f46e5?text=MB'">
                 </div>
                 
-                <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-bold text-xs tracking-wider mb-4 border border-indigo-100">タマベン 公式学習サポートアプリ</span>
+                <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-bold text-xs tracking-wider mb-4 border border-indigo-100">タマベン 学習サポートアプリ</span>
                 
                 <h1 class="text-3xl md:text-5xl font-black mb-6 text-slate-800 tracking-tight">
                     Manabi Baton
                 </h1>
                 
                 <p class="text-slate-500 font-medium text-sm md:text-lg mb-10 leading-relaxed max-w-xl mx-auto">
-                    日々の学習記録をバトンのようにつなぐ。<br>
-                    モチベーションを維持しながら、あなたのペースで目標へ近づくための学習管理アプリです。
+                    学習記録を「かんたん・見える化・共有」。<br>
+                    子どもの勉強の『やった！』を記録し、ポモドーロタイマーやご褒美ポイント、家族・先生との共有機能で毎日の学びを支える学習支援アプリです。
                 </p>
                 
                 <!-- アプリへのリンクボタン -->
-                <a href="https://manabi-tamaben.vercel.app" target="_blank" class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-lg shadow-[0_8px_20px_-4px_rgba(79,70,229,0.5)] hover:bg-indigo-700 hover:shadow-[0_12px_25px_-4px_rgba(79,70,229,0.6)] transition-all duration-300 active:scale-95 overflow-hidden w-full md:w-auto">
-                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                    <i data-lucide="external-link" class="w-5 h-5 relative z-10"></i>
-                    <span class="relative z-10">アプリを開く (無料)</span>
-                </a>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
+                    <a href="https://manabi-tamaben.vercel.app" target="_blank" class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-lg shadow-[0_8px_20px_-4px_rgba(79,70,229,0.5)] hover:bg-indigo-700 hover:shadow-[0_12px_25px_-4px_rgba(79,70,229,0.6)] transition-all duration-300 active:scale-95 overflow-hidden w-full sm:w-auto">
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                        <i data-lucide="external-link" class="w-5 h-5 relative z-10"></i>
+                        <span class="relative z-10">アプリを開く (無料)</span>
+                    </a>
+                </div>
+                <p class="text-xs text-slate-400 mt-4 font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="info" class="w-4 h-4"></i> ブラウザからすぐ使えるPWA対応
+                </p>
             </div>
         </section>
 
         <!-- アプリの特徴セクション -->
         <section class="mb-16">
-            <h2 class="text-2xl font-black text-slate-800 mb-8 text-center tracking-tight">3つの特徴</h2>
+            <h2 class="text-2xl font-black text-slate-800 mb-8 text-center tracking-tight">学びを続ける、3つの特徴</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- 特徴1 -->
                 <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                     <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 mb-6">
-                        <i data-lucide="edit-3" class="w-6 h-6"></i>
+                        <i data-lucide="timer" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-lg font-black text-slate-800 mb-3">サクッと記録</h3>
+                    <h3 class="text-lg font-black text-slate-800 mb-3">集中サポートタイマー</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">
-                        勉強した時間や内容を、シンプルで直感的な操作で素早く記録できます。毎日の負担になりません。
+                        「25分集中＋5分休憩」のポモドーロ設定や、雨音などの集中BGMを搭載。他アプリを開くと終了する「厳格モード」でメリハリをつけて学習できます。
                     </p>
                 </div>
 
                 <!-- 特徴2 -->
                 <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50/50 rounded-full blur-xl"></div>
-                    <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500 mb-6 relative z-10">
-                        <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-yellow-50/50 rounded-full blur-xl"></div>
+                    <div class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center text-yellow-600 mb-6 relative z-10">
+                        <i data-lucide="gift" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-lg font-black text-slate-800 mb-3 relative z-10">バトンをつなぐ</h3>
+                    <h3 class="text-lg font-black text-slate-800 mb-3 relative z-10">ポイント＆ご褒美制度</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium relative z-10">
-                        昨日の頑張りを今日の自分へ。継続するほどバトンがつながり、目に見えて達成感を感じられます。
+                        勉強した時間に応じて自動でポイント(SP)を付与。貯まったポイントをご褒美と交換できる仕組みで、子どものやる気とモチベーションを維持します。
                     </p>
                 </div>
 
                 <!-- 特徴3 -->
                 <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                     <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mb-6">
-                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                        <i data-lucide="users" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-lg font-black text-slate-800 mb-3">振り返りで成長</h3>
+                    <h3 class="text-lg font-black text-slate-800 mb-3">家族・先生とつながる共有</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">
-                        積み重ねた記録はグラフやカレンダーで確認。自分の成長が一目でわかり、モチベーションが途切れません。
+                        学習の振り返りや理解度を保護者・先生と共有可能。チャット機能でのやり取りや、AI分析レポートによる科目バランスの確認で、学習をしっかりサポートします。
                     </p>
                 </div>
             </div>
         </section>
 
+        <!-- その他の機能リスト -->
+        <section class="mb-16 bg-slate-100/50 rounded-[2.5rem] p-8 md:p-12 border border-slate-200/60">
+            <h3 class="text-xl font-black text-slate-800 mb-6 text-center">充実のサポート機能</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <div class="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="text-indigo-500"><i data-lucide="wifi-off" class="w-5 h-5"></i></div>
+                    <span class="font-bold text-sm text-slate-700">オフライン自動同期対応</span>
+                </div>
+                <div class="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="text-indigo-500"><i data-lucide="book-open-check" class="w-5 h-5"></i></div>
+                    <span class="font-bold text-sm text-slate-700">自分だけの単語帳・クイズ</span>
+                </div>
+                <div class="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="text-indigo-500"><i data-lucide="qr-code" class="w-5 h-5"></i></div>
+                    <span class="font-bold text-sm text-slate-700">QR・招待コードで簡単連携</span>
+                </div>
+                <div class="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="text-indigo-500"><i data-lucide="bar-chart-3" class="w-5 h-5"></i></div>
+                    <span class="font-bold text-sm text-slate-700">AIによる学習データ分析</span>
+                </div>
+            </div>
+        </section>
+
         <!-- スクリーンショットセクション -->
-        <!-- ※実際の画像を準備できた場合は、imgタグの src を書き換えてください -->
-        <section class="mb-12 bg-slate-100/50 rounded-[2.5rem] p-8 md:p-12 border border-slate-200/60">
+        <section class="mb-12">
             <div class="text-center mb-10">
                 <h2 class="text-2xl font-black text-slate-800 mb-3 tracking-tight">アプリ画面のイメージ</h2>
                 <p class="text-slate-500 text-sm font-medium">スマホやタブレットで快適にご利用いただけます</p>
@@ -128,8 +155,7 @@
                 <div class="w-64 h-[28rem] bg-white rounded-[2.5rem] p-3 shadow-xl border border-slate-200 relative">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-white rounded-b-xl border-b border-x border-slate-200 z-10"></div>
                     <div class="w-full h-full bg-slate-100 rounded-[2rem] overflow-hidden border border-slate-100 relative">
-                        <!-- ここに実際のスクショ画像を配置 -->
-                        <img src="screen1.png" alt="ホーム画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Home+Screen'">
+                        <img src="screen1.png" alt="タイマー画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Timer+Screen'">
                     </div>
                 </div>
 
@@ -137,8 +163,7 @@
                 <div class="w-64 h-[28rem] bg-white rounded-[2.5rem] p-3 shadow-xl border border-slate-200 relative md:-translate-y-4">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-white rounded-b-xl border-b border-x border-slate-200 z-10"></div>
                     <div class="w-full h-full bg-slate-100 rounded-[2rem] overflow-hidden border border-slate-100 relative">
-                        <!-- ここに実際のスクショ画像を配置 -->
-                        <img src="screen2.png" alt="記録画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Record+Screen'">
+                        <img src="screen2.png" alt="ご褒美・ポイント画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Rewards+Screen'">
                     </div>
                 </div>
 
@@ -146,8 +171,7 @@
                 <div class="hidden lg:block w-64 h-[28rem] bg-white rounded-[2.5rem] p-3 shadow-xl border border-slate-200 relative">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-white rounded-b-xl border-b border-x border-slate-200 z-10"></div>
                     <div class="w-full h-full bg-slate-100 rounded-[2rem] overflow-hidden border border-slate-100 relative">
-                        <!-- ここに実際のスクショ画像を配置 -->
-                        <img src="screen3.png" alt="振り返り画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Graph+Screen'">
+                        <img src="screen3.png" alt="振り返り・共有画面" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/f8fafc/94a3b8?text=Report+Screen'">
                     </div>
                 </div>
             </div>
@@ -155,11 +179,14 @@
 
         <!-- ボトムCTA (Call To Action) -->
         <section class="text-center py-8">
-            <h3 class="text-xl font-black text-slate-800 mb-6">さあ、学びのバトンをつなごう</h3>
-            <a href="https://manabi-tamaben.vercel.app" target="_blank" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-slate-800 text-white rounded-full font-bold text-sm shadow-lg hover:bg-slate-700 transition-colors active:scale-95">
-                <i data-lucide="smartphone" class="w-4 h-4"></i> ブラウザからすぐに始める
+            <h3 class="text-xl font-black text-slate-800 mb-6">家庭と学校で、学びのバトンをつなごう</h3>
+            <a href="https://manabi-tamaben.vercel.app" target="_blank" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-800 text-white rounded-full font-bold text-sm shadow-lg hover:bg-slate-700 transition-colors active:scale-95">
+                <i data-lucide="smartphone" class="w-4 h-4"></i> アプリを使ってみる (無料)
             </a>
-            <p class="text-xs text-slate-400 mt-4 font-medium">※インストール不要。ブラウザ上で動作するWebアプリです。</p>
+            <p class="text-xs text-slate-400 mt-4 font-medium leading-relaxed">
+                ※インストール不要。SafariやChromeなどのブラウザですぐに使い始められます。<br>
+                ホーム画面に追加することで、通常のアプリのようにご利用いただけます。
+            </p>
         </section>
 
     </main>
