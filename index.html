@@ -12,227 +12,107 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root {
-            --bg-main: #fcfaf7; /* ミルクティーベージュ */
-            --accent-peach: #fff1f0;
-            --accent-mint: #f0fdf4;
-            --accent-lavender: #fafaff;
-            --text-main: #4a4a4a;
-        }
+        :root { --bg: #fdfbf7; --accent: #fb923c; }
+        body { background: var(--bg); color: #444; }
+        .glass-header { background: rgba(253, 251, 247, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        
+        /* 浮遊するBlob背景 */
+        .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; animation: move 20s infinite alternate; }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(10%, 10%); } }
 
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
+        /* おしゃれな検索バーの質感 */
+        .search-outer { border: 2px solid #f3f1ed; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .search-outer:focus-within { border-color: var(--accent); box-shadow: 0 10px 40px -10px rgba(251, 146, 60, 0.2); transform: translateY(-2px); }
 
-        /* 背景の動く色の塊（Blob） */
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(251, 146, 60, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 50%;
-            filter: blur(60px);
-            z-index: -1;
-            animation: move 20s infinite alternate;
-        }
-        @keyframes move {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(20%, 20%) scale(1.2); }
-        }
+        /* 教材カード */
+        .material-card { background: white; border-radius: 2.5rem; border: 2px solid #f8f6f2; transition: all 0.5s ease; }
+        .material-card:hover { transform: translateY(-8px); border-color: #fb923c33; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.04); }
 
-        /* ガラスモーフィズム・ヘッダー */
-        .glass-header {
-            background: rgba(252, 250, 247, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
+        /* タブ */
+        .tab-btn { transition: all 0.3s; position: relative; font-weight: 900; color: #a1a1aa; }
+        .tab-btn.active { color: #fb923c; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-        /* 柔らかい浮遊感のあるカード */
-        .soft-card {
-            background: white;
-            border-radius: 2rem;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.03);
-        }
-        .soft-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.06);
-        }
-
-        /* タブのアニメーション */
-        .tab-btn {
-            position: relative;
-            transition: color 0.3s;
-        }
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 4px;
-            background: #fb923c;
-            border-radius: 10px;
-            animation: tab-pop 0.3s ease-out;
-        }
-        @keyframes tab-pop {
-            0% { width: 0; opacity: 0; }
-            100% { width: 20px; opacity: 1; }
-        }
-
-        /* スクロール時のふわっとした表示 */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 背景アニメーション -->
-    <div class="blob" style="top: -100px; left: -100px;"></div>
-    <div class="blob" style="bottom: -100px; right: -100px; animation-delay: -5s; background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, rgba(255, 255, 255, 0) 70%);"></div>
+    <div class="blob" style="width:500px; height:500px; background:rgba(251,146,60,0.06); top:-100px; left:-100px;"></div>
+    <div class="blob" style="width:400px; height:400px; background:rgba(99,102,241,0.05); bottom:-50px; right:-50px; animation-delay:-5s;"></div>
 
-    <!-- ヘッダー -->
-    <header class="sticky top-0 z-[100] glass-header border-b border-orange-100/30">
+    <header class="sticky top-0 z-[100] glass-header border-b-2 border-orange-50/50">
         <div class="container mx-auto px-6 h-20 md:h-28 flex items-center justify-between max-w-7xl">
-            <button onclick="goHome()" class="hover:opacity-80 transition-opacity">
-                <img src="logo.svg" alt="タマベン" class="h-12 md:h-18 w-auto">
+            <button onclick="location.reload()" class="active:scale-95 transition-all">
+                <img src="logo.svg" alt="タマベン" class="h-12 md:h-20 w-auto">
             </button>
-
-            <div class="flex items-center gap-6">
-                <div id="grade-badge" class="hidden md:flex flex-col items-end">
-                    <span class="text-[10px] font-black text-orange-300 uppercase tracking-widest leading-none mb-1">Grade Info</span>
-                    <span id="user-grade-label" class="text-sm font-black text-slate-500">設定なし</span>
-                </div>
-                <button onclick="openSettingsModal()" class="group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-orange-50 shadow-sm transition-all hover:bg-orange-400">
-                    <i data-lucide="user" class="w-5 h-5 text-orange-400 group-hover:text-white transition-colors"></i>
-                </button>
-            </div>
+            <button onclick="openSettingsModal()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border-2 border-orange-50 hover:bg-orange-400 group transition-all">
+                <i data-lucide="user" class="w-5 h-5 text-orange-400 group-hover:text-white"></i>
+            </button>
         </div>
     </header>
 
     <main class="container mx-auto px-6 max-w-6xl pb-32">
-        
-        <!-- ヒーローセクション -->
-        <section class="py-16 md:py-28 text-center reveal">
-            <h1 class="text-4xl md:text-6xl font-black mb-8 tracking-tight text-slate-800 leading-[1.2]">
+        <section class="py-16 md:py-24 text-center reveal">
+            <h1 class="text-4xl md:text-6xl font-black mb-8 leading-[1.2]">
                 学びを、もっと<br/>
-                <span class="inline-block px-4 py-1 bg-orange-100 text-orange-500 rounded-2xl rotate-[-2deg]">自由に。</span>
+                <span class="inline-block px-5 py-1 bg-orange-100 text-orange-500 rounded-3xl rotate-[-2deg]">自由に。</span>
             </h1>
-            <p class="text-slate-400 font-bold text-lg md:text-xl max-w-2xl mx-auto">
-                自分だけのペースで、新しい「わかる！」を見つけにいこう。
-            </p>
             
-            <!-- 検索バー -->
-            <div class="mt-12 max-w-xl mx-auto">
-                <div class="flex items-center bg-white rounded-3xl px-6 py-4 shadow-sm border border-orange-50 focus-within:shadow-xl focus-within:border-orange-200 transition-all">
-                    <i data-lucide="search" class="w-5 h-5 text-orange-300 mr-4"></i>
-                    <input type="text" placeholder="教科やキーワードで探す" class="w-full bg-transparent outline-none font-bold text-slate-600 placeholder:text-slate-300">
+            <!-- 検索エリア -->
+            <div class="mt-12 max-w-2xl mx-auto">
+                <div class="search-outer flex items-center bg-white rounded-[2.5rem] px-8 py-5">
+                    <i data-lucide="search" class="w-6 h-6 text-orange-200 mr-4"></i>
+                    <input type="text" id="search-input" placeholder="例：計算、歴史、小1、ぶんしょうだい..." class="w-full bg-transparent outline-none font-bold text-slate-600 placeholder:text-slate-200">
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 mt-6">
+                    <button onclick="quickSearch('計算')" class="px-4 py-2 rounded-full bg-white border border-orange-50 text-[10px] font-black text-slate-400 hover:bg-orange-400 hover:text-white transition-all shadow-sm">#計算</button>
+                    <button onclick="quickSearch('漢字')" class="px-4 py-2 rounded-full bg-white border border-orange-50 text-[10px] font-black text-slate-400 hover:bg-orange-400 hover:text-white transition-all shadow-sm">#漢字</button>
+                    <button onclick="quickSearch('生き物')" class="px-4 py-2 rounded-full bg-white border border-orange-50 text-[10px] font-black text-slate-400 hover:bg-orange-400 hover:text-white transition-all shadow-sm">#生き物</button>
+                    <button onclick="quickSearch('テスト')" class="px-4 py-2 rounded-full bg-white border border-orange-50 text-[10px] font-black text-slate-400 hover:bg-orange-400 hover:text-white transition-all shadow-sm">#テスト対策</button>
                 </div>
             </div>
         </section>
 
-        <!-- アプリ紹介 -->
-        <section class="mb-20 reveal">
-            <a href="manabi.html" class="group block relative p-1 bg-white rounded-[3rem] shadow-sm hover:shadow-2xl transition-all border border-orange-50">
-                <div class="flex flex-col md:flex-row items-center gap-8 p-8 md:p-12">
-                    <div class="w-24 h-24 md:w-32 md:h-32 bg-indigo-50 rounded-[2.5rem] flex items-center justify-center flex-shrink-0 group-hover:rotate-6 transition-transform duration-500">
-                        <img src="manabi.png" alt="MB" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl">
-                    </div>
-                    <div class="text-center md:text-left flex-grow">
-                        <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-400 text-[10px] font-black rounded-full mb-3 uppercase tracking-tighter">Support App</span>
-                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 mb-2">Manabi Baton</h2>
-                        <p class="text-slate-400 font-bold text-sm">学習記録を楽しく続けられる、タマベン公式アプリ。</p>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-50 text-slate-300 group-hover:bg-orange-400 group-hover:text-white transition-all">
-                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </section>
-
-        <!-- 学年切り替えナビ -->
+        <!-- タブナビ -->
         <div class="sticky top-24 md:top-32 z-40 mb-12 flex justify-center reveal">
-            <div class="inline-flex bg-white/60 p-1.5 rounded-2xl border border-orange-50 backdrop-blur-md">
-                <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-8 py-3 rounded-xl text-sm font-black text-slate-400">小学生</button>
-                <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-8 py-3 rounded-xl text-sm font-black text-slate-400">中学生</button>
+            <div class="inline-flex bg-orange-50/40 p-1.5 rounded-[2rem] border-2 border-white backdrop-blur-md shadow-sm">
+                <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-10 py-3 rounded-[1.6rem] text-sm font-black">小学生</button>
+                <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-10 py-3 rounded-[1.6rem] text-sm font-black">中学生</button>
             </div>
         </div>
 
         <!-- 教材一覧 -->
-        <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-            <!-- JSで動的に挿入 -->
-        </div>
-
+        <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
     </main>
 
-    <!-- フッター -->
-    <footer class="bg-white/50 border-t border-orange-100 py-20 text-center">
-        <img src="logo.svg" alt="タマベン" class="h-10 mx-auto mb-8 opacity-40 grayscale">
-        <p class="text-[10px] text-slate-300 font-black tracking-widest uppercase">
-            &copy; 2026 Tamaben. Made with Love.
-        </p>
+    <footer class="bg-white/50 border-t-2 border-orange-50 py-20 text-center">
+        <img src="logo.svg" alt="タマベン" class="h-10 mx-auto mb-8 opacity-20 grayscale">
+        <p class="text-[10px] text-slate-300 font-black tracking-[0.2em] uppercase">&copy; 2026 Tamaben. All Rights Reserved.</p>
     </footer>
 
-    <!-- 設定モーダル -->
-    <div id="settings-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/10 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-500">
-        <div class="bg-white rounded-[3rem] p-10 w-full max-w-sm shadow-2xl transform scale-90 transition-transform duration-500">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="sparkles" class="w-8 h-8 text-orange-400"></i>
-                </div>
-                <h3 class="text-xl font-black text-slate-800 mb-2">学年の設定</h3>
-                <p class="text-xs text-slate-400 font-bold mb-8">生年月日を入力してね</p>
-                <input type="date" id="birthdate-input" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-orange-50 outline-none font-black text-center mb-6 focus:border-orange-300 transition-all">
-                <button onclick="saveBirthDate()" class="w-full py-4 bg-orange-400 text-white rounded-2xl font-black shadow-lg shadow-orange-100 hover:bg-orange-500 transition-all active:scale-95">保存する</button>
-                <button onclick="closeSettingsModal()" class="mt-6 text-xs font-black text-slate-300 hover:text-slate-500 transition-colors">閉じる</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- スクリプトの読み込み -->
     <script src="script.js"></script>
     <script>
         lucide.createIcons();
-
-        // スクロール時のフェードイン演出
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 150;
-                if (elementTop < windowHeight - elementVisible) {
+                if (reveals[i].getBoundingClientRect().top < window.innerHeight - 100) {
                     reveals[i].classList.add("active");
                 }
             }
         }
         window.addEventListener("scroll", reveal);
         window.onload = reveal;
-
-        // モーダル制御
-        function openSettingsModal() {
-            const m = document.getElementById('settings-modal');
-            m.classList.remove('pointer-events-none', 'opacity-0');
-            m.querySelector('div').classList.remove('scale-90');
-        }
-        function closeSettingsModal() {
-            const m = document.getElementById('settings-modal');
-            m.classList.add('pointer-events-none', 'opacity-0');
-            m.querySelector('div').classList.add('scale-90');
+        
+        function quickSearch(val) {
+            const input = document.getElementById('search-input');
+            input.value = val;
+            renderMaterials();
+            document.getElementById('learning-materials-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     </script>
 </body>
