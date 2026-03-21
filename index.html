@@ -7,343 +7,224 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- 手書き感のあるKiwi Maruを追加 -->
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <link rel="stylesheet" href="style.css">
-    
     <style>
-        /* カスタムスクロールバー等、一部Tailwindで補えない微調整 */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        :root {
+            --sketch-border: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        }
+
+        body {
+            font-family: 'Kiwi Maru', 'Zen Maru Gothic', sans-serif;
+            background-color: #fdfcf8; /* 紙のような色 */
+            background-image: radial-gradient(#e5e7eb 0.5px, transparent 0.5px);
+            background-size: 20px 20px; /* ドット方眼 */
+        }
+
+        /* 手書き風の歪んだ枠線 */
+        .sketch-card {
+            border: 2px solid #474742;
+            border-radius: var(--sketch-border);
+            transition: transform 0.3s ease;
+        }
+        .sketch-card:hover {
+            transform: rotate(-1deg) scale(1.02);
+        }
+
+        /* ぷるぷるアニメーション */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-0.5deg); }
+            50% { transform: rotate(0.5deg); }
+        }
+        .animate-wiggle {
+            animation: wiggle 2s infinite ease-in-out;
+        }
+
+        .glass-header { 
+            background: rgba(253, 252, 248, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 3px solid #474742;
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 10px; 
+            border: 2px solid #f1f1f1;
+        }
+
+        .marker-yellow {
+            background: linear-gradient(transparent 60%, #fef9c3 60%);
+        }
+
+        /* ロゴのテキスト色調整（白から暗いグレーへ） */
+        .main-logo-svg path[stroke="#ffffff"] {
+            stroke: #474742 !important;
+        }
     </style>
 </head>
-<body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative transition-colors duration-1000 overflow-x-hidden bg-slate-50 selection:bg-emerald-200 selection:text-emerald-900">
+<body class="min-h-screen text-slate-700 relative overflow-x-hidden selection:bg-yellow-200">
 
-    <!-- 背景レイヤー (ID保持) -->
+    <!-- 背景レイヤー -->
     <div id="sky-background" class="fixed inset-0 -z-20 transition-colors duration-[3000ms]">
         <div id="stars" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
-        <div id="clouds" class="absolute inset-0 opacity-40"></div>
-    </div>
-
-    <!-- 誕生日演出 (ID保持) -->
-    <div id="birthday-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md pointer-events-none opacity-0 transition-opacity duration-1000">
-        <div id="birthday-content" class="text-center text-white transform scale-0 transition-transform duration-700 p-6 bg-white/10 rounded-[3rem] border border-white/20 shadow-2xl">
-            <div class="mb-6 animate-bounce">
-                <i data-lucide="cake" class="w-24 h-24 md:w-32 md:h-32 text-pink-400 drop-shadow-lg mx-auto"></i>
-            </div>
-            <h1 class="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 mb-4 filter drop-shadow-sm">HAPPY BIRTHDAY!</h1>
-            <p class="text-lg md:text-2xl font-bold text-white/90 mb-8">素敵な1年になりますように！</p>
-            <button onclick="closeBirthdayMode()" class="pointer-events-auto px-10 py-4 bg-white text-pink-500 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform">ありがとう！</button>
-        </div>
     </div>
 
     <!-- ヘッダー -->
-    <header class="sticky top-0 z-50 glass-header border-b border-slate-200/50 transition-colors duration-500 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)]">
-        <div class="container mx-auto px-4 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-6xl">
-            <button onclick="goHome()" class="flex items-center gap-3 group transition-transform active:scale-95">
-                <div class="relative">
-                    <div id="logo-glow" class="absolute inset-0 rounded-xl blur opacity-0 group-hover:opacity-40 transition-opacity bg-emerald-400"></div>
-                    <div class="relative bg-white p-1.5 rounded-xl border border-slate-100 shadow-sm">
-                        <!-- 【修正】テキストからロゴ画像(logo.svg)に変更 -->
-                        <div id="header-logo-wrapper" class="w-24 md:w-32 flex items-center justify-center">
-                            <img src="logo.svg" alt="タマベン" class="w-full h-auto drop-shadow-sm">
-                        </div>
-                    </div>
+    <header class="sticky top-0 z-50 glass-header shadow-sm">
+        <div class="container mx-auto px-4 lg:px-8 h-16 md:h-24 flex items-center justify-between max-w-6xl">
+            <button onclick="goHome()" class="flex items-center gap-3 group active:scale-95 transition-transform">
+                <!-- ロゴ挿入エリア -->
+                <div class="w-32 md:w-48 animate-wiggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="main-logo-svg w-full h-auto">
+                        <g transform="translate(-184.9,-165.975)">
+                            <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb" stroke="none"></path>
+                            <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"></path>
+                            <path d="M194.9,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"></path>
+                            <path d="M197.88,181.65c0,-0.75 0.18,-1.51 0.93,-1.51c0.75,0 0.89,0.75 0.89,1.51c0,0.75 -0.13,1.37 -0.89,1.37c-0.75,0 -0.93,-0.61 -0.93,-1.37z" fill="#f7c7b2"></path>
+                            <path d="M196.18,184.92c0,-0.62 0.5,-0.81 1.12,-0.81c0.62,0 1.12,0.19 1.12,0.81c0,0.62 -0.5,1 -1.12,1c-0.62,0 -1.12,-0.37 -1.12,-1z" fill="#f7b2b2" stroke="#474742" stroke-width="0.5"></path>
+                            <path d="M192.7,176.58c0.05,-1.59 0,-3.41 0,-3.41h9.18c0,0 0.04,2.7 0,3.41c-0.35,1.5 -2.9,1.95 -4.43,1.95c-1.52,0 -4.5,-0.25 -4.75,-1.95z" fill="#4d4d4d"></path>
+                            <g stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none">
+                                <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"></path>
+                                <path d="M243.09,187.37l-7.14,-6.8"></path>
+                                <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"></path>
+                                <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"></path>
+                                <path d="M219.86,179.89l2.95,2.38"></path>
+                                <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"></path>
+                                <path d="M252.36,183c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"></path>
+                                <path d="M266.6,177.77l-1.7,-3.1"></path>
+                                <path d="M267.9,173.77l1.7,3.1"></path>
+                                <path d="M280.34,177.53l-4.4,-4"></path>
+                                <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"></path>
+                            </g>
+                        </g>
+                    </svg>
                 </div>
             </button>
 
             <div class="flex items-center gap-3">
-                <div id="current-grade-badge" class="hidden px-3 py-1.5 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 text-xs font-bold items-center gap-1.5 shadow-sm">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                    <span id="user-grade-label"></span>
-                </div>
-                <button onclick="openSettingsModal()" class="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-emerald-300 hover:text-emerald-600 hover:shadow-md transition-all group">
-                    <i data-lucide="user-cog" class="w-4 h-4 text-slate-400 group-hover:text-emerald-500 transition-colors"></i>
-                    <span class="text-xs font-bold text-slate-600 group-hover:text-emerald-600 hidden md:inline">設定</span>
+                <button onclick="openSettingsModal()" class="sketch-card bg-white px-4 py-2 flex items-center gap-2 hover:bg-yellow-50 transition-colors">
+                    <i data-lucide="user-cog" class="w-5 h-5"></i>
+                    <span class="text-sm font-bold hidden md:inline">せってい</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- メインコンテンツ -->
-    <main class="container mx-auto px-4 py-8 pb-32 relative z-10 max-w-5xl">
+    <main class="container mx-auto px-4 py-8 pb-32 max-w-5xl">
         
-        <!-- === 1. ホーム画面 === -->
-        <div id="view-home" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <!-- === ホーム画面 === -->
+        <div id="view-home">
             
             <!-- ヒーローセクション -->
-            <section id="hero-section" class="relative rounded-[2.5rem] overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 md:p-14 text-center md:text-left transition-all duration-1000 mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30"></div>
-                <!-- 背景装飾 -->
-                <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-100/40 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-100/40 rounded-full blur-3xl"></div>
-
-                <div class="relative z-10 max-w-2xl">
-                    <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-xs font-bold mb-6 border border-slate-100 shadow-sm text-emerald-600">
-                        <i data-lucide="book-open" class="w-4 h-4"></i> 
-                        <span id="season-name"></span>の学びを応援
-                    </div>
-                    <h1 class="text-3xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.2] tracking-tight text-slate-800">
+            <section class="sketch-card bg-white p-8 md:p-14 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl text-left">
+                    <span class="marker-yellow text-sm font-bold mb-4 inline-block">
+                        <i data-lucide="sparkles" class="w-4 h-4 inline mr-1"></i> <span id="season-name"></span>の学び
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight text-slate-800">
                         寄り添う、<br/>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">やさしい学び。</span>
+                        <span class="text-orange-400">やさしい学び。</span>
                     </h1>
-                    <p class="text-slate-500 font-medium text-sm md:text-lg mb-0 leading-relaxed">
-                        ひとりひとりのペースを大切に。<br class="hidden md:block">
+                    <p class="text-slate-500 font-medium text-lg leading-relaxed">
+                        ひとりひとりのペースを大切に。<br>
                         今日も、新しい発見を見つけにいこう。
                     </p>
                 </div>
-                <div class="relative z-10 w-32 h-32 md:w-56 md:h-56 flex-shrink-0 hidden md:flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-emerald-100 to-teal-50 rounded-[2.5rem] rotate-6"></div>
-                    <div class="w-full h-full bg-white rounded-[2.5rem] -rotate-3 flex items-center justify-center border border-slate-100 shadow-xl transition-transform hover:rotate-0 duration-500">
-                        <i id="main-season-icon" class="text-emerald-400 w-16 h-16 md:w-24 md:h-24 drop-shadow-sm"></i>
-                    </div>
+                <!-- 季節のアイコン -->
+                <div class="w-32 h-32 md:w-48 md:h-48 bg-yellow-50 rounded-full border-4 border-dashed border-yellow-200 flex items-center justify-center animate-wiggle">
+                    <i id="main-season-icon" class="text-yellow-400 w-20 h-20"></i>
                 </div>
             </section>
 
-            <!-- アプリ一覧セクション -->
-            <section id="apps-section" class="mb-12 animate-in slide-in-from-top-4 duration-700 delay-100">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
-                        <i data-lucide="smartphone" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">学習サポートアプリ</h3>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <!-- Manabi Baton カード -->
-                    <a href="manabi.html" class="group relative bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-50 rounded-full blur-2xl group-hover:bg-indigo-100 transition-colors"></div>
-                        
-                        <div class="relative z-10 flex items-start gap-4 mb-4">
-                            <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-sm border border-slate-100 bg-white group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                                <img src="manabi.png" alt="Manabi Baton" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/e0e7ff/4f46e5?text=MB'">
-                            </div>
-                            <div class="flex-1 pt-1">
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 font-bold text-[10px] tracking-wider">公式アプリ</span>
-                                </div>
-                                <h4 class="text-lg font-black text-slate-800 group-hover:text-indigo-600 transition-colors">Manabi Baton</h4>
-                            </div>
-                        </div>
-                        
-                        <div class="relative z-10">
-                            <p class="text-sm text-slate-500 font-medium leading-relaxed mb-4">
-                                日々の学習記録をバトンのようにつなぐ。モチベーションを維持するための学習管理アプリです。
-                            </p>
-                            <div class="flex items-center text-indigo-500 font-bold text-sm gap-1.5 group-hover:gap-2.5 transition-all">
-                                <span>アプリを見る</span>
-                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- おすすめ (最優先表示) -->
-            <div id="recommendation-section" class="hidden mb-12 animate-in slide-in-from-top-4 duration-700 delay-200">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
-                        <i data-lucide="star" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">今月のピックアップ (<span id="recommend-month"></span>月)</h3>
-                </div>
-                <div id="recommendation-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
-
-            <!-- 最近使った教材 -->
-            <div id="history-section" class="hidden mb-12 animate-in slide-in-from-top-4 duration-700 delay-300">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
-                        <i data-lucide="clock" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">最近ダウンロードした教材</h3>
-                </div>
-                <div id="history-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
-
-            <hr class="border-slate-200/60 my-10">
-
-            <!-- 学年切り替えタブ -->
-            <div class="flex justify-center mb-8 sticky top-[5rem] z-40">
-                <div class="inline-flex bg-white/80 p-1.5 rounded-2xl backdrop-blur-xl border border-slate-200 shadow-sm w-full max-w-sm">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex justify-center items-center gap-2">
-                        <i data-lucide="sun" class="w-4 h-4"></i> 小学生
-                    </button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex justify-center items-center gap-2">
-                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> 中学生
-                    </button>
+            <!-- 学年切り替え -->
+            <div class="flex justify-center mb-12">
+                <div class="inline-flex bg-slate-100 p-2 rounded-full border-2 border-slate-200">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="px-8 py-3 rounded-full text-sm font-bold transition-all">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="px-8 py-3 rounded-full text-sm font-bold transition-all">中学生</button>
                 </div>
             </div>
 
-            <!-- 教材リストエリア -->
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
-                <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-400 border-t-transparent"></div>
-                    <p class="mt-4 text-slate-500 font-bold text-sm">読み込み中...</p>
-                    <p id="data-load-status" class="text-[10px] text-slate-400 mt-2"></p>
-                </div>
+            <!-- 教材リスト -->
+            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- JSでカードが挿入される -->
+                <p class="col-span-full text-center py-20 text-slate-400 font-bold">読み込み中...</p>
             </div>
-
-            <!-- チームメッセージ -->
-            <section class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] text-center max-w-3xl mx-auto mb-10 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-300 to-teal-400"></div>
-                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-emerald-500 rotate-3">
-                    <i data-lucide="heart-handshake" class="w-7 h-7"></i>
-                </div>
-                <h2 class="text-xl font-black text-slate-800 mb-4 tracking-tight">タマベンチームより</h2>
-                <p class="text-slate-500 font-medium leading-relaxed text-sm md:text-base mb-8 text-justify md:text-center">
-                    このサイトは、趣味で活動している個人が運営しています。<br class="hidden md:inline">
-                    「もっと楽しく、もっと自由に学びたい」という想いで作成しました。<br class="hidden md:inline">
-                    もし教材に不備や間違いがございましたら、お手数ですがお問い合わせよりご連絡いただけますと幸いです。
-                </p>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd8klNVN_Y1Wip09FtJngdl1suEjPwX6Gn5n2vH97UATWek9Q/viewform?usp=publish-editor" target="_blank" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-bold transition-colors text-sm w-full md:w-auto justify-center group">
-                    <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-slate-600"></i> Googleフォームで問い合わせる
-                </a>
-            </section>
-
         </div>
 
-        <!-- === 2. 詳細ページ === -->
-        <div id="view-detail" class="hidden animate-in slide-in-from-right-8 duration-500 h-[calc(100vh-6rem)] md:h-auto flex flex-col">
-            <div class="flex-none mb-4">
-                <button onclick="goHome()" class="flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-bold bg-white px-5 py-2.5 rounded-full hover:bg-slate-50 transition-all shadow-sm border border-slate-200 text-sm w-fit">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 教材一覧へ戻る
-                </button>
-            </div>
+        <!-- === 詳細ページ === -->
+        <div id="view-detail" class="hidden animate-in slide-in-from-bottom-10 duration-500">
+            <button onclick="goHome()" class="sketch-card bg-white px-6 py-2 mb-6 flex items-center gap-2 hover:bg-slate-50 transition-all">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i> 一覧にもどる
+            </button>
 
-            <div class="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col flex-grow md:block">
-                <!-- ヘッダー -->
-                <div id="detail-header" class="flex-none p-8 md:p-12 text-center relative overflow-hidden text-white bg-emerald-500 transition-colors duration-500">
-                    <div class="relative z-10">
-                        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 px-4 py-1.5 rounded-full text-xs font-bold mb-4 shadow-sm">
-                            <span id="detail-grade"></span> <span class="opacity-50">|</span> <span id="detail-subject"></span>
-                        </div>
-                        <h1 id="detail-title" class="text-3xl md:text-4xl lg:text-5xl font-black drop-shadow-sm leading-tight tracking-tight"></h1>
+            <div class="sketch-card bg-white overflow-hidden">
+                <div id="detail-header" class="p-8 md:p-12 text-center border-b-2 border-slate-100 bg-yellow-50">
+                    <div class="inline-block px-4 py-1 rounded-full border-2 border-slate-800 text-xs font-bold mb-4 bg-white">
+                        <span id="detail-grade"></span> / <span id="detail-subject"></span>
                     </div>
-                    <div class="absolute -bottom-16 -right-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')]"></div>
+                    <h1 id="detail-title" class="text-3xl md:text-5xl font-black text-slate-800"></h1>
                 </div>
 
-                <!-- PDF選択エリア -->
-                <div class="flex-grow p-6 md:p-10 bg-slate-50/50 overflow-y-auto">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-3xl mx-auto content-center h-full">
-                        <!-- 基本 -->
-                        <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm hover:shadow-lg transition-all border border-slate-100 hover:border-emerald-300 group cursor-pointer flex items-center justify-between md:flex-col md:text-center" onclick="openPdf('basic')">
-                            <div class="flex items-center gap-5 md:flex-col md:gap-4">
-                                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 md:mx-auto group-hover:-translate-y-1 transition-transform">
-                                    <i data-lucide="file-text" class="w-7 h-7"></i>
-                                </div>
-                                <div class="text-left md:text-center">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-600 font-bold text-[10px] mb-1.5 tracking-wider">LEVEL 1</span>
-                                    <h3 class="text-lg font-black text-slate-800">基本問題</h3>
-                                </div>
-                            </div>
-                            <span class="md:hidden w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                            </span>
-                            <span class="hidden md:block w-full mt-6 py-3 rounded-xl bg-slate-50 text-slate-500 font-bold text-sm group-hover:bg-emerald-500 group-hover:text-white transition-all">問題を開く</span>
+                <div class="p-8 md:p-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 基本問題 -->
+                    <div onclick="openPdf('basic')" class="sketch-card p-8 bg-white hover:bg-emerald-50 cursor-pointer group border-emerald-400">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4 text-emerald-600">
+                            <i data-lucide="book-open" class="w-8 h-8"></i>
                         </div>
-
-                        <!-- 応用 -->
-                        <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm hover:shadow-lg transition-all border border-slate-100 hover:border-orange-300 group cursor-pointer flex items-center justify-between md:flex-col md:text-center" onclick="openPdf('advanced')">
-                            <div class="flex items-center gap-5 md:flex-col md:gap-4">
-                                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 md:mx-auto group-hover:-translate-y-1 transition-transform">
-                                    <i data-lucide="file-bar-chart-2" class="w-7 h-7"></i>
-                                </div>
-                                <div class="text-left md:text-center">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-md bg-orange-50 text-orange-600 font-bold text-[10px] mb-1.5 tracking-wider">LEVEL 2</span>
-                                    <h3 class="text-lg font-black text-slate-800">応用問題</h3>
-                                </div>
-                            </div>
-                            <span class="md:hidden w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                            </span>
-                            <span class="hidden md:block w-full mt-6 py-3 rounded-xl bg-slate-50 text-slate-500 font-bold text-sm group-hover:bg-orange-500 group-hover:text-white transition-all">挑戦する</span>
+                        <h3 class="text-xl font-bold mb-2">基本問題</h3>
+                        <p class="text-sm text-slate-500">まずはここから！基本をしっかり確認しよう。</p>
+                    </div>
+                    <!-- 応用問題 -->
+                    <div onclick="openPdf('advanced')" class="sketch-card p-8 bg-white hover:bg-orange-50 cursor-pointer group border-orange-400">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4 text-orange-600">
+                            <i data-lucide="zap" class="w-8 h-8"></i>
                         </div>
-
-                        <!-- 保護者用 -->
-                        <div class="md:col-span-2 bg-blue-50/50 rounded-3xl p-4 md:p-6 border border-blue-100 mt-2 md:mt-0 hover:bg-blue-50 transition-colors">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-500 shadow-sm border border-blue-100">
-                                        <i data-lucide="users" class="w-6 h-6"></i>
-                                    </div>
-                                    <div class="text-left">
-                                        <p class="text-[10px] text-blue-500 font-bold tracking-wider mb-0.5">解答・解説</p>
-                                        <h3 class="text-sm md:text-base font-black text-blue-900">保護者用プリント</h3>
-                                    </div>
-                                </div>
-                                <button onclick="openPdf('answer')" class="px-5 py-2.5 bg-white text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-2">
-                                    <i data-lucide="file-check" class="w-4 h-4"></i> <span class="hidden md:inline">解答を</span>開く
-                                </button>
-                            </div>
-                        </div>
+                        <h3 class="text-xl font-bold mb-2">応用問題</h3>
+                        <p class="text-sm text-slate-500">レベルアップ！難しい問題に挑戦してみよう。</p>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- 設定モーダル -->
-    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100" id="settings-modal-content">
-            <div class="flex justify-end mb-2">
-                <button onclick="closeSettingsModal()" class="p-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-500 border border-emerald-100">
-                    <i data-lucide="baby" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-black text-slate-800">学年の設定</h3>
-                <p class="text-xs text-slate-500 mt-2 font-medium leading-relaxed">生年月日を登録すると<br>おすすめ教材が表示されます</p>
-            </div>
-            <div class="space-y-5">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                    <label class="block text-xs font-bold text-slate-600 mb-2 flex items-center gap-1.5">
-                        <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i> 生年月日
-                    </label>
-                    <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none font-bold text-slate-700 text-center text-base transition-all" />
-                </div>
-                <button onclick="saveBirthDate()" class="w-full py-3.5 rounded-xl font-bold text-white bg-emerald-500 hover:bg-emerald-600 shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
-                    保存する
-                </button>
-                <div class="pt-4 text-center">
-                    <button onclick="clearBirthDate()" class="text-xs text-slate-400 hover:text-red-500 font-bold transition-colors inline-flex items-center gap-1">
-                        情報を削除する
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- フッター -->
-    <footer class="bg-white border-t border-slate-200/60 py-10 mt-10">
+    <footer class="bg-white border-t-4 border-slate-800 py-12 mt-20">
         <div class="container mx-auto px-4 text-center">
-            <!-- 【修正】アイコンとテキストからロゴ画像(logo.svg)に変更 -->
-            <div class="inline-flex items-center justify-center mb-4">
-                <img src="logo.svg" alt="タマベン" class="h-8 w-auto grayscale opacity-50">
+            <div class="w-32 md:w-40 mx-auto opacity-50 grayscale mb-6">
+                <!-- ロゴ（フッター用） -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110.2 28.05" class="main-logo-svg w-full h-auto">
+                    <!-- ヘッダーと同じ内容を再利用 -->
+                    <use href=".main-logo-svg"></use>
+                    <g transform="translate(-184.9,-165.975)">
+                        <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="#f7f7cb"></path>
+                        <path d="M190.659,184.74c0,-5.43 1.84,-9.84 6.65,-9.84c4.8,0 6.65,4.4 6.65,9.84c0,5.43 -2.66,6.65 -6.65,6.65c-3.98,0 -6.65,-1.21 -6.65,-6.65z" fill="none" stroke="#474742" stroke-width="1"></path>
+                        <g stroke="#474742" stroke-width="3.5" stroke-linecap="round" fill="none">
+                            <path d="M233.67,174.32c0,0 13.75,-0.09 14.75,0c1.41,-0.03 -7.94,9.41 -7.94,9.41"></path>
+                            <path d="M243.09,187.37l-7.14,-6.8"></path>
+                            <path d="M219.4,172.63c0,0 -1.33,2.93 -2.41,4.4c-1.03,1.4 -2.34,2.29 -2.34,2.29"></path>
+                            <path d="M218.5,175.47c0,0 7.39,-0.42 8.05,0c0.69,0.69 -1.04,4.66 -3.72,7.39c-3.1,3.16 -5.57,4.06 -5.57,4.06"></path>
+                            <path d="M252.13,183.1c0,0 5.3,-6.6 6.01,-6.58c0.69,-0.49 9.87,9.3 9.87,9.3"></path>
+                            <path d="M280.34,177.53l-4.4,-4"></path>
+                            <path d="M289.34,177.73c0,0 -3.3,4.5 -5.48,5.98c-2.43,1.64 -8.41,3.41 -8.41,3.41"></path>
+                        </g>
+                    </g>
+                </svg>
             </div>
-            <p class="text-xs text-slate-400 font-medium">
-                &copy; 2026 Tamaben. All Rights Reserved.
-            </p>
+            <p class="text-xs text-slate-400 font-bold">&copy; 2026 Tamaben. しゅみでつくっています。</p>
         </div>
     </footer>
 
-    <!-- 【バグ修正】<script src="data.json"></script> はSyntaxErrorになるため削除しました -->
     <script src="script.js"></script>
     <script>
-        // Lucideアイコンの初期化
         lucide.createIcons();
     </script>
 </body>
