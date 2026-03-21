@@ -20,65 +20,54 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* ロゴの雰囲気に合わせた「やさしい境界線」 */
+        .sketch-border { border: 2px solid #e2e8f0; }
+        .sketch-card { border: 2px solid #f1f5f9; transition: all 0.3s ease; }
+        .sketch-card:hover { border-color: #cbd5e1; transform: translateY(-2px); }
+
         .glass-header { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px); 
         }
 
-        /* アニメーションとインタラクションの安定化 */
-        .logo-hover { transition: transform 0.2s ease-in-out; }
-        .logo-hover:hover { transform: scale(1.02); }
-        
-        /* モーダル表示用クラス (script.jsから制御) */
-        .modal-visible { opacity: 1 !important; pointer-events: auto !important; }
-        .modal-visible > div { transform: scale(1) !important; }
+        /* 柔らかい浮遊アニメーション */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim { animation: float 4s ease-in-out infinite; }
     </style>
 </head>
-<body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative transition-colors duration-1000 overflow-x-hidden bg-slate-50 selection:bg-emerald-200 selection:text-emerald-900">
+<body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative overflow-x-hidden bg-[#fafaf9] selection:bg-orange-100 selection:text-orange-900">
 
-    <!-- 背景レイヤー (最背面) -->
-    <div id="sky-background" class="fixed inset-0 -z-50 pointer-events-none transition-colors duration-[3000ms]">
-        <div id="stars" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
-        <div id="clouds" class="absolute inset-0 opacity-30"></div>
+    <!-- 背景装飾（ロゴに合わせた手書き風の柔らかい丸） -->
+    <div class="fixed inset-0 -z-50 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-50 rounded-full blur-[100px] opacity-60"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[100px] opacity-60"></div>
     </div>
 
-    <!-- 誕生日演出 (最前面) -->
-    <div id="birthday-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md pointer-events-none opacity-0 transition-opacity duration-1000">
-        <div id="birthday-content" class="text-center text-white transform scale-0 transition-transform duration-700 p-6 bg-white/10 rounded-[3rem] border border-white/20 shadow-2xl">
-            <div class="mb-6 animate-bounce">
-                <i data-lucide="cake" class="w-24 h-24 md:w-32 md:h-32 text-pink-400 drop-shadow-lg mx-auto"></i>
-            </div>
-            <h1 class="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 mb-4 filter drop-shadow-sm">HAPPY BIRTHDAY!</h1>
-            <p class="text-lg md:text-2xl font-bold text-white/90 mb-8">素敵な1年になりますように！</p>
-            <button onclick="closeBirthdayMode()" class="pointer-events-auto px-10 py-4 bg-white text-pink-500 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform">ありがとう！</button>
-        </div>
-    </div>
-
-    <!-- ヘッダー (固定) -->
-    <header class="sticky top-0 z-[100] glass-header border-b border-slate-200/50 transition-colors duration-500 shadow-sm">
-        <div class="container mx-auto px-4 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-6xl">
+    <!-- ヘッダー -->
+    <header class="sticky top-0 z-[100] glass-header border-b-2 border-slate-100 shadow-sm">
+        <div class="container mx-auto px-4 lg:px-8 h-16 md:h-24 flex items-center justify-between max-w-6xl">
             
-            <!-- ロゴエリア (左) -->
+            <!-- 新しいロゴ -->
             <button onclick="goHome()" class="flex items-center transition-transform active:scale-95 py-2">
-                <div class="w-28 md:w-36 lg:w-40 flex items-center justify-center">
-                    <img src="logo.svg" alt="タマベン" class="w-full h-auto logo-hover">
+                <div class="w-32 md:w-48 lg:w-56">
+                    <img src="logo.svg" alt="タマベン" class="w-full h-auto">
                 </div>
             </button>
 
-            <!-- アクションエリア (右) -->
-            <div class="flex items-center gap-2 md:gap-4">
-                <!-- 学年表示バッジ -->
-                <div id="current-grade-badge" class="hidden px-3 py-1.5 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 text-[10px] md:text-xs font-bold items-center gap-1.5 shadow-sm">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+            <!-- アクションエリア -->
+            <div class="flex items-center gap-3">
+                <div id="current-grade-badge" class="hidden md:flex px-4 py-2 rounded-full border-2 border-slate-100 bg-white text-slate-500 text-xs font-black items-center gap-2">
+                    <i data-lucide="smile" class="w-4 h-4"></i>
                     <span id="user-grade-label"></span>
                 </div>
-                <!-- 設定ボタン -->
-                <button onclick="openSettingsModal()" class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 rounded-full bg-white border border-slate-200 shadow-sm hover:border-emerald-300 hover:text-emerald-600 hover:shadow-md transition-all group relative z-[110]">
-                    <i data-lucide="user-cog" class="w-4 h-4 text-slate-400 group-hover:text-emerald-500 transition-colors"></i>
-                    <span class="text-xs font-black text-slate-600 group-hover:text-emerald-600">設定</span>
+                <button onclick="openSettingsModal()" class="flex items-center gap-2 px-4 py-2 md:py-3 rounded-2xl bg-slate-800 text-white hover:bg-slate-700 transition-all shadow-md active:scale-95 group">
+                    <i data-lucide="settings" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500"></i>
+                    <span class="text-xs font-black">設定</span>
                 </button>
             </div>
         </div>
@@ -88,113 +77,86 @@
     <main class="container mx-auto px-4 py-8 pb-32 relative z-10 max-w-5xl">
         
         <!-- ホーム画面 -->
-        <div id="view-home" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="view-home" class="animate-in fade-in slide-in-from-bottom-4 duration-700">
             
-            <!-- ヒーローセクション -->
-            <section id="hero-section" class="relative rounded-[2.5rem] overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 md:p-14 text-center md:text-left mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30"></div>
+            <!-- ヒーローセクション（ロゴのマスコットに合わせた雰囲気） -->
+            <section id="hero-section" class="relative rounded-[3rem] overflow-hidden bg-white border-2 border-slate-100 p-8 md:p-16 text-center md:text-left mb-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-sm">
                 <div class="relative z-10 max-w-2xl">
-                    <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold mb-6 border border-slate-100 shadow-sm text-emerald-600">
-                        <i data-lucide="book-open" class="w-4 h-4"></i> <span id="season-name"></span>の学びを応援
+                    <div class="inline-flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-full text-xs font-black mb-6 text-slate-400 border border-slate-100 uppercase tracking-widest">
+                        Handmade Learning Support
                     </div>
-                    <h1 class="text-3xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.2] tracking-tight text-slate-800">
-                        寄り添う、<br/>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">やさしい学び。</span>
+                    <h1 class="text-4xl md:text-6xl font-black mb-8 leading-[1.15] text-slate-800 tracking-tight">
+                        学びを、<br/>
+                        <span class="text-orange-400">もっと自由に。</span>
                     </h1>
-                    <p class="text-slate-500 font-medium text-sm md:text-lg mb-0 leading-relaxed">
-                        ひとりひとりのペースを大切に。今日も、新しい発見を見つけにいこう。
+                    <p class="text-slate-400 font-bold text-base md:text-xl mb-0 leading-relaxed">
+                        ひとりひとりの「やりたい」に寄り添う、<br class="hidden md:block">
+                        タマベンはそんな、やさしい場所を目指しています。
                     </p>
                 </div>
-                <div class="relative z-10 w-32 h-32 md:w-56 md:h-56 hidden md:flex items-center justify-center">
-                    <div class="w-full h-full bg-white rounded-[2.5rem] flex items-center justify-center border border-slate-100 shadow-xl transition-transform hover:rotate-2 duration-500">
-                        <i id="main-season-icon" class="text-emerald-400 w-16 h-16 md:w-24 md:h-24"></i>
+                <!-- 右側の装飾（マスコットが浮いているようなイメージ） -->
+                <div class="relative z-10 w-40 h-40 md:w-64 md:h-64 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-orange-100/50 rounded-full blur-2xl float-anim"></div>
+                    <div class="relative w-full h-full bg-white rounded-[3rem] border-2 border-slate-50 shadow-xl flex items-center justify-center rotate-3 float-anim">
+                        <i id="main-season-icon" class="text-orange-300 w-20 h-20 md:w-32 md:h-32"></i>
                     </div>
                 </div>
             </section>
 
-            <!-- アプリ一覧 -->
-            <section class="mb-12">
-                <div class="flex items-center gap-3 mb-6 text-slate-800">
-                    <i data-lucide="smartphone" class="w-6 h-6 text-indigo-500"></i>
-                    <h3 class="text-xl font-bold tracking-tight">学習サポートアプリ</h3>
+            <!-- 学習サポートアプリ -->
+            <section class="mb-16">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 sketch-border">
+                        <i data-lucide="layout" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800">学習サポートアプリ</h3>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <a href="manabi.html" class="group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all">
-                        <div class="flex items-center gap-4 mb-4">
-                            <img src="manabi.png" alt="MB" class="w-14 h-14 rounded-2xl shadow-sm border border-slate-50">
-                            <div>
-                                <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Official</span>
-                                <h4 class="font-black text-lg group-hover:text-indigo-600 transition-colors leading-none mt-1">Manabi Baton</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="manabi.html" class="group bg-white rounded-[2.5rem] p-8 sketch-card flex flex-col md:flex-row items-center gap-8">
+                        <img src="manabi.png" alt="MB" class="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] shadow-lg group-hover:rotate-6 transition-transform">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-black px-2 py-0.5 bg-indigo-50 text-indigo-500 rounded-md">APP</span>
+                                <h4 class="font-black text-xl text-slate-800">Manabi Baton</h4>
                             </div>
+                            <p class="text-sm text-slate-400 font-bold leading-relaxed">学習記録を「見える化」して、こどものやる気を引き出す専用アプリ。</p>
                         </div>
-                        <p class="text-sm text-slate-500 leading-relaxed">日々の学習記録をバトンのようにつなぐ学習管理アプリです。</p>
                     </a>
                 </div>
             </section>
 
-            <!-- 学年切り替えタブ -->
-            <div class="flex justify-center mb-10 sticky top-[5.5rem] z-40">
-                <div class="inline-flex bg-white/90 p-1.5 rounded-2xl backdrop-blur-xl border border-slate-200 shadow-sm w-full max-w-sm">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active flex-1 py-3 rounded-xl text-sm font-black transition-all">小学生</button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive flex-1 py-3 rounded-xl text-sm font-black transition-all">中学生</button>
+            <!-- 教材一覧（タブとカード） -->
+            <div class="flex justify-center mb-12 sticky top-24 z-40">
+                <div class="inline-flex bg-white/90 p-2 rounded-[2rem] border-2 border-slate-100 shadow-xl backdrop-blur-md w-full max-w-sm">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active flex-1 py-4 rounded-2xl text-sm font-black transition-all">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive flex-1 py-4 rounded-2xl text-sm font-black transition-all">中学生</button>
                 </div>
             </div>
 
-            <!-- 教材コンテナ -->
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
-                <!-- script.jsによって中身が生成されます -->
+            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+                <!-- script.jsが教材カードを生成します -->
             </div>
         </div>
 
         <!-- 詳細画面 -->
         <div id="view-detail" class="hidden animate-in slide-in-from-right-8 duration-500">
-            <button onclick="goHome()" class="mb-6 flex items-center gap-2 text-slate-500 font-bold bg-white px-5 py-2.5 rounded-full border border-slate-200 shadow-sm hover:text-emerald-600 hover:bg-slate-50 transition-all">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> 教材一覧に戻る
+            <button onclick="goHome()" class="mb-8 flex items-center gap-2 text-slate-400 font-black hover:text-slate-800 transition-colors">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i> 教材一覧に戻る
             </button>
-            <div id="detail-card" class="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-xl">
-                <!-- script.jsによって詳細が描画されます -->
+            <div id="detail-card" class="bg-white rounded-[3.5rem] overflow-hidden border-2 border-slate-100 shadow-sm">
+                <!-- script.jsが内容を描画します -->
             </div>
         </div>
 
     </main>
 
-    <!-- 設定モーダル -->
-    <div id="settings-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
-        <div class="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100">
-            <div class="flex justify-end mb-2">
-                <button onclick="closeSettingsModal()" class="p-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-500 border border-emerald-100">
-                    <i data-lucide="baby" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-black text-slate-800">学年の設定</h3>
-                <p class="text-xs text-slate-500 mt-2 font-medium">生年月日を登録すると<br>おすすめ教材が表示されます</p>
-            </div>
-            <div class="space-y-5">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                    <label class="block text-xs font-bold text-slate-600 mb-2">生年月日</label>
-                    <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none font-bold text-slate-700 text-center transition-all" />
-                </div>
-                <button onclick="saveBirthDate()" class="w-full py-4 rounded-xl font-black text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg transition-all active:scale-95">
-                    保存する
-                </button>
-                <button onclick="clearBirthDate()" class="w-full text-xs text-slate-400 hover:text-red-500 font-bold transition-colors">
-                    情報を削除する
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- フッター -->
-    <footer class="bg-white border-t border-slate-200/60 py-12">
+    <footer class="bg-white border-t-2 border-slate-50 py-16">
         <div class="container mx-auto px-4 text-center">
-            <div class="inline-flex items-center justify-center mb-6">
-                <img src="logo.svg" alt="タマベン" class="h-8 md:h-10 w-auto grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <div class="inline-flex items-center justify-center mb-8 opacity-50 hover:opacity-100 transition-opacity">
+                <img src="logo.svg" alt="タマベン" class="h-10 md:h-12 w-auto grayscale">
             </div>
-            <p class="text-[10px] md:text-xs text-slate-400 font-bold tracking-widest uppercase">
+            <p class="text-xs text-slate-300 font-black tracking-widest uppercase">
                 &copy; 2026 Tamaben. All Rights Reserved.
             </p>
         </div>
@@ -202,18 +164,7 @@
 
     <script src="script.js"></script>
     <script>
-        // Lucideアイコンの初期化
         lucide.createIcons();
-        
-        // モーダルの開閉機能（script.jsにない場合のための予備実装）
-        function openSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.add('modal-visible');
-        }
-        function closeSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.remove('modal-visible');
-        }
     </script>
 </body>
 </html>
