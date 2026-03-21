@@ -22,6 +22,8 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        /* ロゴが少し浮き上がるホバーアニメーション */
+        .logo-hover:hover { transform: translateY(-1px); filter: brightness(1.05); }
     </style>
 </head>
 <body class="min-h-screen font-['Zen_Maru_Gothic'] text-slate-700 relative transition-colors duration-1000 overflow-x-hidden bg-slate-50 selection:bg-emerald-200 selection:text-emerald-900">
@@ -47,13 +49,13 @@
     <!-- ヘッダー -->
     <header class="sticky top-0 z-50 glass-header border-b border-slate-200/50 transition-colors duration-500 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)]">
         <div class="container mx-auto px-4 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-6xl">
-            <button onclick="goHome()" class="flex items-center gap-3 group transition-transform active:scale-95">
+            <button onclick="goHome()" class="flex items-center group transition-transform active:scale-95">
                 <div class="relative">
                     <div id="logo-glow" class="absolute inset-0 rounded-xl blur opacity-0 group-hover:opacity-40 transition-opacity bg-emerald-400"></div>
-                    <div class="relative bg-white p-1.5 rounded-xl border border-slate-100 shadow-sm">
-                        <!-- 【修正】外部ファイル logo.svg を読み込む形式に変更 -->
+                    <div class="relative bg-white/40 p-1.5 rounded-xl border border-slate-100 shadow-sm backdrop-blur-sm">
+                        <!-- === 全てのロゴを logo.svg に変更 (Header) === -->
                         <div id="header-logo-wrapper" class="w-28 md:w-40 flex items-center justify-center">
-                            <img src="logo.svg" alt="タマベン" class="w-full h-auto drop-shadow-sm">
+                            <img src="logo.svg" alt="タマベン ロゴ" class="w-full h-auto logo-hover transition-all duration-300">
                         </div>
                     </div>
                 </div>
@@ -75,7 +77,7 @@
     <!-- メインコンテンツ -->
     <main class="container mx-auto px-4 py-8 pb-32 relative z-10 max-w-5xl">
         
-        <!-- ホーム画面 -->
+        <!-- === 1. ホーム画面 === -->
         <div id="view-home" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
             <!-- ヒーローセクション -->
@@ -106,8 +108,8 @@
                 </div>
             </section>
 
-            <!-- アプリ一覧 -->
-            <section id="apps-section" class="mb-12">
+            <!-- アプリ一覧セクション -->
+            <section id="apps-section" class="mb-12 animate-in slide-in-from-top-4 duration-700 delay-100">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
                         <i data-lucide="smartphone" class="w-5 h-5"></i>
@@ -120,70 +122,72 @@
                         <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-50 rounded-full blur-2xl group-hover:bg-indigo-100 transition-colors"></div>
                         <div class="relative z-10 flex items-start gap-4 mb-4">
                             <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-sm border border-slate-100 bg-white group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                                <img src="manabi.png" alt="Manabi Baton" class="w-full h-full object-cover">
+                                <img src="manabi.png" alt="Manabi Baton" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/e0e7ff/4f46e5?text=MB'">
                             </div>
                             <div class="flex-1 pt-1">
                                 <span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 font-bold text-[10px] tracking-wider">公式アプリ</span>
                                 <h4 class="text-lg font-black text-slate-800 group-hover:text-indigo-600 transition-colors">Manabi Baton</h4>
                             </div>
                         </div>
-                        <p class="relative z-10 text-sm text-slate-500 font-medium leading-relaxed mb-4">日々の学習記録をバトン。モチベーションを維持するための学習管理アプリです。</p>
-                        <div class="relative z-10 flex items-center text-indigo-500 font-bold text-sm gap-1.5 group-hover:gap-2.5 transition-all">
-                            <span>アプリを見る</span>
-                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <div class="relative z-10">
+                            <p class="text-sm text-slate-500 font-medium leading-relaxed mb-4">
+                                日々の学習記録をバトンのようにつなぐ。モチベーションを維持するための学習管理アプリです。
+                            </p>
+                            <div class="flex items-center text-indigo-500 font-bold text-sm gap-1.5 group-hover:gap-2.5 transition-all">
+                                <span>アプリを見る</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </div>
                         </div>
                     </a>
                 </div>
             </section>
 
-            <!-- タブ切り替え -->
+            <!-- 学年切り替えタブ -->
             <div class="flex justify-center mb-8 sticky top-[5rem] z-40">
-                <div class="inline-flex bg-white/80 p-1.5 rounded-2xl backdrop-blur-xl border border-slate-200 shadow-sm w-full max-w-sm">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active flex-1 py-3 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">小学生</button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive flex-1 py-3 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">中学生</button>
+                <div class="inline-flex bg-white/80 p-1.5 rounded-2xl backdrop-blur-xl border border-slate-200 shadow-sm w-full max-sm:max-w-xs">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-active flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-inactive flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300">中学生</button>
                 </div>
             </div>
 
-            <!-- 教材コンテナ -->
+            <!-- 教材リストエリア -->
             <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
-                <!-- JSで挿入 -->
+                <!-- コンテンツは script.js で生成されます -->
             </div>
 
         </div>
 
-        <!-- 詳細画面 (構造のみ) -->
+        <!-- === 2. 詳細ページ === -->
         <div id="view-detail" class="hidden animate-in slide-in-from-right-8 duration-500">
-            <button onclick="goHome()" class="mb-4 flex items-center gap-2 text-slate-500 font-bold bg-white px-5 py-2.5 rounded-full border border-slate-200 shadow-sm hover:text-emerald-600 transition-colors">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> 教材一覧へ戻る
-            </button>
-            <div class="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-xl">
-                <div id="detail-header" class="p-12 text-center text-white bg-emerald-500 transition-colors">
-                    <h1 id="detail-title" class="text-3xl md:text-5xl font-black drop-shadow-sm"></h1>
-                </div>
-                <div class="p-8 bg-slate-50/50" id="detail-content">
-                    <!-- JSで詳細を挿入 -->
-                </div>
+            <div class="flex-none mb-4">
+                <button onclick="goHome()" class="flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-bold bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-200 text-sm">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 教材一覧へ戻る
+                </button>
+            </div>
+            <div id="detail-card" class="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-lg">
+                <!-- script.js で詳細が描画されます -->
             </div>
         </div>
 
     </main>
 
     <!-- フッター -->
-    <footer class="bg-white border-t border-slate-200/60 py-10 mt-10">
+    <footer class="bg-white border-t border-slate-200/60 py-12 mt-10">
         <div class="container mx-auto px-4 text-center">
-            <!-- 【修正】フッターも外部ロゴ読み込みに変更 -->
-            <div class="inline-flex items-center justify-center mb-4">
-                <img src="logo.svg" alt="タマベン" class="h-8 w-auto grayscale opacity-50">
+            <!-- === 全てのロゴを logo.svg に変更 (Footer) === -->
+            <div class="inline-flex items-center justify-center mb-6">
+                <img src="logo.svg" alt="タマベン" class="h-8 md:h-10 w-auto grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
             </div>
-            <p class="text-xs text-slate-400 font-medium">
+            <p class="text-[10px] md:text-xs text-slate-400 font-bold tracking-widest uppercase">
                 &copy; 2026 Tamaben. All Rights Reserved.
             </p>
         </div>
     </footer>
 
-    <!-- JS読み込み -->
+    <!-- スクリプトの読み込み順序に注意 -->
     <script src="script.js"></script>
     <script>
+        // Lucideアイコンの初期化
         lucide.createIcons();
     </script>
 </body>
