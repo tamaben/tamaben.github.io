@@ -14,7 +14,7 @@
 
     <style>
         :root {
-            --bg-base: #fefaf6; /* ミルクティーベージュ */
+            --bg-base: #fefaf6;
             --text-main: #5d5752;
             --accent-peach: #f9dcc4;
             --accent-mint: #d8e2dc;
@@ -27,7 +27,7 @@
             font-feature-settings: "palt";
         }
 
-        /* 背景：ゆっくり動くオーガニック・シェイプ */
+        /* 浮遊する背景シェイプ */
         .blob {
             position: fixed;
             border-radius: 50%;
@@ -35,50 +35,62 @@
             z-index: -1;
             animation: move 30s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
             pointer-events: none;
-            opacity: 0.5;
+            opacity: 0.6;
         }
         @keyframes move {
             from { transform: translate(-10%, -10%) rotate(0deg); }
             to { transform: translate(15%, 15%) rotate(120deg); }
         }
 
-        /* 洗練されたガラスモーフィズム */
         .glass-nav {
-            background: rgba(254, 250, 246, 0.7);
+            background: rgba(254, 250, 246, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(93, 87, 82, 0.05);
         }
 
-        /* 教材カード：浮遊感とプレミアムな影 */
+        /* 登場アニメーション */
+        .fade-in-up {
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 教材カードのスタッガー（時間差）表示用 */
+        .card-appear {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-appear.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
         .premium-card {
             background: white;
             border-radius: 2.5rem;
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             border: 1px solid rgba(0, 0, 0, 0.01);
             box-shadow: 0 4px 20px rgba(93, 87, 82, 0.03);
         }
         .premium-card:hover {
-            transform: translateY(-12px) scale(1.01);
-            box-shadow: 0 40px 80px rgba(93, 87, 82, 0.08);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 40px 80px rgba(93, 87, 82, 0.06);
             border-color: var(--accent-peach);
         }
 
-        /* 検索バーのインビジブル・デザイン */
         .search-field {
             background: white;
             border: 1.5px solid #ece4de;
             transition: all 0.4s ease;
         }
-        .search-field:focus-within {
-            border-color: #d8c8bd;
-            box-shadow: 0 10px 30px rgba(93, 87, 82, 0.05);
-            transform: scale(1.02);
-        }
 
-        /* タブ：今時のフラット・ピルデザイン */
         .tab-pill {
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.4s ease;
             color: #bcaea3;
         }
         .tab-pill.active {
@@ -87,48 +99,37 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* フェードイン */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        /* 準備中プレースホルダーのアニメーション */
+        .loading-pulse {
+            animation: pulse 2s infinite ease-in-out;
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 詳細画面のスライド */
-        #view-detail {
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
         }
 
         #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
         #settings-modal.active { opacity: 1; pointer-events: auto; }
+        .btn-disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 背景装飾 -->
     <div class="blob" style="width: 800px; height: 800px; background: var(--accent-peach); top: -200px; left: -100px;"></div>
     <div class="blob" style="width: 600px; height: 600px; background: var(--accent-mint); bottom: -100px; right: -100px; animation-delay: -5s;"></div>
 
-    <!-- ヘッダー -->
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-6 h-16 md:h-24 flex items-center justify-between max-w-6xl">
-            <!-- ロゴ：控えめで洗練されたサイズ -->
             <button onclick="goHome()" class="active:scale-95 transition-all">
                 <img src="logo.svg" alt="タマベン" class="h-8 md:h-12 w-auto">
             </button>
-
-            <!-- 右側：ステータス & 設定 -->
             <div class="flex items-center gap-4">
-                <div id="grade-badge" class="hidden md:flex flex-col items-end mr-2">
+                <div id="grade-badge" class="hidden md:flex flex-col items-end mr-2 fade-in-up">
                     <span class="text-[9px] font-black text-[#bcaea3] uppercase tracking-[0.2em] leading-none mb-1.5">Your Pace</span>
                     <span id="user-grade-label" class="text-xs font-black text-[#5d5752]">未設定</span>
                 </div>
                 <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-white border border-[#ece4de] shadow-sm hover:bg-[#faf6f2] transition-all">
-                    <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[#8b8279]"></i>
+                    <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[#bcaea3]"></i>
                 </button>
             </div>
         </div>
@@ -138,67 +139,61 @@
         
         <!-- === ホーム画面 === -->
         <div id="view-home">
-            <!-- ヒーローセクション -->
-            <section class="py-16 md:py-32 text-center reveal">
+            <!-- ヒーローセクション：ここが一番最初に現れる -->
+            <section class="py-16 md:py-28 text-center fade-in-up" style="animation-delay: 0.1s;">
                 <h1 class="text-4xl md:text-7xl font-black mb-10 tracking-tight text-[#4a4541] leading-[1.1]">
-                    今日は何を、<br/>
-                    <span class="inline-block px-6 py-2 bg-white text-[#d4a373] rounded-full shadow-sm rotate-[-1deg] border border-[#f5ebe0] my-2">発見</span>しよう？
+                    学びを、もっと<br/>
+                    <span class="inline-block px-6 py-2 bg-white text-[#d4a373] rounded-full shadow-sm rotate-[-1deg] border border-[#f5ebe0] my-2">自由に。</span>
                 </h1>
                 
-                <!-- 検索バー -->
-                <div class="mt-12 max-w-xl mx-auto">
+                <div class="mt-8 max-w-xl mx-auto">
                     <div class="search-field flex items-center rounded-[2.5rem] px-10 py-5">
                         <i data-lucide="search" class="w-6 h-6 text-[#d8c8bd] mr-4"></i>
                         <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[#5d5752] placeholder:text-[#dcd0c6] text-lg">
                     </div>
-                    
-                    <div class="flex flex-wrap justify-center gap-2 mt-8">
-                        <button onclick="quickSearch('計算')" class="px-5 py-2 rounded-full bg-white border border-[#ece4de] text-[11px] font-black text-[#bcaea3] hover:text-[#5d5752] transition-all shadow-sm">#計算</button>
-                        <button onclick="quickSearch('漢字')" class="px-5 py-2 rounded-full bg-white border border-[#ece4de] text-[11px] font-black text-[#bcaea3] hover:text-[#5d5752] transition-all shadow-sm">#漢字</button>
-                        <button onclick="quickSearch('生き物')" class="px-5 py-2 rounded-full bg-white border border-[#ece4de] text-[11px] font-black text-[#bcaea3] hover:text-[#5d5752] transition-all shadow-sm">#生き物</button>
-                    </div>
                 </div>
             </section>
 
-            <!-- 注目のアプリ紹介 -->
-            <section class="mb-24 reveal">
-                <a href="manabi.html" class="group block relative bg-[#d8e2dc] rounded-[3.5rem] overflow-hidden transition-all active:scale-[0.98] shadow-sm">
-                    <div class="flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-10">
+            <!-- 注目のアプリ紹介：次に現れる -->
+            <section class="mb-20 fade-in-up" style="animation-delay: 0.3s;">
+                <a href="manabi.html" class="group block relative bg-[#d8e2dc]/60 backdrop-blur-sm rounded-[3.5rem] overflow-hidden transition-all active:scale-[0.98]">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-10 md:p-14 gap-10">
                         <div class="text-center md:text-left">
-                            <span class="px-4 py-1.5 bg-white/40 text-[#7a9e9f] text-[10px] font-black rounded-full mb-6 uppercase tracking-[0.2em] inline-block">Recommended</span>
-                            <h2 class="text-3xl md:text-5xl font-black text-[#4a4e69] mb-4">Manabi Baton</h2>
-                            <p class="text-[#7a9e9f] font-bold mb-8 text-lg">がんばりを未来へつなぐ学習管理アプリ。</p>
-                            <span class="inline-flex items-center gap-3 bg-white text-[#4a4e69] px-8 py-3.5 rounded-2xl font-black text-sm group-hover:gap-6 transition-all shadow-sm">
+                            <span class="px-4 py-1.5 bg-white/50 text-[#7a9e9f] text-[10px] font-black rounded-full mb-6 uppercase tracking-[0.2em] inline-block">Recommended</span>
+                            <h2 class="text-3xl md:text-4xl font-black text-[#4a4e69] mb-4">Manabi Baton</h2>
+                            <p class="text-[#7a9e9f] font-bold mb-8">がんばりを未来へつなぐ学習管理アプリ。</p>
+                            <span class="inline-flex items-center gap-3 bg-white text-[#4a4e69] px-8 py-3 rounded-2xl font-black text-sm group-hover:gap-6 transition-all">
                                 詳細を見る <i data-lucide="arrow-right" class="w-5 h-5"></i>
                             </span>
                         </div>
-                        <img src="manabi.png" alt="MB" class="w-32 h-32 md:w-48 md:h-48 rounded-[3rem] shadow-2xl transition-transform duration-700 group-hover:rotate-6 group-hover:scale-105">
+                        <img src="manabi.png" alt="MB" class="w-32 h-32 md:w-44 md:h-44 rounded-[2.5rem] shadow-2xl transition-all duration-700 group-hover:rotate-6">
                     </div>
                 </a>
             </section>
 
             <!-- 学年ナビ -->
-            <div class="sticky top-24 md:top-32 z-40 mb-16 flex justify-center reveal">
+            <div class="sticky top-20 md:top-28 z-40 mb-12 flex justify-center fade-in-up" style="animation-delay: 0.5s;">
                 <div class="inline-flex bg-[#f5ebe0]/60 p-2 rounded-[2.2rem] border border-white backdrop-blur-md shadow-sm">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active px-12 py-4 rounded-[1.8rem] text-sm font-black">小学生</button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill px-12 py-4 rounded-[1.8rem] text-sm font-black">中学生</button>
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active px-10 py-3.5 rounded-[1.8rem] text-sm font-black">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill px-10 py-3.5 rounded-[1.8rem] text-sm font-black">中学生</button>
                 </div>
             </div>
 
-            <!-- 教材グリッド -->
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-20">
-                <!-- script.jsが挿入 -->
+            <!-- 教材グリッド：JSでカードがトントン現れる場所 -->
+            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-20 min-h-[400px]">
+                <!-- ローディング中の見た目 -->
+                <div class="col-span-full py-20 text-center loading-pulse">
+                    <p class="text-[#dcd0c6] font-black tracking-widest uppercase text-sm">Finding best materials for you...</p>
+                </div>
             </div>
         </div>
 
         <!-- === 詳細画面 === -->
         <div id="view-detail" class="hidden py-12">
-            <button onclick="goHome()" class="flex items-center gap-2 text-[#bcaea3] font-black hover:text-[#5d5752] mb-12 transition-colors group">
-                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i> 戻る
+            <button onclick="goHome()" class="flex items-center gap-2 text-[#bcaea3] font-black hover:text-[#5d5752] mb-10 transition-colors group">
+                <i data-lucide="arrow-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i> 一覧に戻る
             </button>
-            <div id="detail-content" class="bg-white rounded-[4rem] overflow-hidden shadow-2xl border border-[#f5ebe0] min-h-[500px]">
-                <!-- 内容が挿入されます -->
-            </div>
+            <div id="detail-content" class="bg-white rounded-[4rem] overflow-hidden shadow-2xl border border-[#f5ebe0] min-h-[500px]"></div>
         </div>
 
     </main>
@@ -207,44 +202,38 @@
     <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#4a4541]/10 backdrop-blur-sm p-4">
         <div class="bg-white rounded-[3.5rem] p-12 w-full max-w-sm shadow-2xl">
             <div class="text-center">
-                <div class="w-20 h-20 bg-[#faf6f2] rounded-[2.2rem] flex items-center justify-center mx-auto mb-8">
-                    <i data-lucide="sparkles" class="w-10 h-10 text-[#d4a373]"></i>
-                </div>
-                <h3 class="text-xl font-black text-[#5d5752] mb-2">学年の設定</h3>
-                <p class="text-xs text-[#bcaea3] font-bold mb-10">生年月日を入力してね</p>
+                <h3 class="text-xl font-black text-[#5d5752] mb-10">学年の設定</h3>
                 <input type="date" id="birthdate-input" class="w-full px-6 py-5 rounded-2xl bg-[#faf6f2] border border-[#ece4de] outline-none font-black text-center mb-10 focus:border-[#d4a373] transition-all">
                 <div class="space-y-4">
-                    <button onclick="saveBirthDate()" class="w-full py-5 bg-[#5d5752] text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg">保存する</button>
-                    <button onclick="clearBirthDate()" class="w-full py-2 text-[#bcaea3] text-[10px] font-black hover:text-red-400">設定をリセット</button>
+                    <button onclick="saveBirthDate()" class="w-full py-5 bg-[#5d5752] text-white rounded-2xl font-black active:scale-95 shadow-lg">保存する</button>
+                    <button onclick="clearBirthDate()" class="w-full py-2 text-[#bcaea3] text-[10px] font-black">リセット</button>
                 </div>
                 <button onclick="closeSettingsModal()" class="mt-8 text-[10px] font-black text-[#dcd0c6]">閉じる</button>
             </div>
         </div>
     </div>
 
-    <footer class="py-24 text-center opacity-40">
+    <footer class="py-24 text-center opacity-30">
         <img src="logo.svg" alt="タマベン" class="h-10 mx-auto mb-10 grayscale hover:grayscale-0 transition-all duration-700">
-        <p class="text-[10px] text-[#bcaea3] font-black tracking-[0.3em] uppercase">&copy; 2026 Tamaben.</p>
+        <p class="text-[9px] text-[#bcaea3] font-black tracking-[0.3em] uppercase">&copy; 2026 Tamaben.</p>
     </footer>
 
     <script>
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
-        /* --- 1. データ読み込み --- */
+        /* --- 1. データ読み込み（トントン現れるアニメーション付） --- */
         async function loadMaterials() {
             try {
                 const response = await fetch('data.json');
                 MATERIAL_DATA = await response.json();
                 renderMaterials();
             } catch (e) {
-                console.error("JSON Error");
-                // 失敗時のフォールバック教材（空のままにせず「準備中」を出すため）
+                console.warn("JSON loading error. Showing empty state.");
                 renderMaterials();
             }
         }
 
-        /* --- 2. 検索・描画 --- */
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
             const query = document.getElementById('search-input').value.toLowerCase().trim();
@@ -254,33 +243,44 @@
                 const matchTab = item.tab === currentTab;
                 const matchText = item.title.toLowerCase().includes(query) || 
                                   item.subject.toLowerCase().includes(query) || 
-                                  item.grade.toLowerCase().includes(query) ||
                                   (item.tags && item.tags.some(t => t.toLowerCase().includes(query)));
                 return matchTab && (query === "" || matchText);
             });
 
-            container.innerHTML = filtered.map(item => `
-                <div onclick='openDetail(${JSON.stringify(item)})' class="premium-card p-10 reveal active group cursor-pointer">
-                    <div class="flex items-center gap-3 mb-8">
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-32 text-center text-[#dcd0c6] font-black">教材は現在、心を込めて準備中です。</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            filtered.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "premium-card p-10 cursor-pointer group card-appear";
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 mb-6">
                         <span class="px-4 py-1.5 bg-[#f5ebe0] text-[#a98467] text-[10px] font-black rounded-xl uppercase tracking-wider">${item.subject}</span>
                         <span class="text-[10px] font-bold text-[#dcd0c6]">${item.grade}</span>
                     </div>
-                    <h3 class="text-xl font-black text-[#5d5752] group-hover:text-[#d4a373] transition-colors leading-snug">${item.title}</h3>
-                    <div class="mt-12 flex justify-end">
+                    <h3 class="text-xl font-black text-[#5d5752] group-hover:text-[#d4a373] transition-colors">${item.title}</h3>
+                    <div class="mt-10 flex justify-end">
                         <div class="w-10 h-10 rounded-full bg-[#faf6f2] flex items-center justify-center text-[#dcd0c6] group-hover:bg-[#5d5752] group-hover:text-white transition-all duration-500 shadow-sm">
                             <i data-lucide="arrow-right" class="w-5 h-5"></i>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+                card.onclick = () => openDetail(item);
+                container.appendChild(card);
+
+                // トントンと順番に表示させるための遅延
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, index * 80); 
+            });
             
-            if(filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-32 text-center text-[#dcd0c6] font-black">教材は現在、心を込めて準備中です。</div>`;
-            }
             lucide.createIcons();
         }
 
-        /* --- 3. UI・設定制御 --- */
+        /* --- 2. UI制御 --- */
         function saveBirthDate() {
             const val = document.getElementById('birthdate-input').value;
             if (!val) return;
@@ -297,8 +297,9 @@
             const age = schoolYear - birthYear;
             const badge = document.getElementById('grade-badge');
             const label = document.getElementById('user-grade-label');
-            if (age >= 6 && age <= 11) { label.textContent = `小学${age - 5}年生`; badge.classList.remove('hidden'); switchTab('elementary'); }
-            else if (age >= 12 && age <= 14) { label.textContent = `中学${age - 11}年生`; badge.classList.remove('hidden'); switchTab('junior'); }
+            if (age >= 6 && age <= 11) { label.textContent = `小学${age - 5}年生`; badge.classList.remove('hidden'); currentTab = 'elementary'; }
+            else if (age >= 12 && age <= 14) { label.textContent = `中学${age - 11}年生`; badge.classList.remove('hidden'); currentTab = 'junior'; }
+            switchTab(currentTab);
         }
 
         function switchTab(tab) {
@@ -311,31 +312,29 @@
         function openDetail(item) {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
+            const hasBasic = item.pdfBasic && item.pdfBasic.startsWith('print/');
+            const hasAdv = item.pdfAdv && item.pdfAdv.startsWith('print/');
+            const hasAns = item.pdfAns && item.pdfAns.startsWith('print/');
+
             document.getElementById('detail-content').innerHTML = `
-                <div class="p-12 md:p-24 text-center">
-                    <div class="inline-block px-5 py-2 bg-[#f5ebe0] text-[#a98467] text-[11px] font-black rounded-full mb-10 tracking-widest">${item.grade} / ${item.subject}</div>
+                <div class="p-12 md:p-24 text-center fade-in-up">
+                    <div class="inline-block px-5 py-2 bg-[#f5ebe0] text-[#a98467] text-[11px] font-black rounded-full mb-10">${item.grade} / ${item.subject}</div>
                     <h2 class="text-4xl md:text-6xl font-black text-[#5d5752] mb-16 leading-tight">${item.title}</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                        <button onclick="window.open('${item.pdfBasic}')" class="p-10 bg-[#faf6f2] rounded-[3rem] font-black text-[#5d5752] hover:bg-[#f5ebe0] transition-all border border-[#ece4de]">基本問題</button>
-                        <button onclick="window.open('${item.pdfAdv}')" class="p-10 bg-white rounded-[3rem] font-black text-[#5d5752] border-2 border-[#f5ebe0] hover:border-[#d4a373] transition-all">応用問題</button>
-                        <button onclick="window.open('${item.pdfAns}')" class="md:col-span-2 p-8 bg-[#5d5752] text-white rounded-[2.5rem] font-black shadow-xl hover:bg-[#4a4541] transition-all">解答をひらく</button>
+                        <button onclick="${hasBasic ? `window.open('${item.pdfBasic}')` : ''}" class="p-10 rounded-[3rem] font-black border ${hasBasic ? 'bg-[#faf6f2] border-[#ece4de] hover:bg-[#f5ebe0]' : 'btn-disabled bg-stone-50'}">${hasBasic ? '基本問題' : '準備中'}</button>
+                        <button onclick="${hasAdv ? `window.open('${item.pdfAdv}')` : ''}" class="p-10 rounded-[3rem] font-black border ${hasAdv ? 'bg-white border-[#f5ebe0] hover:border-[#d4a373]' : 'btn-disabled bg-stone-50'}">${hasAdv ? '応用問題' : '準備中'}</button>
+                        <button onclick="${hasAns ? `window.open('${item.pdfAns}')` : ''}" class="md:col-span-2 p-8 rounded-[2.5rem] font-black ${hasAns ? 'bg-[#5d5752] text-white shadow-xl' : 'btn-disabled bg-stone-100 text-[#bcaea3]'}">${hasAns ? '解答をひらく' : '準備中'}</button>
                     </div>
                 </div>`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
 
-        function goHome() {
-            document.getElementById('view-home').classList.remove('hidden');
-            document.getElementById('view-detail').classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
+        function goHome() { document.getElementById('view-home').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); renderMaterials(); }
         function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
         function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
         function quickSearch(v) { document.getElementById('search-input').value = v; renderMaterials(); }
 
-        /* --- 4. 初期化 --- */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             document.getElementById('search-input').oninput = renderMaterials;
@@ -343,12 +342,6 @@
             if (saved) { document.getElementById('birthdate-input').value = saved; applySettings(saved); }
             loadMaterials();
         });
-
-        window.onscroll = () => {
-            document.querySelectorAll(".reveal").forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add("active");
-            });
-        };
     </script>
 </body>
 </html>
