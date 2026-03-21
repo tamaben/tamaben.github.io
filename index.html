@@ -14,35 +14,22 @@
 
     <style>
         :root {
-            --bg-main: #f9f8f6; /* ニュアンスベージュ */
-            --accent-pale: #fdf2f0; /* ペールアプリコット */
+            --bg-main: #f9f8f6;
+            --accent-pale: #fdf2f0;
             --text-muted: #5f6368;
         }
-
         body { background-color: var(--bg-main); color: var(--text-muted); overflow-x: hidden; }
-
-        /* 背景：ゆっくり動く淡い色の塊 */
         .blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 220, 210, 0.3) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: move 25s infinite alternate; pointer-events: none; }
-        @keyframes move { from { transform: translate(-5%, -5%) scale(1); } to { transform: translate(15%, 15%) scale(1.1); } }
-
+        @keyframes move { from { transform: translate(-5%, -5%); } to { transform: translate(15%, 15%); } }
         .glass-header { background: rgba(249, 248, 246, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-
-        /* 教材カード */
-        .soft-card { background: white; border-radius: 2.2rem; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1.5px solid #f8f6f2; cursor: pointer; position: relative; overflow: hidden; }
+        .soft-card { background: white; border-radius: 2.2rem; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1.5px solid #f8f6f2; cursor: pointer; }
         .soft-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.04); border-color: #eee4dc; }
-
-        /* 検索バー */
         .search-outer { background: white; border: 1.5px solid #eceae4; transition: all 0.4s ease; }
         .search-outer:focus-within { border-color: #fb923c; box-shadow: 0 10px 40px -10px rgba(251, 146, 60, 0.1); }
-
-        /* タブ */
         .tab-btn { transition: all 0.3s ease; color: #b0ada6; font-weight: 900; }
         .tab-btn.active { background: white; color: #7c7871; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03); }
-
         .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* 設定モーダル */
         #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
         #settings-modal.active { opacity: 1; pointer-events: auto; }
     </style>
@@ -52,7 +39,6 @@
     <div class="blob" style="top: -100px; left: -100px;"></div>
     <div class="blob" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(210, 220, 230, 0.2) 0%, rgba(255, 255, 255, 0) 70%);"></div>
 
-    <!-- ヘッダー -->
     <header class="sticky top-0 z-[100] glass-header border-b border-stone-200/40">
         <div class="container mx-auto px-6 h-16 md:h-20 flex items-center justify-between max-w-6xl">
             <button onclick="goHome()" class="active:scale-95 transition-all">
@@ -60,10 +46,10 @@
             </button>
             <div class="flex items-center gap-4">
                 <div id="grade-badge" class="hidden md:flex flex-col items-end mr-1">
-                    <span class="text-[9px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">Grade</span>
+                    <span class="text-[9px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">Status</span>
                     <span id="user-grade-label" class="text-[11px] font-black text-stone-500">未設定</span>
                 </div>
-                <button id="open-settings-btn" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-stone-100 shadow-sm hover:bg-stone-50 transition-all">
+                <button id="open-settings-btn" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-stone-100 shadow-sm hover:bg-stone-50">
                     <i data-lucide="user" class="w-4 h-4 text-stone-300"></i>
                 </button>
             </div>
@@ -71,15 +57,9 @@
     </header>
 
     <main class="container mx-auto px-6 max-w-6xl pb-32">
-        
-        <!-- ホーム画面 -->
         <div id="view-home">
             <section class="py-16 md:py-24 text-center reveal">
-                <h1 class="text-3xl md:text-5xl font-black mb-8 tracking-tight text-stone-700 leading-tight">
-                    学びを、もっと<br/>
-                    <span class="inline-block px-4 py-1 bg-[#fdf2f0] text-[#e89a8e] rounded-[1.2rem] rotate-[-1deg]">自由に。</span>
-                </h1>
-                
+                <h1 class="text-3xl md:text-5xl font-black mb-8 tracking-tight text-stone-700 leading-tight">学びを、もっと<br/><span class="inline-block px-4 py-1 bg-[#fdf2f0] text-[#e89a8e] rounded-[1.2rem] rotate-[-1deg]">自由に。</span></h1>
                 <div class="mt-12 max-w-lg mx-auto">
                     <div class="search-outer flex items-center rounded-[2rem] px-8 py-4">
                         <i data-lucide="search" class="w-5 h-5 text-stone-300 mr-4"></i>
@@ -88,106 +68,61 @@
                 </div>
             </section>
 
-            <!-- 学年ナビ -->
             <div class="sticky top-20 md:top-24 z-40 mb-12 flex justify-center reveal">
-                <div class="inline-flex bg-[#f2f1ee]/50 p-1.5 rounded-[1.8rem] border border-white/50 backdrop-blur-md">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-8 md:px-12 py-3 rounded-[1.5rem] text-xs font-black">小学生</button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-8 md:px-12 py-3 rounded-[1.5rem] text-xs font-black">中学生</button>
+                <div class="inline-flex bg-stone-100/50 p-1.5 rounded-[1.8rem] border border-white/50 backdrop-blur-md">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-8 md:px-12 py-3 rounded-[1.5rem] text-xs">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-8 md:px-12 py-3 rounded-[1.5rem] text-xs">中学生</button>
                 </div>
             </div>
 
             <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- scriptで生成 -->
+                <!-- 教材がここに表示されます -->
             </div>
         </div>
 
-        <!-- 詳細画面 -->
         <div id="view-detail" class="hidden py-12">
-            <button onclick="goHome()" class="flex items-center gap-2 text-stone-400 font-black hover:text-stone-600 mb-8 transition-colors">
-                <i data-lucide="chevron-left" class="w-5 h-5"></i> 戻る
-            </button>
-            <div id="detail-content" class="bg-white rounded-[3rem] overflow-hidden border border-stone-100 shadow-sm min-h-[450px]"></div>
+            <button onclick="goHome()" class="flex items-center gap-2 text-stone-400 font-black hover:text-stone-600 mb-8 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i> 戻る</button>
+            <div id="detail-content" class="bg-white rounded-[3rem] overflow-hidden border border-stone-100 shadow-sm min-h-[400px]"></div>
         </div>
-
     </main>
 
-    <!-- 設定モーダル -->
+    <!-- モーダル -->
     <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-stone-900/10 backdrop-blur-sm p-4">
         <div class="bg-white rounded-[3rem] p-10 w-full max-w-sm shadow-2xl">
             <div class="text-center">
-                <div class="w-16 h-16 bg-stone-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="sparkles" class="w-8 h-8 text-stone-300"></i>
-                </div>
                 <h3 class="text-lg font-black text-stone-700 mb-2">学年の設定</h3>
-                <p class="text-[11px] text-stone-400 font-bold mb-8">生年月日を入力してね</p>
                 <input type="date" id="birthdate-input" class="w-full px-6 py-4 rounded-2xl bg-stone-50 border border-stone-100 outline-none font-black text-center mb-8 text-sm">
-                
                 <div class="space-y-3">
-                    <button onclick="saveBirthDate()" class="w-full py-4 bg-stone-700 text-white rounded-2xl font-black active:scale-95 transition-all text-sm shadow-lg shadow-stone-200">保存する</button>
-                    <button onclick="clearBirthDate()" class="w-full py-2 text-stone-300 text-[10px] font-black hover:text-red-400">設定をリセット</button>
+                    <button onclick="saveBirthDate()" class="w-full py-4 bg-stone-700 text-white rounded-2xl font-black text-sm">保存する</button>
+                    <button onclick="clearBirthDate()" class="w-full py-2 text-stone-300 text-[10px] font-black">リセット</button>
                 </div>
-                
-                <button id="close-settings-btn" class="mt-6 text-[10px] font-black text-stone-300 hover:text-stone-500">閉じる</button>
+                <button id="close-settings-btn" class="mt-6 text-[10px] font-black text-stone-300">閉じる</button>
             </div>
         </div>
     </div>
 
-    <footer class="py-20 text-center opacity-30">
-        <img src="logo.svg" alt="タマベン" class="h-8 mx-auto grayscale">
-        <p class="text-[9px] text-stone-400 font-black tracking-widest uppercase mt-4">&copy; 2026 Tamaben.</p>
-    </footer>
-
     <script>
-        /* =====================================================================
-           📚 教材データ (主要単元を全て網羅)
-           ===================================================================== */
-        // 表示したい場合はデータを入れ、非表示にしたい場合は [] (空) にしてください。
-        const MATERIAL_DATA = [
-            // 小1
-            { id:"e1-1", tab:"elementary", grade:"小学1年生", subject:"国語", color:"rose", title:"ひらがな・カタカナ", tags:["1年","文字","基本","導入"] },
-            { id:"e1-2", tab:"elementary", grade:"小学1年生", subject:"算数", color:"sky", title:"かずとたしざん", tags:["1年","計算","足し算","基本"] },
-            // 小2
-            { id:"e2-1", tab:"elementary", grade:"小学2年生", subject:"国語", color:"rose", title:"かん字の練習", tags:["2年","漢字","書写"] },
-            { id:"e2-2", tab:"elementary", grade:"小学2年生", subject:"算数", color:"sky", title:"かけ算(九九)", tags:["2年","九九","計算","重要"] },
-            // 小3
-            { id:"e3-1", tab:"elementary", grade:"小学3年生", subject:"算数", color:"sky", title:"わり算と分数", tags:["3年","割り算","分数","計算"] },
-            { id:"e3-2", tab:"elementary", grade:"小学3年生", subject:"理科", color:"emerald", title:"昆虫の育ち方", tags:["3年","虫","生き物","観察"] },
-            { id:"e3-3", tab:"elementary", grade:"小学3年生", subject:"社会", color:"amber", title:"わたしたちの町", tags:["3年","地域","地図"] },
-            // 小4
-            { id:"e4-1", tab:"elementary", grade:"小学4年生", subject:"算数", color:"sky", title:"角の大きさと面積", tags:["4年","図形","面積"] },
-            { id:"e4-2", tab:"elementary", grade:"小学4年生", subject:"理科", color:"emerald", title:"月と星の動き", tags:["4年","天体","夜空"] },
-            { id:"e4-3", tab:"elementary", grade:"小学4年生", subject:"社会", color:"amber", title:"都道府県", tags:["4年","日本地図","県名"] },
-            // 小5
-            { id:"e5-1", tab:"elementary", grade:"小学5年生", subject:"算数", color:"sky", title:"割合と速さ", tags:["5年","重要","難しい","計算"] },
-            { id:"e5-2", tab:"elementary", grade:"小学5年生", subject:"社会", color:"amber", title:"日本の産業と国土", tags:["5年","工業","農業"] },
-            { id:"e5-3", tab:"elementary", grade:"小学5年生", subject:"英語", color:"violet", title:"Greeting & Alphabet", tags:["5年","はじめて","英語"] },
-            // 小6
-            { id:"e6-1", tab:"elementary", grade:"小学6年生", subject:"算数", color:"sky", title:"比と対称な図形", tags:["6年","まとめ","比例"] },
-            { id:"e6-2", tab:"elementary", grade:"小学6年生", subject:"社会", color:"amber", title:"日本の歴史", tags:["6年","武士","歴史","江戸"] },
-            { id:"e6-3", tab:"elementary", grade:"小学6年生", subject:"理科", color:"emerald", title:"人体のつくり", tags:["6年","生物","体"] },
-            // 中1
-            { id:"j1-1", tab:"junior", grade:"中学1年生", subject:"数学", color:"sky", title:"正負の数・方程式", tags:["中1","数学","計算"] },
-            { id:"j1-2", tab:"junior", grade:"中学1年生", subject:"英語", color:"violet", title:"be動詞・一般動詞", tags:["中1","英語","文法"] },
-            { id:"j1-3", tab:"junior", grade:"中学1年生", subject:"理科", color:"emerald", title:"植物の分類", tags:["中1","生物","観察"] },
-            // 中2
-            { id:"j2-1", tab:"junior", grade:"中学2年生", subject:"数学", color:"sky", title:"連立方程式・関数", tags:["中2","方程式","グラフ"] },
-            { id:"j2-2", tab:"junior", grade:"中学2年生", subject:"理科", color:"emerald", title:"化学変化と原子", tags:["中2","化学","実験"] },
-            { id:"j2-3", tab:"junior", grade:"中学2年生", subject:"社会", color:"amber", title:"近世までの歴史", tags:["中2","歴史","江戸"] },
-            // 中3
-            { id:"j3-1", tab:"junior", grade:"中学3年生", subject:"数学", color:"sky", title:"因数分解・2次関数", tags:["中3","まとめ","受験"] },
-            { id:"j3-2", tab:"junior", grade:"中学3年生", subject:"英語", color:"violet", title:"現在完了・関係代名詞", tags:["中3","文法","重要"] },
-            { id:"j3-3", tab:"junior", grade:"中学3年生", subject:"社会", color:"amber", title:"現代社会と公民", tags:["中3","政治","経済"] }
-        ];
-
+        let MATERIAL_DATA = []; // JSONから読み込むデータを格納
         let currentTab = 'elementary';
 
-        /* =====================================================================
-           🔍 検索・描画
-           ===================================================================== */
-        const renderMaterials = () => {
+        // --- 1. JSONデータの読み込み ---
+        async function loadMaterials() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                MATERIAL_DATA = await response.json();
+                renderMaterials(); // 読み込み後に描画
+            } catch (error) {
+                console.error('データの取得に失敗しました:', error);
+                document.getElementById('learning-materials-container').innerHTML = 
+                    `<div class="col-span-full py-20 text-center text-red-300 font-bold">教材データの読み込みに失敗しました。</div>`;
+            }
+        }
+
+        // --- 2. 検索・描画 ---
+        function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
-            const input = document.getElementById('search-input');
-            const query = input ? input.value.toLowerCase().trim() : "";
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
             if (!container) return;
 
             const filtered = MATERIAL_DATA.filter(item => {
@@ -206,21 +141,17 @@
                         <span class="text-[9px] font-bold text-stone-300">${item.grade}</span>
                     </div>
                     <h3 class="text-lg font-black text-stone-700 group-hover:text-stone-900 transition-colors">${item.title}</h3>
-                    <div class="mt-8 flex justify-end">
-                        <div class="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-300 group-hover:bg-stone-700 group-hover:text-white transition-all">
-                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                        </div>
-                    </div>
+                    <div class="mt-8 flex justify-end"><div class="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-300 group-hover:bg-stone-700 group-hover:text-white transition-all"><i data-lucide="arrow-right" class="w-4 h-4"></i></div></div>
                 </div>
             `).join('');
             
-            if(filtered.length === 0) container.innerHTML = `<div class="col-span-full py-20 text-center text-stone-300 font-bold">教材は現在準備中です。</div>`;
+            if(filtered.length === 0 && MATERIAL_DATA.length > 0) {
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-stone-300 font-bold">見つかりませんでした</div>`;
+            }
             lucide.createIcons();
-        };
+        }
 
-        /* =====================================================================
-           🛠️ 学年設定 (localStorage)
-           ===================================================================== */
+        // --- 3. その他のロジック (学年・UI) ---
         function saveBirthDate() {
             const val = document.getElementById('birthdate-input').value;
             if (!val) return;
@@ -228,89 +159,80 @@
             applySettings(val);
             closeSettingsModal();
         }
+
         function clearBirthDate() {
             localStorage.removeItem('tamaben_birthdate');
             location.reload();
         }
+
         function applySettings(dateStr) {
-            const result = calculateGrade(dateStr);
+            const today = new Date();
+            const birth = new Date(dateStr);
+            let schoolYear = today.getFullYear() - (today.getMonth() + 1 < 4 ? 1 : 0);
+            let birthYear = birth.getFullYear() - (birth.getMonth() + 1 < 4 || (birth.getMonth() + 1 === 4 && birth.getDate() === 1) ? 1 : 0);
+            const age = schoolYear - birthYear;
+            
             const badge = document.getElementById('grade-badge');
             const label = document.getElementById('user-grade-label');
-            if (result && result.type !== 'other') {
-                if(badge) badge.classList.remove('hidden');
-                if(label) label.textContent = result.label;
-                switchTab(result.type);
+
+            if (age >= 6 && age <= 11) {
+                label.textContent = `小学${age - 5}年生`;
+                badge.classList.remove('hidden');
+                switchTab('elementary');
+            } else if (age >= 12 && age <= 14) {
+                label.textContent = `中学${age - 11}年生`;
+                badge.classList.remove('hidden');
+                switchTab('junior');
             }
         }
-        function calculateGrade(birthStr) {
-            const today = new Date();
-            const birth = new Date(birthStr);
-            let schoolYear = today.getFullYear();
-            if (today.getMonth() + 1 < 4) schoolYear--;
-            let birthYear = birth.getFullYear();
-            if (birth.getMonth() + 1 < 4 || (birth.getMonth() + 1 === 4 && birth.getDate() === 1)) birthYear--;
-            const age = schoolYear - birthYear;
-            if (age >= 6 && age <= 11) return { type: 'elementary', label: `小学${age - 5}年生` };
-            if (age >= 12 && age <= 14) return { type: 'junior', label: `中学${age - 11}年生` };
-            return { type: 'other' };
-        }
 
-        /* =====================================================================
-           🖥️ UI制御
-           ===================================================================== */
-        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
-        function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
         function switchTab(tab) {
             currentTab = tab;
             document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
             document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
             renderMaterials();
         }
-        function goHome() {
-            document.getElementById('view-home').classList.remove('hidden');
-            document.getElementById('view-detail').classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
-        // 詳細（準備中メッセージ）
         function openDetail(item) {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
             document.getElementById('detail-content').innerHTML = `
                 <div class="p-10 md:p-20 text-center">
-                    <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <i data-lucide="timer" class="w-10 h-10 text-stone-200"></i>
-                    </div>
                     <h2 class="text-3xl md:text-5xl font-black text-stone-700 mb-6">${item.title}</h2>
-                    <p class="text-stone-400 font-bold mb-12">この教材は現在、制作スタッフが心を込めて準備中です。<br>公開まで今しばらくお待ちください。</p>
-                    <button onclick="goHome()" class="px-10 py-4 bg-stone-800 text-white rounded-full font-black text-sm hover:bg-stone-900 transition-all">他の教材を探す</button>
+                    <p class="text-stone-400 font-bold mb-12">この教材は現在準備中です。公開をお楽しみに！</p>
+                    <button onclick="goHome()" class="px-10 py-4 bg-stone-800 text-white rounded-full font-black text-sm">戻る</button>
                 </div>`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
 
-        /* =====================================================================
-           🚀 初期化
-           ===================================================================== */
+        function goHome() {
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-detail').classList.add('hidden');
+        }
+
+        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            document.getElementById('open-settings-btn').addEventListener('click', openSettingsModal);
-            document.getElementById('close-settings-btn').addEventListener('click', closeSettingsModal);
-            document.getElementById('search-input').addEventListener('input', renderMaterials);
+            document.getElementById('open-settings-btn').onclick = openSettingsModal;
+            document.getElementById('close-settings-btn').onclick = closeSettingsModal;
+            document.getElementById('search-input').oninput = renderMaterials;
+
             const saved = localStorage.getItem('tamaben_birthdate');
             if (saved) {
                 document.getElementById('birthdate-input').value = saved;
                 applySettings(saved);
             }
-            renderMaterials();
+            loadMaterials(); // JSON読み込み開始
         });
 
-        window.addEventListener("scroll", () => {
-            const reveals = document.querySelectorAll(".reveal");
-            reveals.forEach(el => {
+        window.onscroll = () => {
+            document.querySelectorAll(".reveal").forEach(el => {
                 if (el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add("active");
             });
-        });
+        };
     </script>
 </body>
 </html>
