@@ -1,149 +1,119 @@
 /* =====================================================================
-   📚 教材データベース（類義語・タグを強化）
+   📚 教材データベース
    ===================================================================== */
-const BACKUP_DATA = [
-  {
-    "grade": "小学1年生", "gradeId": "e1", "subjects": [
-      { 
-        "name": "算数", "color": "lime", "icon": "calculator", 
-        "units": [
-          { 
-            "title": "かずとすうじ", 
-            "tags": ["数", "すうじ", "基本", "はじめて", "導入", "1年生", "算数", "さんすう", "かず"],
-            "pdfBasic": "#"
-          },
-          { 
-            "title": "たしざん（１）", 
-            "tags": ["計算", "けいさん", "足し算", "たす", "＋", "さんすう", "基本計算", "ドリル", "1年生"],
-            "pdfBasic": "#"
-          }
-        ]
-      },
-      {
-        "name": "国語", "color": "rose", "icon": "pencil",
-        "units": [
-          { "title": "ひらがなのれんしゅう", "tags": ["文字", "国語", "書き方", "あいうえお", "練習", "こくご", "1年生", "基本"], "pdfBasic": "#" }
-        ]
-      }
-    ]
-  },
-  {
-    "grade": "小学6年生", "gradeId": "e6", "subjects": [
-      {
-        "name": "社会", "color": "amber", "icon": "globe",
-        "units": [
-          { 
-            "title": "日本の歴史", 
-            "tags": ["歴史", "れきし", "社会", "日本", "昔", "むかし", "武士", "江戸", "侍", "6年生", "テスト対策", "日本史"], 
-            "pdfBasic": "#" 
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "grade": "中学1年生", "gradeId": "j1", "subjects": [
-      {
-        "name": "数学", "color": "violet", "icon": "sigma",
-        "units": [
-          { "title": "正の数・負の数", "tags": ["数学", "計算", "マイナス", "プラス", "負の数", "中1", "基本", "導入", "数"], "pdfBasic": "#" }
-        ]
-      }
-    ]
-  }
+const MATERIAL_DATA = [
+  { id: "e1-math-1", tab: "elementary", grade: "小学1年生", subject: "算数", color: "rose", title: "かずとすうじ", tags: ["1年", "算数", "基本", "数"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" },
+  { id: "e1-math-2", tab: "elementary", grade: "小学1年生", subject: "算数", color: "rose", title: "たしざんのきほん", tags: ["1年", "計算", "足し算"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" },
+  { id: "e2-math-1", tab: "elementary", grade: "小学2年生", subject: "算数", color: "orange", title: "ひっ算のやりかた", tags: ["2年", "計算", "筆算"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" },
+  { id: "e3-sci-1", tab: "elementary", grade: "小学3年生", subject: "理科", color: "emerald", title: "昆虫のひみつ", tags: ["3年", "生き物", "虫"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" },
+  { id: "e6-soc-1", tab: "elementary", grade: "小学6年生", subject: "社会", color: "amber", title: "日本の歴史(江戸)", tags: ["6年", "歴史", "江戸時代"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" },
+  { id: "j1-math-1", tab: "junior", grade: "中学1年生", subject: "数学", color: "indigo", title: "正の数・負の数", tags: ["中1", "数学", "マイナス"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#" }
 ];
 
-let cachedData = BACKUP_DATA;
 let currentTab = 'elementary';
 
 /* =====================================================================
-   🔍 検索・描画ロジック
+   🔍 検索・描画
    ===================================================================== */
 const renderMaterials = () => {
     const container = document.getElementById('learning-materials-container');
-    const searchInput = document.getElementById('search-input');
-    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
-    
+    const input = document.getElementById('search-input');
+    const query = input ? input.value.toLowerCase().trim() : "";
     if (!container) return;
 
-    // タブで大まかにフィルター
-    let filteredData = cachedData.filter(d => {
-        if(currentTab === 'elementary') return d.gradeId.startsWith('e');
-        if(currentTab === 'junior') return d.gradeId.startsWith('j');
-        return false;
+    const filtered = MATERIAL_DATA.filter(item => {
+        const matchTab = item.tab === currentTab;
+        const matchText = item.title.toLowerCase().includes(query) || 
+                          item.subject.toLowerCase().includes(query) || 
+                          item.grade.toLowerCase().includes(query) ||
+                          (item.tags && item.tags.some(t => t.toLowerCase().includes(query)));
+        return matchTab && (query === "" || matchText);
     });
 
-    let hasMatch = false;
-    const cardsHtml = filteredData.map(data => {
-        // 学年がヒットするか（例：小1、1年生）
-        const gradeMatches = data.grade.toLowerCase().includes(query);
-
-        const subjectsHtml = data.subjects.map(sub => {
-            // 教科名がヒットするか（例：算数、数学）
-            const subjectMatches = sub.name.toLowerCase().includes(query);
-
-            // 単元ごとの詳細・抽象・キーワード検索
-            const matchedUnits = sub.units.filter(unit => {
-                const titleMatches = unit.title.toLowerCase().includes(query);
-                // 抽象キーワード（タグ）のどれかにヒットするか
-                const tagMatches = unit.tags ? unit.tags.some(tag => tag.toLowerCase().includes(query)) : false;
-                
-                return gradeMatches || subjectMatches || titleMatches || tagMatches;
-            });
-
-            if (matchedUnits.length === 0) return '';
-            hasMatch = true;
-
-            const unitsList = matchedUnits.map(unit => `
-                <div onclick="alert('${unit.title}を開きます')" class="flex items-center justify-between p-4 rounded-2xl hover:bg-orange-50/50 transition-all cursor-pointer group mb-1 border border-transparent hover:border-orange-100">
-                    <span class="text-sm font-bold text-slate-500 group-hover:text-orange-600 transition-colors">${unit.title}</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-orange-400"></i>
+    container.innerHTML = filtered.map(item => `
+        <div onclick='openDetail(${JSON.stringify(item)})' class="soft-card p-8 reveal active cursor-pointer group">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="px-3 py-1 bg-${item.color}-50 text-${item.color}-400 text-[9px] font-black rounded-lg uppercase border border-${item.color}-100">
+                    ${item.subject}
+                </span>
+                <span class="text-[9px] font-bold text-stone-300">${item.grade}</span>
+            </div>
+            <h3 class="text-lg font-black text-stone-700 group-hover:text-stone-900 transition-colors">${item.title}</h3>
+            <div class="mt-8 flex justify-end">
+                <div class="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-300 group-hover:bg-stone-700 group-hover:text-white transition-all">
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </div>
-            `).join('');
-
-            return `
-                <div class="mb-8">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-${sub.color}-50 flex items-center justify-center text-${sub.color}-400 border border-${sub.color}-100">
-                            <i data-lucide="${sub.icon}" width="20" height="20"></i>
-                        </div>
-                        <h4 class="font-black text-slate-700">${sub.name}</h4>
-                    </div>
-                    <div>${unitsList}</div>
-                </div>`;
-        }).join('');
-
-        if (subjectsHtml.trim() === "") return '';
-
-        return `
-            <div class="material-card p-8 reveal active">
-                <div class="flex items-center justify-between mb-8 border-b-2 border-orange-50/50 pb-4">
-                    <h3 class="text-2xl font-black text-slate-800">${data.grade}</h3>
-                    <span class="text-[10px] font-black text-slate-300 tracking-widest uppercase">Unit</span>
-                </div>
-                ${subjectsHtml}
-            </div>`;
-    }).join('');
-
-    // ヒットなしの時
-    if (!hasMatch && query !== "") {
-        container.innerHTML = `
-            <div class="col-span-full py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="search-x" class="w-10 h-10 text-orange-200"></i>
-                </div>
-                <p class="font-black text-slate-400">「${query}」で見つかりませんでした。<br><span class="text-[10px] opacity-60">もっとざっくりした言葉で探してみてね！</span></p>
-            </div>`;
-    } else {
-        container.innerHTML = cardsHtml;
-    }
+            </div>
+        </div>
+    `).join('');
     
     lucide.createIcons();
 };
 
-// イベント登録
-document.getElementById('search-input').addEventListener('input', renderMaterials);
+/* =====================================================================
+   🎂 学年計算ロジック
+   ===================================================================== */
+const calculateGrade = (birthDateString) => {
+    if (!birthDateString) return null;
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    
+    let schoolYear = today.getFullYear();
+    if (today.getMonth() + 1 < 4) schoolYear -= 1;
 
+    let birthYear = birthDate.getFullYear();
+    if (birthDate.getMonth() + 1 < 4 || (birthDate.getMonth() + 1 === 4 && birthDate.getDate() === 1)) {
+        birthYear -= 1;
+    }
+
+    const age = schoolYear - birthYear;
+
+    if (age >= 6 && age <= 11) {
+        return { type: 'elementary', label: `小学${age - 5}年生` };
+    } else if (age >= 12 && age <= 14) {
+        return { type: 'junior', label: `中学${age - 11}年生` };
+    } else {
+        return { type: 'other', label: '対象外' };
+    }
+};
+
+/* =====================================================================
+   🛠️ 設定の保存・読込 (localStorageを使用)
+   ===================================================================== */
+window.saveBirthDate = () => {
+    const input = document.getElementById('birthdate-input');
+    const dateVal = input.value;
+    if (!dateVal) return;
+
+    // localStorageに保存
+    localStorage.setItem('tamaben_birthdate', dateVal);
+    
+    applySettings(dateVal);
+    closeSettingsModal();
+};
+
+window.clearBirthDate = () => {
+    localStorage.removeItem('tamaben_birthdate');
+    location.reload(); // リセットして再読み込み
+};
+
+const applySettings = (dateStr) => {
+    const result = calculateGrade(dateStr);
+    if (result) {
+        const badge = document.getElementById('grade-badge');
+        const label = document.getElementById('user-grade-label');
+        if(badge) badge.classList.remove('hidden');
+        if(label) label.textContent = result.label;
+        
+        if (result.type === 'elementary' || result.type === 'junior') {
+            switchTab(result.type);
+        }
+    }
+};
+
+/* =====================================================================
+   🖥️ UI制御
+   ===================================================================== */
 window.switchTab = (tab) => {
     currentTab = tab;
     document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
@@ -151,4 +121,42 @@ window.switchTab = (tab) => {
     renderMaterials();
 };
 
-document.addEventListener('DOMContentLoaded', renderMaterials);
+window.openSettingsModal = () => document.getElementById('settings-modal').classList.add('active');
+window.closeSettingsModal = () => document.getElementById('settings-modal').classList.remove('active');
+
+window.openDetail = (item) => {
+    const home = document.getElementById('view-home');
+    const detail = document.getElementById('view-detail');
+    const content = document.getElementById('detail-content');
+
+    content.innerHTML = `
+        <div class="p-10 md:p-16 text-center">
+            <h2 class="text-3xl md:text-5xl font-black text-stone-700 mb-12">${item.title}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                <button onclick="window.open('${item.pdfBasic}')" class="p-8 bg-[#fdf2f0] rounded-[2rem] font-black text-stone-600">基本問題</button>
+                <button onclick="window.open('${item.pdfAdv}')" class="p-8 bg-stone-50 rounded-[2rem] font-black text-stone-600">応用問題</button>
+                <button onclick="window.open('${item.pdfAns}')" class="md:col-span-2 p-6 bg-stone-800 text-white rounded-[2rem] font-black">解答を確認</button>
+            </div>
+        </div>`;
+    home.classList.add('hidden');
+    detail.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    lucide.createIcons();
+};
+
+window.goHome = () => {
+    document.getElementById('view-home').classList.remove('hidden');
+    document.getElementById('view-detail').classList.add('hidden');
+};
+
+// 初期化：保存されたデータを読み込む
+document.addEventListener('DOMContentLoaded', () => {
+    const savedDate = localStorage.getItem('tamaben_birthdate');
+    if (savedDate) {
+        document.getElementById('birthdate-input').value = savedDate;
+        applySettings(savedDate);
+    }
+    renderMaterials();
+});
+
+document.getElementById('search-input').addEventListener('input', renderMaterials);
