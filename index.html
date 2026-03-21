@@ -52,8 +52,10 @@
                 <div class="relative">
                     <div id="logo-glow" class="absolute inset-0 rounded-xl blur opacity-0 group-hover:opacity-40 transition-opacity bg-emerald-400"></div>
                     <div class="relative bg-white p-1.5 rounded-xl border border-slate-100 shadow-sm">
-                        <!-- JSでロゴが挿入される想定 -->
-                        <div id="header-logo-wrapper" class="w-24 md:w-32 flex items-center justify-center font-black text-emerald-500 tracking-wider">タマベン</div>
+                        <!-- 【修正】テキストからロゴ画像(logo.svg)に変更 -->
+                        <div id="header-logo-wrapper" class="w-24 md:w-32 flex items-center justify-center">
+                            <img src="logo.svg" alt="タマベン" class="w-full h-auto drop-shadow-sm">
+                        </div>
                     </div>
                 </div>
             </button>
@@ -106,7 +108,7 @@
                 </div>
             </section>
 
-            <!-- 【NEW】アプリ一覧セクション -->
+            <!-- アプリ一覧セクション -->
             <section id="apps-section" class="mb-12 animate-in slide-in-from-top-4 duration-700 delay-100">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
@@ -328,11 +330,9 @@
     <!-- フッター -->
     <footer class="bg-white border-t border-slate-200/60 py-10 mt-10">
         <div class="container mx-auto px-4 text-center">
-            <div class="inline-flex items-center justify-center gap-2 mb-4">
-                <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
-                    <i data-lucide="book" class="w-4 h-4"></i>
-                </div>
-                <span class="font-black text-slate-400 tracking-wider">タマベン</span>
+            <!-- 【修正】アイコンとテキストからロゴ画像(logo.svg)に変更 -->
+            <div class="inline-flex items-center justify-center mb-4">
+                <img src="logo.svg" alt="タマベン" class="h-8 w-auto grayscale opacity-50">
             </div>
             <p class="text-xs text-slate-400 font-medium">
                 &copy; 2026 Tamaben. All Rights Reserved.
@@ -340,10 +340,10 @@
         </div>
     </footer>
 
-    <script src="data.json"></script>
+    <!-- 【バグ修正】<script src="data.json"></script> はSyntaxErrorになるため削除しました -->
     <script src="script.js"></script>
     <script>
-        // Lucideアイコンの初期化（Tailwindと併用時の保険）
+        // Lucideアイコンの初期化
         lucide.createIcons();
     </script>
 </body>
