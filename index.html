@@ -14,7 +14,7 @@
 
     <style>
         :root {
-            --bg-main: #fcfaf7; /* ニュアンスベージュ */
+            --bg-main: #f9f8f6; /* ニュアンスベージュ */
             --accent-pale: #fdf2f0; /* ペールアプリコット */
             --text-muted: #5f6368;
         }
@@ -22,17 +22,17 @@
         body { background-color: var(--bg-main); color: var(--text-muted); overflow-x: hidden; }
 
         /* 背景：ゆっくり動く淡い色の塊 */
-        .blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 220, 210, 0.2) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: move 25s infinite alternate; pointer-events: none; }
+        .blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 220, 210, 0.3) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: move 25s infinite alternate; pointer-events: none; }
         @keyframes move { from { transform: translate(-5%, -5%) scale(1); } to { transform: translate(15%, 15%) scale(1.1); } }
 
-        .glass-header { background: rgba(252, 250, 247, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .glass-header { background: rgba(249, 248, 246, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 
         /* 教材カード */
-        .soft-card { background: white; border-radius: 2.2rem; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1.5px solid #f8f6f2; }
-        .soft-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.03); border-color: #eee4dc; }
+        .soft-card { background: white; border-radius: 2.2rem; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1.5px solid #f8f6f2; cursor: pointer; }
+        .soft-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.04); border-color: #eee4dc; }
 
         /* 検索バー */
-        .search-outer { background: white; border: 2px solid #f1eee9; transition: all 0.4s ease; }
+        .search-outer { background: white; border: 1.5px solid #eceae4; transition: all 0.4s ease; }
         .search-outer:focus-within { border-color: #fb923c; box-shadow: 0 10px 40px -10px rgba(251, 146, 60, 0.1); }
 
         /* タブ */
@@ -42,28 +42,37 @@
         .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        .modal-overlay { opacity: 0; pointer-events: none; transition: all 0.5s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        /* 設定モーダル */
+        #settings-modal { 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: all 0.4s ease; 
+            z-index: 200;
+        }
+        #settings-modal.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
     <div class="blob" style="top: -100px; left: -100px;"></div>
-    <div class="blob" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, rgba(255, 255, 255, 0) 70%);"></div>
+    <div class="blob" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(210, 220, 230, 0.2) 0%, rgba(255, 255, 255, 0) 70%);"></div>
 
     <!-- ヘッダー -->
-    <header class="sticky top-0 z-[100] glass-header border-b border-stone-200/30">
+    <header class="sticky top-0 z-[100] glass-header border-b border-stone-200/40">
         <div class="container mx-auto px-6 h-16 md:h-20 flex items-center justify-between max-w-6xl">
             <button onclick="goHome()" class="active:scale-95 transition-all">
                 <img src="logo.svg" alt="タマベン" class="h-8 md:h-10 w-auto">
             </button>
             <div class="flex items-center gap-4">
                 <div id="grade-badge" class="hidden md:flex flex-col items-end mr-1">
-                    <span class="text-[9px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">Grade</span>
+                    <span class="text-[9px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">Status</span>
                     <span id="user-grade-label" class="text-[11px] font-black text-stone-500">未設定</span>
                 </div>
-                <button onclick="openSettingsModal()" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-stone-100 shadow-sm hover:bg-stone-50 transition-all">
-                    <i data-lucide="user" class="w-4 h-4 text-stone-300"></i>
+                <button id="open-settings-btn" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-stone-100 shadow-sm hover:bg-stone-50 transition-all">
+                    <i data-lucide="user" class="w-4 h-4 text-stone-400"></i>
                 </button>
             </div>
         </div>
@@ -74,60 +83,59 @@
         <!-- ホーム画面 -->
         <div id="view-home">
             <section class="py-16 md:py-24 text-center reveal">
-                <h1 class="text-3xl md:text-6xl font-black mb-8 tracking-tight text-stone-700 leading-tight">
+                <h1 class="text-3xl md:text-5xl font-black mb-8 tracking-tight text-stone-700 leading-tight">
                     学びを、もっと<br/>
-                    <span class="inline-block px-5 py-1 bg-[#fdf2f0] text-[#e89a8e] rounded-[1.5rem] rotate-[-1deg]">自由に。</span>
+                    <span class="inline-block px-4 py-1 bg-[#fdf2f0] text-[#e89a8e] rounded-[1.2rem] rotate-[-1deg]">自由に。</span>
                 </h1>
                 
-                <div class="mt-12 max-w-xl mx-auto">
-                    <div class="search-outer flex items-center rounded-[2.5rem] px-8 py-5">
-                        <i data-lucide="search" class="w-6 h-6 text-orange-200 mr-4"></i>
-                        <input type="text" id="search-input" placeholder="例：計算、漢字、生き物、歴史..." class="w-full bg-transparent outline-none font-bold text-stone-600 placeholder:text-stone-200 text-lg">
-                    </div>
-                    <div class="flex flex-wrap justify-center gap-2 mt-8">
-                        <button onclick="quickSearch('計算')" class="px-5 py-2 rounded-full bg-white border border-stone-100 text-[10px] font-black text-stone-300 hover:text-orange-400 transition-all shadow-sm">#計算</button>
-                        <button onclick="quickSearch('漢字')" class="px-5 py-2 rounded-full bg-white border border-stone-100 text-[10px] font-black text-stone-300 hover:text-orange-400 transition-all shadow-sm">#漢字</button>
-                        <button onclick="quickSearch('歴史')" class="px-5 py-2 rounded-full bg-white border border-stone-100 text-[10px] font-black text-stone-300 hover:text-orange-400 transition-all shadow-sm">#歴史</button>
-                        <button onclick="quickSearch('英語')" class="px-5 py-2 rounded-full bg-white border border-stone-100 text-[10px] font-black text-stone-300 hover:text-orange-400 transition-all shadow-sm">#英語</button>
+                <div class="mt-12 max-w-lg mx-auto">
+                    <div class="search-outer flex items-center rounded-[2rem] px-8 py-4">
+                        <i data-lucide="search" class="w-5 h-5 text-stone-300 mr-4"></i>
+                        <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-stone-600 placeholder:text-stone-200 text-sm">
                     </div>
                 </div>
             </section>
 
             <!-- タブ -->
-            <div class="sticky top-20 md:top-24 z-40 mb-16 flex justify-center reveal">
-                <div class="inline-flex bg-stone-100/50 p-1.5 rounded-[2rem] border border-white/50 backdrop-blur-md">
-                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-12 py-3 rounded-[1.6rem] text-sm">小学生</button>
-                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-12 py-3 rounded-[1.6rem] text-sm">中学生</button>
+            <div class="sticky top-20 md:top-24 z-40 mb-12 flex justify-center reveal">
+                <div class="inline-flex bg-stone-100/50 p-1.5 rounded-[1.8rem] border border-white/50 backdrop-blur-md">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-8 md:px-12 py-3 rounded-[1.5rem] text-xs">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-8 md:px-12 py-3 rounded-[1.5rem] text-xs">中学生</button>
                 </div>
             </div>
 
-            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <!-- script.jsが挿入 -->
+            <div id="learning-materials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- JavaScriptで生成 -->
             </div>
         </div>
 
         <!-- 詳細画面 -->
         <div id="view-detail" class="hidden py-12">
-            <button onclick="goHome()" class="flex items-center gap-2 text-stone-400 font-black hover:text-stone-600 mb-10 transition-colors">
-                <i data-lucide="chevron-left" class="w-5 h-5"></i> 一覧へ戻る
+            <button onclick="goHome()" class="flex items-center gap-2 text-stone-400 font-black hover:text-stone-600 mb-8 transition-colors">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i> 戻る
             </button>
-            <div id="detail-content" class="bg-white rounded-[3.5rem] overflow-hidden border border-stone-100 shadow-sm"></div>
+            <div id="detail-content" class="bg-white rounded-[3rem] overflow-hidden border border-stone-100 shadow-sm min-h-[400px]"></div>
         </div>
 
     </main>
 
-    <!-- モーダル -->
-    <div id="settings-modal" class="modal-overlay fixed inset-0 z-[200] flex items-center justify-center bg-stone-900/10 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-[3.5rem] p-12 w-full max-w-sm shadow-2xl">
+    <!-- 設定モーダル -->
+    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-stone-900/10 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-[3rem] p-10 w-full max-w-sm shadow-2xl">
             <div class="text-center">
-                <h3 class="text-xl font-black text-stone-700 mb-2">学年の設定</h3>
-                <p class="text-xs text-stone-400 font-bold mb-10">生年月日を教えてね</p>
-                <input type="date" id="birthdate-input" class="w-full px-6 py-4 rounded-2xl bg-stone-50 border border-stone-100 outline-none font-black text-center mb-10 text-sm">
-                <div class="space-y-4">
-                    <button onclick="saveBirthDate()" class="w-full py-5 bg-stone-700 text-white rounded-2xl font-black active:scale-95 transition-all text-sm">保存する</button>
-                    <button onclick="clearBirthDate()" class="w-full py-2 text-stone-300 text-[10px] font-black hover:text-red-400">設定をリセット</button>
+                <div class="w-16 h-16 bg-stone-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="sparkles" class="w-8 h-8 text-stone-300"></i>
                 </div>
-                <button onclick="closeSettingsModal()" class="mt-8 text-[10px] font-black text-stone-300">閉じる</button>
+                <h3 class="text-lg font-black text-stone-700 mb-2">学年の設定</h3>
+                <p class="text-[11px] text-stone-400 font-bold mb-8">生年月日を入力してね</p>
+                <input type="date" id="birthdate-input" class="w-full px-6 py-4 rounded-2xl bg-stone-50 border border-stone-100 outline-none font-black text-center mb-8 focus:border-stone-200 transition-all text-sm">
+                
+                <div class="space-y-3">
+                    <button onclick="saveBirthDate()" class="w-full py-4 bg-stone-700 text-white rounded-2xl font-black active:scale-95 transition-all text-sm">保存する</button>
+                    <button onclick="clearBirthDate()" class="w-full py-2 text-stone-300 text-[10px] font-black hover:text-red-400 transition-colors">設定をリセット</button>
+                </div>
+                
+                <button id="close-settings-btn" class="mt-6 text-[10px] font-black text-stone-300 hover:text-stone-500 transition-colors">閉じる</button>
             </div>
         </div>
     </div>
@@ -137,24 +145,165 @@
         <p class="text-[9px] text-stone-400 font-black tracking-widest uppercase mt-4">&copy; 2026 Tamaben.</p>
     </footer>
 
-    <script src="script.js"></script>
     <script>
-        lucide.createIcons();
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                if (reveals[i].getBoundingClientRect().top < window.innerHeight - 100) {
-                    reveals[i].classList.add("active");
-                }
+        /* =====================================================================
+           📚 データベース
+           ===================================================================== */
+        const MATERIAL_DATA = [
+            // 小学校
+            { id:"e1-j", tab:"elementary", grade:"小学1年生", subject:"国語", color:"rose", title:"ひらがな・カタカナ", tags:["文字","五十音","1年"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"e1-m", tab:"elementary", grade:"小学1年生", subject:"算数", color:"sky", title:"かずとたしざん", tags:["計算","1年","数"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"e2-m", tab:"elementary", grade:"小学2年生", subject:"算数", color:"orange", title:"かけ算(九九)", tags:["計算","九九","2年"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"e3-s", tab:"elementary", grade:"小学3年生", subject:"理科", color:"emerald", title:"昆虫の育ち方", tags:["生き物","虫","3年"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"e6-ss", tab:"elementary", grade:"小学6年生", subject:"社会", color:"amber", title:"日本の歴史", tags:["歴史","侍","6年"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            // 中学校
+            { id:"j1-m", tab:"junior", grade:"中学1年生", subject:"数学", color:"sky", title:"正負の数・方程式", tags:["中1","数学","マイナス"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"j2-e", tab:"junior", grade:"中学2年生", subject:"英語", color:"violet", title:"過去形・不定詞", tags:["中2","英語","文法"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" },
+            { id:"j3-s", tab:"junior", grade:"中学3年生", subject:"理科", color:"emerald", title:"天体・イオン", tags:["中3","宇宙","化学"], pdfBasic:"#", pdfAdv:"#", pdfAns:"#" }
+        ];
+
+        let currentTab = 'elementary';
+
+        /* =====================================================================
+           🔍 検索・描画エンジン
+           ===================================================================== */
+        const renderMaterials = () => {
+            const container = document.getElementById('learning-materials-container');
+            const input = document.getElementById('search-input');
+            const query = input ? input.value.toLowerCase().trim() : "";
+            if (!container) return;
+
+            const filtered = MATERIAL_DATA.filter(item => {
+                const matchTab = item.tab === currentTab;
+                const matchText = item.title.toLowerCase().includes(query) || 
+                                  item.subject.toLowerCase().includes(query) || 
+                                  item.grade.toLowerCase().includes(query) ||
+                                  (item.tags && item.tags.some(t => t.toLowerCase().includes(query)));
+                return matchTab && (query === "" || matchText);
+            });
+
+            container.innerHTML = filtered.map(item => `
+                <div onclick='openDetail(${JSON.stringify(item)})' class="soft-card p-8 reveal active group">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="px-3 py-1 bg-${item.color}-50 text-${item.color}-400 text-[9px] font-black rounded-lg uppercase border border-${item.color}-100">${item.subject}</span>
+                        <span class="text-[9px] font-bold text-stone-300">${item.grade}</span>
+                    </div>
+                    <h3 class="text-lg font-black text-stone-700 group-hover:text-stone-900 transition-colors">${item.title}</h3>
+                    <div class="mt-8 flex justify-end">
+                        <div class="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-300 group-hover:bg-stone-700 group-hover:text-white transition-all">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            if(filtered.length === 0) container.innerHTML = `<div class="col-span-full py-20 text-center text-stone-300 font-bold">見つかりませんでした</div>`;
+            lucide.createIcons();
+        };
+
+        /* =====================================================================
+           🛠️ 学年設定 (localStorageを使用)
+           ===================================================================== */
+        function saveBirthDate() {
+            const val = document.getElementById('birthdate-input').value;
+            if (!val) return;
+            localStorage.setItem('tamaben_birthdate', val);
+            applySettings(val);
+            closeSettingsModal();
+        }
+
+        function clearBirthDate() {
+            localStorage.removeItem('tamaben_birthdate');
+            location.reload();
+        }
+
+        function applySettings(dateStr) {
+            const result = calculateGrade(dateStr);
+            const badge = document.getElementById('grade-badge');
+            const label = document.getElementById('user-grade-label');
+            if (result && result.type !== 'other') {
+                if(badge) badge.classList.remove('hidden');
+                if(label) label.textContent = result.label;
+                switchTab(result.type);
             }
         }
-        window.addEventListener("scroll", reveal);
-        window.onload = reveal;
-        function quickSearch(val) {
-            const input = document.getElementById('search-input');
-            input.value = val;
+
+        function calculateGrade(birthStr) {
+            const today = new Date();
+            const birth = new Date(birthStr);
+            let schoolYear = today.getFullYear();
+            if (today.getMonth() + 1 < 4) schoolYear--;
+            let birthYear = birth.getFullYear();
+            if (birth.getMonth() + 1 < 4 || (birth.getMonth() + 1 === 4 && birth.getDate() === 1)) birthYear--;
+            const age = schoolYear - birthYear;
+            if (age >= 6 && age <= 11) return { type: 'elementary', label: `小学${age - 5}年生` };
+            if (age >= 12 && age <= 14) return { type: 'junior', label: `中学${age - 11}年生` };
+            return { type: 'other' };
+        }
+
+        /* =====================================================================
+           🖥️ UI制御
+           ===================================================================== */
+        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
+            document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
             renderMaterials();
         }
+
+        function openDetail(item) {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-detail').classList.remove('hidden');
+            document.getElementById('detail-content').innerHTML = `
+                <div class="p-10 md:p-16 text-center">
+                    <div class="inline-block px-4 py-1 bg-stone-50 text-stone-400 text-[10px] font-black rounded-full mb-6 border border-stone-100">${item.grade} / ${item.subject}</div>
+                    <h2 class="text-3xl md:text-5xl font-black text-stone-700 mb-12">${item.title}</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                        <button onclick="window.open('${item.pdfBasic}')" class="p-8 bg-[#fdf2f0] rounded-[2rem] font-black text-stone-600">基本問題</button>
+                        <button onclick="window.open('${item.pdfAdv}')" class="p-8 bg-stone-50 rounded-[2rem] font-black text-stone-600">応用問題</button>
+                        <button onclick="window.open('${item.pdfAns}')" class="md:col-span-2 p-6 bg-stone-800 text-white rounded-[2rem] font-black">解答を確認</button>
+                    </div>
+                </div>`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function goHome() {
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-detail').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* =====================================================================
+           🚀 初期化
+           ===================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // イベントリスナーの直接割り当て
+            document.getElementById('open-settings-btn').addEventListener('click', openSettingsModal);
+            document.getElementById('close-settings-btn').addEventListener('click', closeSettingsModal);
+            document.getElementById('search-input').addEventListener('input', renderMaterials);
+
+            // 保存データの確認
+            const saved = localStorage.getItem('tamaben_birthdate');
+            if (saved) {
+                document.getElementById('birthdate-input').value = saved;
+                applySettings(saved);
+            }
+            renderMaterials();
+        });
+
+        // スクロールフェードイン
+        window.addEventListener("scroll", () => {
+            const reveals = document.querySelectorAll(".reveal");
+            reveals.forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add("active");
+            });
+        });
     </script>
 </body>
 </html>
