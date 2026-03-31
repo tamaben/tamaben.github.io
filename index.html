@@ -231,6 +231,7 @@
     </div>
 
     <script>
+        // 教材データを空に設定
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
@@ -240,13 +241,8 @@
                 if(!response.ok) throw new Error('Network response was not ok');
                 MATERIAL_DATA = await response.json();
             } catch (e) {
-                // テスト用のデモデータ（空のデータがある場合をテストできます）
-                MATERIAL_DATA = [
-                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: 'ans.pdf' },
-                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベットと基本', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: '' }
-                ];
+                // ファイルが読み込めなかった場合のデモデータも空にする
+                MATERIAL_DATA = [];
             }
             renderMaterials();
         }
@@ -288,6 +284,7 @@
                 return matchTab && (query === "" || matchText);
             });
 
+            // データが空の場合の表示
             if(filtered.length === 0) {
                 container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm">教材が見つかりません。</div>`;
                 return;
@@ -317,8 +314,11 @@
                 card.onclick = () => openDetail(item);
                 container.appendChild(card);
 
-                if (item.pdfBasic) { renderPDFThumbnail(item.pdfBasic, canvasId); } 
-                else { document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] text-[10px] font-bold">準備中</div>`; }
+                if (item.pdfBasic && item.pdfBasic !== "#") { 
+                    renderPDFThumbnail(item.pdfBasic, canvasId); 
+                } else { 
+                    document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] text-[10px] font-bold">準備中</div>`; 
+                }
 
                 // フワッと表示させるための遅延
                 setTimeout(() => { card.classList.add('show'); }, index * 40); 
@@ -330,9 +330,9 @@
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
             
-            const hasBasic = !!item.pdfBasic;
-            const hasAdv = !!item.pdfAdv;
-            const hasAns = !!item.pdfAns;
+            const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
+            const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
+            const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
             document.getElementById('detail-content').innerHTML = `
                 <div class="flex flex-col md:flex-row">
