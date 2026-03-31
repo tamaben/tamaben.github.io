@@ -1,153 +1,512 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>練習問題アプリ</title>
-<style>
-  /* 全体の基本設定 */
-  body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 16px;
-    background-color: #f9f9f9;
-    color: #333;
-  }
-
-  /* ロゴエリア（画像はそのまま） */
-  .header {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  .header img {
-    max-width: 150px; /* 必要に応じてサイズ調整してください */
-    height: auto;
-  }
-
-  /* 操作パネル（使いやすさの向上） */
-  .controls {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .control-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .control-group label {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #2e7d32; /* アクセントの緑色 */
-  }
-
-  /* セレクトボックスをスマホでも押しやすく大きくする */
-  .control-group select {
-    padding: 14px;
-    font-size: 16px; /* スマホでの自動ズームを防ぐため16px以上 */
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background-color: #fff;
-    cursor: pointer;
-    transition: border-color 0.3s;
-  }
-  .control-group select:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-
-  /* セクション見出し */
-  .section-title {
-    font-size: 1.2rem;
-    color: #2e7d32;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-  }
-
-  /* スマホ用横2列レイアウト（CSS Gridを使用） */
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 常に2列（1frずつ均等） */
-    gap: 12px; /* アイテム間の隙間 */
-  }
-
-  /* 練習問題の各アイテム */
-  .grid-item {
-    background: #ffffff;
-    padding: 20px 10px;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-weight: bold;
-    /* タップしやすくするための設定 */
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  /* タップした時のちょっとしたアニメーション */
-  .grid-item:active {
-    transform: scale(0.96);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
-
-  /* 画面が広い場合（PCやタブレット）は4列にする設定（おまけ） */
-  @media (min-width: 600px) {
-    .grid-container {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-    .controls {
-      flex-direction: row;
-    }
-    .control-group {
-      flex: 1;
-    }
-  }
-</style>
-</head>
-<body>
-
-  <div class="header">
-    <img src="logo.png" alt="ロゴ画像">
-  </div>
-
-  <div class="controls">
-    <div class="control-group">
-      <label for="design-select">デザインを選ぶ</label>
-      <select id="design-select">
-        <option value="default">標準デザイン</option>
-        <option value="cute">かわいい</option>
-        <option value="cool">かっこいい</option>
-      </select>
-    </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>タマベン - 学びを、もっと自由に。</title>
     
-    <div class="control-group">
-      <label for="animation-select">アニメーションを選ぶ</label>
-      <select id="animation-select">
-        <option value="none">なし</option>
-        <option value="fade">フワッと表示</option>
-        <option value="slide">横からスライド</option>
-      </select>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <style>
+        /* テーマカラー変数（初期設定：たまべんグリーン） */
+        :root {
+            --bg-base: #f4f8f4;
+            --text-main: #2e3d30;
+            --text-dark: #1b261c;
+            --text-muted: #84a589;
+            --text-light: #b5ccb8;
+            --accent-main: #4CAF50;
+            --accent-dark: #388E3C;
+            --bg-sub: #e6f0e7;
+            --bg-card: #ffffff;
+            --border-color: #d1e2d3;
+            --blob-1: #aed581;
+            --blob-2: #81c784;
+        }
+
+        /* ユーザー提供のウォーム（ベージュ）テーマ */
+        [data-theme="warm"] {
+            --bg-base: #fefaf6;
+            --text-main: #5d5752;
+            --text-dark: #4a4541;
+            --text-muted: #bcaea3;
+            --text-light: #dcd0c6;
+            --accent-main: #d4a373;
+            --accent-dark: #a98467;
+            --bg-sub: #f5ebe0;
+            --bg-card: #ffffff;
+            --border-color: #ece4de;
+            --blob-1: #f9dcc4;
+            --blob-2: #d8e2dc;
+        }
+
+        /* クール（ブルー）テーマ */
+        [data-theme="cool"] {
+            --bg-base: #f4f6f9;
+            --text-main: #2c3e50;
+            --text-dark: #1a252f;
+            --text-muted: #7f8c8d;
+            --text-light: #bdc3c7;
+            --accent-main: #3498db;
+            --accent-dark: #2980b9;
+            --bg-sub: #e1e8ed;
+            --bg-card: #ffffff;
+            --border-color: #d1d8df;
+            --blob-1: #85c1e9;
+            --blob-2: #abebc6;
+        }
+
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            overflow-x: hidden;
+            font-feature-settings: "palt";
+            padding-bottom: env(safe-area-inset-bottom);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* 背景Blob */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(8vw);
+            z-index: -1;
+            animation: move 30s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
+            pointer-events: none;
+            opacity: 0.5;
+            width: clamp(300px, 60vw, 800px);
+            height: clamp(300px, 60vw, 800px);
+            will-change: transform;
+            transition: background-color 0.8s ease;
+        }
+        @keyframes move {
+            from { transform: translate(-5%, -5%) rotate(0deg); }
+            to { transform: translate(15%, 15%) rotate(90deg); }
+        }
+
+        .glass-nav {
+            background: color-mix(in srgb, var(--bg-base) 85%, transparent);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* カスタムコントロールUI */
+        .controls-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 12px 20px;
+            display: inline-flex;
+            gap: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .control-select {
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* カードアニメーションの種類 */
+        .card-appear {
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        /* アニメ：フェード（下から） */
+        [data-animation="fade"] .card-appear { transform: scale(0.95) translateY(20px); }
+        [data-animation="fade"] .card-appear.show { opacity: 1; transform: scale(1) translateY(0); }
+        /* アニメ：スライド（横から） */
+        [data-animation="slide"] .card-appear { transform: translateX(-30px); }
+        [data-animation="slide"] .card-appear.show { opacity: 1; transform: translateX(0); }
+        /* アニメ：ポップ（拡大） */
+        [data-animation="pop"] .card-appear { transform: scale(0.8); }
+        [data-animation="pop"] .card-appear.show { opacity: 1; transform: scale(1); }
+        /* アニメ：なし */
+        [data-animation="none"] .card-appear { opacity: 1; transform: none; transition: none; }
+
+        /* プレミアムカード */
+        .premium-card {
+            background: var(--bg-card);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (min-width: 640px) { .premium-card { border-radius: 2rem; } }
+        
+        .premium-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: var(--accent-main);
+        }
+
+        .pdf-thumbnail-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1.414;
+            background-color: var(--bg-sub);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .pdf-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .premium-card:hover .pdf-canvas { transform: scale(1.05); }
+        .pdf-loading { position: absolute; color: var(--text-light); animation: pulse 2s infinite; }
+
+        .search-field { background: var(--bg-card); border: 1.5px solid var(--border-color); transition: all 0.4s ease; }
+        .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: scale(1.01); }
+
+        .tab-pill { transition: all 0.4s ease; color: var(--text-muted); }
+        .tab-pill.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+
+        .loading-pulse { animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
+        #settings-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
+
+        .btn-disabled { opacity: 0.4; pointer-events: none; background: var(--bg-base); color: var(--text-light); border-color: var(--border-color); }
+        .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
+    </style>
+</head>
+<body class="font-['Zen_Maru_Gothic']" data-theme="default" data-animation="fade">
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <div class="blob" style="background: var(--blob-1); top: -10%; left: -10%;"></div>
+    <div class="blob" style="background: var(--blob-2); bottom: -10%; right: -10%; animation-delay: -5s;"></div>
+
+    <header class="sticky top-0 z-[100] glass-nav">
+        <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
+            <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
+                <img src="logo.svg" alt="タマベンロゴ" class="h-6 sm:h-8 md:h-10 w-auto">
+            </button>
+            <div class="flex items-center gap-3 md:gap-4">
+                <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2 fade-in-up">
+                    <span class="text-[8px] md:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] leading-none mb-1">Your Pace</span>
+                    <span id="user-grade-label" class="text-[10px] md:text-xs font-black text-[var(--text-main)]">未設定</span>
+                </div>
+                <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-sm hover:scale-105 transition-all outline-none">
+                    <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[var(--text-muted)]"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl pb-24 md:pb-32">
+        
+        <div id="view-home">
+            <section class="py-8 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
+                <h1 class="fluid-title font-black mb-6 tracking-tight text-[var(--text-dark)] leading-[1.15]">
+                    学びを、もっと<br/>
+                    <span class="inline-block px-5 py-2 bg-[var(--bg-card)] text-[var(--accent-main)] rounded-full shadow-sm rotate-[-2deg] border border-[var(--border-color)] my-2">自由に。</span>
+                </h1>
+                
+                <div class="mt-4 mb-6 md:mb-8 flex justify-center">
+                    <div class="controls-bar">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="palette" class="w-4 h-4 text-[var(--accent-main)]"></i>
+                            <select id="theme-select" class="control-select" onchange="changeTheme(this.value)">
+                                <option value="default">たまべんグリーン</option>
+                                <option value="warm">ウォーム（ベージュ）</option>
+                                <option value="cool">クール（ブルー）</option>
+                            </select>
+                        </div>
+                        <div class="w-px h-5 bg-[var(--border-color)] hidden sm:block"></div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="wand-2" class="w-4 h-4 text-[var(--accent-main)]"></i>
+                            <select id="anim-select" class="control-select" onchange="changeAnimation(this.value)">
+                                <option value="fade">フワッと表示</option>
+                                <option value="slide">横からスライド</option>
+                                <option value="pop">ポンッと拡大</option>
+                                <option value="none">アニメなし</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-2xl mx-auto px-2 sm:px-0">
+                    <div class="search-field flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
+                        <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 text-[var(--text-light)] mr-3 md:mr-4"></i>
+                        <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
+                    </div>
+                </div>
+            </section>
+
+            <div class="sticky top-16 sm:top-20 md:top-24 z-40 mb-8 md:mb-16 flex justify-center fade-in-up px-2" style="animation-delay: 0.3s;">
+                <div class="flex w-full max-w-sm bg-[var(--bg-sub)]/80 p-1.5 md:p-2 rounded-full border border-white backdrop-blur-xl shadow-sm">
+                    <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">小学生</button>
+                    <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">中学生</button>
+                </div>
+            </div>
+
+            <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8 lg:gap-10 mb-20 min-h-[40vh]">
+                <div class="col-span-full py-20 text-center loading-pulse">
+                    <p class="text-[var(--text-light)] font-black tracking-widest uppercase text-xs md:text-sm">Finding materials...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-detail" class="hidden py-8 md:py-12">
+            <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 md:mb-10 transition-colors group outline-none">
+                <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm md:text-base">一覧に戻る</span>
+            </button>
+            <div id="detail-content" class="bg-[var(--bg-card)] rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-2xl border border-[var(--border-color)] min-h-[50vh]"></div>
+        </div>
+
+    </main>
+
+    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#1b261c]/30 backdrop-blur-sm p-4 sm:p-6">
+        <div class="modal-content rounded-[2.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
+            <div class="text-center">
+                <h3 class="text-lg md:text-xl font-black text-[var(--text-main)] mb-6 md:mb-10">学年を自動設定</h3>
+                <input type="date" id="birthdate-input" class="w-full px-5 py-4 rounded-2xl bg-[var(--bg-sub)] border border-[var(--border-color)] outline-none font-black text-[var(--text-main)] text-center mb-8 md:mb-10 focus:border-[var(--accent-main)] transition-all text-sm md:text-base">
+                <div class="space-y-3 md:space-y-4">
+                    <button onclick="saveBirthDate()" class="w-full py-4 bg-[var(--text-main)] text-white rounded-2xl font-black active:scale-95 shadow-lg text-sm md:text-base outline-none hover:bg-[var(--text-dark)] transition-colors">保存する</button>
+                    <button onclick="clearBirthDate()" class="w-full py-2 text-[var(--text-muted)] text-[10px] md:text-xs font-black outline-none hover:text-[var(--text-main)]">リセット</button>
+                </div>
+                <button onclick="closeSettingsModal()" class="absolute top-6 right-6 p-2 text-[var(--text-light)] hover:text-[var(--text-main)] outline-none">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <h2 class="section-title">練習問題</h2>
-  
-  <div class="grid-container">
-    <div class="grid-item">問題 1</div>
-    <div class="grid-item">問題 2</div>
-    <div class="grid-item">問題 3</div>
-    <div class="grid-item">問題 4</div>
-    <div class="grid-item">問題 5</div>
-    <div class="grid-item">問題 6</div>
-  </div>
+    <script>
+        let MATERIAL_DATA = [];
+        let currentTab = 'elementary';
 
+        // 設定の読み込み
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('tamaben_theme') || 'default';
+            const savedAnim = localStorage.getItem('tamaben_anim') || 'fade';
+            document.body.setAttribute('data-theme', savedTheme);
+            document.body.setAttribute('data-animation', savedAnim);
+            document.getElementById('theme-select').value = savedTheme;
+            document.getElementById('anim-select').value = savedAnim;
+        }
+
+        function changeTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('tamaben_theme', theme);
+        }
+
+        function changeAnimation(anim) {
+            document.body.setAttribute('data-animation', anim);
+            localStorage.setItem('tamaben_anim', anim);
+            // アニメーションを再再生するためにリストを再描画
+            renderMaterials(); 
+        }
+
+        async function loadMaterials() {
+            try {
+                const response = await fetch('data.json');
+                if(!response.ok) throw new Error('Network response was not ok');
+                MATERIAL_DATA = await response.json();
+            } catch (e) {
+                // デモデータ
+                MATERIAL_DATA = [
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '' },
+                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: 'ans.pdf' },
+                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '' },
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベットと基本', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf' }
+                ];
+            }
+            renderMaterials();
+        }
+
+        async function renderPDFThumbnail(url, canvasId) {
+            try {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 1.5 });
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                const renderContext = { canvasContext: context, viewport: viewport };
+                await page.render(renderContext).promise;
+                const wrapper = canvas.parentElement;
+                const loader = wrapper.querySelector('.pdf-loading');
+                if(loader) loader.remove();
+            } catch (error) {
+                const canvas = document.getElementById(canvasId);
+                if(canvas) {
+                    const wrapper = canvas.parentElement;
+                    wrapper.innerHTML = `<div class="text-[var(--text-light)] flex flex-col items-center gap-1"><i data-lucide="file-x" class="w-6 h-6"></i><span class="text-[9px] font-bold">No Preview</span></div>`;
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        function renderMaterials() {
+            const container = document.getElementById('learning-materials-container');
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            if (!container) return;
+
+            const filtered = MATERIAL_DATA.filter(item => {
+                const matchTab = item.tab === currentTab;
+                const matchText = item.title.toLowerCase().includes(query) || item.subject.toLowerCase().includes(query);
+                return matchTab && (query === "" || matchText);
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm">教材が見つかりません。</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            filtered.forEach((item, index) => {
+                const card = document.createElement('div');
+                const canvasId = `pdf-thumb-${Date.now()}-${index}`;
+                
+                card.className = "premium-card cursor-pointer group card-appear flex flex-col";
+                card.innerHTML = `
+                    <div class="pdf-thumbnail-wrapper">
+                        <i data-lucide="loader-2" class="w-5 h-5 pdf-loading"></i>
+                        <canvas id="${canvasId}" class="pdf-canvas"></canvas>
+                    </div>
+                    
+                    <div class="p-3 sm:p-5 flex-grow flex flex-col bg-[var(--bg-card)]">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-1 bg-[var(--bg-sub)] text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg">${item.subject}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-light)]">${item.grade}</span>
+                        </div>
+                        <h3 class="text-sm sm:text-base font-black text-[var(--text-main)] group-hover:text-[var(--accent-main)] transition-colors leading-snug flex-grow">${item.title}</h3>
+                    </div>
+                `;
+                
+                card.onclick = () => openDetail(item);
+                container.appendChild(card);
+
+                if (item.pdfBasic) { renderPDFThumbnail(item.pdfBasic, canvasId); } 
+                else { document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] text-[10px] font-bold">準備中</div>`; }
+
+                // アニメーションの時差発火
+                setTimeout(() => { card.classList.add('show'); }, index * 40); 
+            });
+            lucide.createIcons();
+        }
+
+        function openDetail(item) {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-detail').classList.remove('hidden');
+            
+            const hasBasic = !!item.pdfBasic;
+            const hasAdv = !!item.pdfAdv;
+            const hasAns = !!item.pdfAns;
+
+            document.getElementById('detail-content').innerHTML = `
+                <div class="flex flex-col md:flex-row">
+                    <div class="w-full md:w-5/12 bg-[var(--bg-sub)] flex items-center justify-center p-8 md:p-12 relative">
+                         <div class="w-full aspect-[1/1.414] bg-[var(--bg-card)] rounded-xl shadow-md overflow-hidden flex items-center justify-center relative">
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[var(--text-light)] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover"></canvas>` : `<div class="text-[var(--text-light)] font-bold text-sm">No Preview</div>`}
+                         </div>
+                    </div>
+                    
+                    <div class="w-full md:w-7/12 p-6 sm:p-12 text-center md:text-left flex flex-col justify-center">
+                        <div class="inline-block px-4 py-1.5 bg-[var(--bg-card)] text-[var(--accent-dark)] text-[11px] font-black rounded-lg mb-4 border border-[var(--border-color)] w-max mx-auto md:mx-0">${item.grade} / ${item.subject}</div>
+                        <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-[var(--text-main)] mb-8 md:mb-10 leading-tight">${item.title}</h2>
+                        
+                        <div class="flex flex-col gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 w-full">
+                            <button onclick="${hasBasic ? `window.open('${item.pdfBasic}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasBasic ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)]' : 'btn-disabled'} transition-all">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                                ${hasBasic ? '基本問題をひらく' : '準備中'}
+                            </button>
+                            <button onclick="${hasAdv ? `window.open('${item.pdfAdv}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasAdv ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500' : 'btn-disabled'} transition-all">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                ${hasAdv ? '練習問題に挑戦' : '準備中'}
+                            </button>
+                            <button onclick="${hasAns ? `window.open('${item.pdfAns}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-lg hover:bg-[var(--text-dark)] hover:-translate-y-1' : 'btn-disabled'} transition-all">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                ${hasAns ? '解答・解説を確認する' : '準備中'}
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            
+            if(hasBasic) renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function goHome() { document.getElementById('view-home').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); renderMaterials(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        /* --- ユーザー設定 --- */
+        function saveBirthDate() {
+            const val = document.getElementById('birthdate-input').value;
+            if (!val) return;
+            localStorage.setItem('tamaben_birthdate', val);
+            applySettings(val);
+            closeSettingsModal();
+        }
+        function clearBirthDate() { localStorage.removeItem('tamaben_birthdate'); location.reload(); }
+        
+        function applySettings(dateStr) {
+            const today = new Date();
+            const birth = new Date(dateStr);
+            let schoolYear = today.getFullYear() - (today.getMonth() + 1 < 4 ? 1 : 0);
+            let birthYear = birth.getFullYear() - (birth.getMonth() + 1 < 4 || (birth.getMonth() + 1 === 4 && birth.getDate() === 1) ? 1 : 0);
+            const age = schoolYear - birthYear;
+            const badge = document.getElementById('grade-badge');
+            const label = document.getElementById('user-grade-label');
+            if (age >= 6 && age <= 11) { label.textContent = `小学${age - 5}年生`; badge.classList.remove('hidden'); switchTab('elementary'); }
+            else if (age >= 12 && age <= 14) { label.textContent = `中学${age - 11}年生`; badge.classList.remove('hidden'); switchTab('junior'); }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
+            document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
+            renderMaterials();
+        }
+
+        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadPreferences(); // デザイン・アニメ設定の復元
+            document.getElementById('search-input').oninput = renderMaterials;
+            const saved = localStorage.getItem('tamaben_birthdate');
+            if (saved) { document.getElementById('birthdate-input').value = saved; applySettings(saved); }
+            loadMaterials();
+        });
+    </script>
 </body>
 </html>
