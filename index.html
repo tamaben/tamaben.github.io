@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- viewport-fit=cover でiPhoneなどのノッチ領域まで美しく表示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>タマベン - 学びを、もっと自由に。</title>
     
@@ -12,6 +11,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         :root {
@@ -26,7 +26,6 @@
             color: var(--text-main); 
             overflow-x: hidden;
             font-feature-settings: "palt";
-            /* スマホのホームバー対応 */
             padding-bottom: env(safe-area-inset-bottom);
         }
 
@@ -38,10 +37,10 @@
             z-index: -1;
             animation: move 30s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
             pointer-events: none;
-            opacity: 0.6;
+            opacity: 0.5;
             width: clamp(300px, 60vw, 800px);
             height: clamp(300px, 60vw, 800px);
-            will-change: transform; /* パフォーマンス最適化 */
+            will-change: transform;
         }
         @keyframes move {
             from { transform: translate(-5%, -5%) rotate(0deg); }
@@ -53,17 +52,15 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(93, 87, 82, 0.05);
-            padding-top: env(safe-area-inset-top); /* ノッチ対応 */
+            padding-top: env(safe-area-inset-top);
         }
 
-        /* 登場アニメーション */
         .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 教材カードのスタッガー表示用 */
         .card-appear {
             opacity: 0;
             transform: scale(0.95) translateY(20px);
@@ -71,20 +68,49 @@
         }
         .card-appear.show { opacity: 1; transform: scale(1) translateY(0); }
 
+        /* カードデザインのアップデート */
         .premium-card {
             background: white;
             border-radius: 2rem;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(0, 0, 0, 0.015);
-            box-shadow: 0 4px 20px rgba(93, 87, 82, 0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 10px 30px rgba(93, 87, 82, 0.04);
             display: flex;
             flex-direction: column;
             height: 100%;
+            overflow: hidden; /* サムネイルのはみ出しを防ぐ */
         }
         .premium-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 25px 50px rgba(93, 87, 82, 0.06);
-            border-color: var(--accent-peach);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(93, 87, 82, 0.08);
+            border-color: #f5ebe0;
+        }
+
+        /* PDFサムネイル用のスタイル */
+        .pdf-thumbnail-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1.414; /* A4用紙の比率 */
+            background-color: #f5ebe0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+        .pdf-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .premium-card:hover .pdf-canvas {
+            transform: scale(1.05); /* ホバーで少しズーム */
+        }
+        .pdf-loading {
+            position: absolute;
+            color: #d8c8bd;
+            animation: pulse 2s infinite;
         }
 
         .search-field { background: white; border: 1.5px solid #ece4de; transition: all 0.4s ease; }
@@ -94,91 +120,67 @@
         .tab-pill.active { background: white; color: #5d5752; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
 
         .loading-pulse { animation: pulse 2s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        /* モーダルが画面高さを超えないように調整 */
         #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
         #settings-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content { max-height: 90vh; overflow-y: auto; }
 
-        .btn-disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+        .btn-disabled { opacity: 0.4; pointer-events: none; background: #f9f8f6; color: #dcd0c6; border-color: #ece4de; }
         
-        /* 画面幅に応じた滑らかな文字サイズ可変 */
         .fluid-title { font-size: clamp(2rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
-        .fluid-text { font-size: clamp(0.875rem, 2vw, 1.125rem); }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- レスポンシブBlob背景 -->
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
     <div class="blob" style="background: var(--accent-peach); top: -10%; left: -10%;"></div>
     <div class="blob" style="background: var(--accent-mint); bottom: -10%; right: -10%; animation-delay: -5s;"></div>
 
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 sm:px-6 h-16 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
-            <!-- ロゴ：スマホでは小さく、PCでは大きく -->
             <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
-                <img src="logo.svg" alt="タマベン" class="h-7 sm:h-8 md:h-11 w-auto">
+                <h1 class="text-xl md:text-2xl font-black tracking-widest text-[#5d5752]">TAMABEN<span class="text-[#d4a373]">.</span></h1>
             </button>
             <div class="flex items-center gap-3 md:gap-4">
                 <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2 fade-in-up">
                     <span class="text-[8px] md:text-[9px] font-black text-[#bcaea3] uppercase tracking-[0.2em] leading-none mb-1">Your Pace</span>
                     <span id="user-grade-label" class="text-[10px] md:text-xs font-black text-[#5d5752]">未設定</span>
                 </div>
-                <!-- ボタンもスマホでは少し小さく -->
-                <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-[1rem] md:rounded-[1.2rem] bg-white border border-[#ece4de] shadow-sm hover:bg-[#faf6f2] transition-all outline-none">
+                <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-white border border-[#ece4de] shadow-sm hover:bg-[#faf6f2] transition-all outline-none">
                     <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[#bcaea3]"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- px-4 sm:px-6 md:px-8 で画面端の余白を最適化 -->
     <main class="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl pb-24 md:pb-32">
         
-        <!-- === ホーム画面 === -->
         <div id="view-home">
-            <section class="py-12 sm:py-16 md:py-24 text-center fade-in-up" style="animation-delay: 0.1s;">
-                <h1 class="fluid-title font-black mb-6 md:mb-10 tracking-tight text-[#4a4541] leading-[1.15]">
+            <section class="py-10 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
+                <h1 class="fluid-title font-black mb-6 tracking-tight text-[#4a4541] leading-[1.15]">
                     学びを、もっと<br/>
-                    <span class="inline-block px-4 md:px-6 py-1 md:py-2 bg-white text-[#d4a373] rounded-full shadow-sm rotate-[-2deg] border border-[#f5ebe0] my-1 md:my-2">自由に。</span>
+                    <span class="inline-block px-5 py-2 bg-white text-[#d4a373] rounded-full shadow-sm rotate-[-2deg] border border-[#f5ebe0] my-2">自由に。</span>
                 </h1>
                 
-                <!-- 検索バーの幅を画面に合わせる -->
-                <div class="mt-8 md:mt-12 w-full max-w-2xl mx-auto px-2 sm:px-0">
+                <div class="mt-8 md:mt-10 w-full max-w-2xl mx-auto px-2 sm:px-0">
                     <div class="search-field flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
-                        <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 text-[#d8c8bd] mr-3 md:mr-4 flex-shrink-0"></i>
+                        <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 text-[#d8c8bd] mr-3 md:mr-4"></i>
                         <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[#5d5752] placeholder:text-[#dcd0c6] text-sm md:text-base">
                     </div>
                 </div>
             </section>
 
-            <!-- アプリ紹介：スマホでは縦並び、PCでは横並び -->
-            <section class="mb-16 md:mb-24 fade-in-up" style="animation-delay: 0.3s;">
-                <a href="manabi.html" class="group block relative bg-white/40 border border-white backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden transition-all active:scale-[0.98] shadow-sm hover:shadow-lg hover:border-[#d8e2dc]">
-                    <div class="flex flex-col sm:flex-row items-center justify-between p-8 sm:p-10 md:p-14 gap-8 md:gap-10">
-                        <div class="text-center sm:text-left flex-1">
-                            <span class="px-3 py-1 bg-[#eef0f7] text-[#7a9e9f] text-[9px] md:text-[10px] font-black rounded-full mb-4 md:mb-6 uppercase tracking-[0.2em] inline-block">Recommended</span>
-                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#4a4e69] mb-3 md:mb-4">Manabi Baton</h2>
-                            <p class="text-[#7a9e9f] font-bold mb-6 md:mb-8 text-xs sm:text-sm">がんばりを未来へつなぐ学習管理アプリ。</p>
-                            <span class="inline-flex items-center gap-2 md:gap-3 bg-white text-[#4a4e69] px-6 py-2.5 md:py-3 rounded-2xl font-black text-xs md:text-sm group-hover:gap-4 transition-all shadow-sm border border-[#ece4de]">
-                                詳細を見る <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                            </span>
-                        </div>
-                        <img src="manabi.png" alt="MB" class="w-28 h-28 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-[2rem] md:rounded-[2.5rem] shadow-xl transition-all duration-700 group-hover:rotate-6 flex-shrink-0">
-                    </div>
-                </a>
-            </section>
-
-            <!-- 学年ナビ：スマホで画面幅いっぱいにならないよう調整 -->
-            <div class="sticky top-16 sm:top-20 md:top-28 z-40 mb-10 md:mb-16 flex justify-center fade-in-up px-2" style="animation-delay: 0.5s;">
+            <div class="sticky top-16 sm:top-20 md:top-28 z-40 mb-10 md:mb-16 flex justify-center fade-in-up px-2" style="animation-delay: 0.3s;">
                 <div class="flex w-full max-w-sm bg-[#f5ebe0]/80 p-1.5 md:p-2 rounded-full border border-white backdrop-blur-xl shadow-sm">
                     <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">小学生</button>
                     <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">中学生</button>
                 </div>
             </div>
 
-            <!-- 教材グリッド：スマホ1列、タブレット2列、PC3列、大型モニタ4列 -->
             <div id="learning-materials-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10 mb-20 min-h-[40vh]">
                 <div class="col-span-full py-20 text-center loading-pulse">
                     <p class="text-[#dcd0c6] font-black tracking-widest uppercase text-xs md:text-sm">Finding materials...</p>
@@ -186,25 +188,22 @@
             </div>
         </div>
 
-        <!-- === 詳細画面 === -->
         <div id="view-detail" class="hidden py-8 md:py-12">
             <button onclick="goHome()" class="flex items-center gap-2 text-[#bcaea3] font-black hover:text-[#5d5752] mb-6 md:mb-10 transition-colors group outline-none">
                 <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm md:text-base">一覧に戻る</span>
             </button>
-            <!-- 詳細カード内の余白もレスポンシブに -->
             <div id="detail-content" class="bg-white rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-2xl border border-[#f5ebe0] min-h-[50vh]"></div>
         </div>
 
     </main>
 
-    <!-- 設定モーダル：スマホキーボード対応 -->
-    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#4a4541]/20 backdrop-blur-md p-4 sm:p-6">
-        <div class="modal-content bg-white rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
+    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#4a4541]/30 backdrop-blur-sm p-4 sm:p-6">
+        <div class="modal-content bg-white rounded-[2.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
             <div class="text-center">
                 <h3 class="text-lg md:text-xl font-black text-[#5d5752] mb-6 md:mb-10">学年を自動設定</h3>
                 <input type="date" id="birthdate-input" class="w-full px-5 py-4 rounded-2xl bg-[#faf6f2] border border-[#ece4de] outline-none font-black text-center mb-8 md:mb-10 focus:border-[#d4a373] transition-all text-sm md:text-base">
                 <div class="space-y-3 md:space-y-4">
-                    <button onclick="saveBirthDate()" class="w-full py-4 md:py-5 bg-[#5d5752] text-white rounded-2xl font-black active:scale-95 shadow-lg text-sm md:text-base outline-none">保存する</button>
+                    <button onclick="saveBirthDate()" class="w-full py-4 bg-[#5d5752] text-white rounded-2xl font-black active:scale-95 shadow-lg text-sm md:text-base outline-none">保存する</button>
                     <button onclick="clearBirthDate()" class="w-full py-2 text-[#bcaea3] text-[10px] md:text-xs font-black outline-none">リセット</button>
                 </div>
                 <button onclick="closeSettingsModal()" class="absolute top-6 right-6 p-2 text-[#dcd0c6] hover:text-[#5d5752] outline-none">
@@ -214,23 +213,64 @@
         </div>
     </div>
 
-    <footer class="py-16 md:py-24 text-center opacity-40">
-        <img src="logo.svg" alt="タマベン" class="h-8 md:h-10 mx-auto mb-6 md:mb-10 grayscale hover:grayscale-0 transition-all duration-700">
-        <p class="text-[8px] md:text-[9px] text-[#bcaea3] font-black tracking-[0.3em] uppercase">&copy; 2026 Tamaben.</p>
-    </footer>
-
     <script>
-        let MATERIAL_DATA =[];
+        // デモ用の仮データ（実際は loadMaterials() で上書きされます）
+        let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
         async function loadMaterials() {
             try {
                 const response = await fetch('data.json');
+                if(!response.ok) throw new Error('Network response was not ok');
                 MATERIAL_DATA = await response.json();
-                renderMaterials();
             } catch (e) {
-                console.warn("JSON error");
-                renderMaterials();
+                console.warn("JSON error, using fallback data for demo.");
+                // エラー時のデモ表示用モックデータ
+                MATERIAL_DATA = [
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '' },
+                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: 'ans.pdf' }
+                ];
+            }
+            renderMaterials();
+        }
+
+        // PDFの1ページ目をCanvasに描画する関数
+        async function renderPDFThumbnail(url, canvasId) {
+            try {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                
+                // PDFを読み込み
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                const page = await pdf.getPage(1);
+                
+                // 描画サイズの設定（画質向上のためスケールを調整）
+                const viewport = page.getViewport({ scale: 1.5 });
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // ローディングアイコンを消す
+                const wrapper = canvas.parentElement;
+                const loader = wrapper.querySelector('.pdf-loading');
+                if(loader) loader.remove();
+
+            } catch (error) {
+                console.warn('PDFの読み込みに失敗しました:', url);
+                const canvas = document.getElementById(canvasId);
+                if(canvas) {
+                    const wrapper = canvas.parentElement;
+                    wrapper.innerHTML = `<div class="text-[#dcd0c6] flex flex-col items-center gap-2"><i data-lucide="file-x" class="w-8 h-8"></i><span class="text-[10px] font-bold">No Preview</span></div>`;
+                    lucide.createIcons();
+                }
             }
         }
 
@@ -242,42 +282,54 @@
             const filtered = MATERIAL_DATA.filter(item => {
                 const matchTab = item.tab === currentTab;
                 const matchText = item.title.toLowerCase().includes(query) || 
-                                  item.subject.toLowerCase().includes(query) || 
-                                  (item.tags && item.tags.some(t => t.toLowerCase().includes(query)));
+                                  item.subject.toLowerCase().includes(query);
                 return matchTab && (query === "" || matchText);
             });
 
             if(filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 md:py-32 text-center text-[#dcd0c6] font-black text-sm md:text-base">教材は準備中です。</div>`;
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-[#dcd0c6] font-black text-sm">教材が見つかりません。</div>`;
                 return;
             }
 
             container.innerHTML = "";
             filtered.forEach((item, index) => {
                 const card = document.createElement('div');
-                // paddingをレスポンシブに (p-6 sm:p-8 md:p-10)
-                card.className = "premium-card p-6 sm:p-8 md:p-10 cursor-pointer group card-appear";
+                const canvasId = `pdf-thumb-${Date.now()}-${index}`;
+                
+                card.className = "premium-card cursor-pointer group card-appear flex flex-col";
                 card.innerHTML = `
-                    <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                        <span class="px-3 md:px-4 py-1 md:py-1.5 bg-[#f5ebe0] text-[#a98467] text-[9px] md:text-[10px] font-black rounded-xl uppercase tracking-wider">${item.subject}</span>
-                        <span class="text-[9px] md:text-[10px] font-bold text-[#dcd0c6]">${item.grade}</span>
+                    <div class="pdf-thumbnail-wrapper">
+                        <i data-lucide="loader-2" class="w-6 h-6 pdf-loading"></i>
+                        <canvas id="${canvasId}" class="pdf-canvas"></canvas>
+                        <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/5 to-transparent pointer-events-none"></div>
                     </div>
-                    <h3 class="text-base sm:text-lg md:text-xl font-black text-[#5d5752] group-hover:text-[#d4a373] transition-colors leading-snug flex-grow">${item.title}</h3>
-                    <div class="mt-6 md:mt-8 flex justify-end">
-                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#faf6f2] flex items-center justify-center text-[#dcd0c6] group-hover:bg-[#5d5752] group-hover:text-white transition-all duration-500 shadow-sm">
-                            <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    
+                    <div class="p-5 sm:p-6 flex-grow flex flex-col bg-white">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3 py-1 bg-[#f5ebe0] text-[#a98467] text-[10px] font-black rounded-lg">${item.subject}</span>
+                            <span class="text-[10px] font-bold text-[#dcd0c6]">${item.grade}</span>
                         </div>
+                        <h3 class="text-base font-black text-[#5d5752] group-hover:text-[#d4a373] transition-colors leading-snug flex-grow">${item.title}</h3>
                     </div>
                 `;
+                
                 card.onclick = () => openDetail(item);
                 container.appendChild(card);
+
+                // PDFが存在すれば非同期で描画を開始
+                if (item.pdfBasic) {
+                    renderPDFThumbnail(item.pdfBasic, canvasId);
+                } else {
+                    const cvs = document.getElementById(canvasId);
+                    cvs.parentElement.innerHTML = `<div class="text-[#dcd0c6] text-[10px] font-bold">準備中</div>`;
+                }
 
                 setTimeout(() => { card.classList.add('show'); }, index * 50); 
             });
             lucide.createIcons();
         }
 
-        /* --- UI制御・レスポンシブ対応 --- */
+        /* --- UI制御 --- */
         function saveBirthDate() {
             const val = document.getElementById('birthdate-input').value;
             if (!val) return;
@@ -310,30 +362,44 @@
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
             
-            const hasBasic = item.pdfBasic && item.pdfBasic.startsWith('print/');
-            const hasAdv = item.pdfAdv && item.pdfAdv.startsWith('print/');
-            const hasAns = item.pdfAns && item.pdfAns.startsWith('print/');
+            const hasBasic = !!item.pdfBasic;
+            const hasAdv = !!item.pdfAdv;
+            const hasAns = !!item.pdfAns;
 
-            // スマホではボタンを縦並び、PCではグリッド配置にする
             document.getElementById('detail-content').innerHTML = `
-                <div class="p-8 sm:p-12 md:p-20 text-center fade-in-up">
-                    <div class="inline-block px-4 md:px-5 py-1.5 md:py-2 bg-[#f5ebe0] text-[#a98467] text-[10px] md:text-[11px] font-black rounded-full mb-6 md:mb-10">${item.grade} / ${item.subject}</div>
-                    <h2 class="fluid-title font-black text-[#5d5752] mb-10 md:mb-16 text-[#5d5752]">${item.title}</h2>
+                <div class="flex flex-col md:flex-row">
+                    <div class="w-full md:w-5/12 bg-[#f5ebe0] flex items-center justify-center p-8 md:p-12 relative">
+                         <div class="w-full aspect-[1/1.414] bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center relative">
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[#d8c8bd] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover"></canvas>` : `<div class="text-[#dcd0c6] font-bold text-sm">No Preview</div>`}
+                         </div>
+                    </div>
                     
-                    <div class="flex flex-col sm:grid sm:grid-cols-2 gap-4 md:gap-8 max-w-3xl mx-auto">
-                        <button onclick="${hasBasic ? `window.open('${item.pdfBasic}')` : ''}" class="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] font-black text-sm md:text-base border ${hasBasic ? 'bg-[#faf6f2] border-[#ece4de] text-[#5d5752] hover:bg-[#f5ebe0]' : 'btn-disabled bg-stone-50'}">
-                            <i data-lucide="file-text" class="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 md:mb-4 ${hasBasic ? 'text-[#d4a373]' : ''}"></i>
-                            ${hasBasic ? '基本問題をひらく' : '準備中'}
-                        </button>
-                        <button onclick="${hasAdv ? `window.open('${item.pdfAdv}')` : ''}" class="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] font-black text-sm md:text-base border-2 ${hasAdv ? 'bg-white border-[#f5ebe0] text-[#5d5752] hover:border-[#d4a373]' : 'btn-disabled bg-stone-50'}">
-                            <i data-lucide="zap" class="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 md:mb-4 ${hasAdv ? 'text-orange-300' : ''}"></i>
-                            ${hasAdv ? '応用問題に挑戦' : '準備中'}
-                        </button>
-                        <button onclick="${hasAns ? `window.open('${item.pdfAns}')` : ''}" class="sm:col-span-2 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] font-black text-sm md:text-base ${hasAns ? 'bg-[#5d5752] text-white shadow-xl hover:bg-[#4a4541]' : 'btn-disabled bg-stone-100 text-[#bcaea3]'}">
-                            ${hasAns ? '解答・解説を確認する' : '準備中'}
-                        </button>
+                    <div class="w-full md:w-7/12 p-8 sm:p-12 text-center md:text-left flex flex-col justify-center">
+                        <div class="inline-block px-4 py-1.5 bg-[#faf6f2] text-[#a98467] text-[11px] font-black rounded-lg mb-4 border border-[#ece4de] w-max mx-auto md:mx-0">${item.grade} / ${item.subject}</div>
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#5d5752] mb-10 leading-tight">${item.title}</h2>
+                        
+                        <div class="flex flex-col gap-4 max-w-sm mx-auto md:mx-0 w-full">
+                            <button onclick="${hasBasic ? `window.open('${item.pdfBasic}')` : ''}" class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white border-[#ece4de] text-[#5d5752] hover:border-[#d4a373] hover:text-[#d4a373]' : 'btn-disabled'} transition-all">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                                ${hasBasic ? '基本問題をひらく' : '準備中'}
+                            </button>
+                            <button onclick="${hasAdv ? `window.open('${item.pdfAdv}')` : ''}" class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasAdv ? 'bg-white border-[#ece4de] text-[#5d5752] hover:border-orange-300 hover:text-orange-400' : 'btn-disabled'} transition-all">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                ${hasAdv ? '応用問題に挑戦' : '準備中'}
+                            </button>
+                            <button onclick="${hasAns ? `window.open('${item.pdfAns}')` : ''}" class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm mt-2 ${hasAns ? 'bg-[#5d5752] text-white shadow-lg hover:bg-[#4a4541] hover:-translate-y-1' : 'btn-disabled'} transition-all">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                ${hasAns ? '解答・解説を確認する' : '準備中'}
+                            </button>
+                        </div>
                     </div>
                 </div>`;
+            
+            if(hasBasic) {
+                // 詳細画面用の大きなプレビューを描画
+                renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
