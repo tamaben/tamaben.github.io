@@ -145,6 +145,13 @@
             box-shadow: none !important;
         }
 
+        /* 準備中バッジ */
+        .badge-disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            border: 1px solid #e2e8f0;
+        }
+
         .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
     </style>
 </head>
@@ -183,10 +190,22 @@
                     <span class="inline-block px-5 py-2 bg-[var(--bg-card)] text-[var(--accent-main)] rounded-full shadow-sm rotate-[-2deg] border border-[var(--border-color)] my-2">自由に。</span>
                 </h1>
 
-                <div class="w-full max-w-2xl mx-auto px-2 sm:px-0">
-                    <div class="search-field flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
+                <div class="w-full max-w-3xl mx-auto px-2 sm:px-0 flex flex-col sm:flex-row gap-3">
+                    <div class="search-field flex-grow flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
                         <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 text-[var(--text-light)] mr-3 md:mr-4"></i>
                         <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
+                    </div>
+                    
+                    <div class="search-field flex items-center rounded-full px-4 py-3 md:py-4 sm:w-48 shrink-0 relative">
+                        <i data-lucide="filter" class="w-5 h-5 text-[var(--text-light)] mr-2"></i>
+                        <select id="material-filter" class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] text-sm cursor-pointer appearance-none" onchange="renderMaterials()">
+                            <option value="all">すべて表示</option>
+                            <option value="available">教材あり</option>
+                            <option value="unavailable">準備中のみ</option>
+                        </select>
+                        <div class="absolute right-4 pointer-events-none text-[var(--text-light)]">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -231,7 +250,6 @@
     </div>
 
     <script>
-        // 教材データを空に設定
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
@@ -241,8 +259,13 @@
                 if(!response.ok) throw new Error('Network response was not ok');
                 MATERIAL_DATA = await response.json();
             } catch (e) {
-                // ファイルが読み込めなかった場合のデモデータも空にする
-                MATERIAL_DATA = [];
+                // デモデータ（空のデータと入っているデータの混合でテスト）
+                MATERIAL_DATA = [
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#' },
+                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベット (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' }
+                ];
             }
             renderMaterials();
         }
@@ -276,22 +299,38 @@
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
             const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const filterValue = document.getElementById('material-filter').value;
+            
             if (!container) return;
 
             const filtered = MATERIAL_DATA.filter(item => {
+                // タブとテキスト検索の判定
                 const matchTab = item.tab === currentTab;
-                const matchText = item.title.toLowerCase().includes(query) || item.subject.toLowerCase().includes(query);
-                return matchTab && (query === "" || matchText);
+                const matchText = item.title.toLowerCase().includes(query) || item.subject.toLowerCase().includes(query) || item.grade.includes(query);
+                
+                // 教材が存在するかどうかの判定 (値が空文字や # ではないこと)
+                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || 
+                                       (item.pdfAdv && item.pdfAdv !== "#") || 
+                                       (item.pdfAns && item.pdfAns !== "#");
+                
+                // フィルター（プルダウン）の判定
+                let matchFilter = true;
+                if (filterValue === 'available') matchFilter = hasAnyMaterial;
+                if (filterValue === 'unavailable') matchFilter = !hasAnyMaterial;
+
+                return matchTab && (query === "" || matchText) && matchFilter;
             });
 
-            // データが空の場合の表示
+            // 該当するデータがない場合
             if(filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm">教材が見つかりません。</div>`;
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm">条件に一致する教材が見つかりません。</div>`;
                 return;
             }
 
             container.innerHTML = "";
             filtered.forEach((item, index) => {
+                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
@@ -302,22 +341,25 @@
                         <canvas id="${canvasId}" class="pdf-canvas"></canvas>
                     </div>
                     
-                    <div class="p-3 sm:p-5 flex-grow flex flex-col bg-[var(--bg-card)]">
-                        <div class="flex items-center gap-2 mb-2">
+                    <div class="p-3 sm:p-5 flex-grow flex flex-col bg-[var(--bg-card)] relative">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
                             <span class="px-2 py-1 bg-[var(--bg-sub)] text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg">${item.subject}</span>
                             <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-light)]">${item.grade}</span>
+                            ${!hasAnyMaterial ? `<span class="badge-disabled px-2 py-1 text-[9px] sm:text-[10px] font-black rounded-lg">準備中</span>` : ''}
                         </div>
                         <h3 class="text-sm sm:text-base font-black text-[var(--text-main)] group-hover:text-[var(--accent-main)] transition-colors leading-snug flex-grow">${item.title}</h3>
                     </div>
                 `;
                 
-                card.onclick = () => openDetail(item);
+                card.onclick = () => openDetail(item, hasAnyMaterial);
                 container.appendChild(card);
 
+                // サムネイルの描画処理
                 if (item.pdfBasic && item.pdfBasic !== "#") { 
                     renderPDFThumbnail(item.pdfBasic, canvasId); 
                 } else { 
-                    document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] text-[10px] font-bold">準備中</div>`; 
+                    // 教材がない場合は準備中のアイコンを表示
+                    document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] flex flex-col items-center gap-2"><i data-lucide="book-dashed" class="w-8 h-8 opacity-50"></i><span class="text-[10px] font-bold">教材準備中</span></div>`; 
                 }
 
                 // フワッと表示させるための遅延
@@ -326,10 +368,12 @@
             lucide.createIcons();
         }
 
-        function openDetail(item) {
+        // 詳細画面を開く（hasAnyMaterial を引数に追加）
+        function openDetail(item, hasAnyMaterial) {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
             
+            // 教材ごとの有無を厳密にチェック
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
@@ -338,12 +382,15 @@
                 <div class="flex flex-col md:flex-row">
                     <div class="w-full md:w-5/12 bg-[var(--bg-sub)] flex items-center justify-center p-8 md:p-12 relative">
                          <div class="w-full aspect-[1/1.414] bg-[var(--bg-card)] rounded-xl shadow-md overflow-hidden flex items-center justify-center relative">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[var(--text-light)] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover"></canvas>` : `<div class="text-[var(--text-light)] font-bold text-sm">No Preview</div>`}
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[var(--text-light)] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover"></canvas>` : `<div class="text-[var(--text-light)] flex flex-col items-center gap-2"><i data-lucide="book-dashed" class="w-10 h-10 opacity-50"></i><span class="font-bold text-sm">教材準備中</span></div>`}
                          </div>
                     </div>
                     
                     <div class="w-full md:w-7/12 p-6 sm:p-12 text-center md:text-left flex flex-col justify-center">
-                        <div class="inline-block px-4 py-1.5 bg-[var(--bg-card)] text-[var(--accent-dark)] text-[11px] font-black rounded-lg mb-4 border border-[var(--border-color)] w-max mx-auto md:mx-0">${item.grade} / ${item.subject}</div>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
+                            <span class="px-4 py-1.5 bg-[var(--bg-card)] text-[var(--accent-dark)] text-[11px] font-black rounded-lg border border-[var(--border-color)]">${item.grade} / ${item.subject}</span>
+                            ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
+                        </div>
                         <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-[var(--text-main)] mb-8 md:mb-10 leading-tight">${item.title}</h2>
                         
                         <div class="flex flex-col gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 w-full">
