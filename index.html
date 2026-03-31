@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        /* テーマカラー変数（初期設定：たまべんグリーン） */
+        /* テーマカラー変数（たまべんグリーン固定） */
         :root {
             --bg-base: #f4f8f4;
             --text-main: #2e3d30;
@@ -30,45 +30,12 @@
             --blob-2: #81c784;
         }
 
-        /* ユーザー提供のウォーム（ベージュ）テーマ */
-        [data-theme="warm"] {
-            --bg-base: #fefaf6;
-            --text-main: #5d5752;
-            --text-dark: #4a4541;
-            --text-muted: #bcaea3;
-            --text-light: #dcd0c6;
-            --accent-main: #d4a373;
-            --accent-dark: #a98467;
-            --bg-sub: #f5ebe0;
-            --bg-card: #ffffff;
-            --border-color: #ece4de;
-            --blob-1: #f9dcc4;
-            --blob-2: #d8e2dc;
-        }
-
-        /* クール（ブルー）テーマ */
-        [data-theme="cool"] {
-            --bg-base: #f4f6f9;
-            --text-main: #2c3e50;
-            --text-dark: #1a252f;
-            --text-muted: #7f8c8d;
-            --text-light: #bdc3c7;
-            --accent-main: #3498db;
-            --accent-dark: #2980b9;
-            --bg-sub: #e1e8ed;
-            --bg-card: #ffffff;
-            --border-color: #d1d8df;
-            --blob-1: #85c1e9;
-            --blob-2: #abebc6;
-        }
-
         body { 
             background-color: var(--bg-base); 
             color: var(--text-main); 
             overflow-x: hidden;
             font-feature-settings: "palt";
             padding-bottom: env(safe-area-inset-bottom);
-            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         /* 背景Blob */
@@ -83,7 +50,6 @@
             width: clamp(300px, 60vw, 800px);
             height: clamp(300px, 60vw, 800px);
             will-change: transform;
-            transition: background-color 0.8s ease;
         }
         @keyframes move {
             from { transform: translate(-5%, -5%) rotate(0deg); }
@@ -104,44 +70,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* カスタムコントロールUI */
-        .controls-bar {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            padding: 12px 20px;
-            display: inline-flex;
-            gap: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .control-select {
-            background: transparent;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            font-weight: 700;
-            outline: none;
-            cursor: pointer;
-            border: none;
-        }
-
-        /* カードアニメーションの種類 */
+        /* カードアニメーション（フワッと表示固定） */
         .card-appear {
             opacity: 0;
+            transform: scale(0.95) translateY(20px);
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        /* アニメ：フェード（下から） */
-        [data-animation="fade"] .card-appear { transform: scale(0.95) translateY(20px); }
-        [data-animation="fade"] .card-appear.show { opacity: 1; transform: scale(1) translateY(0); }
-        /* アニメ：スライド（横から） */
-        [data-animation="slide"] .card-appear { transform: translateX(-30px); }
-        [data-animation="slide"] .card-appear.show { opacity: 1; transform: translateX(0); }
-        /* アニメ：ポップ（拡大） */
-        [data-animation="pop"] .card-appear { transform: scale(0.8); }
-        [data-animation="pop"] .card-appear.show { opacity: 1; transform: scale(1); }
-        /* アニメ：なし */
-        [data-animation="none"] .card-appear { opacity: 1; transform: none; transition: none; }
+        .card-appear.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
 
         /* プレミアムカード */
         .premium-card {
@@ -196,11 +134,21 @@
         #settings-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content { max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
 
-        .btn-disabled { opacity: 0.4; pointer-events: none; background: var(--bg-base); color: var(--text-light); border-color: var(--border-color); }
+        /* 押せないボタンのスタイル強化 */
+        .btn-disabled {
+            opacity: 0.5;
+            pointer-events: none; /* マウス操作を完全に無効化 */
+            background: var(--bg-sub) !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border-color) !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+
         .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
     </style>
 </head>
-<body class="font-['Zen_Maru_Gothic']" data-theme="default" data-animation="fade">
+<body class="font-['Zen_Maru_Gothic']">
 
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -230,33 +178,10 @@
         
         <div id="view-home">
             <section class="py-8 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
-                <h1 class="fluid-title font-black mb-6 tracking-tight text-[var(--text-dark)] leading-[1.15]">
+                <h1 class="fluid-title font-black mb-10 md:mb-12 tracking-tight text-[var(--text-dark)] leading-[1.15]">
                     学びを、もっと<br/>
                     <span class="inline-block px-5 py-2 bg-[var(--bg-card)] text-[var(--accent-main)] rounded-full shadow-sm rotate-[-2deg] border border-[var(--border-color)] my-2">自由に。</span>
                 </h1>
-                
-                <div class="mt-4 mb-6 md:mb-8 flex justify-center">
-                    <div class="controls-bar">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="palette" class="w-4 h-4 text-[var(--accent-main)]"></i>
-                            <select id="theme-select" class="control-select" onchange="changeTheme(this.value)">
-                                <option value="default">たまべんグリーン</option>
-                                <option value="warm">ウォーム（ベージュ）</option>
-                                <option value="cool">クール（ブルー）</option>
-                            </select>
-                        </div>
-                        <div class="w-px h-5 bg-[var(--border-color)] hidden sm:block"></div>
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="wand-2" class="w-4 h-4 text-[var(--accent-main)]"></i>
-                            <select id="anim-select" class="control-select" onchange="changeAnimation(this.value)">
-                                <option value="fade">フワッと表示</option>
-                                <option value="slide">横からスライド</option>
-                                <option value="pop">ポンッと拡大</option>
-                                <option value="none">アニメなし</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="w-full max-w-2xl mx-auto px-2 sm:px-0">
                     <div class="search-field flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
@@ -309,40 +234,18 @@
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
-        // 設定の読み込み
-        function loadPreferences() {
-            const savedTheme = localStorage.getItem('tamaben_theme') || 'default';
-            const savedAnim = localStorage.getItem('tamaben_anim') || 'fade';
-            document.body.setAttribute('data-theme', savedTheme);
-            document.body.setAttribute('data-animation', savedAnim);
-            document.getElementById('theme-select').value = savedTheme;
-            document.getElementById('anim-select').value = savedAnim;
-        }
-
-        function changeTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('tamaben_theme', theme);
-        }
-
-        function changeAnimation(anim) {
-            document.body.setAttribute('data-animation', anim);
-            localStorage.setItem('tamaben_anim', anim);
-            // アニメーションを再再生するためにリストを再描画
-            renderMaterials(); 
-        }
-
         async function loadMaterials() {
             try {
                 const response = await fetch('data.json');
                 if(!response.ok) throw new Error('Network response was not ok');
                 MATERIAL_DATA = await response.json();
             } catch (e) {
-                // デモデータ
+                // テスト用のデモデータ（空のデータがある場合をテストできます）
                 MATERIAL_DATA = [
-                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '' },
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
                     { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: 'ans.pdf' },
-                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '' },
-                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベットと基本', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf' }
+                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベットと基本', pdfBasic: 'sample.pdf', pdfAdv: 'sample2.pdf', pdfAns: '' }
                 ];
             }
             renderMaterials();
@@ -417,7 +320,7 @@
                 if (item.pdfBasic) { renderPDFThumbnail(item.pdfBasic, canvasId); } 
                 else { document.getElementById(canvasId).parentElement.innerHTML = `<div class="text-[var(--text-light)] text-[10px] font-bold">準備中</div>`; }
 
-                // アニメーションの時差発火
+                // フワッと表示させるための遅延
                 setTimeout(() => { card.classList.add('show'); }, index * 40); 
             });
             lucide.createIcons();
@@ -444,15 +347,17 @@
                         <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-[var(--text-main)] mb-8 md:mb-10 leading-tight">${item.title}</h2>
                         
                         <div class="flex flex-col gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 w-full">
-                            <button onclick="${hasBasic ? `window.open('${item.pdfBasic}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasBasic ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)]' : 'btn-disabled'} transition-all">
+                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasBasic ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)]' : 'btn-disabled'} transition-all">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                                 ${hasBasic ? '基本問題をひらく' : '準備中'}
                             </button>
-                            <button onclick="${hasAdv ? `window.open('${item.pdfAdv}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasAdv ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500' : 'btn-disabled'} transition-all">
+                            
+                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasAdv ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500' : 'btn-disabled'} transition-all">
                                 <i data-lucide="zap" class="w-5 h-5"></i>
                                 ${hasAdv ? '練習問題に挑戦' : '準備中'}
                             </button>
-                            <button onclick="${hasAns ? `window.open('${item.pdfAns}')` : ''}" class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-lg hover:bg-[var(--text-dark)] hover:-translate-y-1' : 'btn-disabled'} transition-all">
+                            
+                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-lg hover:bg-[var(--text-dark)] hover:-translate-y-1' : 'btn-disabled'} transition-all">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
                                 ${hasAns ? '解答・解説を確認する' : '準備中'}
                             </button>
@@ -501,7 +406,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            loadPreferences(); // デザイン・アニメ設定の復元
             document.getElementById('search-input').oninput = renderMaterials;
             const saved = localStorage.getItem('tamaben_birthdate');
             if (saved) { document.getElementById('birthdate-input').value = saved; applySettings(saved); }
