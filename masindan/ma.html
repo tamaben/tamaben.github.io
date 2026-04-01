@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断 - 真実の「マ度」測定システム</title>
+    <title>マ診断 - 真の「マ度」測定システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #f9fbf9;
-            --accent-green: #2d4a36;
+            --bg-base: #f7faf8;
+            --accent-green: #27422f;
             --soft-green: #588157;
-            --leaf-green: #a3b18a;
-            --glass-white: rgba(255, 255, 255, 0.75);
-            --text-main: #1b261e;
+            --leaf-green: #8ca38a;
+            --glass-white: rgba(255, 255, 255, 0.85);
+            --text-main: #131e17;
         }
 
         body {
@@ -28,9 +28,9 @@
             align-items: center;
             justify-content: center;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 90% 80%, rgba(45, 74, 54, 0.15) 0%, transparent 45%),
-                linear-gradient(135deg, #ffffff 0%, #f1f5f2 100%);
+                radial-gradient(circle at 10% 20%, rgba(140, 163, 138, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(39, 66, 47, 0.15) 0%, transparent 45%),
+                linear-gradient(135deg, #ffffff 0%, #edf1ee 100%);
             -webkit-font-smoothing: antialiased;
         }
 
@@ -50,7 +50,7 @@
             -webkit-backdrop-filter: blur(35px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: 2.5rem;
-            box-shadow: 0 30px 60px -15px rgba(45, 74, 54, 0.08);
+            box-shadow: 0 30px 60px -15px rgba(39, 66, 47, 0.1);
             overflow: hidden;
             position: relative;
         }
@@ -59,10 +59,10 @@
             width: 100%;
             text-align: left;
             padding: 1.2rem 1.6rem;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             border: 1px solid #ffffff;
             border-radius: 1.4rem;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             font-size: 1rem;
             line-height: 1.5;
             color: var(--text-main);
@@ -74,7 +74,7 @@
             background: #ffffff;
             border-color: var(--soft-green);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(45, 74, 54, 0.1);
+            box-shadow: 0 10px 25px rgba(39, 66, 47, 0.1);
         }
 
         .score-display {
@@ -93,14 +93,14 @@
             font-weight: 700;
             letter-spacing: 0.15em;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(45, 74, 54, 0.15);
+            box-shadow: 0 10px 25px rgba(39, 66, 47, 0.15);
         }
 
         .progress-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: rgba(45, 74, 54, 0.1);
+            background: rgba(39, 66, 47, 0.1);
             transition: all 0.4s ease;
         }
         .progress-dot.active {
@@ -108,13 +108,24 @@
             transform: scale(1.5);
         }
 
+        /* グラフのレイアウト崩れを防ぐ固定コンテナ */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+        }
+
+        /* 画像保存時の強制スタイル */
         .capture-flat-mode {
             background: #ffffff !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             box-shadow: none !important;
             border: 1px solid #f0f0f0 !important;
-            width: 100% !important;
+            width: 520px !important; /* PC/スマホ問わず幅を固定して崩れを防ぐ */
+            max-width: none !important;
             padding: 40px !important;
         }
 
@@ -145,12 +156,12 @@
         
         <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
-            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Element Detection</p>
+            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Detection System</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
-                マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかがわかるものです。<br><br>
-                全40問のユニークな質問から完全にランダムに抽出された10問に、直感でお答えください。
+                マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかが正確にわかるシステムです。<br><br>
+                全40問のユニークな質問プールから、完全にランダムに抽出された10問に直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -216,11 +227,14 @@
                     <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
                 </div>
 
-                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-8 border border-white mx-4 shadow-inner">
-                    <canvas id="radarChart" width="300" height="300"></canvas>
+                <!-- グラフ領域。サイズを厳密に固定し、崩れを防ぐ -->
+                <div class="mb-12 flex justify-center bg-gray-50/80 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner">
+                    <div class="chart-wrapper">
+                        <canvas id="radarChart"></canvas>
+                    </div>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-8">
+                <div class="text-left px-8 space-y-12 pb-6">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
@@ -240,11 +254,13 @@
 
     <!-- SNS保存用(1080x1080) -->
     <div id="sns-export-area">
-        <div style="font-family: 'Outfit', sans-serif; font-size: 36px; color: #2d4a36; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
-        <div style="font-family: 'Outfit', sans-serif; font-size: 250px; font-weight: 800; color: #2d4a36; margin-bottom: 20px; line-height: 1;" id="sns-score">0.0%</div>
-        <div style="background: #edf2f0; padding: 20px 60px; border-radius: 60px; font-size: 44px; color: #2d4a36; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 80px;" id="sns-mbti">ISFP-A</div>
+        <div style="font-family: 'Outfit', sans-serif; font-size: 36px; color: #27422f; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
+        <div style="font-family: 'Outfit', sans-serif; font-size: 250px; font-weight: 800; color: #27422f; margin-bottom: 20px; line-height: 1;" id="sns-score">0.0%</div>
+        <div style="background: #edf1ee; padding: 20px 60px; border-radius: 60px; font-size: 44px; color: #27422f; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 80px;" id="sns-mbti">ISFP-A</div>
         <div style="background: #ffffff; padding: 60px; border-radius: 80px; border: 2px solid #eee; width: 850px; display: flex; justify-content: center;">
-            <canvas id="snsChart" width="700" height="600"></canvas>
+            <div style="width: 100%; max-width: 650px; aspect-ratio: 1/1; position: relative;">
+                <canvas id="snsChart"></canvas>
+            </div>
         </div>
         <div style="margin-top: 100px; color: #8ca38a; font-size: 24px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY PORTRAIT</div>
     </div>
@@ -253,6 +269,7 @@
 
     <script>
         // --- 完全にユニークな全40問の質問プール ---
+        // マ本人の回答を確実に10点とする。
         const questionsPool = [
             { id: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
             { id: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
@@ -324,7 +341,7 @@
         function startDiagnosis(reset = false) {
             if (reset) eraseCookie('ma_true_algo_perfect');
             
-            // 完全シャッフルして10問を抽出 (1回の診断で質問が被ることはない)
+            // 40問のユニークプールから完全にランダムに10問を抽出
             let shuffledPool = [...questionsPool].sort(() => Math.random() - 0.5);
             selectedQuestions = shuffledPool.slice(0, 10);
 
@@ -382,10 +399,7 @@
 
         function goBack() {
             if (currentIdx <= 0) return;
-            const saved = getCookie('ma_true_algo_perfect');
-            if (saved) {
-                // 戻る時は状態が複雑になるため、再開ボタンからのリロード等を推奨
-            }
+            // 履歴管理が複雑になるため、戻る場合は再開機能やリロードに依存
         }
 
         function saveToCookie() {
@@ -416,15 +430,8 @@
         }
 
         function processDisplay() {
-            // 純粋な計算式（10点 × 10問 = 100点満点）。
-            let final = Math.min(100, Math.round((totalScore / 100) * 100));
-            
-            // 5%未満のブレ（95%以上）なら「まさひろ本人である」と確信して100%にロックする。
-            // それ以下なら（5%以上変な回答があるなら）ロックを解除して生のスコアを表示する。
-            if (final >= 95) {
-                final = 100;
-            }
-
+            // 純粋な計算式。本人が自身の回答を選べば確実に100%になる。
+            const final = Math.min(100, (totalScore / 100) * 100);
             const displayScore = final === 100 ? "100.0" : final.toFixed(1);
             
             document.getElementById('result-score').innerText = `${displayScore}%`;
@@ -445,28 +452,52 @@
                 "マ度 100.0% —— システムの計算により、あなたが他の誰でもない『まさひろ本人』であることが完全に証明されました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
-            let avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
+            let avgData = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
+            
+            // バグ修正：引数名(avg)とスコープの被りを解消し、明確にデータを渡す
             if (final === 100) {
-                avg = [10, 10, 10, 10, 10]; // マ本人ならグラフも完全体に
+                avgData = [10, 10, 10, 10, 10]; // マ本人ならグラフも完全な正五角形に補正
             }
 
-            renderCharts(avg);
+            renderCharts(avgData);
         }
 
-        function renderCharts(avg) {
+        // 引数を使ってグラフを描画する（内部での上書きバグを排除）
+        function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
             const config = {
                 type: 'radar',
                 data: {
                     labels: ['内面', '現実', '共感', '柔軟', '安定'],
-                    datasets: [{ data: avg, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
+                    datasets: [{ data: dataArray, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
                 },
-                options: { scales: { r: { min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' }, pointLabels: { color: '#3a5a40', font: { size: 12, weight: 'bold', family: 'Noto Sans JP' } } } }, plugins: { legend: { display: false } }, animation: { duration: 1500 } }
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        r: { 
+                            min: 0, max: 10, ticks: { display: false }, 
+                            grid: { color: 'rgba(0,0,0,0.05)' }, 
+                            pointLabels: { color: '#3a5a40', font: { size: 12, weight: 'bold', family: 'Noto Sans JP' } } 
+                        } 
+                    }, 
+                    plugins: { legend: { display: false } }, 
+                    animation: { duration: 1500 } 
+                }
             };
-            if (window.radarChart) window.radarChart.destroy();
-            window.radarChart = new Chart(ctx, config);
+
+            if (window.radarChartInstance) window.radarChartInstance.destroy();
+            window.radarChartInstance = new Chart(ctx, config);
+
             const snsCtx = document.getElementById('snsChart').getContext('2d');
-            new Chart(snsCtx, { ...config, options: { ...config.options, scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40', family: 'Noto Sans JP' } } } } });
+            if (window.snsChartInstance) window.snsChartInstance.destroy();
+            window.snsChartInstance = new Chart(snsCtx, { 
+                ...config, 
+                options: { 
+                    ...config.options, 
+                    scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40', family: 'Noto Sans JP' } } } 
+                } 
+            });
         }
 
         function downloadImage(type) {
@@ -479,13 +510,16 @@
             
             html2canvas(target, { 
                 backgroundColor: "#ffffff", scale: 2, logging: false, useCORS: true,
-                onclone: (cloned) => {
-                    const clonedEl = cloned.getElementById(targetId);
+                onclone: (clonedDoc) => {
+                    const clonedEl = clonedDoc.getElementById(targetId);
                     clonedEl.classList.add('capture-flat-mode');
+                    clonedEl.style.width = "520px"; // PC/スマホ問わず幅を固定してレイアウト崩れを防ぐ
+                    clonedEl.style.maxWidth = "none";
                     clonedEl.style.backdropFilter = "none";
                     clonedEl.style.background = "#ffffff";
+                    
                     clonedEl.querySelectorAll('.content-wrapper').forEach(b => {
-                        b.style.marginBottom = '50px';
+                        b.style.marginBottom = '40px';
                         b.style.display = 'block';
                     });
                 }
