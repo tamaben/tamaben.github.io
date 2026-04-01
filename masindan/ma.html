@@ -11,11 +11,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
         :root {
-            --bg-base: #f0f4f1;
+            --bg-base: #f8faf9;
             --accent-green: #3a5a40;
             --soft-green: #a3b18a;
             --mint-green: #dad7cd;
-            --glass-white: rgba(255, 255, 255, 0.4);
+            --glass-white: rgba(255, 255, 255, 0.6);
             --text-main: #344e41;
             --text-sub: #588157;
         }
@@ -29,11 +29,10 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
-            /* オーロラのような柔らかい緑と白のグラデーション */
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(58, 90, 64, 0.1) 0%, transparent 40%),
-                linear-gradient(135deg, #ffffff 0%, #e9edc9 100%);
+                radial-gradient(circle at 15% 15%, rgba(163, 177, 138, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(58, 90, 64, 0.1) 0%, transparent 45%),
+                linear-gradient(135deg, #ffffff 0%, #f1f3e9 100%);
             margin: 0;
         }
 
@@ -46,14 +45,13 @@
             z-index: 10;
         }
 
-        /* グラスモーフィズムパネル */
         .glass-panel {
             background: var(--glass-white);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(58, 90, 64, 0.15);
+            box-shadow: 0 30px 60px -12px rgba(58, 90, 64, 0.12);
             overflow: hidden;
         }
 
@@ -61,10 +59,10 @@
             width: 100%;
             text-align: left;
             padding: 1.25rem 1.75rem;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ffffff;
             border-radius: 1.25rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             font-size: 1rem;
             color: var(--text-main);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
@@ -73,7 +71,7 @@
         .option-btn:hover {
             background: #ffffff;
             border-color: var(--accent-green);
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(58, 90, 64, 0.1);
             color: var(--accent-green);
         }
@@ -81,7 +79,7 @@
         .score-number {
             font-weight: 700;
             color: var(--accent-green);
-            text-shadow: 0 4px 12px rgba(58, 90, 64, 0.2);
+            text-shadow: 0 4px 15px rgba(58, 90, 64, 0.15);
         }
 
         .btn-green {
@@ -89,18 +87,12 @@
             color: white;
             border-radius: 1.25rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.1em;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(58, 90, 64, 0.2);
         }
 
-        .btn-green:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(58, 90, 64, 0.3);
-            filter: brightness(1.1);
-        }
+        .btn-green:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* SNS画像キャプチャ用（隠し要素） */
         #sns-export-area {
             position: fixed;
             left: -9999px;
@@ -112,7 +104,7 @@
             align-items: center;
             justify-content: center;
             padding: 80px;
-            background-image: radial-gradient(circle at 0% 0%, #f0f4f1 0%, transparent 50%), linear-gradient(135deg, #ffffff 0%, #f9fbf9 100%);
+            background-image: radial-gradient(circle at 10% 10%, #f0f4f1 0%, transparent 50%);
         }
 
         .fade-in { animation: fadeIn 0.8s ease-out forwards; }
@@ -130,8 +122,7 @@
         }
         .progress-dot.active {
             background: var(--accent-green);
-            transform: scale(1.5);
-            box-shadow: 0 0 10px rgba(58, 90, 64, 0.3);
+            transform: scale(1.4);
         }
 
         ::-webkit-scrollbar { width: 5px; }
@@ -152,12 +143,12 @@
                     本診断では、日常の何気ない感覚や選択から、あなたの心にある<strong class="text-[var(--accent-green)]">「マ（余白）」</strong>の状態を100%の精度で測定します。
                 </p>
                 <p class="text-[var(--text-sub)] text-xs leading-relaxed border-l-2 border-[var(--accent-green)] pl-4 italic">
-                    ※ 診断中、解答傾向からパーソナリティタイプ（MBTI）の予想も同時に行います。
+                    ※ 診断結果として、解答傾向から導き出された性格タイプ（MBTI）の予想も表示されます。
                 </p>
             </div>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
-                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest">中断したデータが見つかりました</p>
+                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest">中断したデータがあります</p>
                 <button onclick="resumeDiagnosis()" class="w-full py-4 btn-green text-sm mb-3">続きから再開する</button>
                 <button onclick="startDiagnosis(true)" class="text-[11px] text-gray-400 underline">最初からやり直す</button>
             </div>
@@ -187,9 +178,8 @@
 
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
-            
             <div id="capture-area" class="glass-panel text-center mb-8">
-                <div class="font-serif-en text-[var(--soft-green)] tracking-[0.5em] text-[10px] mb-8 uppercase pt-4">Final Report</div>
+                <div class="font-serif-en text-[var(--soft-green)] tracking-[0.5em] text-[10px] mb-8 uppercase pt-6">Final Report</div>
                 
                 <div class="mb-10">
                     <div class="text-[11px] text-[var(--text-sub)] tracking-[0.3em] uppercase mb-4 font-bold">あなたのマ要素</div>
@@ -206,18 +196,19 @@
                     <div class="mbti-tag" id="result-mbti">ISFP-A</div>
                 </div>
 
-                <!-- グラフ -->
-                <div class="mb-12 flex justify-center bg-white/30 rounded-[2rem] p-6 border border-white/50 mx-4">
-                    <canvas id="radarChart" width="320" height="300"></canvas>
+                <div class="mb-12 flex justify-center bg-white/30 rounded-[2.5rem] p-6 border border-white/50 mx-4">
+                    <div style="width: 100%; height: 300px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="radarChart"></canvas>
+                    </div>
                 </div>
 
-                <div class="text-left px-8 space-y-10 pb-8">
+                <div class="text-left px-8 space-y-10 pb-10">
                     <div>
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.25em]">特性の深層分析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
                     </div>
                     
-                    <div class="bg-white/60 p-8 rounded-[2rem] border border-white shadow-sm">
+                    <div class="bg-white/60 p-8 rounded-[2.5rem] border border-white shadow-sm">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
                             🌿 マになるためのワンポイント
                         </h4>
@@ -226,7 +217,6 @@
                 </div>
             </div>
 
-            <!-- ボタン -->
             <div class="flex flex-col gap-4">
                 <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase">
                     SNS投稿用(正方形)を保存
@@ -239,11 +229,8 @@
                 </button>
             </div>
             
-            <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-400 tracking-[0.4em] uppercase hover:text-gray-600 transition-all">
-                最初からやり直す
-            </button>
+            <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-400 tracking-[0.4em] uppercase hover:text-gray-600 transition-all">最初からやり直す</button>
         </div>
-
     </div>
 
     <!-- SNS保存用ダミー(1080x1080) -->
@@ -252,7 +239,7 @@
         <div style="font-family: 'Cormorant Garamond', serif; font-size: 200px; font-weight: 700; color: #3a5a40; margin-bottom: 30px; line-height: 1;" id="sns-score">0%</div>
         <div style="background: #dad7cd; padding: 15px 50px; border-radius: 60px; font-size: 40px; color: #3a5a40; margin-bottom: 80px; font-family: 'Noto Sans JP'; font-weight: bold;" id="sns-mbti">ISFP-A</div>
         <div style="background: rgba(255,255,255,0.8); padding: 60px; border-radius: 80px; border: 1px solid rgba(0,0,0,0.05); width: 850px; display: flex; justify-content: center; box-shadow: 0 40px 80px rgba(0,0,0,0.05);">
-            <canvas id="snsChart" width="700" height="600"></canvas>
+            <div style="width: 700px; height: 600px;"><canvas id="snsChart"></canvas></div>
         </div>
         <div style="margin-top: 80px; color: #a3b18a; font-size: 22px; letter-spacing: 0.4em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY RESEARCH REPORT</div>
     </div>
@@ -309,7 +296,7 @@
 
         function startDiagnosis(isReset = false) {
             if (isReset) eraseCookie('ma_final_data');
-            selectedQuestions = shuffleArray([...questionsPool]);
+            selectedQuestions = [...questionsPool].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0; totalScore = 0; history = [];
             categoryScores = [0, 0, 0, 0, 0]; categoryCounts = [0, 0, 0, 0, 0];
             mbtiCounts = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0 };
@@ -327,15 +314,6 @@
             renderQuestion();
         }
 
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
         function renderQuestion() {
             const q = selectedQuestions[currentQuestionIndex];
             document.getElementById('q-counter').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / 12`;
@@ -347,7 +325,7 @@
 
             const container = document.getElementById('options-container');
             container.innerHTML = '';
-            shuffleArray([...q.options]).forEach((opt) => {
+            [...q.options].sort(() => Math.random() - 0.5).forEach((opt) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn fade-in';
                 btn.innerText = opt.text;
@@ -456,7 +434,7 @@
                 mbti = `${key} (${map[key] || '分析中'}) ${a_t}`;
             }
             document.getElementById('result-mbti').innerText = mbti;
-            document.getElementById('sns-mbti').innerText = mbti;
+            document.getElementById('sns-mbti').innerText = mbti.split(' ')[0];
 
             document.getElementById('result-type').innerText = finalScore >= 90 ? "【 自然体と調和の体現者 】" : "【 中庸のバランス型 】";
             document.getElementById('result-desc').innerText = finalScore >= 90 ? 
@@ -481,45 +459,45 @@
         }
 
         function renderChart(data) {
-            const options = {
-                scales: {
-                    r: {
-                        min: 0, max: 10, ticks: { display: false, stepSize: 2 },
-                        grid: { color: 'rgba(58, 90, 64, 0.08)' },
-                        angleLines: { color: 'rgba(58, 90, 64, 0.08)' },
-                        pointLabels: { color: '#588157', font: { size: 11, family: 'Noto Sans JP', weight: 'bold' } }
-                    }
+            const config = {
+                type: 'radar',
+                data: {
+                    labels: ['性格', '生活', '五感', '価値観', '対人'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: 'rgba(58, 90, 64, 0.15)',
+                        borderColor: '#3a5a40',
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }]
                 },
-                plugins: { legend: { display: false } },
-                animation: { duration: 1500 }
-            };
-
-            const chartData = {
-                labels: ['性格', '生活', '五感', '価値観', '対人'],
-                datasets: [{
-                    data: data,
-                    backgroundColor: 'rgba(58, 90, 64, 0.15)',
-                    borderColor: '#3a5a40',
-                    borderWidth: 3,
-                    pointRadius: 0
-                }]
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0, max: 10, ticks: { display: false, stepSize: 2 },
+                            grid: { color: 'rgba(58, 90, 64, 0.1)' },
+                            angleLines: { color: 'rgba(58, 90, 64, 0.1)' },
+                            pointLabels: { color: '#588157', font: { size: 12, family: 'Noto Sans JP', weight: 'bold' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } },
+                    animation: { duration: 1500 }
+                }
             };
 
             if (radarChart) radarChart.destroy();
-            radarChart = new Chart(document.getElementById('radarChart'), {
-                type: 'radar',
-                data: chartData,
-                options: options
-            });
+            radarChart = new Chart(document.getElementById('radarChart'), config);
 
-            // SNS用
-            new Chart(document.getElementById('snsChart'), {
-                type: 'radar',
-                data: chartData,
+            // SNS用グラフ
+            const snsCtx = document.getElementById('snsChart').getContext('2d');
+            new Chart(snsCtx, {
+                ...config,
                 options: {
-                    ...options,
+                    ...config.options,
                     scales: {
-                        r: { ...options.scales.r, pointLabels: { font: { size: 24 }, color: '#3a5a40' } }
+                        r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40' } }
                     }
                 }
             });
