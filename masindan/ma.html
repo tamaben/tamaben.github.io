@@ -134,23 +134,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-
-        /* SNSエクスポート用の1080x1080完全固定レイアウト */
-        #sns-export-area {
-            position: fixed;
-            top: 0;
-            left: -9999px;
-            width: 1080px;
-            height: 1080px;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            background-image: radial-gradient(circle at 10% 10%, #f0f4f1 0%, transparent 50%);
-            z-index: -100;
-        }
     </style>
 </head>
 <body>
@@ -268,16 +251,35 @@
     </div>
 
     <!-- SNS用 1080x1080 ピクセルパーフェクトレイアウト -->
-    <div id="sns-export-area">
-        <div style="font-family: 'Outfit', sans-serif; font-size: 32px; color: #27422f; letter-spacing: 0.5em; margin-bottom: 30px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
-        <div style="font-family: 'Outfit', sans-serif; font-size: 160px; font-weight: 800; color: #27422f; margin-bottom: 10px; line-height: 1;" id="sns-score">0.0%</div>
-        <div style="background: #edf1ee; padding: 12px 40px; border-radius: 40px; font-size: 28px; color: #27422f; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 40px;" id="sns-mbti">ISFP-A</div>
-        <div style="background: #ffffff; padding: 40px; border-radius: 60px; border: 2px solid #eee; width: 750px; height: 500px; display: flex; justify-content: center; align-items: center; box-sizing: border-box;">
-            <div style="width: 100%; max-width: 420px; height: 420px; position: relative;">
+    <!-- html2canvasで確実にキャプチャできるようインラインCSSで強固に記述 -->
+    <div id="sns-export-area" style="position: fixed; left: -9999px; top: 0; width: 1080px; height: 1080px; background-color: #f7faf8; z-index: -100; box-sizing: border-box; overflow: hidden; font-family: 'Noto Sans JP', sans-serif;">
+        <!-- 背景グラデーション -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 10% 20%, rgba(140, 163, 138, 0.25) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(39, 66, 47, 0.15) 0%, transparent 45%), linear-gradient(135deg, #ffffff 0%, #edf1ee 100%);"></div>
+        
+        <!-- コンテンツコンテナ -->
+        <div style="position: relative; z-index: 10; width: 940px; height: 940px; margin: 70px auto; background-color: rgba(255, 255, 255, 0.85); border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 60px; box-shadow: 0 30px 60px rgba(39, 66, 47, 0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding: 50px;">
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-family: 'Cormorant Garamond', serif; color: #8ca38a; letter-spacing: 0.6em; font-size: 24px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">Identity Report</div>
+                <div style="font-family: 'Outfit', sans-serif; color: #27422f; font-size: 36px; font-weight: 800; letter-spacing: 0.3em;">MA ANALYSIS</div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 20px; color: #8ca38a; letter-spacing: 0.4em; font-weight: bold; margin-bottom: 15px;">あなたのマ度（マ要素）</div>
+                <div style="font-family: 'Outfit', sans-serif; font-size: 210px; font-weight: 900; color: #27422f; line-height: 0.9; letter-spacing: -0.05em;" id="sns-score">0.0%</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 40px; height: 80px;">
+                <div id="sns-cert-badge" style="display: none; padding: 15px 35px; background-color: #f0fdf4; border: 3px solid #8ca38a; color: #27422f; border-radius: 100px; font-size: 24px; font-weight: bold; letter-spacing: 0.2em;">🌟 マ 本人認定</div>
+                <div id="sns-mbti" style="background-color: #8ca38a; color: white; padding: 18px 45px; border-radius: 100px; font-size: 28px; font-weight: bold; letter-spacing: 0.15em; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">ISFP-A</div>
+            </div>
+
+            <div style="width: 100%; max-width: 440px; height: 440px; position: relative;">
                 <canvas id="snsChart"></canvas>
             </div>
+            
+            <div style="margin-top: 30px; color: #a3b18a; font-size: 22px; font-weight: bold; letter-spacing: 0.3em;">🔍 マ診断 #自己分析</div>
         </div>
-        <div style="margin-top: 50px; color: #8ca38a; font-size: 20px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY PORTRAIT</div>
     </div>
 
     <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
@@ -353,7 +355,6 @@
         }
         function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
-        // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
             if (reset) {
                 eraseCookie('ma_true_algo_perfect');
@@ -455,7 +456,7 @@
         function processDisplay(skipAnim) {
             let final = Math.min(100, Math.round((totalScore / 100) * 100));
             
-            // 98%以上なら100%にロックする。それ未満ならロック解除でそのまま表示。
+            // 98%以上なら100%にロックする
             if (final >= 98) {
                 final = 100;
             }
@@ -464,7 +465,13 @@
             
             document.getElementById('sns-score').innerText = `${displayScore}%`;
 
-            if (final === 100) document.getElementById('cert-badge').classList.remove('hidden');
+            if (final === 100) {
+                document.getElementById('cert-badge').classList.remove('hidden');
+                document.getElementById('sns-cert-badge').style.display = 'block';
+            } else {
+                document.getElementById('cert-badge').classList.add('hidden');
+                document.getElementById('sns-cert-badge').style.display = 'none';
+            }
 
             const mMap = {"ISFP":"冒険家","ISFJ":"擁護者","ISTP":"巨匠","ISTJ":"管理者","INFP":"仲介者","INFJ":"提唱者","INTP":"論理学者","INTJ":"建築家","ESFP":"エンターテイナー","ESFJ":"領事","ESTP":"起業家","ESTJ":"幹部","ENFP":"広報運動家","ENFJ":"主人公","ENTP":"討論者","ENTJ":"指揮官"};
             const core = (mbtiScore.I >= mbtiScore.E ? "I" : "E") + (mbtiScore.S >= mbtiScore.N ? "S" : "N") + (mbtiScore.F >= mbtiScore.T ? "F" : "T") + (mbtiScore.P >= mbtiScore.J ? "P" : "J");
@@ -483,7 +490,7 @@
 
             if (final === 100) {
                 document.getElementById('result-advice').innerText = "あなたはすでに完全なる『マ』です。今のまま、自分の感覚と価値観を信じて突き進んでください。";
-                avgData = [10, 10, 10, 10, 10]; // グラフを完全体に
+                avgData = [10, 10, 10, 10, 10]; 
             } else {
                 const adviceList = [
                     "自分の本当の気持ちや『好き』という感覚を、もっと最優先にしてみてください。",
@@ -544,24 +551,20 @@
 
         function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            
-            // グラフ描画アニメーションのオプションを調整して遅延描画
             const getChartConfig = (labelsFontSize, isSns) => ({
                 type: 'radar',
                 data: {
                     labels: ['内面', '現実', '共感', '柔軟', '安定'],
-                    datasets: [{ data: dataArray, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
+                    datasets: [{ data: dataArray, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: isSns ? 5 : 3, pointRadius: 0 }]
                 },
                 options: { 
                     responsive: true, maintainAspectRatio: false,
                     scales: { 
                         r: { 
-                            min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' }, 
+                            min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)', lineWidth: isSns ? 3 : 1 }, 
                             pointLabels: { color: '#3a5a40', font: { size: labelsFontSize, weight: 'bold', family: 'Noto Sans JP' } } 
                         } 
-                    }, 
-                    plugins: { legend: { display: false } }, 
-                    animation: isSns ? false : { duration: 1500 } 
+                    }, plugins: { legend: { display: false } }, animation: isSns ? false : { duration: 1500 } 
                 }
             });
 
@@ -570,7 +573,7 @@
 
             const snsCtx = document.getElementById('snsChart').getContext('2d');
             if (window.snsChartInstance) window.snsChartInstance.destroy();
-            window.snsChartInstance = new Chart(snsCtx, getChartConfig(28, true));
+            window.snsChartInstance = new Chart(snsCtx, getChartConfig(24, true));
         }
 
         function downloadImage(type) {
@@ -579,31 +582,26 @@
             showToast("画像を生成しています...");
             
             const target = document.getElementById(targetId);
-            
-            // html2canvasで確実にキャプチャするための前処理
             const originalCssText = target.style.cssText;
-            
+
             if (type === 'sns') {
-                target.style.position = 'absolute';
-                target.style.top = '0';
-                target.style.left = '0';
+                // html2canvas用に一時的に画面内に配置（ただし見えないようにする）
+                target.style.left = '0px';
+                target.style.top = '0px';
+                target.style.opacity = '1'; // 0だと描画されない場合があるため
                 target.style.zIndex = '-9999';
             }
             
             const options = { 
-                backgroundColor: "#ffffff", 
+                backgroundColor: type === 'sns' ? null : "#ffffff", 
                 logging: false, 
                 useCORS: true,
                 onclone: (clonedDoc) => {
                     const clonedEl = clonedDoc.getElementById(targetId);
                     if (type === 'sns') {
-                        // SNS用は正確に1080pxを指定
-                        clonedEl.style.position = 'relative';
-                        clonedEl.style.left = '0px';
-                        clonedEl.style.top = '0px';
+                        // クローン側で確実にサイズを固定する
                         clonedEl.style.width = '1080px';
                         clonedEl.style.height = '1080px';
-                        clonedEl.style.display = 'flex';
                     } else {
                         clonedEl.classList.add('capture-flat-mode');
                         clonedEl.style.width = "520px"; 
@@ -641,8 +639,8 @@
                 showToast("保存完了しました");
             }).catch(e => {
                 if (type === 'sns') target.style.cssText = originalCssText;
-                showToast("画像生成に失敗しました");
                 console.error(e);
+                showToast("画像生成に失敗しました");
             });
         }
 
