@@ -84,10 +84,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .text-gradient {
-            background: linear-gradient(135deg, #79c0ff 0%, #58a6ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* 画像保存バグ対策：グラデーションではなく単色＋発光エフェクトに変更 */
+        .text-score-glow {
+            color: #79c0ff;
+            text-shadow: 0 0 20px rgba(121, 192, 255, 0.5);
         }
 
         .mbti-badge {
@@ -161,7 +161,8 @@
                 
                 <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
                     <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
-                    <span class="text-6xl md:text-7xl font-serif-en font-bold text-gradient drop-shadow-md" id="result-score">0%</span>
+                    <!-- text-gradient を外し、画像保存対応の text-score-glow に変更 -->
+                    <span class="text-6xl md:text-7xl font-serif-en font-bold text-score-glow" id="result-score">0%</span>
                 </div>
 
                 <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
@@ -175,7 +176,7 @@
                 </div>
 
                 <!-- グラフ領域 -->
-                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50">
+                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50 flex justify-center">
                     <canvas id="radarChart" width="300" height="250"></canvas>
                 </div>
 
@@ -185,8 +186,8 @@
                 </div>
                 
                 <!-- ワンポイントアドバイス -->
-                <div class="text-left mt-6 p-4 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
-                    <h4 class="text-xs text-white font-bold mb-2 uppercase tracking-widest flex items-center gap-2">
+                <div class="text-left mt-6 p-5 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
+                    <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[var(--accent-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -224,13 +225,9 @@
     </div>
 
     <script>
-        /*
-         * ISFP-A (マ本人) のリアルな回答を10点に最適化した最終ロジック
-         * 様々な場面(SNS、仕事、買物等)を新たに追加
-         * カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
-         */
+        // カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
         const questionsPool = [
-            // --- 新規追加の場面（SNS、買い物、仕事・作業など） ---
+            // --- SNS、買い物、仕事・作業など ---
             { q: "【SNS】SNS（XやInstagramなど）との付き合い方は？", cat: 0, options: [ { text: "主に見る専門で、自分のことはあまり発信しない", score: 10 }, { text: "気の合う友人とのやり取りだけ楽しむ", score: 8 }, { text: "普通に投稿もするし見る", score: 5 }, { text: "有益な情報を発信して多くの人に見られたい", score: 2 }, { text: "常に自分の状況をアピールし、いいねを集めたい", score: 0 } ] },
             { q: "【買物】服や雑貨など、何かを買う時の決め手は？", cat: 2, options: [ { text: "直感。なんとなく「いいな」と惹かれたら", score: 10 }, { text: "自分の感覚に合っていて、心地よく使えるか", score: 8 }, { text: "コスパとデザインのバランス", score: 5 }, { text: "事前にスペックや口コミを徹底的に比較する", score: 2 }, { text: "最新トレンドか、人からどう見られるか", score: 0 } ] },
             { q: "【仕事/作業】タスクや趣味の進め方で一番近いのは？", cat: 3, options: [ { text: "気分が乗った時に自分のペースで一気に進める", score: 10 }, { text: "締め切りは守るが、やり方は自由にしたい", score: 8 }, { text: "与えられた通りに普通にこなす", score: 5 }, { text: "明確な計画やマニュアルに沿って進める", score: 2 }, { text: "自分がリーダーになり、全員の動きを管理する", score: 0 } ] },
@@ -422,13 +419,14 @@
             const ctx = document.getElementById('radarChart').getContext('2d');
             
             if (chartInstance) {
-                chartInstance.destroy(); // 既存のチャートがあれば破棄
+                chartInstance.destroy();
             }
 
             chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['自然体 (等身大)', '調和 (周囲への配慮)', '感覚 (心地よさ)', '柔軟性 (臨機応変)', '自己受容 (-A要素)'],
+                    // ラベルに余白を持たせるためのスペース追加
+                    labels: [' 自然体 (等身大) ', ' 調和 (周囲への配慮) ', ' 感覚 (心地よさ) ', ' 柔軟性 (臨機応変) ', ' 自己受容 (-A要素) '],
                     datasets: [{
                         label: '価値観バランス',
                         data: chartData,
@@ -442,13 +440,25 @@
                     }]
                 },
                 options: {
+                    layout: {
+                        // 文字が切れないようにキャンバス内にパディングを追加
+                        padding: {
+                            left: 20,
+                            right: 20,
+                            top: 20,
+                            bottom: 20
+                        }
+                    },
                     scales: {
                         r: {
                             min: 0,
                             max: 10,
                             ticks: { display: false, stepSize: 2 },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { color: '#c9d1d9', font: { size: 10, family: "'Noto Sans JP', sans-serif" } },
+                            pointLabels: { 
+                                color: '#c9d1d9', 
+                                font: { size: 10, family: "'Noto Sans JP', sans-serif" } 
+                            },
                             angleLines: { color: 'rgba(255, 255, 255, 0.1)' }
                         }
                     },
@@ -471,7 +481,6 @@
                 backgroundColor: "#0d1117", // 背景色を指定して透過を防ぐ
                 scale: 2 // 高画質化
             }).then(canvas => {
-                // aタグを作成してダウンロードを発火
                 const link = document.createElement('a');
                 link.download = 'マ診断_結果.png';
                 link.href = canvas.toDataURL('image/png');
@@ -485,7 +494,6 @@
 
         // リンクをコピーする関数
         function shareLink() {
-            // 現在のURL（クエリパラメータとして結果がエンコードされている）をコピー
             const url = window.location.href;
             
             const dummy = document.createElement('textarea');
