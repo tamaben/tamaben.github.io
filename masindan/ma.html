@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マ診断 - 自己分析＆価値観測定システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: rgba(22, 27, 34, 0.85);
+            --accent-primary: #58a6ff;
+            --accent-dim: rgba(88, 166, 255, 0.15);
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(88, 166, 255, 0.03) 0%, transparent 40%);
+        }
+
+        .font-serif-en {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 560px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #c9d1d9;
+        }
+
+        .option-btn:hover, .option-btn:active {
+            background: var(--accent-dim);
+            border-color: rgba(88, 166, 255, 0.4);
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #79c0ff 0%, #58a6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mbti-badge {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(88, 166, 255, 0.05) 100%);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper z-10">
+        
+        <!-- スタート画面 -->
+        <div id="start-screen" class="glass-panel p-8 md:p-10 text-center fade-in">
+            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.3em] text-xs mb-3 uppercase">Personality & Values</h2>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-widest text-white">マ診断</h1>
+            <div class="w-10 h-[2px] bg-[var(--accent-primary)] mx-auto mb-8 opacity-60"></div>
+            
+            <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-10 text-left">
+                あなたの中に宿る「マ要素」と価値観を精密に測定します。<br><br>
+                深く考え込まず、日々の等身大の感覚で「なんとなく」選んでください。分からないものは「わからない」と素直に答えるのが最も正確な結果を生みます。<br>
+                （全10問 / 5択形式）
+            </p>
+            
+            <button onclick="startDiagnosis()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-all duration-300 font-bold tracking-widest text-sm uppercase">
+                診断を開始する
+            </button>
+        </div>
+
+        <!-- 質問画面 -->
+        <div id="quiz-screen" class="hidden glass-panel p-6 md:p-10 fade-in">
+            <div class="flex justify-between items-end mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <span class="text-[10px] text-gray-500 tracking-[0.2em] uppercase block mb-1">Question</span>
+                    <span id="q-counter" class="text-xl font-serif-en text-[var(--accent-primary)] italic">01 / 10</span>
+                </div>
+                <div class="w-32 h-[2px] bg-gray-800 rounded-full overflow-hidden">
+                    <div id="q-progress" class="h-full bg-[var(--accent-primary)] transition-all duration-500 ease-out" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <div class="min-h-[5rem] mb-6 flex items-center">
+                <h2 id="q-text" class="text-lg font-medium leading-relaxed text-gray-100"></h2>
+            </div>
+
+            <div id="options-container" class="space-y-3">
+                <!-- 選択肢 -->
+            </div>
+        </div>
+
+        <!-- 結果画面 -->
+        <div id="result-screen" class="hidden glass-panel p-6 md:p-10 text-center fade-in">
+            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-2 uppercase">Analysis Result</h2>
+            
+            <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
+                <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
+                <span class="text-6xl md:text-7xl font-serif-en font-bold text-gradient drop-shadow-md" id="result-score">0%</span>
+            </div>
+
+            <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
+
+            <!-- 予想MBTI -->
+            <div class="mb-8">
+                <div class="mbti-badge">
+                    <span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span>
+                    <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-wider"></span>
+                </div>
+            </div>
+
+            <!-- グラフ領域 -->
+            <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50">
+                <canvas id="radarChart" width="300" height="250"></canvas>
+            </div>
+
+            <div class="text-left bg-[#0d1117]/50 rounded-xl p-6 mb-8 border border-gray-800/50">
+                <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-3 uppercase tracking-widest border-b border-gray-800 pb-2">特性分析</h4>
+                <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button onclick="shareResult()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
+                    結果をコピーして共有する
+                </button>
+                <button onclick="location.reload()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-colors">
+                    もう一度診断する
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 通知トースト -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-xs font-bold tracking-[0.2em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+        結果をコピーしました
+    </div>
+
+    <script>
+        /*
+         * リリース用完全版ロジック
+         * ユーザーの等身大の回答（大きな失敗が怖い、心地よいデザインが好き、など）を完全に10点(最高点)にマッピング
+         * カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
+         */
+        const questionsPool = [
+            // 価値観・行動
+            { q: "【価値観】ルールや規則についての考え方に最も近いものは？", cat: 3, options: [ { text: "状況に合わせて柔軟に変えたり、自分の感覚で判断する方が良い", score: 10 }, { text: "基本的には守るが、意味のないルールは好きではない", score: 8 }, { text: "どちらともいえない・普通", score: 5 }, { text: "社会を成り立たせるために、全員が厳格に守るべきだ", score: 2 }, { text: "ルールは自分が作って人を従わせるものだ", score: 0 } ] },
+            { q: "【行動】友人との待ち合わせ。あなたのよくあるパターンは？", cat: 3, options: [ { text: "その時の気分や状況による", score: 10 }, { text: "なんとなく準備して、ピッタリか数分遅れるくらい", score: 8 }, { text: "急いで向かって、ギリギリ間に合うことが多い", score: 5 }, { text: "必ず5分〜10分前には到着して待っている", score: 2 }, { text: "事前に綿密なスケジュールを組み、絶対に遅刻しない", score: 0 } ] },
+            { q: "【対人】他人が明らかに間違った選択（失敗しそうな事）をしようとしている時、どうしますか？", cat: 1, options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは止めない。波風を立てず見守る", score: 8 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 5 }, { text: "論理的に間違いを指摘し、正しい選択をするよう説得する", score: 2 }, { text: "絶対に止めに入り、自分のやり方に従わせる", score: 0 } ] },
+            { q: "【思考】何かトラブルが起きたとき、最初にどこにフォーカスしますか？", cat: 0, options: [{ text: "「とりあえず今はどうしよう」と、目の前の現実や自分の感覚", score: 10 }, { text: "周囲の人がどう感じているか、雰囲気が悪くならないか", score: 8 }, { text: "わからない・ケースバイケース", score: 5 }, { text: "「なぜ起きたか」という根本的な原因究明", score: 2 }, { text: "「誰の責任か」を明確にし、直ちにシステムを改善すること", score: 0 } ] },
+            { q: "【環境】作業や趣味をする「自分の空間」の整理整頓についてはどうですか？", cat: 2, options: [ { text: "気分が乗った時に一気に片付ける", score: 10 }, { text: "多少散らかっていても、自分がどこに何があるか分かればそれでいい", score: 8 }, { text: "普通。そこそこ綺麗にしている", score: 5 }, { text: "常に完璧に整理整頓されていないと落ち着かない", score: 2 }, { text: "モノの配置ルールを厳格に決め、1ミリのズレも許さない", score: 0 } ] },
+
+            // 既存ベースの質問（100%完全チューニング済）
+            { q: "物や人に対して、「完璧さ」と「少しの歪み」どちらに惹かれますか？", cat: 2, options: [ { text: "どちらともいえない・特に何も感じない", score: 10 }, { text: "わからない。または、バランスが取れていて普通に整っているもの", score: 8 }, { text: "どちらかと言えば完璧なもの", score: 5 }, { text: "圧倒的に「歪み」や「欠落」「影」の部分に美しさを感じる", score: 2 }, { text: "完全無欠で非の打ち所がない、絶対的な完璧さ", score: 0 } ] },
+            { q: "何もない休日、あなたはどう過ごすのが好きですか？", cat: 3, options: [ { text: "その日の気分で、なんとなく過ごす", score: 10 }, { text: "疲れていたら寝るし、気が向いたら趣味をする", score: 8 }, { text: "特に決まりはない", score: 5 }, { text: "事前に予定を詰め込んで、アクティブに遊ぶ", score: 2 }, { text: "誰にも会わず、世界との関わりを完全に断つ", score: 0 } ] },
+            { q: "大人数での飲み会や集まりに参加したとき、あなたはどうなりますか？", cat: 1, options: [ { text: "誘われれば行くし、それなりに楽しんで帰る", score: 10 }, { text: "端の方で、仲の良い少人数とだけ話す", score: 8 }, { text: "状況による・あまり行かない", score: 5 }, { text: "エネルギーをもらえる。中心になって会話を回す", score: 2 }, { text: "ひどく消耗するため、絶対に断る", score: 0 } ] },
+            { q: "雨の日、あなたは窓の外を見て何を思いますか？", cat: 0, options: [ { text: "何も思わない。ただの天気", score: 10 }, { text: "家でゆっくりできるから悪くないと思う", score: 8 }, { text: "予定が狂って嫌だなと思う", score: 5 }, { text: "雨音に感情を同調させ、深く沈み込む感覚を楽しむ", score: 2 }, { text: "気圧の変化を論理的に分析し、体調管理に努める", score: 0 } ] },
+            { q: "嘘をつかなければならない状況になったとき、どう感じますか？", cat: 4, options: [ { text: "バレないかヒヤヒヤして落ち着かない", score: 10 }, { text: "何も感じない。その場をやり過ごす", score: 8 }, { text: "強い罪悪感に苛まれ、ひどく疲労したり後悔する", score: 5 }, { text: "相手のためになるなら、上手く割り切って平気で嘘をつける", score: 2 }, { text: "嘘をついている自分を、冷徹に観察して楽しむ", score: 0 } ] },
+            { q: "自分の「影（弱さや過去の失敗）」をどう捉えていますか？", cat: 4, options: [ { text: "消したい過去だが、自分の一部として静かに受け入れようとしている", score: 10 }, { text: "あまり思い出したくないので、考えないようにする", score: 8 }, { text: "特に何も思わない", score: 5 }, { text: "課題として論理的に分析し、完全に克服しようとする", score: 2 }, { text: "それこそが自分を形成する「美しさ」であり表現の源泉だ", score: 0 } ] },
+            { q: "惹かれるデザインやアート、作品はどんなものですか？", cat: 2, options: [ { text: "心地よくて、自分の感覚に合うもの", score: 10 }, { text: "洗練されていて、シンプルなもの", score: 8 }, { text: "特にこだわりはない・よくわからない", score: 5 }, { text: "明るくポップで、派手なもの", score: 2 }, { text: "影があり、退廃的でミステリアスなもの", score: 0 } ] },
+            { q: "あなたが最も「恐れる」ものは何ですか？", cat: 1, options: [ { text: "大きな失敗をして、周囲に迷惑をかけること", score: 10 }, { text: "人から嫌われたり、怒られたり、社会から孤立してしまうこと", score: 10 }, { text: "特に恐れているものはない・わからない", score: 5 }, { text: "自分の芯がブレて、他人にコントロールされること", score: 2 }, { text: "自分の中身が空っぽになり、何も生み出せなくなること", score: 0 } ] },
+            { q: "自分の感情や想いを、言葉で表現するのは得意ですか？", cat: 0, options: [ { text: "あまり得意ではない。複雑な感情を正確な言葉にするのに時間がかかる", score: 10 }, { text: "慎重に言葉を選んで、どうにか伝えようとする", score: 8 }, { text: "普通。伝えたいことは伝えられる", score: 5 }, { text: "得意。思ったことを瞬時に論理的に相手に伝えられる", score: 2 }, { text: "言葉にすると嘘になるので、一切言葉にはしない", score: 0 } ] },
+            { q: "夜、一人で過ごす時間は何をしていますか？", cat: 3, options: [ { text: "特に決まっていない。なんとなく動画やネットを見て過ごす", score: 10 }, { text: "趣味をしたり、のんびりリラックスする", score: 8 }, { text: "明日の準備をしてすぐに寝る", score: 5 }, { text: "友人や家族とずっと通話やチャットをしている", score: 2 }, { text: "思考の海に深く潜り込み、内省や創作活動に没頭する", score: 0 } ] },
+            { q: "涙を流すのは、どのような時ですか？", cat: 4, options: [ { text: "感動する映画を見たり、明確に悲しい出来事があった時", score: 10 }, { text: "あまり泣かない", score: 8 }, { text: "自分の無力さや、悔しさを感じた時", score: 5 }, { text: "言葉にできない圧倒的な美しさや深淵に触れた時", score: 2 }, { text: "常に論理的であるため、感情で涙を流すことはない", score: 0 } ] },
+            { q: "自分自身を「一つの楽器」に例えるなら何ですか？", cat: 0, options: [ { text: "分からない・想像つかない", score: 10 }, { text: "アコースティックギターなど、身近なもの", score: 8 }, { text: "繊細なメロディを奏でるピアノ", score: 5 }, { text: "明るくリズムを刻むドラム", score: 2 }, { text: "低く重い音を響かせるチェロやベース", score: 0 } ] },
+            { q: "部屋のインテリアや持ち物に対するこだわりは？", cat: 2, options: [ { text: "普通。そこまで強いこだわりはない", score: 10 }, { text: "自分が落ち着く色や素材で統一している", score: 8 }, { text: "機能性重視、使いやすければいい", score: 5 }, { text: "流行りのアイテムやブランド品をたくさん置く", score: 2 }, { text: "独特の美学を持つものしか絶対におかない", score: 0 } ] }
+        ];
+
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+        
+        // グラフ用カテゴリ別スコア (0:自然体, 1:調和, 2:感覚, 3:柔軟性, 4:自己受容)
+        let categoryScores = [0, 0, 0, 0, 0];
+        let categoryCounts = [0, 0, 0, 0, 0];
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startDiagnosis() {
+            selectedQuestions = shuffleArray(questionsPool).slice(0, 10);
+            currentQuestionIndex = 0;
+            totalScore = 0;
+            categoryScores = [0, 0, 0, 0, 0];
+            categoryCounts = [0, 0, 0, 0, 0];
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = selectedQuestions[currentQuestionIndex];
+            
+            document.getElementById('q-counter').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / 10`;
+            document.getElementById('q-progress').style.width = `${((currentQuestionIndex + 1) / 10) * 100}%`;
+            document.getElementById('q-text').innerText = q.q;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleAnswer(q, opt);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(questionObj, option) {
+            totalScore += option.score;
+            categoryScores[questionObj.cat] += option.score;
+            categoryCounts[questionObj.cat] += 1;
+
+            currentQuestionIndex++;
+
+            const quizScreen = document.getElementById('quiz-screen');
+            if (currentQuestionIndex < selectedQuestions.length) {
+                quizScreen.style.opacity = '0';
+                setTimeout(() => {
+                    renderQuestion();
+                    quizScreen.style.opacity = '1';
+                }, 200);
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('result-score').innerText = `${totalScore}%`;
+
+            let title = "";
+            let description = "";
+            let expectedMBTI = "";
+
+            if (totalScore >= 80) {
+                title = "【 マ・タイプ：自然体と調和の体現者 】";
+                expectedMBTI = "ISFP (冒険家) - A型 (自己主張型)";
+                description = "あなたは、無用な装飾を持たず、等身大で飾らない「自然体」の極致にいます。複雑な感情を無理に言葉にせず、フラットでニュートラルな視点を保ちながら、他者への気遣いや調和も大切にする平和主義者です。その柔軟性と、現実をありのままに受け入れる適度な自己肯定感（-A要素）こそが、この診断における真の『マ要素』の完全な体現です。";
+            } else if (totalScore >= 60) {
+                title = "【 マ・タイプ：中庸のバランス型 】";
+                expectedMBTI = "ISFJ (擁護者) または INFP (仲介者)";
+                description = "あなたは、自然体でありながらも、少し周囲に気を使いすぎたり、理想を追い求める側面を持っています。日常の中で無理のない範囲で自分のペースを守りながら、周囲ともうまくやっていける適応力を持っています。";
+            } else if (totalScore >= 40) {
+                title = "【 マ・タイプ：論理または行動重視型 】";
+                expectedMBTI = "ISTP (巨匠) または ENFP (広報運動家)";
+                description = "あなたは、「なんとなく」の自然体な状態からは少し外れており、物事に対して明確な理由や論理を求めるか、あるいは外に向かって行動を起こすエネルギーが強い傾向があります。";
+            } else {
+                title = "【 マ・タイプ：対極の存在 】";
+                expectedMBTI = "ESTJ (幹部) または ENTJ (指揮官)";
+                description = "あなたは、極端に論理的で支配的、あるいは計画性が非常に高い気質を持っています。フラットで自然体な「真のマ要素」とは対極に位置する、非常に強い個性とリーダーシップを持っています。";
+            }
+
+            document.getElementById('result-type').innerText = title;
+            document.getElementById('result-mbti').innerText = expectedMBTI;
+            document.getElementById('result-desc').innerText = description;
+
+            // グラフ描画処理
+            drawChart();
+        }
+
+        function drawChart() {
+            // カテゴリごとの平均を計算 (0〜10のスケール)
+            let chartData = categoryScores.map((score, i) => {
+                return categoryCounts[i] > 0 ? (score / categoryCounts[i]) : 5; // 出題されなかったカテゴリは中央値5
+            });
+
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['自然体 (等身大)', '調和 (周囲への配慮)', '感覚 (心地よさ)', '柔軟性 (臨機応変)', '自己受容 (-A要素)'],
+                    datasets: [{
+                        label: '価値観バランス',
+                        data: chartData,
+                        backgroundColor: 'rgba(88, 166, 255, 0.2)',
+                        borderColor: '#58a6ff',
+                        pointBackgroundColor: '#58a6ff',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#58a6ff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: { display: false, stepSize: 2 },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#c9d1d9', font: { size: 10, family: "'Noto Sans JP', sans-serif" } },
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function shareResult() {
+            const score = document.getElementById('result-score').innerText;
+            const title = document.getElementById('result-type').innerText;
+            const mbti = document.getElementById('result-mbti').innerText;
+            
+            // ログは出力せず、結果のみをコピーする仕様に変更
+            let shareText = `【マ診断 - 自己分析＆価値観測定】\nスコア: ${score}\nランク: ${title}\n予想MBTI: ${mbti}\n\n#マ診断 #MBTI #自己分析`;
+
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = shareText;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 2500);
+        }
+    </script>
+</body>
+</html>
