@@ -156,12 +156,12 @@
         
         <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
-            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Detection System</p>
+            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Element Detection</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
                 マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかが正確にわかるシステムです。<br><br>
-                全40問のユニークな質問プールから、完全にランダムに抽出された10問に直感でお答えください。
+                全40問の中から、ランダムに抽出された10問に直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -227,14 +227,14 @@
                     <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
                 </div>
 
-                <!-- グラフ領域。サイズを厳密に固定し、崩れを防ぐ -->
-                <div class="mb-12 flex justify-center bg-gray-50/80 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner">
-                    <div class="chart-wrapper">
+                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner">
+                    <!-- グラフの親要素に高さを明示的に指定して潰れるのを防ぎます -->
+                    <div style="position: relative; width: 100%; max-width: 280px; height: 280px;">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-6">
+                <div class="text-left px-8 space-y-12 pb-14">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
@@ -465,7 +465,9 @@
         // 引数を使ってグラフを描画する（内部での上書きバグを排除）
         function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            const config = {
+            
+            // 設定オブジェクトを共有するとバグの原因になるため、個別に生成します
+            const getChartConfig = (labelsFontSize) => ({
                 type: 'radar',
                 data: {
                     labels: ['内面', '現実', '共感', '柔軟', '安定'],
@@ -478,26 +480,20 @@
                         r: { 
                             min: 0, max: 10, ticks: { display: false }, 
                             grid: { color: 'rgba(0,0,0,0.05)' }, 
-                            pointLabels: { color: '#3a5a40', font: { size: 12, weight: 'bold', family: 'Noto Sans JP' } } 
+                            pointLabels: { color: '#3a5a40', font: { size: labelsFontSize, weight: 'bold', family: 'Noto Sans JP' } } 
                         } 
                     }, 
                     plugins: { legend: { display: false } }, 
                     animation: { duration: 1500 } 
                 }
-            };
+            });
 
             if (window.radarChartInstance) window.radarChartInstance.destroy();
-            window.radarChartInstance = new Chart(ctx, config);
+            window.radarChartInstance = new Chart(ctx, getChartConfig(12));
 
             const snsCtx = document.getElementById('snsChart').getContext('2d');
             if (window.snsChartInstance) window.snsChartInstance.destroy();
-            window.snsChartInstance = new Chart(snsCtx, { 
-                ...config, 
-                options: { 
-                    ...config.options, 
-                    scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40', family: 'Noto Sans JP' } } } 
-                } 
-            });
+            window.snsChartInstance = new Chart(snsCtx, getChartConfig(28));
         }
 
         function downloadImage(type) {
