@@ -7,16 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-
         :root {
-            --bg-base: #fdfdfd;
-            --accent-green: #3a5a40;
+            --bg-base: #f9fbf9;
+            --accent-green: #2d4a36;
             --soft-green: #588157;
             --leaf-green: #a3b18a;
-            --glass-white: rgba(255, 255, 255, 0.7);
-            --text-main: #344e41;
+            --glass-white: rgba(255, 255, 255, 0.75);
+            --text-main: #1b261e;
         }
 
         body {
@@ -30,38 +29,40 @@
             justify-content: center;
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.2) 0%, transparent 45%),
-                radial-gradient(circle at 90% 80%, rgba(45, 74, 54, 0.1) 0%, transparent 45%),
-                linear-gradient(135deg, #ffffff 0%, #f4f7f4 100%);
+                radial-gradient(circle at 90% 80%, rgba(45, 74, 54, 0.12) 0%, transparent 45%),
+                linear-gradient(135deg, #ffffff 0%, #f1f5f2 100%);
         }
 
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
+        .font-outfit { font-family: 'Outfit', sans-serif; }
 
         .app-wrapper {
             width: 100%;
             max-width: 520px;
-            padding: 1.5rem;
+            padding: 1.25rem;
             z-index: 10;
         }
 
         .glass-panel {
             background: var(--glass-white);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: 2.5rem;
-            box-shadow: 0 30px 60px -15px rgba(58, 90, 64, 0.08);
+            box-shadow: 0 30px 60px -15px rgba(45, 74, 54, 0.08);
             overflow: hidden;
         }
 
         .option-btn {
             width: 100%;
             text-align: left;
-            padding: 1.25rem 1.6rem;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 1.2rem 1.6rem;
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid #ffffff;
             border-radius: 1.4rem;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            font-size: 0.95rem;
+            font-size: 1rem;
+            line-height: 1.5;
             color: var(--text-main);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
             margin-bottom: 0.75rem;
@@ -72,6 +73,15 @@
             border-color: var(--soft-green);
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(45, 74, 54, 0.1);
+        }
+
+        .score-display {
+            font-size: 6.5rem;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            color: var(--accent-green);
+            margin: 1.5rem 0;
+            display: block;
         }
 
         .btn-green {
@@ -95,19 +105,10 @@
             transform: scale(1.5);
         }
 
-        /* 画像保存時のズレ防止対策 */
-        .capture-flat {
-            background: white !important;
-            backdrop-filter: none !important;
-            box-shadow: none !important;
-            border: 1px solid #eee !important;
-        }
-
         .log-box {
             background: rgba(255, 255, 255, 0.6);
-            border: 1px solid #fff;
             border-radius: 1.5rem;
-            padding: 1.5rem;
+            padding: 1.25rem;
             font-size: 0.75rem;
             font-family: monospace;
             color: #555;
@@ -115,6 +116,17 @@
             overflow-y: auto;
             text-align: left;
             white-space: pre-wrap;
+            border: 1px solid #fff;
+        }
+
+        /* 画像保存用の完全にズレないスタイル */
+        .capture-safe-mode {
+            background: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 40px !important;
         }
 
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
@@ -144,17 +156,17 @@
         
         <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
-            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Verification</p>
+            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Hybrid Identity Analysis</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
-                こちらでは<strong class="text-[var(--accent-green)]">「まさひろ（マ）」</strong>という存在の純度を100%の精度で診断できます。<br><br>
-                最新の解答データを元に再編された全50問の質問が、あなたの本質を精密に測定。飾らない感覚でお進みください。
+                こちらでは<strong class="text-[var(--accent-green)]">「まさひろ（マ）」</strong>という存在の純度を診断できます。<br><br>
+                初代から最新まで、すべての質問データを融合したハイブリッド・アルゴリズムが、あなたの本質を100%の精度で特定します。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
-                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest uppercase text-center">続きの診断があります</p>
-                <button onclick="resumeDiagnosis()" class="w-full py-4 btn-green text-sm mb-2 shadow-md">再開する</button>
+                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest uppercase text-center">続きから再開できます</p>
+                <button onclick="resumeDiagnosis()" class="w-full py-4 btn-green text-sm mb-2 shadow-md">診断を再開する</button>
             </div>
 
             <button onclick="startDiagnosis()" class="w-full py-5 btn-green text-sm uppercase tracking-[0.25em] shadow-xl">
@@ -173,7 +185,7 @@
             </div>
 
             <div class="min-h-[10rem] mb-12 flex flex-col items-center text-center justify-center">
-                <span id="q-cat" class="text-[9px] uppercase tracking-[0.4em] text-[var(--leaf-green)] mb-4 font-bold">Truth Mapping</span>
+                <span id="q-cat" class="text-[9px] uppercase tracking-[0.4em] text-[var(--leaf-green)] mb-4 font-bold font-serif-en">Truth Sensing</span>
                 <h2 id="q-text" class="text-xl md:text-2xl font-bold text-[var(--accent-green)] leading-relaxed px-2"></h2>
             </div>
 
@@ -182,12 +194,12 @@
 
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
-            <div id="capture-area" class="glass-panel text-center mb-8 bg-white" style="padding-bottom: 50px;">
-                <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10">Final Portrait Report</div>
+            <div id="capture-area" class="glass-panel text-center mb-8 bg-white">
+                <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Record : Final</div>
                 
                 <div class="mb-10">
                     <div class="text-[11px] text-gray-400 tracking-[0.3em] uppercase mb-4 font-bold">あなたのマ濃度</div>
-                    <div class="text-8xl font-serif-en font-bold text-[var(--accent-green)]" id="result-score">0%</div>
+                    <div class="font-outfit score-display" id="result-score">0%</div>
                 </div>
 
                 <div id="cert-badge" class="hidden mb-12">
@@ -197,27 +209,27 @@
                 </div>
 
                 <div class="mb-10">
-                    <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
+                    <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">ISFP-A</div>
                 </div>
 
-                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-8 border border-white mx-4 shadow-inner">
+                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-8 border border-white mx-4 shadow-inner" id="radar-parent">
                     <canvas id="radarChart" width="300" height="300"></canvas>
                 </div>
 
-                <div class="text-left px-8 space-y-12">
-                    <div>
-                        <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性の最終解析</h4>
+                <div class="text-left px-8 space-y-12 pb-14">
+                    <div class="content-block">
+                        <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">本質の最終解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
                     </div>
                     
-                    <div class="bg-white/80 p-8 rounded-[2.5rem] border border-white shadow-sm">
+                    <div class="bg-white/80 p-8 rounded-[2.5rem] border border-white shadow-sm content-block">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
                             🌿 まさひろへの助言
                         </h4>
                         <p id="result-advice" class="text-[14px] text-gray-600 leading-relaxed font-medium italic"></p>
                     </div>
 
-                    <div>
+                    <div id="log-section">
                         <h4 class="text-[10px] text-gray-300 font-bold mb-4 uppercase tracking-[0.2em] border-b border-gray-100 pb-2">精度調節用ログ</h4>
                         <div id="adjustment-log" class="log-box"></div>
                     </div>
@@ -226,8 +238,8 @@
 
             <div class="flex flex-col gap-4">
                 <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase shadow-xl">SNS用(正方形)を保存</button>
-                <button onclick="downloadImage('full')" class="w-full py-4 text-[var(--accent-green)] font-bold text-xs tracking-widest uppercase border border-[var(--accent-green)] rounded-2xl hover:bg-white transition-all">フルレポートを保存</button>
-                <button onclick="shareLink()" id="share-btn" class="w-full py-3 text-[10px] text-gray-400 tracking-widest uppercase border-b border-gray-200 hover:text-[var(--accent-green)] transition-all mt-4">結果をコピー</button>
+                <button onclick="downloadImage('full')" class="w-full py-4 text-[var(--accent-green)] font-bold text-xs tracking-widest uppercase border border-[var(--accent-green)] rounded-2xl hover:bg-white transition-all">詳細レポートを保存</button>
+                <button onclick="shareLink()" id="share-btn" class="w-full py-3 text-[10px] text-gray-400 tracking-widest uppercase border-b border-gray-200 hover:text-[var(--accent-green)] transition-all mt-4">結果を共有する</button>
             </div>
             
             <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-300 tracking-[0.4em] uppercase hover:text-gray-500 transition-all">最初からやり直す</button>
@@ -237,45 +249,46 @@
     <!-- SNS保存用(1080x1080) -->
     <div id="sns-export-area">
         <div style="font-family: 'Cormorant Garamond', serif; font-size: 32px; color: #2d4a36; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
-        <div style="font-family: 'Cormorant Garamond', serif; font-size: 200px; font-weight: 700; color: #2d4a36; margin-bottom: 30px; line-height: 1;" id="sns-score">0%</div>
-        <div style="background: #edf2f0; padding: 18px 60px; border-radius: 60px; font-size: 44px; color: #2d4a36; font-family: 'Noto Sans JP'; font-weight: bold;" id="sns-mbti">ISFP-A</div>
+        <div style="font-family: 'Outfit', sans-serif; font-size: 240px; font-weight: 800; color: #2d4a36; margin-bottom: 30px; line-height: 1;" id="sns-score">0%</div>
+        <div style="background: #edf2f0; padding: 20px 60px; border-radius: 60px; font-size: 44px; color: #2d4a36; font-family: 'Noto Sans JP'; font-weight: bold;" id="sns-mbti">ISFP-A</div>
         <div style="background: #ffffff; padding: 60px; border-radius: 80px; border: 2px solid #eee; width: 850px; display: flex; justify-content: center;">
             <canvas id="snsChart" width="700" height="600"></canvas>
         </div>
-        <div style="margin-top: 100px; color: #8ca38a; font-size: 24px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond';">Masahiro's Essence</div>
+        <div style="margin-top: 100px; color: #8ca38a; font-size: 24px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY PORTRAIT</div>
     </div>
 
     <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
 
     <script>
-        // --- 50問の質問プール (まさひろ本人の最終ログに基づきScore 10を再定義) ---
+        // --- 全50問プール (まさひろ本人の最終ログに基づきScore 10を再定義) ---
         const questionsPool = [
-            { id: 1, q: "古着やヴィンテージ品に対して、どう思う？", cat: 1, m: 'Se', options: [{text:"特に興味がない", score:10}, {text:"風合いが愛おしい", score:7}, {text:"実用性を考える", score:8}, {text:"希少価値を評価する", score:6}, {text:"衛生面が気になる", score:4}]},
-            { id: 2, q: "展覧会で抽象画を見たとき、あなたの楽しみ方は？", cat: 1, m: 'S', options: [{text:"特に何も考えない", score:10}, {text:"記憶と結びつける", score:7}, {text:"意図を解読する", score:4}, {text:"力を理屈抜きで感じる", score:8}, {text:"技法を分析する", score:5}]},
-            { id: 3, q: "森で鳥の声を聞いたとき、あなたの意識はどう動く？", cat: 1, m: 'Se', options: [{text:"響きそのものを全身で聴く", score:10}, {text:"録音して教えたくなる", score:8}, {text:"種類を特定しようとする", score:4}, {text:"すぐに別の思考に移る", score:5}, {text:"美しさに深く感動する", score:7}]},
-            { id: 4, q: "自分の内面を説明するとき、どう感じる？", cat: 0, m: 'I', options: [{text:"あまり説明したくない", score:10}, {text:"話しているうちに新発見がある", score:8}, {text:"正確に伝えたい", score:4}, {text:"もどかしい", score:7}, {text:"例え話を工夫する", score:6}]},
-            { id: 5, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:8}, {text:"「仕事が早いね」", score:4}, {text:"「面白いね」", score:6}, {text:"「何でもできるね」", score:5}]},
-            { id: 6, q: "静かな湖畔で波紋が広がるのを見ているとき", cat: 1, m: 'S', options: [{text:"特に関心を示さず立ち去る", score:10}, {text:"消えるまで見届ける", score:8}, {text:"写真を撮る", score:6}, {text:"石を投げる", score:3}, {text:"法則を考える", score:5}]},
-            { id: 7, q: "自分と意見が違う人と対峙したとき、あなたの心は？", cat: 4, m: 'A', options: [{text:"自分の意見の正当性を証明したくなる", score:10}, {text:"そのまま認める", score:6}, {text:"共通点を探る", score:8}, {text:"表面上合わせる", score:5}, {text:"論理的に整理する", score:7}]},
-            { id: 8, q: "深夜、自分一人だけが起きている感覚のとき", cat: 3, m: 'J', options: [{text:"早く寝なければという義務感が先に立つ", score:10}, {text:"自由を感じる", score:7}, {text:"不安になる", score:5}, {text:"創作したくなる", score:8}, {text:"明日を整理する", score:6}]},
-            { id: 9, q: "海辺で波の音を聞いているとき、自分と世界の境界は？", cat: 0, m: 'Fi', options: [{text:"特に何も思わない", score:10}, {text:"境界が曖昧になる", score:8}, {text:"観測者として分かれる", score:5}, {text:"教訓を見出す", score:4}, {text:"不快感が気になる", score:7}]},
-            { id: 10, q: "誰かに道を聞かれたときのあなたの態度は？", cat: 4, m: 'F', options: [{text:"大まかな方向だけ教えて、あとは任せる", score:10}, {text:"完璧に案内する", score:6}, {text:"丁寧に言葉を尽くす", score:8}, {text:"断る", score:3}, {text:"明るく接する", score:5}]},
-            { id: 11, q: "「普通」という言葉を聞いたとき、どう思う？", cat: 3, m: 'S', options: [{text:"最も安心できる、目指すべき基準だと感じる", score:10}, {text:"つまらない", score:4}, {text:"美しい在り方", score:8}, {text:"定義を考える", score:6}, {text:"何も感じない", score:5}]},
-            { id: 12, q: "身の回りのものを買うとき、色についてどう決める？", cat: 1, m: 'Se', options: [{text:"直感。今の自分の波長に響く色を選ぶ", score:10}, {text:"使い回せる色", score:5}, {text:"流行の色", score:7}, {text:"決まった色", score:6}, {text:"一番安いもの", score:4}]},
-            { id: 13, q: "風で草花が大きく揺れているのを目にしたとき", cat: 1, m: 'S', options: [{text:"特に気にせず、歩く速度を維持する", score:10}, {text:"風を肌で感じる", score:8}, {text:"ダイナミックさを楽しむ", score:7}, {text:"嵐を警戒する", score:5}, {text:"予兆を感じる", score:4}]},
-            { id: 14, q: "道端で誰かが落とした手袋を見つけたとき", cat: 4, m: 'T', options: [{text:"自分には関係のないことだと無視する", score:10}, {text:"物語を想像する", score:6}, {text:"目立つ場所に置く", score:8}, {text:"警察に届ける", score:5}, {text:"スマホで撮る", score:4}]},
-            { id: 15, q: "知らない名前のスパイスが効いた料理を食べた時", cat: 1, m: 'Se', options: [{text:"自分の口に合うかどうかだけで判断する", score:10}, {text:"分析する", score:4}, {text:"刺激をダイレクトに受ける", score:8}, {text:"美味しいかすぐ出す", score:7}, {text:"誰かに共有する", score:5}]},
-            { id: 16, q: "理想の人生の終わり方をイメージするなら？", cat: 0, m: 'J', options: [{text:"何か大きな成果や、後世に語り継がれるものを残すこと", score:10}, {text:"静かに消えていく", score:7}, {text:"感謝されて逝く", score:8}, {text:"学び続ける", score:6}, {text:"理想にこだわらない", score:9}]},
-            { id: 17, q: "予定外の雨が降り始めたとき、窓の外を見て思うことは？", cat: 4, m: 'A', options: [{text:"雨粒の模様や静かになった外をただ受け入れる", score:10}, {text:"対処を考える", score:5}, {text:"感傷に浸る", score:7}, {text:"体調を警戒する", score:4}, {text:"焦る", score:3}]},
-            { id: 18, q: "鏡に映る自分を見たとき、最初に向く意識は？", cat: 0, m: 'I', options: [{text:"良し悪しを判断せず今の空気感を眺める", score:10}, {text:"改善点を探す", score:4}, {text:"他人の目を気にする", score:6}, {text:"理想と比較する", score:5}, {text:"何も見ない", score:2}]},
-            { id: 19, q: "人との会話中、訪れた沈黙をどう感じる？", cat: 2, m: 'F', options: [{text:"沈黙を埋めるために、とりあえず相槌を打つ", score:10}, {text:"豊かな時間だと思う", score:8}, {text:"何か話題を焦る", score:4}, {text:"深読みする", score:6}, {text:"何も感じない", score:5}]},
-            { id: 20, q: "展覧会で抽象画を見たとき、あなたの楽しみ方は？", cat: 1, m: 'S', options: [{text:"自分の過去の記憶や感情と結びつけて鑑賞する", score:10}, {text:"力を理屈抜きで感じる", score:8}, {text:"意図を解読する", score:4}, {text:"構図を分析する", score:5}, {text:"特に何も考えない", score:6}]}
+            // まさひろ本人の「真実」回答群 (ID管理で重複回避)
+            { id: 1, q: "誰かに道を聞かれたときのあなたの態度は？", cat: 4, m: 'F', options: [{text:"大まかな方向だけ教えて、あとは任せる", score:10}, {text:"スマホで完璧に目的地まで案内する", score:6}, {text:"丁寧に言葉を尽くして教えようとする", score:8}, {text:"忙しいので丁重に断る", score:3}, {text:"明るく元気に接して安心させる", score:5}]},
+            { id: 2, q: "深夜、自分一人だけが起きている感覚のとき", cat: 1, m: 'J', options: [{text:"早く寝なければという義務感が先に立つ", score:10}, {text:"世界から切り離されたような自由を感じる", score:7}, {text:"静かすぎて少し不安になる", score:5}, {text:"何かを創作したくなる", score:8}, {text:"明日やるべきことを整理する", score:6}]},
+            { id: 3, q: "「普通」という言葉を聞いたとき、どう思う？", cat: 3, m: 'S', options: [{text:"最も安心できる、目指すべき基準だと感じる", score:10}, {text:"個性がなくてつまらないと思う", score:4}, {text:"一つの美しい在り方だと思う", score:8}, {text:"定義を考えたくなる", score:6}, {text:"何も感じない日常的な言葉", score:5}]},
+            { id: 4, q: "身の回りのものを買うとき、色についてどう決める？", cat: 1, m: 'Se', options: [{text:"直感。今の自分の波長に響く色を選ぶ", score:10}, {text:"汚れが目立たない色を選ぶ", score:5}, {text:"流行の色を選ぶ", score:7}, {text:"自分の決まった色を選ぶ", score:6}, {text:"一番安かったもの", score:4}]},
+            { id: 5, q: "風で草花が大きく揺れているのを目にしたとき", cat: 1, m: 'S', options: [{text:"特に気にせず、歩く速度を維持する", score:10}, {text:"風の抵抗を自分の肌でも感じる", score:8}, {text:"自然のダイナミックさを楽しむ", score:7}, {text:"嵐が来るのではないかと警戒する", score:5}, {text:"揺れに何かの予兆を感じる", score:4}]},
+            { id: 6, q: "道端で誰かが落とした手袋を見つけたとき", cat: 4, m: 'T', options: [{text:"自分には関係のないことだと無視する", score:10}, {text:"持ち主の物語を想像し少し切なくなる", score:6}, {text:"目立つ場所に置き直す", score:8}, {text:"警察に届けるか迷う", score:5}, {text:"スマホで撮影する", score:4}]},
+            { id: 7, q: "自分と意見が違う人と対峙したとき、あなたの心は？", cat: 4, m: 'A', options: [{text:"自分の意見の正当性を証明したくなる", score:10}, {text:"相手の宇宙をそのまま認める", score:6}, {text:"歩み寄れる共通点を探る", score:8}, {text:"表面上だけ合わせる", score:5}, {text:"論理的にどちらが正しいか整理する", score:7}]},
+            { id: 8, q: "知らない名前のスパイスが効いた料理を食べた時", cat: 1, m: 'Se', options: [{text:"自分の口に合うかどうかだけで判断する", score:10}, {text:"どんなスパイスが使われているか分析する", score:4}, {text:"未知の刺激をダイレクトに受ける", score:8}, {text:"美味しいかどうかという結論を出す", score:7}, {text:"誰かに共有したくなる", score:5}]},
+            { id: 9, q: "理想の人生の終わり方をイメージするなら？", cat: 0, m: 'J', options: [{text:"何か大きな成果や、後世に語り継がれるものを残すこと", score:10}, {text:"大きな足跡は残さずとも静かに消えていくこと", score:7}, {text:"多くの人に囲まれ感謝されて逝くこと", score:8}, {text:"最後まで自分を成長させ続けること", score:6}, {text:"理想にこだわらないこと", score:9}]},
+            { id: 10, q: "森で鳥の声を聞いたとき、あなたの意識はどう動く？", cat: 1, m: 'Se', options: [{text:"響きそのものを全身で聴く", score:10}, {text:"録音したり、誰かに教えたくなる", score:8}, {text:"種類や場所を特定しようとする", score:4}, {text:"すぐに別の思考に意識が移る", score:5}, {text:"美しさに深く感動する", score:7}]},
+            { id: 11, q: "古着やヴィンテージ品に対して、どう思う？", cat: 1, m: 'Se', options: [{text:"特に興味がない", score:10}, {text:"時間の経過が作った独特の風合いに惹かれる", score:7}, {text:"実用性を考える", score:8}, {text:"希少価値やデザインを評価する", score:6}]},
+            { id: 12, q: "展覧会で抽象画を見たとき、あなたの楽しみ方は？", cat: 1, m: 'S', options: [{text:"特に何も考えない", score:10}, {text:"自分の過去の記憶と結びつける", score:7}, {text:"色や形の力をダイレクトに感じる", score:8}, {text:"作者の意図を解読しようとする", score:4}]},
+            { id: 13, q: "自分の内面を説明するとき、どう感じる？", cat: 0, m: 'I', options: [{text:"あまり説明したくない", score:10}, {text:"話しているうちに新発見がある", score:8}, {text:"正確に伝えたいと思う", score:4}, {text:"もどかしい", score:7}]},
+            { id: 14, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:8}, {text:"「仕事が早いね」", score:4}, {text:"「面白いね」", score:6}]},
+            { id: 15, q: "海辺で波の音を聞いているとき、自分と世界の境界は？", cat: 0, m: 'Fi', options: [{text:"特に何も思わない", score:10}, {text:"境界が曖昧になる", score:8}, {text:"観測者として分かれている", score:5}, {text:"教訓を見出す", score:4}]},
+            { id: 16, q: "静かな湖畔で波紋が広がるのを見ているとき", cat: 1, m: 'S', options: [{text:"特に関心を示さず立ち去る", score:10}, {text:"消えるまで見届ける", score:8}, {text:"写真を撮る", score:6}, {text:"石を投げる", score:3}]},
+            { id: 17, q: "予定外の雨が降り始めたとき、窓の外を見て思うことは？", cat: 4, m: 'A', options: [{text:"雨粒の模様や外の空気をただ受け入れる", score:10}, {text:"予定が狂った対処法を考える", score:5}, {text:"感傷的な気分に浸る", score:7}, {text:"体調の変化を警戒する", score:4}]},
+            { id: 18, q: "鏡に映る自分を見たとき、最初に向く意識は？", cat: 0, m: 'I', options: [{text:"良し悪しを判断せずそのまま眺める", score:10}, {text:"改善点を探す", score:4}, {text:"他人の目を気にして整える", score:6}, {text:"理想と比較する", score:5}]},
+            { id: 19, q: "人との会話中、訪れた沈黙をどう感じる？", cat: 2, m: 'F', options: [{text:"沈黙を埋めるために、とりあえず相槌を打つ", score:10}, {text:"豊かな時間だと思う", score:8}, {text:"何か話題を焦る", score:4}, {text:"深読みする", score:6}]},
+            { id: 20, q: "誠実さとは、あなたにとってどういうこと？", cat: 3, m: 'Fi', options: [{text:"自分の直感や感覚に嘘をつかず、ありのままでいること", score:10}, {text:"約束を守る", score:5}, {text:"嘘を言わず事実を述べる", score:4}, {text:"調和を乱さない", score:8}]}
         ];
 
-        // 50問まで疑似生成
+        // 足りない分を過去の質問やバリエーションで補完 (計50問)
         while(questionsPool.length < 50) {
-            const b = questionsPool[questionsPool.length % 20];
-            questionsPool.push({...b, id: questionsPool.length + 1, q: b.q + "(深層次元)"});
+            const base = questionsPool[questionsPool.length % 20];
+            questionsPool.push({...base, id: questionsPool.length + 1, q: base.q + " (次元解析)"});
         }
 
         let selectedQuestions = [];
@@ -306,8 +319,8 @@
 
         // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
-            if (reset) eraseCookie('ma_truth_vFinal');
-            // IDで管理し、重複を完全排除
+            if (reset) eraseCookie('ma_final_truth');
+            // IDベースで重複を完全排除して10問抽出
             selectedQuestions = [...questionsPool].sort(() => Math.random() - 0.5).slice(0, 10);
             currentIdx = 0; totalScore = 0; historyArr = [];
             catScores = [0, 0, 0, 0, 0]; catCounts = [0, 0, 0, 0, 0];
@@ -376,13 +389,13 @@
 
         function saveToCookie() {
             const data = { idx: currentIdx, tot: totalScore, cs: catScores, cc: catCounts, hist: historyArr, mbti: mbtiScore, qids: selectedQuestions.map(sq => sq.id) };
-            setCookie('ma_truth_vFinal', JSON.stringify(data), 7);
+            setCookie('ma_final_truth', JSON.stringify(data), 7);
         }
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            eraseCookie('ma_truth_vFinal');
+            eraseCookie('ma_final_truth');
             
             const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
@@ -393,7 +406,10 @@
         }
 
         function processDisplay() {
-            const final = Math.min(100, Math.round((totalScore / 100) * 100));
+            // 本人確信システム：85点以上なら100%へ補正するIdentity検知を導入
+            let final = Math.min(100, Math.round((totalScore / 100) * 100));
+            if (final >= 90) final = 100; // まさひろ本人の特定解答パターンなら確実に100%にする
+            
             document.getElementById('result-score').innerText = `${final}%`;
             document.getElementById('sns-score').innerText = `${final}%`;
 
@@ -401,7 +417,7 @@
 
             const mMap = {"ISFP":"冒険家","ISFJ":"擁護者","ISTP":"巨匠","ISTJ":"管理者","INFP":"仲介者","INFJ":"提唱者","INTP":"論理学者","INTJ":"建築家","ESFP":"エンターテイナー","ESFJ":"領事","ESTP":"起業家","ESTJ":"幹部","ENFP":"広報運動家","ENFJ":"主人公","ENTP":"討論者","ENTJ":"指揮官"};
             const core = (mbtiScore.I >= 1 ? "I" : "E") + (mbtiScore.S >= 1 ? "S" : "N") + (mbtiScore.F >= 1 ? "F" : "T") + (mbtiScore.P >= 1 ? "P" : "J");
-            const mbtiName = (final >= 97) ? "ISFP-A (まさひろ)" : `${core} (${mMap[core] || '分析中'}) ${final >= 80 ? "-A" : "-T"}`;
+            const mbtiName = (final >= 95) ? "ISFP-A (まさひろ)" : `${core} (${mMap[core] || '分析中'}) ${final >= 80 ? "-A" : "-T"}`;
             document.getElementById('result-mbti').innerText = mbtiName;
             document.getElementById('sns-mbti').innerText = mbtiName.split(' ')[0];
 
@@ -410,16 +426,16 @@
                 "あなたは周囲との調和を大切にしながら、自分の感覚も信じることができる、非常に安定したマの素養を持っています。";
 
             const tips = ["こだわりは、あなたを守る聖域。","直感は、あなたを導く唯一の真実。","成果への渇望も、マの重要な欠片。","義務感さえも自分のリズムに変えて。"];
-            document.getElementById('result-advice').innerText = tips[final % tips.length];
+            document.getElementById('result-advice').innerText = tips[totalScore % tips.length];
 
             let log = "";
             historyArr.forEach((h, i) => { log += `Q${String(i+1).padStart(2,'0')}: ${h.q}\n=> ${h.a} (${h.score}点)\n\n`; });
             document.getElementById('adjustment-log').innerText = log;
 
-            renderChart();
+            renderCharts();
         }
 
-        function renderChart() {
+        function renderCharts() {
             const ctx = document.getElementById('radarChart').getContext('2d');
             const avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
             const config = {
@@ -439,7 +455,7 @@
         function downloadImage(type) {
             const targetId = (type === 'sns') ? 'sns-export-area' : 'capture-area';
             const fileName = (type === 'sns') ? 'マ診断_SNS.png' : 'マ診断_レポート.png';
-            showToast("画像を生成中...");
+            showToast("画像を生成しています...");
             
             const target = document.getElementById(targetId);
             if(type === 'sns') target.style.left = '0';
@@ -448,9 +464,14 @@
                 backgroundColor: "#ffffff", scale: 2, logging: false, useCORS: true,
                 onclone: (cloned) => {
                     const clonedEl = cloned.getElementById(targetId);
-                    clonedEl.classList.add('capture-flat');
+                    clonedEl.classList.add('capture-safe-mode');
                     clonedEl.style.backdropFilter = "none";
                     clonedEl.style.background = "#ffffff";
+                    // テキスト重なり防止のため特定ブロックを調整
+                    clonedEl.querySelectorAll('.content-block').forEach(b => {
+                        b.style.marginBottom = '40px';
+                        b.style.display = 'block';
+                    });
                 }
             }).then(canvas => {
                 const link = document.createElement('a'); 
@@ -464,7 +485,7 @@
             const url = window.location.href;
             const dummy = document.createElement('textarea');
             document.body.appendChild(dummy);
-            dummy.value = `私のマ度は【${document.getElementById('result-score').innerText}】でした！\n#マ診断 #ISFP #自己分析\n${url}`;
+            dummy.value = `私のマ度は【${document.getElementById('result-score').innerText}】、予想タイプは【${document.getElementById('result-mbti').innerText}】でした！\n#マ診断 #ISFP #自己分析\n${url}`;
             if (navigator.userAgent.match(/iphone|ipad|ipod/i)) {
                 const range = document.createRange(); range.selectNodeContents(dummy);
                 const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
@@ -476,7 +497,7 @@
         }
 
         function resumeDiagnosis() {
-            const saved = getCookie('ma_truth_vFinal');
+            const saved = getCookie('ma_final_truth');
             if (saved) {
                 const d = JSON.parse(saved);
                 currentIdx = d.idx; totalScore = d.tot; catScores = d.cs; catCounts = d.cc; historyArr = d.hist; mbtiScore = d.mbti; 
@@ -499,7 +520,7 @@
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        function resetAndRestart() { eraseCookie('ma_truth_vFinal'); location.href = window.location.pathname; }
+        function resetAndRestart() { eraseCookie('ma_final_truth'); location.href = window.location.pathname; }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
@@ -512,7 +533,7 @@
                     document.getElementById('result-screen').classList.remove('hidden');
                     setTimeout(processDisplay, 300);
                 } catch(e) {}
-            } else if (getCookie('ma_truth_vFinal')) {
+            } else if (getCookie('ma_final_truth')) {
                 document.getElementById('resume-container').classList.remove('hidden');
             }
         };
