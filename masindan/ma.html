@@ -3,37 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マ診断 - 深層自己分析</title>
+    <title>マ診断 - 心の余白を測る</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
         :root {
-            --bg-color: #0f1218;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --accent-soft: #79c0ff;
-            --accent-main: #58a6ff;
-            --gold-soft: #f1e4bc;
-            --text-main: #f0f6fc;
-            --text-muted: #8b949e;
+            --bg-base: #f0f4f1;
+            --accent-green: #3a5a40;
+            --soft-green: #a3b18a;
+            --mint-green: #dad7cd;
+            --glass-white: rgba(255, 255, 255, 0.4);
+            --text-main: #344e41;
+            --text-sub: #588157;
         }
 
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
-            /* オーロラのような柔らかな背景 */
+            /* オーロラのような柔らかい緑と白のグラデーション */
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(121, 192, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(139, 148, 158, 0.03) 0%, transparent 100%);
+                radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(58, 90, 64, 0.1) 0%, transparent 40%),
+                linear-gradient(135deg, #ffffff 0%, #e9edc9 100%);
+            margin: 0;
         }
 
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
@@ -42,104 +43,99 @@
             width: 100%;
             max-width: 520px;
             padding: 1.5rem;
-            margin: 2rem 0;
             z-index: 10;
         }
 
         /* グラスモーフィズムパネル */
         .glass-panel {
-            background: var(--glass-bg);
+            background: var(--glass-white);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 2rem;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(58, 90, 64, 0.15);
             overflow: hidden;
         }
 
         .option-btn {
             width: 100%;
             text-align: left;
-            padding: 1.2rem 1.5rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #d1d9e1;
+            padding: 1.25rem 1.75rem;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1rem;
+            color: var(--text-main);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
-        .option-btn:hover, .option-btn:active {
-            background: rgba(88, 166, 255, 0.08);
-            border-color: rgba(88, 166, 255, 0.3);
-            color: #ffffff;
-            transform: translateY(-2px);
+        .option-btn:hover {
+            background: #ffffff;
+            border-color: var(--accent-green);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(58, 90, 64, 0.1);
+            color: var(--accent-green);
         }
 
-        .text-score-main {
+        .score-number {
             font-weight: 700;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #fff 0%, var(--accent-soft) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-green);
+            text-shadow: 0 4px 12px rgba(58, 90, 64, 0.2);
         }
 
-        .mbti-tag {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 9999px;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--accent-soft);
-            letter-spacing: 0.1em;
+        .btn-green {
+            background: var(--accent-green);
+            color: white;
+            border-radius: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(58, 90, 64, 0.2);
         }
 
-        /* SNS用正方形キャプチャエリア（画面外または非表示） */
-        #sns-capture-area {
+        .btn-green:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(58, 90, 64, 0.3);
+            filter: brightness(1.1);
+        }
+
+        /* SNS画像キャプチャ用（隠し要素） */
+        #sns-export-area {
             position: fixed;
             left: -9999px;
-            top: 0;
             width: 1080px;
             height: 1080px;
-            background: var(--bg-color);
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 80px;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(88, 166, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 90% 90%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 0% 0%, #f0f4f1 0%, transparent 50%), linear-gradient(135deg, #ffffff 0%, #f9fbf9 100%);
         }
 
-        #capture-area {
-            background-color: var(--bg-color);
-            padding: 2.5rem 1.5rem;
-        }
-
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .progress-dot {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
+            background: rgba(58, 90, 64, 0.1);
+            transition: all 0.4s ease;
         }
         .progress-dot.active {
-            background: var(--accent-main);
-            box-shadow: 0 0 10px var(--accent-main);
-            transform: scale(1.3);
+            background: var(--accent-green);
+            transform: scale(1.5);
+            box-shadow: 0 0 10px rgba(58, 90, 64, 0.3);
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--soft-green); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -148,44 +144,42 @@
         
         <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
-            <p class="text-[var(--accent-soft)] tracking-[0.5em] text-[10px] mb-4 uppercase font-bold">Identity Research</p>
-            <h1 class="text-5xl md:text-6xl font-bold mb-8 tracking-[0.1em] text-white">マ診断</h1>
+            <p class="text-[var(--text-sub)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Mental Balance Research</p>
+            <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800">マ診断</h1>
             
             <div class="space-y-6 text-left mb-12">
-                <p class="text-[var(--text-muted)] text-sm leading-relaxed">
-                    本診断では、日常生活における細かな選択や感覚から、あなたの中に宿る<strong class="text-white">「マ度」</strong>を測定します。
+                <p class="text-[var(--text-main)] text-sm leading-relaxed">
+                    本診断では、日常の何気ない感覚や選択から、あなたの心にある<strong class="text-[var(--accent-green)]">「マ（余白）」</strong>の状態を100%の精度で測定します。
                 </p>
-                <p class="text-[var(--text-muted)] text-sm leading-relaxed border-l border-white/10 pl-4 italic">
-                    ※ 診断の裏側で、あなたの解答傾向からMBTIタイプも同時に予想します。
+                <p class="text-[var(--text-sub)] text-xs leading-relaxed border-l-2 border-[var(--accent-green)] pl-4 italic">
+                    ※ 診断中、解答傾向からパーソナリティタイプ（MBTI）の予想も同時に行います。
                 </p>
             </div>
 
-            <div id="resume-container" class="hidden mb-10 p-6 bg-white/5 border border-white/10 rounded-2xl">
-                <p class="text-xs text-gray-400 mb-4 tracking-widest uppercase font-medium">前回のデータがあります</p>
-                <button onclick="resumeDiagnosis()" class="w-full py-4 bg-white text-[#080a0f] rounded-xl font-bold text-sm mb-3 hover:opacity-90 transition-all">続きから再開する</button>
-                <button onclick="startDiagnosis(true)" class="text-[10px] text-gray-500 underline hover:text-gray-300">新しく診断を始める</button>
+            <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
+                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest">中断したデータが見つかりました</p>
+                <button onclick="resumeDiagnosis()" class="w-full py-4 btn-green text-sm mb-3">続きから再開する</button>
+                <button onclick="startDiagnosis(true)" class="text-[11px] text-gray-400 underline">最初からやり直す</button>
             </div>
 
-            <button id="start-btn" onclick="startDiagnosis()" class="w-full py-5 bg-gradient-to-r from-[var(--accent-main)] to-[#a5d1ff] text-[#080a0f] rounded-2xl font-bold tracking-[0.2em] text-sm uppercase shadow-2xl shadow-blue-500/20 hover:scale-[1.02] transition-transform">
-                分析を開始する
+            <button id="start-btn" onclick="startDiagnosis()" class="w-full py-5 btn-green text-sm uppercase tracking-[0.2em]">
+                診断をはじめる
             </button>
         </div>
 
         <!-- 質問画面 -->
         <div id="quiz-screen" class="hidden glass-panel p-8 md:p-12 fade-in">
-            <div class="flex justify-between items-center mb-12">
-                <button onclick="goBack()" id="back-btn" class="text-[10px] tracking-widest font-bold opacity-40 hover:opacity-100 transition-all flex items-center gap-2 invisible uppercase">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 18l-6-6 6-6"/></svg> 戻る
+            <div class="flex justify-between items-center mb-10">
+                <button onclick="goBack()" id="back-btn" class="text-[10px] tracking-widest font-bold text-[var(--text-sub)] hover:text-[var(--accent-green)] transition-all flex items-center gap-1 invisible">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 18l-6-6 6-6"/></svg> 戻る
                 </button>
-                <div class="flex gap-2" id="progress-dots">
-                    <!-- Dots generated by JS -->
-                </div>
-                <span id="q-counter" class="text-xs font-serif-en italic text-[var(--text-muted)] tracking-widest">01 / 12</span>
+                <div class="flex gap-2.5" id="progress-dots"></div>
+                <span id="q-counter" class="text-xs font-serif-en italic text-[var(--text-sub)]">01 / 12</span>
             </div>
 
-            <div class="min-h-[8rem] mb-12 flex flex-col items-center text-center justify-center">
-                <span id="q-cat-label" class="text-[9px] uppercase tracking-[0.3em] text-[var(--accent-soft)] mb-4 font-bold">Category</span>
-                <h2 id="q-text" class="text-xl font-medium leading-relaxed text-white tracking-wide"></h2>
+            <div class="min-h-[9rem] mb-12 flex flex-col items-center text-center justify-center">
+                <span id="q-cat" class="text-[9px] uppercase tracking-[0.4em] text-[var(--soft-green)] mb-4 font-bold">Step Analysis</span>
+                <h2 id="q-text" class="text-xl md:text-2xl font-bold text-[var(--text-main)] leading-relaxed px-2"></h2>
             </div>
 
             <div id="options-container" class="space-y-4"></div>
@@ -194,19 +188,17 @@
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             
-            <div id="capture-area" class="glass-panel text-center mb-6">
-                <div class="font-serif-en text-[var(--accent-soft)] tracking-[0.4em] text-[10px] mb-6 uppercase opacity-60 italic">Report and Analysis</div>
+            <div id="capture-area" class="glass-panel text-center mb-8">
+                <div class="font-serif-en text-[var(--soft-green)] tracking-[0.5em] text-[10px] mb-8 uppercase pt-4">Final Report</div>
                 
                 <div class="mb-10">
-                    <div class="text-[11px] text-[var(--text-muted)] tracking-[0.4em] uppercase mb-2">マ・エッセンス濃度</div>
-                    <div class="text-8xl font-serif-en text-score-main" id="result-score">0%</div>
+                    <div class="text-[11px] text-[var(--text-sub)] tracking-[0.3em] uppercase mb-4 font-bold">あなたのマ要素</div>
+                    <div class="text-8xl font-serif-en score-number" id="result-score">0%</div>
                 </div>
 
                 <div id="cert-badge" class="hidden mb-10">
-                    <div class="cert-badge">
-                        <span class="text-[11px] font-bold text-[var(--gold-soft)] tracking-[0.3em] uppercase">
-                            🌟 公式『マ』認定 🌟
-                        </span>
+                    <div class="py-2.5 px-8 bg-white/80 border border-[var(--mint-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] shadow-sm">
+                        🌟 公式『マ』認定
                     </div>
                 </div>
 
@@ -215,77 +207,72 @@
                 </div>
 
                 <!-- グラフ -->
-                <div class="bg-white/[0.02] rounded-3xl p-6 mb-10 border border-white/5 flex justify-center">
-                    <canvas id="radarChart" width="320" height="280"></canvas>
+                <div class="mb-12 flex justify-center bg-white/30 rounded-[2rem] p-6 border border-white/50 mx-4">
+                    <canvas id="radarChart" width="320" height="300"></canvas>
                 </div>
 
-                <div class="text-left px-4 space-y-8">
-                    <div class="border-l-2 border-[var(--accent-main)] pl-6">
-                        <h4 class="text-[10px] text-[var(--accent-soft)] font-bold mb-3 uppercase tracking-[0.2em]">深層特性</h4>
-                        <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
+                <div class="text-left px-8 space-y-10 pb-8">
+                    <div>
+                        <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.25em]">特性の深層分析</h4>
+                        <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
                     </div>
                     
-                    <div class="bg-white/[0.03] p-6 rounded-3xl border border-white/5">
-                        <h4 class="text-[10px] text-white font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 bg-[var(--accent-main)] rounded-full"></span>
-                            詳細アドバイス
+                    <div class="bg-white/60 p-8 rounded-[2rem] border border-white shadow-sm">
+                        <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+                            🌿 マになるためのワンポイント
                         </h4>
-                        <p id="result-advice" class="text-[13px] text-gray-400 leading-relaxed font-medium whitespace-pre-wrap"></p>
+                        <p id="result-advice" class="text-[14px] text-[var(--text-main)] leading-relaxed font-medium"></p>
                     </div>
                 </div>
             </div>
 
-            <!-- 操作ボタン -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onclick="downloadImage('full')" class="py-5 bg-white/5 border border-white/10 rounded-2xl font-bold text-xs tracking-widest text-white uppercase hover:bg-white/10 transition-all flex justify-center items-center gap-2">
-                    診断レポート保存
+            <!-- ボタン -->
+            <div class="flex flex-col gap-4">
+                <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase">
+                    SNS投稿用(正方形)を保存
                 </button>
-                <button onclick="downloadImage('sns')" class="py-5 bg-gradient-to-br from-[var(--accent-main)] to-[#8bc5ff] text-[#080a0f] rounded-2xl font-bold text-xs tracking-widest uppercase hover:opacity-90 transition-all flex justify-center items-center gap-2">
-                    SNS投稿用(正方形)保存
+                <button onclick="downloadImage('full')" class="w-full py-4 text-[var(--accent-green)] font-bold text-xs tracking-widest uppercase border border-[var(--accent-green)] rounded-2xl hover:bg-white/50 transition-all">
+                    詳細レポートを保存
+                </button>
+                <button onclick="shareLink()" class="w-full py-3 text-[10px] text-gray-400 tracking-widest uppercase border-b border-gray-200 hover:text-[var(--accent-green)] transition-all mt-4">
+                    結果のリンクをコピー
                 </button>
             </div>
             
-            <button onclick="shareLink()" class="w-full mt-4 py-4 text-[10px] text-[var(--text-muted)] tracking-widest uppercase border-b border-white/5 hover:text-white transition-all">
-                結果のリンクをコピーする
-            </button>
-            
-            <button onclick="resetAndRestart()" class="w-full mt-10 text-[10px] text-gray-600 tracking-[0.3em] uppercase hover:text-gray-400 transition-all">
+            <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-400 tracking-[0.4em] uppercase hover:text-gray-600 transition-all">
                 最初からやり直す
             </button>
         </div>
 
     </div>
 
-    <!-- SNS保存用ダミー要素（1080x1080） -->
-    <div id="sns-capture-area" class="font-serif-en">
-        <div style="font-size: 24px; color: #58a6ff; letter-spacing: 0.5em; margin-bottom: 40px; text-transform: uppercase; font-weight: bold;">MA DIAGNOSIS</div>
-        <div style="font-size: 140px; color: #fff; font-weight: 700; margin-bottom: 20px;" id="sns-score">0%</div>
-        <div style="background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.3); padding: 15px 40px; border-radius: 50px; font-size: 32px; color: #79c0ff; margin-bottom: 60px; font-family: 'Noto Sans JP'; font-weight: bold;" id="sns-mbti">ISFP-A</div>
-        <div style="background: rgba(255,255,255,0.03); padding: 50px; border-radius: 60px; border: 1px solid rgba(255,255,255,0.08); width: 800px; display: flex; justify-content: center;">
-            <canvas id="snsChart" width="650" height="550"></canvas>
+    <!-- SNS保存用ダミー(1080x1080) -->
+    <div id="sns-export-area">
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 32px; color: #3a5a40; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-size: 200px; font-weight: 700; color: #3a5a40; margin-bottom: 30px; line-height: 1;" id="sns-score">0%</div>
+        <div style="background: #dad7cd; padding: 15px 50px; border-radius: 60px; font-size: 40px; color: #3a5a40; margin-bottom: 80px; font-family: 'Noto Sans JP'; font-weight: bold;" id="sns-mbti">ISFP-A</div>
+        <div style="background: rgba(255,255,255,0.8); padding: 60px; border-radius: 80px; border: 1px solid rgba(0,0,0,0.05); width: 850px; display: flex; justify-content: center; box-shadow: 0 40px 80px rgba(0,0,0,0.05);">
+            <canvas id="snsChart" width="700" height="600"></canvas>
         </div>
-        <div style="margin-top: 60px; color: #444; font-size: 18px; letter-spacing: 0.2em;">Produced by MA-Analysis System</div>
+        <div style="margin-top: 80px; color: #a3b18a; font-size: 22px; letter-spacing: 0.4em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY RESEARCH REPORT</div>
     </div>
 
-    <div id="toast" class="fixed top-12 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
+    <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-[var(--accent-green)] text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
 
     <script>
-        /* あなたの100%正解パターンを最高点に設定
-           cat: 0=内面(Fi), 1=現実感(Se), 2=共感(Feeling), 3=柔軟(Flow), 4=安定(A)
-        */
         const questionsPool = [
-            { q: "【感覚】夕暮れ時、空を見て何を思うことが多い？", cat: 1, mbti: 'S', options: [ { text: "何も思わず、ただ眺めている", score: 10 }, { text: "一日の終わりを実感し、安堵する", score: 8 }, { text: "明日の予定や天気を考える", score: 5 }, { text: "世界の広さや切なさに浸る", score: 3 }, { text: "特に見ない", score: 0 } ] },
+            { q: "【感覚】夕暮れ時、空を見て何を思うことが多い？", cat: 1, mbti: 'S', options: [ { text: "何も思わず、ただ眺めている", score: 10 }, { text: "一日の終わりを実感し安堵する", score: 8 }, { text: "明日の予定や天気を考える", score: 5 }, { text: "世界の広さや切なさに浸る", score: 3 }, { text: "特に見ない", score: 0 } ] },
             { q: "【五感】今の自分を象徴する「手触り」はどれに近い？", cat: 1, mbti: 'S', options: [ { text: "柔らかく、どこか曖昧な雲のような感触", score: 10 }, { text: "温かく、安定した木のぬくもり", score: 9 }, { text: "滑らかで洗練されたシルクの感触", score: 7 }, { text: "固く揺るぎない石のような感触", score: 3 }, { text: "鋭く冷たい金属の感触", score: 1 } ] },
-            { q: "【対人】他人の間違いを目にしたとき、あなたはどう振る舞う？", cat: 2, mbti: 'F', options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは言わず波風を立てず見守る", score: 9 }, { text: "やんわりと「大丈夫？」と声をかける", score: 8 }, { text: "論理的に正しさを説得する", score: 2 }, { text: "自分のやり方を貫き、正す", score: 0 } ] },
+            { q: "【対人】他人の間違いを目にしたとき、あなたはどう振る舞う？", cat: 2, mbti: 'F', options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは言わず波風を立てず見守る", score: 10 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 8 }, { text: "論理的に正しさを説得する", score: 2 }, { text: "自分のやり方を貫き、正す", score: 0 } ] },
             { q: "【環境】一番落ち着く音の環境は、次のうちどれ？", cat: 1, mbti: 'S', options: [ { text: "雨音や川のせせらぎなど、自然が発する音", score: 10 }, { text: "静かな部屋で、自分の呼吸だけが聞こえる状態", score: 8 }, { text: "適度な生活音が混じる都会の雑踏", score: 6 }, { text: "お気に入りの音楽が常に流れている状態", score: 4 }, { text: "賑やかな話し声が絶えない場所", score: 1 } ] },
             { q: "【相談】友人から悩みを聞かされたとき、どうありたい？", cat: 2, mbti: 'F', options: [ { text: "ただ静かに、相手の心の波を感じながら聞き続ける", score: 10 }, { text: "相手の気持ちに寄り添い、一緒に解決策を探る", score: 8 }, { text: "話しやすいように明るい相槌を打つ", score: 6 }, { text: "問題の原因を特定し、助言を与える", score: 3 }, { text: "客観的な視点から正解を提示する", score: 0 } ] },
-            { q: "【価値観】何かに失敗したとき、どうやって自分を保つ？", cat: 4, mbti: 'A', options: [ { text: "特に抵抗せず、なんとなくやり過ごす", score: 10 }, { text: "「それも自分だ」と丸ごと受け入れ、時間が経つのを待つ", score: 9 }, { text: "別の刺激でリフレッシュする", score: 7 }, { text: "失敗を分析し、次への糧にする", score: 3 }, { text: "失敗を上書きするほど行動する", score: 1 } ] },
-            { q: "【性格】あなたにとって「自由」とはどんな状態？", cat: 3, mbti: 'P', options: [ { text: "その時の気分で、行きたい場所へすぐに行けること", score: 10 }, { text: "誰にも縛られず自分に戻れる瞬間", score: 9 }, { text: "十分な時間と資産があり、選択肢が多いこと", score: 6 }, { text: "人生をコントロールできている実感", score: 4 }, { text: "ルールの中で最大限に力を発揮すること", score: 1 } ] },
-            { q: "【内面】人から「意外だね」と言われる要素として多いのは？", cat: 0, mbti: 'I', options: [ { text: "「実は頑固だね」と言われる、自分だけの強いこだわり", score: 10 }, { text: "「何を考えているか読めない」部分", score: 9 }, { text: "「意外と普通なんだね」と言われる親しみやすさ", score: 8 }, { text: "「意外と真面目だね」と言われる責任感", score: 4 }, { text: "活動的なバイタリティ", score: 1 } ] },
-            { q: "【習慣】作業や趣味が一番捗るタイミングはいつ？", cat: 3, mbti: 'P', options: [ { text: "気分が乗った時に、一気に集中的に進める", score: 10 }, { text: "「今やりたい！」という強烈な直感が降りてきた時", score: 9 }, { text: "深夜、自分一人だけの感覚になれる時", score: 8 }, { text: "あらかじめスケジュールを決めた時間", score: 3 }, { text: "報酬が明確に見えている時", score: 1 } ] },
-            { q: "【生活】理想的な朝の過ごし方として最も近いのは？", cat: 3, mbti: 'J', options: [ { text: "早起きして計画通りにすぐ行動を開始する", score: 10 }, { text: "アラームなしで自然に目が覚めるのを待つ", score: 9 }, { text: "その日の気分で何をやるか決める", score: 7 }, { text: "窓を開けてゆっくりお茶を淹れる", score: 6 }, { text: "最新情報をチェックし始める", score: 1 } ] },
-            { q: "【感情】人生において、最も避けたいと感じる状況は？", cat: 2, mbti: 'F', options: [ { text: "大切な人を傷つけたり、迷惑をかけてしまう罪悪感", score: 10 }, { text: "自分が自分に嘘を言っていると感じる不誠実さ", score: 9 }, { text: "誰からも理解されない孤独感", score: 7 }, { text: "何が正しいか分からなくなる不安", score: 4 }, { text: "他者より劣っていると感じる劣等感", score: 1 } ] },
-            { q: "【装い】服を選ぶとき、あなたが最も優先するポイントは？", cat: 1, mbti: 'S', options: [ { text: "肌に触れたときの心地よさや、素材の質感", score: 10 }, { text: "鏡で見たときの、自分らしい雰囲気やシルエット", score: 9 }, { text: "動きやすさや機能性", score: 7 }, { text: "清潔感や周りにどう見られるか", score: 4 }, { text: "洗練されたトレンドデザイン", score: 1 } ] }
+            { q: "【価値観】何かに失敗したとき、どうやって自分を保つ？", cat: 4, mbti: 'A', options: [ { text: "特に抵抗せず、なんとなくやり過ごす", score: 10 }, { text: "「それも自分だ」と丸ごと受け入れ、時間が経つのを待つ", score: 10 }, { text: "別の刺激でリフレッシュする", score: 7 }, { text: "失敗を分析し、次への糧にする", score: 3 }, { text: "失敗を上書きするほど行動する", score: 1 } ] },
+            { q: "【性格】あなたにとって「自由」とはどんな状態？", cat: 0, mbti: 'P', options: [ { text: "その時の気分で、行きたい場所へすぐに行けること", score: 10 }, { text: "誰にも縛られず自分に戻れる瞬間", score: 10 }, { text: "選択肢が多いこと", score: 6 }, { text: "人生をコントロールできている実感", score: 4 }, { text: "ルールの中で最大限に力を発揮すること", score: 1 } ] },
+            { q: "【内面】人から「意外だね」と言われる要素として多いのは？", cat: 0, mbti: 'I', options: [ { text: "「実は頑固だね」と言われる、自分だけの強いこだわり", score: 10 }, { text: "「何を考えているか読めない」部分", score: 10 }, { text: "「意外と普通なんだね」と言われる親しみやすさ", score: 8 }, { text: "「意外と真面目だね」と言われる責任感", score: 4 }, { text: "活動的なバイタリティ", score: 1 } ] },
+            { q: "【習慣】作業や趣味が一番捗るタイミングはいつ？", cat: 1, mbti: 'P', options: [ { text: "気分が乗った時に、一気に集中的に進める", score: 10 }, { text: "「今やりたい！」という強烈な直感が降りてきた時", score: 9 }, { text: "深夜、自分一人だけの感覚になれる時", score: 8 }, { text: "あらかじめスケジュールを決めた時間", score: 3 }, { text: "報酬が明確に見えている時", score: 1 } ] },
+            { q: "【生活】理想的な朝の過ごし方として最も近いのは？", cat: 1, mbti: 'J', options: [ { text: "早起きして計画通りにすぐ行動を開始する", score: 10 }, { text: "アラームなしで自然に目が覚めるのを待つ", score: 10 }, { text: "その日の気分で何をやるか決める", score: 8 }, { text: "窓を開けてゆっくりお茶を淹れる", score: 7 }, { text: "最新情報をチェックし始める", score: 1 } ] },
+            { q: "【感情】人生において、最も避けたいと感じる状況は？", cat: 3, mbti: 'F', options: [ { text: "大切な人を傷つけたり、迷惑をかけてしまう罪悪感", score: 10 }, { text: "自分が自分に嘘を言っていると感じる不誠実さ", score: 10 }, { text: "誰からも理解されない孤独感", score: 7 }, { text: "何が正しいか分からなくなる不安", score: 4 }, { text: "他者より劣っていると感じる劣等感", score: 1 } ] },
+            { q: "【装い】服を選ぶとき、あなたが最も優先するポイントは？", cat: 2, mbti: 'S', options: [ { text: "肌に触れたときの心地よさや、素材の質感", score: 10 }, { text: "鏡で見たときの、自分らしい雰囲気やシルエット", score: 9 }, { text: "動きやすさや機能性", score: 7 }, { text: "清潔感や周りにどう見られるか", score: 4 }, { text: "洗練されたトレンドデザイン", score: 1 } ] }
         ];
 
         let selectedQuestions = [];
@@ -293,12 +280,10 @@
         let totalScore = 0;
         let categoryScores = [0, 0, 0, 0, 0];
         let categoryCounts = [0, 0, 0, 0, 0];
-        let mbtiData = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0 };
+        let mbtiCounts = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0 };
         let history = []; 
-        let chartInstance = null;
-        let snsChartInstance = null;
+        let radarChart = null;
 
-        // --- クッキー ユーティリティ ---
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -320,44 +305,15 @@
             return null;
         }
 
-        function eraseCookie(name) {
-            document.cookie = name +'=; Max-Age=-99999999; path=/';
-        }
-
-        // --- URL解析（旧バージョン対応） ---
-        function parseUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const d = params.get('d');
-            if (d) {
-                try {
-                    const data = JSON.parse(atob(d.split('&')[0]));
-                    totalScore = data.s || data.tot || 0;
-                    categoryScores = data.cs || data.catScores || [0,0,0,0,0];
-                    categoryCounts = data.cc || data.catCounts || [2,2,2,2,2];
-                    document.getElementById('start-screen').classList.add('hidden');
-                    document.getElementById('result-screen').classList.remove('hidden');
-                    processResultDisplay();
-                } catch(e) { console.error("URL解析エラー", e); }
-            }
-        }
-
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
+        function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
         function startDiagnosis(isReset = false) {
-            if (isReset) eraseCookie('ma_save');
+            if (isReset) eraseCookie('ma_final_data');
             selectedQuestions = shuffleArray([...questionsPool]);
             currentQuestionIndex = 0; totalScore = 0; history = [];
             categoryScores = [0, 0, 0, 0, 0]; categoryCounts = [0, 0, 0, 0, 0];
-            mbtiData = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0 };
+            mbtiCounts = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0 };
             
-            // Progress dots
             const dotContainer = document.getElementById('progress-dots');
             dotContainer.innerHTML = '';
             for(let i=0; i<12; i++) {
@@ -369,6 +325,15 @@
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
             renderQuestion();
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
 
         function renderQuestion() {
@@ -394,7 +359,7 @@
         function handleAnswer(q, opt) {
             const m = q.mbti;
             const val = opt.score >= 8 ? 2 : (opt.score >= 5 ? 1 : 0);
-            mbtiData[m] += val;
+            mbtiCounts[m] += val;
 
             history.push({ score: opt.score, cat: q.cat, mbti: m, val: val });
             totalScore += opt.score;
@@ -411,33 +376,21 @@
             }
         }
 
-        function goBack() {
-            if (currentQuestionIndex <= 0) return;
-            currentQuestionIndex--;
-            const last = history.pop();
-            totalScore -= last.score;
-            categoryScores[last.cat] -= last.score;
-            categoryCounts[last.cat]--;
-            mbtiData[last.mbti] -= last.val;
-            saveToCookie();
-            renderQuestion();
-        }
-
         function saveToCookie() {
             const data = {
                 idx: currentQuestionIndex, tot: totalScore, cs: categoryScores, cc: categoryCounts,
-                hist: history, mbti: mbtiData, qids: selectedQuestions.map(q => questionsPool.indexOf(q))
+                hist: history, mbti: mbtiCounts, qids: selectedQuestions.map(q => questionsPool.indexOf(q))
             };
-            setCookie('ma_save', JSON.stringify(data), 7);
+            setCookie('ma_final_data', JSON.stringify(data), 7);
         }
 
         function resumeDiagnosis() {
-            const saved = getCookie('ma_save');
+            const saved = getCookie('ma_final_data');
             if (saved) {
                 const d = JSON.parse(saved);
                 currentQuestionIndex = d.idx; totalScore = d.tot;
                 categoryScores = d.cs; categoryCounts = d.cc;
-                history = d.hist; mbtiData = d.mbti; 
+                history = d.hist; mbtiCounts = d.mbti; 
                 selectedQuestions = d.qids.map(id => questionsPool[id]);
                 
                 const dotContainer = document.getElementById('progress-dots');
@@ -454,11 +407,31 @@
             }
         }
 
+        function goBack() {
+            if (currentQuestionIndex <= 0) return;
+            currentQuestionIndex--;
+            const last = history.pop();
+            totalScore -= last.score;
+            categoryScores[last.cat] -= last.score;
+            categoryCounts[last.cat]--;
+            mbtiCounts[last.mbti] -= last.val;
+            saveToCookie();
+            renderQuestion();
+        }
+
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            eraseCookie('ma_save');
-            processResultDisplay();
+            eraseCookie('ma_final_data');
+            
+            // URL更新ロジック
+            const data = { s: totalScore, cs: categoryScores, cc: categoryCounts, m: mbtiCounts };
+            const encoded = btoa(JSON.stringify(data));
+            const newUrl = window.location.pathname + '?d=' + encoded;
+            window.history.pushState({path: newUrl}, '', newUrl);
+
+            // グラフ描画の遅延実行
+            setTimeout(processResultDisplay, 100);
         }
 
         function processResultDisplay() {
@@ -473,11 +446,11 @@
             // MBTI Logic
             let mbti = "ISFP-A (冒険家)";
             if (finalScore < 95) {
-                const i_e = mbtiData.I >= 2 ? "I" : "E";
-                const s_n = mbtiData.S >= 3 ? "S" : "N";
-                const f_t = mbtiData.F >= 2 ? "F" : "T";
-                const p_j = mbtiData.P >= 3 ? "P" : "J";
-                const a_t = mbtiData.A >= 1 ? "-A" : "-T";
+                const i_e = mbtiCounts.I >= 2 ? "I" : "E";
+                const s_n = mbtiCounts.S >= 3 ? "S" : "N";
+                const f_t = mbtiCounts.F >= 2 ? "F" : "T";
+                const p_j = mbtiCounts.P >= 3 ? "P" : "J";
+                const a_t = mbtiCounts.A >= 1 ? "-A" : "-T";
                 const map = {"ISFP":"冒険家","ISFJ":"擁護者","ISTP":"巨匠","ISTJ":"管理者","INFP":"仲介者","INFJ":"提唱者","INTP":"論理学者","INTJ":"建築家","ESFP":"エンターテイナー","ESFJ":"領事","ESTP":"起業家","ESTJ":"幹部","ENFP":"広報運動家","ENFJ":"主人公","ENTP":"討論者","ENTJ":"指揮官"};
                 const key = i_e+s_n+f_t+p_j;
                 mbti = `${key} (${map[key] || '分析中'}) ${a_t}`;
@@ -487,96 +460,92 @@
 
             document.getElementById('result-type').innerText = finalScore >= 90 ? "【 自然体と調和の体現者 】" : "【 中庸のバランス型 】";
             document.getElementById('result-desc').innerText = finalScore >= 90 ? 
-                "あなたは飾らない『自然体』と、周囲への深い『調和』を完璧に体現しています。今この瞬間の心地よさを信じるその在り方こそが、真の『マ』の正体です。" : 
-                "あなたは周囲との調和を保ちながら、自分なりの安定したルールを持って日常を過ごせるタイプです。";
+                "あなたは飾らない『自然体』と、周囲への深い『調和』を完璧に体現しています。無理に言葉で飾らず、今この瞬間の心地よさを信じるその在り方こそが、真の『マ』の正体です。ISFP-A特有の柔軟さと、確固たる内なるこだわりが美しく調和しています。" : 
+                "あなたは周囲との調和を大切にしながら、自分なりの安定したリズムを持って日常を過ごせるタイプです。";
 
-            const adviceArr = ["こだわりを誇りに。","直感を信じて。","自分も愛して。","余白を大切に。","今のままで。"];
-            let maxIdx = avgScores.indexOf(Math.max(...avgScores));
-            document.getElementById('result-advice').innerText = `あなたの最大の強みは、${['性格の深さ', '生活の質', '価値観の調和', '柔軟性', '自己肯定'][maxIdx]}です。${adviceArr[maxIdx]}`;
+            // アドバイス生成
+            const tips = [
+                "その「頑固さ」はあなたの芯の強さです。大切に。",
+                "五感で感じる「心地よさ」をもっと信じて。",
+                "「なんとなく」で流せる強さを忘れないでください。",
+                "周囲への柔軟な対応こそ、あなたの最大の優しさです。",
+                "一人の時間は、自分を愛でるための神聖な儀式です。",
+                "予定のない日は、あえて「余白」を意識して過ごしてみて。",
+                "失敗はただのプロセス。笑い飛ばしてしまいましょう。",
+                "言葉にできない直感を、何よりも優先してください。"
+            ];
+            const seed = (finalScore + Math.floor(Math.random()*10)) % tips.length;
+            document.getElementById('result-advice').innerText = tips[seed];
 
-            // Param bars
-            const paramContainer = document.getElementById('param-container');
-            paramContainer.innerHTML = '';
-            const labels = ['内面性', '現実感', '調和度', '柔軟性', '自己肯定'];
-            avgScores.forEach((s, i) => {
-                const div = document.createElement('div');
-                div.className = 'param-row';
-                div.innerHTML = `
-                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${labels[i]}</span>
-                    <div class="param-bar-bg"><div class="param-bar-fill" style="width: ${s * 10}%"></div></div>
-                    <span class="text-[10px] font-mono text-[var(--accent-soft)]">${Math.round(s * 10)}%</span>
-                `;
-                paramContainer.appendChild(div);
-            });
-
-            drawChart(avgScores, 'radarChart');
-            drawChart(avgScores, 'snsChart', 24); // SNS用は文字を大きく
+            renderChart(avgScores);
         }
 
-        function drawChart(data, canvasId, fontSize = 11) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['性格', '生活', '五感', '価値観', '対人'],
-                    datasets: [{
-                        data: data,
-                        backgroundColor: 'rgba(88, 166, 255, 0.2)',
-                        borderColor: '#58a6ff',
-                        pointBackgroundColor: '#58a6ff',
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }]
+        function renderChart(data) {
+            const options = {
+                scales: {
+                    r: {
+                        min: 0, max: 10, ticks: { display: false, stepSize: 2 },
+                        grid: { color: 'rgba(58, 90, 64, 0.08)' },
+                        angleLines: { color: 'rgba(58, 90, 64, 0.08)' },
+                        pointLabels: { color: '#588157', font: { size: 11, family: 'Noto Sans JP', weight: 'bold' } }
+                    }
                 },
+                plugins: { legend: { display: false } },
+                animation: { duration: 1500 }
+            };
+
+            const chartData = {
+                labels: ['性格', '生活', '五感', '価値観', '対人'],
+                datasets: [{
+                    data: data,
+                    backgroundColor: 'rgba(58, 90, 64, 0.15)',
+                    borderColor: '#3a5a40',
+                    borderWidth: 3,
+                    pointRadius: 0
+                }]
+            };
+
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: chartData,
+                options: options
+            });
+
+            // SNS用
+            new Chart(document.getElementById('snsChart'), {
+                type: 'radar',
+                data: chartData,
                 options: {
-                    layout: { padding: 30 },
+                    ...options,
                     scales: {
-                        r: {
-                            min: 0, max: 10,
-                            ticks: { display: false, stepSize: 2 },
-                            grid: { color: 'rgba(255,255,255,0.08)' },
-                            angleLines: { color: 'rgba(255,255,255,0.08)' },
-                            pointLabels: { color: '#8b949e', font: { size: fontSize, family: 'Noto Sans JP' } }
-                        }
-                    },
-                    plugins: { legend: { display: false } },
-                    animation: { duration: 1500 }
+                        r: { ...options.scales.r, pointLabels: { font: { size: 24 }, color: '#3a5a40' } }
+                    }
                 }
             });
         }
 
         function downloadImage(type) {
-            const targetId = (type === 'sns') ? 'sns-capture-area' : 'capture-area';
+            const targetId = (type === 'sns') ? 'sns-export-area' : 'capture-area';
             const fileName = (type === 'sns') ? 'マ診断_SNS.png' : 'マ診断_レポート.png';
             
             showToast("画像を生成しています...");
-            
-            // SNS用の場合は一時的に表示を有効にする
-            if(type === 'sns') document.getElementById('sns-capture-area').style.left = '0';
+            if(type === 'sns') document.getElementById('sns-export-area').style.left = '0';
 
             html2canvas(document.getElementById(targetId), { 
-                backgroundColor: "#080a0f", scale: 2, logging: false, useCORS: true
+                backgroundColor: "#ffffff", scale: 2, logging: false, useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a'); 
                 link.download = fileName;
                 link.href = canvas.toDataURL('image/png'); 
                 link.click();
-                if(type === 'sns') document.getElementById('sns-capture-area').style.left = '-9999px';
+                if(type === 'sns') document.getElementById('sns-export-area').style.left = '-9999px';
                 showToast("保存完了しました");
             });
         }
 
         function shareLink() {
-            const data = { s: totalScore, cs: categoryScores, cc: categoryCounts };
-            const encoded = btoa(JSON.stringify(data));
-            const url = window.location.origin + window.location.pathname + '?d=' + encoded;
-            
-            const dummy = document.createElement('textarea');
-            document.body.appendChild(dummy);
-            dummy.value = `私のマ度は【${document.getElementById('result-score').innerText}】でした！\n#マ診断 #自己分析\n${url}`;
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
+            navigator.clipboard.writeText(window.location.href);
             showToast("リンクをコピーしました");
         }
 
@@ -586,11 +555,21 @@
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        function resetAndRestart() { eraseCookie('ma_save'); location.href = window.location.pathname; }
+        function resetAndRestart() { eraseCookie('ma_final_data'); location.href = window.location.pathname; }
 
         window.onload = () => {
-            parseUrl();
-            if (getCookie('ma_save')) document.getElementById('resume-container').classList.remove('hidden');
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('d')) {
+                try {
+                    const data = JSON.parse(atob(params.get('d')));
+                    totalScore = data.s; categoryScores = data.cs; categoryCounts = data.cc; mbtiCounts = data.m;
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('result-screen').classList.remove('hidden');
+                    setTimeout(processResultDisplay, 200);
+                } catch(e) {}
+            } else if (getCookie('ma_final_data')) {
+                document.getElementById('resume-container').classList.remove('hidden');
+            }
         };
     </script>
 </body>
