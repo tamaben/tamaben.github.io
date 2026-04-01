@@ -7,15 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #f7faf8;
-            --accent-green: #27422f;
+            --bg-base: #f9fbf9;
+            --accent-green: #2d4a36;
             --soft-green: #588157;
-            --leaf-green: #8ca38a;
-            --glass-white: rgba(255, 255, 255, 0.85);
-            --text-main: #131e17;
+            --leaf-green: #a3b18a;
+            --glass-white: rgba(255, 255, 255, 0.75);
+            --text-main: #1b261e;
         }
 
         body {
@@ -28,9 +28,9 @@
             align-items: center;
             justify-content: center;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(140, 163, 138, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 90% 80%, rgba(39, 66, 47, 0.15) 0%, transparent 45%),
-                linear-gradient(135deg, #ffffff 0%, #edf1ee 100%);
+                radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(45, 74, 54, 0.15) 0%, transparent 45%),
+                linear-gradient(135deg, #ffffff 0%, #f1f5f2 100%);
             -webkit-font-smoothing: antialiased;
         }
 
@@ -50,7 +50,7 @@
             -webkit-backdrop-filter: blur(35px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: 2.5rem;
-            box-shadow: 0 30px 60px -15px rgba(39, 66, 47, 0.1);
+            box-shadow: 0 30px 60px -15px rgba(45, 74, 54, 0.08);
             overflow: hidden;
             position: relative;
         }
@@ -59,10 +59,10 @@
             width: 100%;
             text-align: left;
             padding: 1.2rem 1.6rem;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid #ffffff;
             border-radius: 1.4rem;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             font-size: 1rem;
             line-height: 1.5;
             color: var(--text-main);
@@ -74,7 +74,7 @@
             background: #ffffff;
             border-color: var(--soft-green);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(39, 66, 47, 0.1);
+            box-shadow: 0 10px 25px rgba(45, 74, 54, 0.1);
         }
 
         .score-display {
@@ -93,19 +93,33 @@
             font-weight: 700;
             letter-spacing: 0.15em;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(39, 66, 47, 0.15);
+            box-shadow: 0 10px 25px rgba(45, 74, 54, 0.15);
         }
 
         .progress-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: rgba(39, 66, 47, 0.1);
+            background: rgba(45, 74, 54, 0.1);
             transition: all 0.4s ease;
         }
         .progress-dot.active {
             background: var(--accent-green);
             transform: scale(1.5);
+        }
+
+        .log-box {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #555;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            white-space: pre-wrap;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .capture-flat-mode {
@@ -125,6 +139,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* 順番に表示させるためのアニメーション用クラス */
         .anim-ready {
             opacity: 0;
             transform: translateY(30px);
@@ -154,13 +169,14 @@
 
     <div class="app-wrapper">
         
+        <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
             <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Detection System</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
                 マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかが正確にわかるシステムです。<br><br>
-                全40問の中から、ランダムに抽出された10問に直感でお答えください。
+                全40問のユニークな質問から、完全にランダムに抽出された10問に直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -173,6 +189,7 @@
             </button>
         </div>
 
+        <!-- 質問画面 -->
         <div id="quiz-screen" class="hidden glass-panel p-8 md:p-12 fade-in">
             <div class="flex justify-between items-center mb-10">
                 <button onclick="goBack()" id="back-btn" class="text-[10px] tracking-widest font-bold text-gray-400 hover:text-[var(--accent-green)] transition-all flex items-center gap-1 invisible uppercase">
@@ -190,6 +207,7 @@
             <div id="options-container" class="space-y-1"></div>
         </div>
 
+        <!-- 分析ローディング画面 -->
         <div id="loading-screen" class="hidden glass-panel p-12 md:p-16 text-center fade-in">
             <div class="mb-10 relative flex justify-center items-center">
                 <svg class="animate-spin h-14 w-14 text-[var(--accent-green)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -204,15 +222,18 @@
             <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase font-bold">マ度を精密算出しています</p>
         </div>
 
+        <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             <div id="capture-area" class="glass-panel text-center mb-8 bg-white" style="padding-bottom: 40px;">
                 
+                <!-- 順次表示: ヘッダー＆スコア -->
                 <div class="anim-ready" id="anim-header">
                     <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Report</div>
                     <div class="text-[11px] text-gray-400 tracking-[0.4em] uppercase mb-4 font-bold">あなたのマ度（マ要素）</div>
                     <div class="font-outfit score-display" id="result-score">0.0%</div>
                 </div>
 
+                <!-- 順次表示: バッジ＆MBTI -->
                 <div class="anim-ready" id="anim-badge">
                     <div id="cert-badge" class="hidden mb-12">
                         <div class="py-2.5 px-8 bg-green-50/50 border border-[var(--leaf-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em]">
@@ -224,12 +245,14 @@
                     </div>
                 </div>
 
+                <!-- 順次表示: グラフ (高さを明示して潰れ防止) -->
                 <div class="mb-12 flex justify-center bg-gray-50/50 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner anim-ready" id="anim-chart">
                     <div style="position: relative; width: 100%; max-width: 280px; height: 280px;">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
+                <!-- 順次表示: テキスト解析 -->
                 <div class="text-left px-8 pb-4 anim-ready" id="anim-text">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
@@ -237,7 +260,8 @@
                     </div>
                 </div>
 
-                <div class="text-left px-8 pb-6 anim-ready" id="anim-advice">
+                <!-- 順次表示: ワンポイントアドバイス -->
+                <div class="text-left px-8 pb-4 anim-ready" id="anim-advice">
                     <div class="content-wrapper mt-4 bg-green-50/50 p-6 rounded-2xl border border-green-100 shadow-sm">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
                             🌿 マ度を高めるワンポイント
@@ -246,8 +270,19 @@
                     </div>
                 </div>
 
+                <!-- 順次表示: 精度ログ -->
+                <div class="text-left px-8 pb-6 anim-ready" id="anim-log">
+                    <div class="content-wrapper mt-2 bg-gray-50/50 p-6 rounded-2xl border border-white shadow-sm">
+                        <h4 class="text-[10px] text-gray-400 font-bold mb-3 uppercase tracking-[0.2em] flex items-center gap-2 border-b border-gray-200 pb-2">
+                            📊 精度調節用・解答ログ
+                        </h4>
+                        <div id="adjustment-log" class="log-box mt-4"></div>
+                    </div>
+                </div>
+
             </div>
 
+            <!-- 順次表示: ボタン類 -->
             <div class="flex flex-col gap-4 anim-ready" id="anim-buttons">
                 <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase shadow-xl">SNS用(正方形)を保存</button>
                 <button onclick="downloadImage('full')" class="w-full py-4 bg-white text-[var(--accent-green)] border border-[var(--accent-green)] rounded-2xl font-bold text-xs tracking-widest uppercase hover:bg-gray-50 transition-all">フルレポートを保存</button>
@@ -260,7 +295,7 @@
         </div>
     </div>
 
-    <!-- SNS保存用 -->
+    <!-- SNS保存用(1080x1080) -->
     <div id="sns-export-area">
         <div style="font-family: 'Outfit', sans-serif; font-size: 36px; color: #27422f; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
         <div style="font-family: 'Outfit', sans-serif; font-size: 250px; font-weight: 800; color: #27422f; margin-bottom: 20px; line-height: 1;" id="sns-score">0.0%</div>
@@ -328,6 +363,7 @@
         let catScores = [0, 0, 0, 0, 0];
         let catCounts = [0, 0, 0, 0, 0];
         let mbtiScore = {I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0};
+        let historyArr = []; // 戻る機能・ログ用の履歴配列
 
         function setCookie(name, val, days) {
             const d = new Date();
@@ -356,7 +392,7 @@
             let shuffledPool = [...questionsPool].sort(() => Math.random() - 0.5);
             selectedQuestions = shuffledPool.slice(0, 10);
 
-            currentIdx = 0; totalScore = 0;
+            currentIdx = 0; totalScore = 0; historyArr = [];
             catScores = [0, 0, 0, 0, 0]; catCounts = [0, 0, 0, 0, 0];
             mbtiScore = {I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0};
 
@@ -377,6 +413,8 @@
             const q = selectedQuestions[currentIdx];
             document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
             document.getElementById('q-text').innerText = q.q;
+            
+            // 戻るボタンの表示制御
             document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
 
             const dots = document.querySelectorAll('.progress-dot');
@@ -394,10 +432,15 @@
         }
 
         function handleAnswer(q, opt) {
+            let mVal = 0;
             if(q.m) {
-                if(opt.score >= 8) mbtiScore[q.m] += 2;
-                else if(opt.score >= 5) mbtiScore[q.m] += 1;
+                if(opt.score >= 8) { mbtiScore[q.m] += 2; mVal = 2; }
+                else if(opt.score >= 5) { mbtiScore[q.m] += 1; mVal = 1; }
             }
+            
+            // 履歴に保存（戻る機能とログ表示用）
+            historyArr.push({ q: q.q, a: opt.text, score: opt.score, cat: q.cat, m: q.m, val: mVal });
+            
             totalScore += opt.score;
             catScores[q.cat] += opt.score;
             catCounts[q.cat]++;
@@ -408,48 +451,55 @@
             else showResult();
         }
 
+        // 戻る機能の完全復活
         function goBack() {
             if (currentIdx <= 0) return;
-            // 状態が複雑になるため簡易無効化
+            currentIdx--;
+            
+            // 履歴から直前の解答を取り出し、スコアを巻き戻す
+            const last = historyArr.pop();
+            totalScore -= last.score;
+            catScores[last.cat] -= last.score;
+            catCounts[last.cat]--;
+            if(last.m) mbtiScore[last.m] -= last.val;
+            
+            saveToCookie();
+            renderQuestion();
         }
 
         function saveToCookie() {
-            const data = { idx: currentIdx, tot: totalScore, cs: catScores, cc: catCounts, mbti: mbtiScore, qids: selectedQuestions.map(sq => sq.id) };
+            const data = { idx: currentIdx, tot: totalScore, cs: catScores, cc: catCounts, mbti: mbtiScore, hist: historyArr, qids: selectedQuestions.map(sq => sq.id) };
             setCookie('ma_true_algo_perfect', JSON.stringify(data), 7);
         }
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             
+            // 結果が出た時点でURLを生成・更新 (ログデータも含む)
+            const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore, hist: historyArr };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+            const newUrl = window.location.pathname + '?d=' + encoded;
+            window.history.pushState({path: newUrl}, '', newUrl);
+
             const skipAnim = sessionStorage.getItem('ma_anim_done');
             if (skipAnim) {
                 document.getElementById('result-screen').classList.remove('hidden');
-                finalizeResultAndDisplay(true);
+                processDisplay(true);
             } else {
                 document.getElementById('loading-screen').classList.remove('hidden');
                 setTimeout(() => { document.getElementById('calc-progress').style.width = '100%'; }, 50);
                 setTimeout(() => {
                     document.getElementById('loading-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
-                    finalizeResultAndDisplay(false);
+                    processDisplay(false);
                 }, 2500);
             }
-        }
-
-        function finalizeResultAndDisplay(skipAnim) {
-            eraseCookie('ma_true_algo_perfect');
-            const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
-            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-            const newUrl = window.location.pathname + '?d=' + encoded;
-            window.history.pushState({path: newUrl}, '', newUrl);
-            
-            processDisplay(skipAnim);
         }
 
         function processDisplay(skipAnim) {
             let final = Math.min(100, Math.round((totalScore / 100) * 100));
             
-            // 98%以上なら100%にロックする。それ未満ならロック解除でそのまま表示。
+            // 98%以上なら100%にロック。それ未満(5%以上変な回答)ならロック解除でそのまま表示。
             if (final >= 98) {
                 final = 100;
             }
@@ -470,6 +520,12 @@
             document.getElementById('result-desc').innerText = final === 100 ? 
                 "マ度 100.0% —— システムの計算により、あなたが他の誰でもない『まさひろ本人』であることが完全に証明されました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
+
+            // 精度ログの描画
+            let logText = "";
+            historyArr.forEach((h, i) => { logText += `Q${String(i+1).padStart(2,'0')}: ${h.q}\n=> ${h.a} (${h.score}点)\n\n`; });
+            const logEl = document.getElementById('adjustment-log');
+            if(logEl) logEl.innerText = logText || "ログデータがありません";
 
             let avgData = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
             let minIdx = 0, minVal = 11;
@@ -498,7 +554,7 @@
                 sessionStorage.setItem('ma_anim_done', '1');
                 animateValue(scoreEl, 0, final, 2200);
 
-                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-advice', 'anim-buttons', 'anim-reset'];
+                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-advice', 'anim-log', 'anim-buttons', 'anim-reset'];
                 let delay = 0;
 
                 animBlocks.forEach((id, index) => {
@@ -625,7 +681,7 @@
             const saved = getCookie('ma_true_algo_perfect');
             if (saved) {
                 const d = JSON.parse(saved);
-                currentIdx = d.idx; totalScore = d.tot; catScores = d.cs; catCounts = d.cc; mbtiScore = d.mbti; 
+                currentIdx = d.idx; totalScore = d.tot; catScores = d.cs; catCounts = d.cc; mbtiScore = d.mbti; historyArr = d.hist || [];
                 selectedQuestions = d.qids.map(id => questionsPool.find(qp => qp.id === id)).filter(x => x);
                 document.getElementById('start-screen').classList.add('hidden');
                 document.getElementById('quiz-screen').classList.remove('hidden');
@@ -658,19 +714,17 @@
                 try {
                     const data = JSON.parse(decodeURIComponent(escape(atob(d.split('&')[0]))));
                     totalScore = data.s || 0; catScores = data.cs || [0,0,0,0,0]; catCounts = data.cc || [1,1,1,1,1]; mbtiScore = data.m || {};
+                    historyArr = data.hist || []; // URLからの履歴復元
+                    
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
                     
-                    finalizeResultAndDisplay(true); 
+                    processDisplay(true); 
                 } catch(e) {}
             } else if (getCookie('ma_true_algo_perfect')) {
                 document.getElementById('resume-container').classList.remove('hidden');
             }
         };
-
-        function finalizeResultAndDisplay(skipAnim) {
-            processDisplay(skipAnim);
-        }
     </script>
 </body>
 </html>
