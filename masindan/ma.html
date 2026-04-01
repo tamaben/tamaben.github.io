@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マ診断 - 自己分析＆価値観測定システム</title>
+    <title>マ診断 - 超高精度自己分析システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,12 +11,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
         :root {
-            --bg-color: #0d1117;
-            --panel-bg: rgba(22, 27, 34, 0.85);
+            --bg-color: #080a0f;
+            --panel-bg: rgba(17, 22, 30, 0.9);
             --accent-primary: #58a6ff;
-            --accent-dim: rgba(88, 166, 255, 0.15);
+            --accent-dim: rgba(88, 166, 255, 0.1);
             --gold-cert: #ffd700;
-            --text-main: #c9d1d9;
+            --text-main: #d1d9e1;
             --text-muted: #8b949e;
         }
 
@@ -26,44 +26,42 @@
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(88, 166, 255, 0.03) 0%, transparent 40%);
+                radial-gradient(circle at 15% 15%, rgba(88, 166, 255, 0.07) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 215, 0, 0.03) 0%, transparent 40%);
         }
 
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
 
         .app-wrapper {
             width: 100%;
-            max-width: 560px;
-            padding: 1.5rem;
-            margin: 2rem 0;
+            max-width: 580px;
+            padding: 1rem;
+            margin: 1rem 0;
         }
 
         .glass-panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.25rem;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
-            position: relative;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
             overflow: hidden;
         }
 
         .option-btn {
             width: 100%;
             text-align: left;
-            padding: 1rem 1.25rem;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 1.1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 0.75rem;
-            transition: all 0.25s ease;
+            border-radius: 0.85rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.95rem;
             line-height: 1.5;
-            color: #c9d1d9;
+            color: #cbd5e1;
         }
 
         .option-btn:hover, .option-btn:active {
@@ -77,47 +75,28 @@
             color: #79c0ff;
             text-shadow: 0 0 20px rgba(121, 192, 255, 0.6);
         }
-        
-        .text-cert-glow {
-            color: var(--gold-cert);
-            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-        }
-
-        .mbti-badge {
-            background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(88, 166, 255, 0.05) 100%);
-            border: 1px solid rgba(88, 166, 255, 0.3);
-            border-radius: 0.75rem;
-            padding: 1rem 1.5rem;
-            display: inline-block;
-        }
 
         .cert-badge {
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%);
             border: 1px solid rgba(255, 215, 0, 0.5);
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            display: inline-block;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            animation: pulseCert 2s infinite alternate;
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            animation: pulseGold 3s infinite alternate;
         }
 
-        @keyframes pulseCert {
-            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-            100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
+        @keyframes pulseGold {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1.03); filter: brightness(1.2); }
         }
 
         #capture-area {
             background-color: var(--bg-color);
-            padding: 1.5rem;
-            border-radius: 1.25rem;
-        }
-
-        .param-box {
-            background: rgba(0, 0, 0, 0.2);
-            border-left: 3px solid var(--accent-primary);
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0 0.5rem 0.5rem 0;
+            padding: 2.5rem 2rem;
+            border-radius: 1.5rem;
         }
 
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -125,6 +104,31 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .param-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .param-bar-bg {
+            width: 60%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .param-bar-fill {
+            height: 100%;
+            background: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary);
+            transition: width 1s ease-out;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -132,103 +136,108 @@
     <div class="app-wrapper z-10">
         
         <!-- スタート画面 -->
-        <div id="start-screen" class="glass-panel p-8 md:p-10 text-center fade-in">
-            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.3em] text-xs mb-3 uppercase">Progressive Analysis</h2>
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-widest text-white">マ診断</h1>
-            <div class="w-10 h-[2px] bg-[var(--accent-primary)] mx-auto mb-8 opacity-60"></div>
+        <div id="start-screen" class="glass-panel p-8 md:p-12 text-center fade-in">
+            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-3 uppercase">Precision Diagnosis</h2>
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 tracking-[0.2em] text-white">マ診断</h1>
+            <div class="w-12 h-[2px] bg-[var(--accent-primary)] mx-auto mb-8 opacity-60"></div>
             
-            <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-10 text-left">
-                性格、生活、五感、価値観、対人の5つの観点から、あなたの中に宿る「マ要素」を精密に測定します。<br><br>
-                進捗はクッキーに自動保存されるため、続きから再開可能です。ありのままの感覚でお選びください。
+            <p class="text-[var(--text-muted)] text-sm leading-loose mb-10 text-left">
+                性格、五感、生活リズム、そして深層価値観を100%の精度で測定します。<br><br>
+                中断してもクッキーにより進捗は守られます。<br>
+                飾らない「等身大の自分」でお答えください。
             </p>
             
-            <div id="resume-container" class="hidden mb-6 p-5 bg-blue-900/20 border border-blue-500/30 rounded-xl text-center">
-                <p class="text-xs text-blue-300 mb-3 font-bold">中断した診断を再開できます。</p>
-                <button onclick="resumeDiagnosis()" class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold text-sm mb-3 hover:bg-blue-500 transition-all">続きから再開</button>
-                <button onclick="startDiagnosis(true)" class="text-[10px] text-gray-500 underline uppercase tracking-widest hover:text-gray-300">最初からやり直す</button>
+            <div id="resume-container" class="hidden mb-8 p-5 bg-blue-900/20 border border-blue-500/30 rounded-2xl text-center">
+                <p class="text-xs text-blue-300 mb-4 font-bold tracking-widest uppercase">中断データが見つかりました</p>
+                <button onclick="resumeDiagnosis()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm mb-3 hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20">続きから再開</button>
+                <button onclick="startDiagnosis(true)" class="text-[10px] text-gray-500 underline uppercase tracking-[0.2em] hover:text-gray-300">最初からやり直す</button>
             </div>
 
-            <button id="start-btn" onclick="startDiagnosis()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-all duration-300 font-bold tracking-widest text-sm uppercase">
-                診断を開始する
+            <button id="start-btn" onclick="startDiagnosis()" class="w-full py-5 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-xl hover:bg-[var(--accent-primary)] hover:text-[#080a0f] transition-all duration-500 font-bold tracking-[0.3em] text-sm uppercase">
+                深層分析を開始
             </button>
         </div>
 
         <!-- 質問画面 -->
         <div id="quiz-screen" class="hidden glass-panel p-6 md:p-10 fade-in">
-            <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+            <div class="flex justify-between items-center mb-10 border-b border-gray-800 pb-5">
                 <button onclick="goBack()" id="back-btn" class="flex items-center gap-1 text-[10px] font-bold opacity-60 hover:opacity-100 hover:text-blue-400 invisible transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                     PREV
                 </button>
                 <div class="text-center">
-                    <span id="q-counter" class="text-xl font-serif-en text-[var(--accent-primary)] italic">01 / 12</span>
+                    <span id="q-counter" class="text-2xl font-serif-en text-[var(--accent-primary)] italic">01 / 12</span>
                 </div>
-                <div class="w-16 h-1 bg-gray-800 rounded-full overflow-hidden">
+                <div class="w-20 h-1 bg-gray-800 rounded-full overflow-hidden">
                     <div id="q-progress" class="h-full bg-[var(--accent-primary)] transition-all duration-500" style="width: 8%"></div>
                 </div>
             </div>
 
-            <div class="min-h-[5rem] mb-8 flex items-center text-center justify-center">
-                <h2 id="q-text" class="text-lg font-medium leading-relaxed text-gray-100"></h2>
+            <div class="min-h-[6rem] mb-10 flex items-center text-center justify-center">
+                <h2 id="q-text" class="text-xl font-medium leading-relaxed text-gray-100 tracking-wide px-4"></h2>
             </div>
 
-            <div id="options-container" class="space-y-3"></div>
+            <div id="options-container" class="space-y-4"></div>
         </div>
 
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             
             <div id="capture-area" class="glass-panel text-center mb-6">
-                <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-2 uppercase pt-2">Analysis Result</h2>
+                <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.5em] text-xs mb-3 uppercase pt-2">Deep Analysis Report</h2>
                 
-                <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
-                    <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
-                    <span class="text-6xl md:text-7xl font-serif-en font-bold text-score-glow" id="result-score">0%</span>
+                <div class="flex justify-center items-baseline gap-2 mt-4 mb-4">
+                    <span class="text-xs text-[var(--text-muted)] tracking-[0.3em] uppercase">マ度:</span>
+                    <span class="text-7xl font-serif-en font-bold text-score-glow" id="result-score">0%</span>
                 </div>
 
-                <!-- マ認定バッジ -->
-                <div id="cert-container" class="hidden mb-6">
+                <div id="cert-badge" class="hidden mb-8">
                     <div class="cert-badge">
-                        <span class="text-sm font-bold text-[var(--gold-cert)] tracking-widest uppercase flex items-center gap-2">
-                            🌟 OFFICIAL マ 認定 🌟
+                        <span class="text-xs font-bold text-[var(--gold-cert)] tracking-[0.2em] uppercase">
+                            🌟 Official Ma Certified 🌟
                         </span>
                     </div>
                 </div>
 
-                <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
+                <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-[0.1em] mb-6"></h3>
 
-                <div class="mb-8">
+                <div class="mb-10">
                     <div class="mbti-badge">
-                        <span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span>
-                        <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-wider"></span>
+                        <span class="text-[10px] text-[var(--accent-primary)] tracking-[0.2em] uppercase block mb-1">Expected MBTI</span>
+                        <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-widest"></span>
                     </div>
                 </div>
 
-                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50 flex justify-center">
+                <!-- 数値パラメーター詳細 -->
+                <div id="param-container" class="px-6 mb-10 text-left space-y-4">
+                    <!-- JSで挿入 -->
+                </div>
+
+                <div class="bg-[#0d1117]/60 rounded-2xl p-6 mb-8 border border-gray-800/50 flex justify-center">
                     <canvas id="radarChart" width="300" height="250"></canvas>
                 </div>
 
-                <div class="text-left bg-[#0d1117]/50 rounded-xl p-6 mb-2 border border-gray-800/50">
-                    <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-3 uppercase tracking-widest border-b border-gray-800 pb-2">特性分析</h4>
+                <div class="text-left bg-black/30 rounded-2xl p-6 mb-2 border border-gray-800/50">
+                    <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-4 uppercase tracking-[0.2em] border-b border-gray-800 pb-2">特性分析</h4>
                     <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
                 </div>
                 
-                <div class="text-left mt-6 p-5 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
-                    <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2 border-b border-[var(--accent-primary)] border-opacity-30 pb-2">
+                <div class="text-left mt-8 p-6 rounded-2xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)] shadow-inner">
+                    <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2 border-b border-[var(--accent-primary)] border-opacity-20 pb-2">
                         💡 詳細アドバイス
                     </h4>
                     <p id="result-advice" class="text-sm text-gray-200 leading-relaxed font-medium whitespace-pre-wrap"></p>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3">
-                <button onclick="downloadImage()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+            <div class="flex flex-col gap-4">
+                <button onclick="downloadImage()" class="w-full py-5 bg-[var(--accent-primary)] text-[#080a0f] rounded-xl font-bold text-sm tracking-[0.2em] uppercase hover:opacity-90 transition-all flex justify-center items-center gap-2 shadow-xl shadow-blue-500/20">
                     結果を画像で保存
                 </button>
-                <button onclick="shareLink()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg font-bold text-sm tracking-widest uppercase hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-colors flex justify-center items-center gap-2">
-                    リンクをコピー
+                <button onclick="shareLink()" class="w-full py-5 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-xl font-bold text-sm tracking-[0.2em] uppercase hover:bg-[var(--accent-primary)] hover:text-[#080a0f] transition-all flex justify-center items-center gap-2">
+                    結果を共有する
                 </button>
-                <button onclick="resetAndRestart()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-colors">
+                <button onclick="resetAndRestart()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-xl font-bold text-xs tracking-[0.2em] uppercase hover:text-white transition-all">
                     最初からやり直す
                 </button>
             </div>
@@ -236,25 +245,26 @@
 
     </div>
 
-    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-sm font-bold tracking-[0.1em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50">
-        通知
-    </div>
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#080a0f] px-8 py-3 rounded-full text-sm font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
 
     <script>
-        /* 100%最適化済み質問プール */
+        /* 超高精度質問プール 
+           cat: 0=内面(Fi/I), 1=現実感(Se/S), 2=価値判断(Empathy/F), 3=柔軟性(Flow/P), 4=自己安定(Assertive/A)
+           提供された解答ログを Score: 10 に設定
+        */
         const questionsPool = [
-            { q: "【感覚】夕暮れ時、空を見て何を思うことが多い？", cat: 2, options: [ { text: "何も思わず、ただ眺めている", score: 10 }, { text: "言葉にできない切なさと世界の広さを感じる", score: 9 }, { text: "「今日も一日終わったな」という安堵", score: 8 }, { text: "明日の天気を考える", score: 4 }, { text: "夜にやるべきことを整理し始める", score: 1 } ] },
-            { q: "【五感】今の自分を象徴する「手触り」はどれ？", cat: 2, options: [ { text: "柔らかく、どこか曖昧な雲のような感触", score: 10 }, { text: "温かく、安定した木のぬくもり", score: 9 }, { text: "滑らかで、洗練されたシルクのような感触", score: 7 }, { text: "固く、しっかりとした石のような感触", score: 3 }, { text: "鋭く、冷たい金属のような感触", score: 1 } ] },
-            { q: "【対人】他人の間違いを目にしたとき、どうする？", cat: 4, options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは言わず、波風を立てず見守る", score: 10 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 8 }, { text: "論理的に間違いを指摘し、説得する", score: 3 }, { text: "絶対に止めに入り、自分のやり方を教える", score: 0 } ] },
-            { q: "【感覚】一番落ち着く音の環境はどれ？", cat: 2, options: [ { text: "雨音や川のせせらぎなど、自然な音", score: 10 }, { text: "静かな部屋で、自分の呼吸だけ聞こえる状態", score: 8 }, { text: "都会の雑踏のような、適度な生活音", score: 6 }, { text: "お気に入りの音楽が流れている状態", score: 4 }, { text: "活気のある賑やかな話し声", score: 1 } ] },
-            { q: "【対人】友人から相談を受けた時、どうありたい？", cat: 4, options: [ { text: "ただ静かに、相手の心の波を感じながら聞く", score: 10 }, { text: "なんとなく寄り添う", score: 9 }, { text: "話しやすいように相槌を打つ", score: 8 }, { text: "少しでも楽になるようなアドバイスを考える", score: 3 }, { text: "論理的に解決策を提示しようとする", score: 0 } ] },
-            { q: "【価値観】失敗したとき、どう自分を取り戻す？", cat: 3, options: [ { text: "なんとなくやり過ごす", score: 10 }, { text: "「それも自分だ」と受け入れ、時間が経つのを待つ", score: 10 }, { text: "寝たりリフレッシュしたりして忘れる", score: 8 }, { text: "失敗を分析し、次への対策を立てる", score: 3 }, { text: "とにかく行動して失敗を上書きする", score: 1 } ] },
-            { q: "【性格】あなたにとって「自由」とは？", cat: 0, options: [ { text: "その時の気分で、行きたい場所へ行けること", score: 10 }, { text: "誰にも縛られず、何者でもない自分に戻れる瞬間", score: 10 }, { text: "十分な時間とお金があること", score: 6 }, { text: "自分で人生をコントロールできている実感", score: 4 }, { text: "人より多くの選択肢を持っていること", score: 1 } ] },
-            { q: "【性格】人から「意外だね」と言われるとき、どんな要素？", cat: 0, options: [ { text: "「実は頑固だね」と言われる、自分だけのこだわり", score: 10 }, { text: "「何を考えているか読めない」ミステリアスな部分", score: 10 }, { text: "「意外と普通なんだね」と言われる、親しみやすさ", score: 8 }, { text: "「真面目なんだね」と言われる、責任感", score: 3 }, { text: "「行動的だね」と言われる、フットワークの軽さ", score: 1 } ] },
-            { q: "【ライフスタイル】作業が一番捗るタイミングは？", cat: 1, options: [ { text: "気分が乗った時に一気に進める", score: 10 }, { text: "「今やりたい！」という強烈な直感がある時", score: 9 }, { text: "深夜、自分一人だけの感覚になれる時", score: 8 }, { text: "スケジュールを組み、決められた時間に取り組む時", score: 3 }, { text: "誰かと競い合ったり成果が見えやすい時", score: 1 } ] },
-            { q: "【ライフスタイル】理想的な朝の過ごし方は？", cat: 1, options: [ { text: "早起きして計画通りにすぐ行動を開始する", score: 10 }, { text: "アラームなしで、自然に目が覚めるのを待つ", score: 10 }, { text: "その日の気分で、なんとなく過ごす", score: 8 }, { text: "窓を開けて、ゆっくり飲み物を淹れる", score: 7 }, { text: "決まったルーティンを淡々とこなす", score: 3 } ] },
-            { q: "【価値観】人生で一番避けたい感情は？", cat: 3, options: [ { text: "大切な人を傷つけたり、迷惑をかける罪悪感", score: 10 }, { text: "自分が嘘を言っていると感じる不誠実さ", score: 10 }, { text: "誰からも理解されない孤独感", score: 7 }, { text: "将来が見えない不安や退屈", score: 4 }, { text: "人より劣っていると感じる劣等感", score: 1 } ] },
-            { q: "【五感】服を選ぶとき、一番大切にしたいのは？", cat: 2, options: [ { text: "肌に触れたときの心地よさや質感", score: 10 }, { text: "鏡で見たときの自分らしさ", score: 8 }, { text: "動きやすさや機能性", score: 6 }, { text: "周りからどう見られるか", score: 4 }, { text: "流行を取り入れたトレンド感", score: 1 } ] }
+            { q: "【感覚】夕暮れ時、空を見て何を思うことが多い？", cat: 1, mbti: 'S', options: [ { text: "何も思わず、ただ眺めている", score: 10 }, { text: "今日という一日の終わりを実感し、安堵する", score: 8 }, { text: "明日の予定や天気を冷静に考える", score: 5 }, { text: "世界の広さや、言葉にできない寂寥感に浸る", score: 3 }, { text: "特に見ることもしない。やるべきことを優先する", score: 0 } ] },
+            { q: "【五感】今の自分を象徴する「手触り」はどれに近い？", cat: 1, mbti: 'S', options: [ { text: "柔らかく、どこか曖昧な雲のような感触", score: 10 }, { text: "温かく、安定した木のぬくもり", score: 8 }, { text: "滑らかで、洗練されたシルクの感触", score: 6 }, { text: "固く、揺るぎない石のような感触", score: 4 }, { text: "鋭く、冷たい金属の感触", score: 1 } ] },
+            { q: "【対人】他人の間違いを目にしたとき、あなたはどう振る舞う？", cat: 2, mbti: 'F', options: [ { text: "相手との関係性によって対応を柔軟に変える", score: 10 }, { text: "強くは言わず、波風を立てずにそっと見守る", score: 9 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 7 }, { text: "何が正しいかを論理的に説明し、納得させる", score: 2 }, { text: "自分のやり方を貫くため、厳しく正す", score: 0 } ] },
+            { q: "【環境】一番落ち着く音の環境は、次のうちどれ？", cat: 1, mbti: 'S', options: [ { text: "雨音や川のせせらぎなど、自然が発する音", score: 10 }, { text: "静かな部屋で、自分の呼吸だけが聞こえる状態", score: 8 }, { text: "適度な生活音が混じる都会の雑踏", score: 6 }, { text: "お気に入りの音楽が常に流れている状態", score: 4 }, { text: "活気があり、賑やかな話し声が絶えない場所", score: 1 } ] },
+            { q: "【対人】友人から深い相談を受けたとき、どうありたい？", cat: 2, mbti: 'F', options: [ { text: "ただ静かに、相手の心の波を感じながら聞き続ける", score: 10 }, { text: "相手の気持ちに寄り添い、一緒に解決策を探る", score: 8 }, { text: "話しやすいように明るい相槌を打つ", score: 6 }, { text: "問題の原因を特定し、的確な助言を与える", score: 3 }, { text: "感情を挟まず、客観的な視点から正解を提示する", score: 0 } ] },
+            { q: "【価値観】何かに失敗したとき、どうやって自分を保つ？", cat: 4, mbti: 'A', options: [ { text: "特に抵抗せず、なんとなくやり過ごす", score: 10 }, { text: "「それも自分だ」と丸ごと受け入れ、時間が経つのを待つ", score: 9 }, { text: "美味しいものを食べるなど、別の刺激でリセットする", score: 7 }, { text: "なぜ失敗したかを徹底的に分析し、次への糧にする", score: 3 }, { text: "立ち止まることなく、行動を重ねて失敗を上書きする", score: 1 } ] },
+            { q: "【性格】あなたにとって「自由」とはどんな状態？", cat: 3, mbti: 'P', options: [ { text: "その時の気分で、行きたい場所へすぐに行けること", score: 10 }, { text: "誰にも縛られず、何者でもない自分に戻れる瞬間", score: 9 }, { text: "十分な時間と資産があり、選択肢が多いこと", score: 6 }, { text: "自分の人生を完全にコントロールできている実感", score: 4 }, { text: "社会的なルールの中で、最大限に力を発揮できること", score: 1 } ] },
+            { q: "【内面】人から「意外だね」と言われる要素として多いのは？", cat: 0, mbti: 'I', options: [ { text: "「実は頑固だね」と言われる、自分だけの強いこだわり", score: 10 }, { text: "「何を考えているか読めない」ミステリアスな部分", score: 9 }, { text: "「意外と普通なんだね」と言われる、親しみやすさ", score: 7 }, { text: "「意外と真面目だね」と言われる、強い責任感", score: 4 }, { text: "「意外と活動的だね」と言われる、バイタリティ", score: 1 } ] },
+            { q: "【習慣】作業や趣味が一番捗るタイミングはいつ？", cat: 3, mbti: 'P', options: [ { text: "気分が乗った時に、一気に、集中的に進める", score: 10 }, { text: "「今やりたい！」という強烈な直感が降りてきた時", score: 9 }, { text: "深夜、世界が静かになり自分一人だけの感覚になれる時", score: 8 }, { text: "あらかじめスケジュールを決め、その時間に取り組む時", score: 3 }, { text: "目標を達成した後の報酬が明確に見えている時", score: 1 } ] },
+            { q: "【生活】理想的な朝の過ごし方として最も近いのは？", cat: 3, mbti: 'P', options: [ { text: "早起きして計画通りにすぐ行動を開始する", score: 10 }, { text: "アラームなしで、自然に目が覚めるのを待つ", score: 8 }, { text: "その日の気分で、起きてから何をするか決める", score: 6 }, { text: "窓を開けて、ゆっくりとお茶を淹れて内省する", score: 5 }, { text: "目覚めてすぐに最新の情報をチェックし始める", score: 1 } ] },
+            { q: "【価値観】人生において、最も避けたいと感じる感情は？", cat: 2, mbti: 'F', options: [ { text: "大切な人を傷つけたり、迷惑をかけてしまう罪悪感", score: 10 }, { text: "自分が自分に嘘を言っていると感じる不誠実さ", score: 9 }, { text: "誰からも理解されない、耐えがたい孤独感", score: 6 }, { text: "何が正しいか分からず、立ち止まってしまう不安", score: 3 }, { text: "他者より劣っていると感じる、強い劣等感", score: 1 } ] },
+            { q: "【五感】服を選ぶとき、あなたが最も優先するポイントは？", cat: 1, mbti: 'S', options: [ { text: "肌に触れたときの心地よさや、素材の質感", score: 10 }, { text: "鏡で見たときの、自分らしい雰囲気やシルエット", score: 8 }, { text: "動きやすさや、ポケットの位置などの機能性", score: 6 }, { text: "清潔感があり、周りにどう見られるかという印象", score: 4 }, { text: "トレンドを取り入れた、洗練されたデザイン", score: 1 } ] }
         ];
 
         let selectedQuestions = [];
@@ -265,7 +275,7 @@
         let history = []; 
         let chartInstance = null;
 
-        // --- クッキー操作関数 ---
+        // --- Cookie Utilities ---
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -273,7 +283,7 @@
                 date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                 expires = "; expires=" + date.toUTCString();
             }
-            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
         }
 
         function getCookie(name) {
@@ -282,7 +292,7 @@
             for(let i=0;i < ca.length;i++) {
                 let c = ca[i];
                 while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
             }
             return null;
         }
@@ -293,27 +303,23 @@
 
         function saveProgress() {
             const data = {
-                index: currentQuestionIndex,
-                total: totalScore,
-                catScores: categoryScores,
-                catCounts: categoryCounts,
-                history: history,
-                selectedIds: selectedQuestions.map(q => questionsPool.indexOf(q))
+                idx: currentQuestionIndex,
+                tot: totalScore,
+                cs: categoryScores,
+                cc: categoryCounts,
+                hist: history,
+                qids: selectedQuestions.map(q => questionsPool.indexOf(q))
             };
-            setCookie('ma_diag_progress', btoa(JSON.stringify(data)), 7);
+            setCookie('ma_p_data', JSON.stringify(data), 7);
         }
 
         function resumeDiagnosis() {
-            const saved = getCookie('ma_diag_progress');
+            const saved = getCookie('ma_p_data');
             if (saved) {
-                const d = JSON.parse(atob(saved));
-                currentQuestionIndex = d.index;
-                totalScore = d.total;
-                categoryScores = d.catScores;
-                categoryCounts = d.catCounts;
-                history = d.history;
-                selectedQuestions = d.selectedIds.map(idx => questionsPool[idx]);
-                
+                const d = JSON.parse(saved);
+                currentQuestionIndex = d.idx; totalScore = d.tot;
+                categoryScores = d.cs; categoryCounts = d.cc;
+                history = d.hist; selectedQuestions = d.qids.map(id => questionsPool[id]);
                 document.getElementById('start-screen').classList.add('hidden');
                 document.getElementById('quiz-screen').classList.remove('hidden');
                 renderQuestion();
@@ -336,12 +342,10 @@
         }
 
         function startDiagnosis(isReset = false) {
-            if (isReset) eraseCookie('ma_diag_progress');
-            
+            if (isReset) eraseCookie('ma_p_data');
             selectedQuestions = shuffleArray([...questionsPool]);
             currentQuestionIndex = 0; totalScore = 0; history = [];
             categoryScores = [0, 0, 0, 0, 0]; categoryCounts = [0, 0, 0, 0, 0];
-            
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
             renderQuestion();
@@ -395,38 +399,67 @@
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            eraseCookie('ma_diag_progress'); // 完了したら消す
+            eraseCookie('ma_p_data');
             processResultDisplay();
         }
 
         function processResultDisplay() {
+            // スコア算出（120点満点）
             const finalScore = Math.min(100, Math.round((totalScore / 120) * 100));
             document.getElementById('result-score').innerText = `${finalScore}%`;
 
-            const scoreElement = document.getElementById('result-score');
-            const certContainer = document.getElementById('cert-container');
             if (finalScore >= 90) {
-                certContainer.classList.remove('hidden');
-                scoreElement.classList.remove('text-score-glow');
-                scoreElement.classList.add('text-cert-glow');
+                document.getElementById('cert-badge').classList.remove('hidden');
             } else {
-                certContainer.classList.add('hidden');
-                scoreElement.classList.remove('text-cert-glow');
-                scoreElement.classList.add('text-score-glow');
+                document.getElementById('cert-badge').classList.add('hidden');
             }
 
+            // MBTIロジックの補正 (ISFP-A 100%基準)
             let avgScores = categoryScores.map((s, i) => categoryCounts[i] > 0 ? s / categoryCounts[i] : 5);
-            document.getElementById('result-mbti').innerText = "ISFP-A (冒険家)";
+            
+            // スコアが100%に近い場合、確実にISFP-Aを表示
+            let mbti = "ISFP-A (冒険家)";
+            if (finalScore < 95) {
+                const i_e = avgScores[0] >= 5 ? "I" : "E";
+                const s_n = avgScores[1] >= 5 ? "S" : "N";
+                const f_t = avgScores[2] >= 5 ? "F" : "T";
+                const p_j = avgScores[3] >= 5 ? "P" : "J";
+                const a_t = avgScores[4] >= 5 ? "-A" : "-T";
+                mbti = `${i_e}${s_n}${f_t}${p_j}${a_t}`;
+            }
+            document.getElementById('result-mbti').innerText = mbti;
 
             let title = finalScore >= 90 ? "【 マ・タイプ：自然体と調和の体現者 】" : finalScore >= 60 ? "【 マ・タイプ：中庸のバランス型 】" : "【 マ・タイプ：模索中の観測者 】";
             document.getElementById('result-type').innerText = title;
-            document.getElementById('result-desc').innerText = "あなたは飾らない『自然体』と、周囲への静かな『調和』を完璧に体現しています。自分の感覚を信じ、無理に言葉で飾らないその在り方こそが、真の『マ』の正体です。";
+            document.getElementById('result-desc').innerText = finalScore >= 90 ? 
+                "あなたは飾らない『自然体』と、周囲への静かな『調和』を完璧に体現しています。自分の感覚を信じ、無理に言葉で飾らないその在り方こそが、真の『マ』の正体です。ISFP-A特有の柔軟さと、内なるこだわりが調和した素晴らしい状態です。" : 
+                "あなたはバランス感覚に優れ、適度な自制心と感受性を持っています。日常を安定して過ごせる資質があります。";
 
-            // 詳細アドバイス
-            let advice = finalScore >= 90 ? 
-                "【究極のマに認定！】\nあなたはすでに揺るぎない『マ』の領域に達しています。無理に言葉で取り繕わず、その自然体な優しさをこれからも一番に大切にしてください。" : 
-                "【マへのステップ】\nもう少し直感を信じて、「なんとなく」という曖昧さを許容してみましょう。";
-            document.getElementById('result-advice').innerText = advice;
+            // 詳細アドバイスの生成
+            const adviceArr = [
+                "内なるこだわり（頑固さ）は、あなたの芯の強さです。今のまま大切に。", // 性格
+                "五感の心地よさを優先する選択が、あなたの幸福度を支えています。", // 生活/五感
+                "周囲への柔軟な対応は、あなたの優しさの表れです。自分も同じくらい愛してください。", // 対人
+                "計画通りにいかない時でも「なんとなく」で流せる強さを忘れないで。", // 柔軟性
+                "失敗をただの過程として捉えるAssertiveな姿勢が、マの真髄です。" // 自己受容
+            ];
+            let maxIdx = avgScores.indexOf(Math.max(...avgScores));
+            document.getElementById('result-advice').innerText = `あなたの最も『マ』らしい強みは、${['性格の深さ', '生活の質', '価値観の調和', '変化への柔軟性', '安定した自己受容'][maxIdx]}に現れています。${adviceArr[maxIdx]} そのままのあなたでい続けてください。`;
+
+            // パラメーターバーの生成
+            const paramContainer = document.getElementById('param-container');
+            paramContainer.innerHTML = '';
+            const labels = ['内面性 (Fi)', '現実感覚 (Se)', '調和度 (Feeling)', '柔軟性 (Perceiving)', '自己肯定 (Assertive)'];
+            avgScores.forEach((s, i) => {
+                const div = document.createElement('div');
+                div.className = 'param-row';
+                div.innerHTML = `
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${labels[i]}</span>
+                    <div class="param-bar-bg"><div class="param-bar-fill" style="width: ${s * 10}%"></div></div>
+                    <span class="text-[10px] font-mono text-[var(--accent-primary)]">${Math.round(s * 10)}%</span>
+                `;
+                paramContainer.appendChild(div);
+            });
 
             drawChart(avgScores);
         }
@@ -437,7 +470,7 @@
             chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: [' 性格 ', ' 生活 ', ' 五感 ', ' 価値観 ', ' 対人 '],
+                    labels: ['性格', '生活', '五感', '価値観', '対人'],
                     datasets: [{
                         data: data,
                         backgroundColor: 'rgba(88, 166, 255, 0.2)',
@@ -453,31 +486,30 @@
                         r: {
                             min: 0, max: 10,
                             ticks: { display: false, stepSize: 2 },
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            pointLabels: { color: '#c9d1d9', font: { size: 11 } }
+                            grid: { color: 'rgba(255,255,255,0.08)' },
+                            angleLines: { color: 'rgba(255,255,255,0.08)' },
+                            pointLabels: { color: '#8b949e', font: { size: 11, family: 'Noto Sans JP' } }
                         }
                     },
                     plugins: { legend: { display: false } },
-                    animation: { duration: 1000 }
+                    animation: { duration: 1500, easing: 'easeOutQuart' }
                 }
             });
         }
 
         function downloadImage() {
             const btn = event.currentTarget;
-            btn.innerText = "生成中...";
+            const originalHtml = btn.innerHTML;
+            btn.innerText = "画像を生成中...";
             html2canvas(document.getElementById('capture-area'), { 
-                backgroundColor: "#0d1117", 
-                scale: 2,
-                logging: false,
-                useCORS: true
+                backgroundColor: "#080a0f", scale: 2, logging: false, useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a'); 
                 link.download = 'マ診断結果.png';
                 link.href = canvas.toDataURL('image/png'); 
                 link.click();
-                btn.innerHTML = "保存完了";
-                setTimeout(() => btn.innerHTML = "結果を画像で保存", 2000);
+                btn.innerText = "保存完了";
+                setTimeout(() => btn.innerHTML = originalHtml, 2000);
             });
         }
 
@@ -485,21 +517,20 @@
             const url = window.location.href;
             const dummy = document.createElement('textarea');
             document.body.appendChild(dummy);
-            dummy.value = `私の「マ診断」結果はこちら！\n${url}\n\n#マ診断 #自己分析`;
+            dummy.value = `【マ診断】100%正確な自己分析。私のマ度は【${document.getElementById('result-score').innerText}】でした！\n#マ診断 #ISFP #自己分析`;
             dummy.select();
             document.execCommand('copy');
             document.body.removeChild(dummy);
-            showToast("リンクをコピーしました");
+            showToast("結果のテキストをコピーしました");
         }
 
         function resetAndRestart() { 
-            eraseCookie('ma_diag_progress');
+            eraseCookie('ma_p_data');
             location.reload(); 
         }
 
-        // 初期ロード時にクッキーチェック
         window.onload = () => {
-            if (getCookie('ma_diag_progress')) {
+            if (getCookie('ma_p_data')) {
                 document.getElementById('resume-container').classList.remove('hidden');
             }
         };
