@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断 - 真の「マ度」測定システム</title>
+    <title>マ診断 - マ度測定システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -108,20 +108,6 @@
             transform: scale(1.5);
         }
 
-        .log-box {
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            font-size: 0.75rem;
-            font-family: monospace;
-            color: #555;
-            max-height: 250px;
-            overflow-y: auto;
-            text-align: left;
-            white-space: pre-wrap;
-            border: 1px solid #fff;
-        }
-
         .capture-flat-mode {
             background: #ffffff !important;
             backdrop-filter: none !important;
@@ -163,8 +149,8 @@
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
-                マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかが正確にわかるシステムです。<br><br>
-                全40問のユニークな質問プールから、完全にランダムに抽出された10問に直感でお答えください。
+                マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかがわかるものです。<br><br>
+                全40問のユニークな質問から、完全にランダムに抽出された10問に直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -207,7 +193,7 @@
             <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-6">
                 <div id="calc-progress" class="h-full bg-[var(--accent-green)] transition-all ease-out" style="width: 0%; transition-duration: 2500ms;"></div>
             </div>
-            <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase font-bold">アルゴリズム照合中 / マ度を精密算出しています</p>
+            <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase font-bold">マ度を精密算出しています</p>
         </div>
 
         <!-- 結果画面 -->
@@ -234,7 +220,7 @@
                     <canvas id="radarChart" width="300" height="300"></canvas>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-14">
+                <div class="text-left px-8 space-y-12 pb-10">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
@@ -267,7 +253,7 @@
 
     <script>
         // --- 完全にユニークな全40問の質問プール ---
-        // マ（本人）の回答を確実に10点（100%一致）とする。
+        // マ本人の回答を確実に10点とする。
         const questionsPool = [
             { id: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
             { id: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
@@ -277,7 +263,7 @@
             { id: 6, q: "懐かしい匂いを嗅いだ瞬間、あなたの心はどう動きますか？", cat: 1, m: 'S', options: [{text:"「ああ、あの時の匂いだ」と客観的に認識する", score:10}, {text:"当時の感情が鮮明に蘇る", score:6}, {text:"情景が頭に浮かぶ", score:7}, {text:"匂いについて分析する", score:3}, {text:"すぐに別の思考に移る", score:5}]},
             { id: 7, q: "知らない名前の野菜を貰ったときの反応は？", cat: 1, m: 'P', options: [{text:"とりあえず適当に調理して食べてみる", score:10}, {text:"レシピを検索して忠実に作る", score:4}, {text:"誰かにあげるか捨てる", score:2}, {text:"美味しそうな調理法を想像する", score:7}, {text:"しばらく放置してしまう", score:5}]},
             { id: 8, q: "道端で誰かが落とした手袋を見つけたとき", cat: 4, m: 'T', options: [{text:"自分には関係のないことだと無視する", score:10}, {text:"持ち主の物語を想像し切なくなる", score:5}, {text:"目立つ場所に置き直す", score:7}, {text:"警察に届けるか迷う", score:4}, {text:"スマホで撮影する", score:3}]},
-            { id: 9, q: "カフェで隣の席から話し声が聞こえてくるとき", cat: 2, m: 'F', options: [{text:"自分も会話に混ざりたくなる", score:10}, {text:"話の内容が気になって、つい耳を立ててしまう", score:7}, {text:"うるさいと感じてイヤホンをする", score:4}, {text:"BGMとして聞き流す", score:6}, {text:"人間観察の材料にする", score:5}]},
+            { id: 9, q: "カフェで隣の席から話し声が聞こえてくるとき", cat: 2, m: 'F', options: [{text:"自分も会話に混ざりたくなる", score:10}, {text:"話の内容が気になって、つい耳を立ててしまう", score:8}, {text:"うるさいと感じてイヤホンをする", score:4}, {text:"BGMとして聞き流す", score:6}, {text:"人間観察の材料にする", score:5}]},
             { id: 10, q: "知らない名前のスパイスが効いた料理を食べた時", cat: 1, m: 'Se', options: [{text:"自分の口に合うかどうかだけで判断する", score:10}, {text:"どんなスパイスが使われているか分析する", score:3}, {text:"未知の刺激をダイレクトに受ける", score:7}, {text:"美味しいかどうか結論をすぐ出す", score:6}, {text:"誰かに共有したくなる", score:5}]},
             { id: 11, q: "誰かに道を聞かれたときのあなたの態度は？", cat: 4, m: 'F', options: [{text:"大まかな方向だけ教えて、あとは任せる", score:10}, {text:"スマホで完璧に案内する", score:4}, {text:"丁寧に教えようとする", score:7}, {text:"忙しいので断る", score:2}, {text:"明るく安心させる", score:5}]},
             { id: 12, q: "深夜、自分一人だけが起きている感覚のとき", cat: 1, m: 'J', options: [{text:"早く寝なければという義務感が先に立つ", score:10}, {text:"自由を感じる", score:6}, {text:"少し不安になる", score:4}, {text:"何かを創作したくなる", score:7}, {text:"明日を整理する", score:5}]},
@@ -340,7 +326,7 @@
         function startDiagnosis(reset = false) {
             if (reset) eraseCookie('ma_true_algo_perfect');
             
-            // 完全シャッフルして10問を抽出
+            // 完全シャッフルして10問を抽出 (1回の診断で質問が被ることはない)
             let shuffledPool = [...questionsPool].sort(() => Math.random() - 0.5);
             selectedQuestions = shuffledPool.slice(0, 10);
 
@@ -398,7 +384,10 @@
 
         function goBack() {
             if (currentIdx <= 0) return;
-            // 状態が複雑になるため、必要ならリロードなどで対応
+            const saved = getCookie('ma_true_algo_perfect');
+            if (saved) {
+                // 戻る時は状態が複雑になるため、再開ボタンからのリロード等を推奨
+            }
         }
 
         function saveToCookie() {
@@ -431,7 +420,7 @@
         }
 
         function processDisplay() {
-            // 純粋な計算式（10点 × 10問 = 100点満点）による正確な算出。
+            // 純粋な計算式（10点 × 10問 = 100点満点）。本人が自身の回答を選べば確実に100%になる。
             const final = Math.min(100, (totalScore / 100) * 100);
             const displayScore = final === 100 ? "100.0" : final.toFixed(1);
             
@@ -453,12 +442,17 @@
                 "マ度 100.0% —— システムの計算により、あなたが他の誰でもない『まさひろ本人』であることが完全に証明されました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
-            renderCharts();
+            // 一番スコアが低いカテゴリを補完して、もし100%だった場合は全項目MAXの正五角形にする
+            let avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : (final / 10));
+            if (final === 100) {
+                avg = [10, 10, 10, 10, 10]; // マ本人ならグラフも完全体に
+            }
+
+            renderCharts(avg);
         }
 
-        function renderCharts() {
+        function renderCharts(avg) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            const avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
             const config = {
                 type: 'radar',
                 data: {
