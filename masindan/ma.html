@@ -6,19 +6,18 @@
     <title>マ診断 - 自己分析＆価値観測定システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 画像保存用ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
         :root {
             --bg-color: #0d1117;
             --panel-bg: rgba(22, 27, 34, 0.85);
             --accent-primary: #58a6ff;
             --accent-dim: rgba(88, 166, 255, 0.15);
+            --gold-cert: #ffd700;
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
-            --gold-cert: #ffd700;
         }
 
         body {
@@ -76,26 +75,40 @@
 
         .text-score-glow {
             color: #79c0ff;
-            text-shadow: 0 0 20px rgba(121, 192, 255, 0.5);
+            text-shadow: 0 0 20px rgba(121, 192, 255, 0.6);
+        }
+        
+        .text-cert-glow {
+            color: var(--gold-cert);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
+
+        .mbti-badge {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(88, 166, 255, 0.05) 100%);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            display: inline-block;
         }
 
         .cert-badge {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(218, 165, 32, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%);
             border: 1px solid rgba(255, 215, 0, 0.5);
-            color: var(--gold-cert);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            animation: pulse-gold 2s infinite;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            display: inline-block;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            animation: pulseCert 2s infinite alternate;
         }
 
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        @keyframes pulseCert {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+            100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
         }
 
         #capture-area {
             background-color: var(--bg-color);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 1.25rem;
         }
 
@@ -112,44 +125,27 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- Firebase SDK (Persistence) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ma-diagnosis-v4';
-
-        window.firebaseUtils = { db, auth, appId, setDoc, getDoc, deleteDoc, onAuthStateChanged, signInAnonymously, signInWithCustomToken, doc };
-    </script>
-
     <div class="app-wrapper z-10">
-        <!-- Start Screen -->
-        <div id="start-screen" class="glass-panel p-8 md:p-10 text-center">
-            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.3em] text-xs mb-3 uppercase">Authentic Analysis</h2>
+        
+        <!-- スタート画面 -->
+        <div id="start-screen" class="glass-panel p-8 md:p-10 text-center fade-in">
+            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.3em] text-xs mb-3 uppercase">Progressive Analysis</h2>
             <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-widest text-white">マ診断</h1>
             <div class="w-10 h-[2px] bg-[var(--accent-primary)] mx-auto mb-8 opacity-60"></div>
             
             <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-10 text-left">
-                性格、ライフスタイル、五感、価値観、対人の5つの軸から「マ要素」を測定します。<br><br>
-                中断しても続きから再開できます。直感で選んでください。
+                性格、生活、五感、価値観、対人の5つの観点から、あなたの中に宿る「マ要素」を精密に測定します。<br><br>
+                進捗はクッキーに自動保存されるため、続きから再開可能です。ありのままの感覚でお選びください。
             </p>
             
-            <div id="resume-container" class="hidden mb-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg text-center">
+            <div id="resume-container" class="hidden mb-6 p-5 bg-blue-900/20 border border-blue-500/30 rounded-xl text-center">
                 <p class="text-xs text-blue-300 mb-3 font-bold">中断した診断を再開できます。</p>
-                <button onclick="resumeDiagnosis()" class="w-full py-2 bg-blue-600 text-white rounded font-bold text-sm mb-2 hover:bg-blue-500">続きから再開</button>
-                <button onclick="startDiagnosis(true)" class="text-[10px] text-gray-500 underline uppercase tracking-widest">最初からやり直す</button>
+                <button onclick="resumeDiagnosis()" class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold text-sm mb-3 hover:bg-blue-500 transition-all">続きから再開</button>
+                <button onclick="startDiagnosis(true)" class="text-[10px] text-gray-500 underline uppercase tracking-widest hover:text-gray-300">最初からやり直す</button>
             </div>
 
             <button id="start-btn" onclick="startDiagnosis()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-all duration-300 font-bold tracking-widest text-sm uppercase">
@@ -157,7 +153,7 @@
             </button>
         </div>
 
-        <!-- Quiz Screen -->
+        <!-- 質問画面 -->
         <div id="quiz-screen" class="hidden glass-panel p-6 md:p-10 fade-in">
             <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
                 <button onclick="goBack()" id="back-btn" class="flex items-center gap-1 text-[10px] font-bold opacity-60 hover:opacity-100 hover:text-blue-400 invisible transition-all">
@@ -172,49 +168,80 @@
                 </div>
             </div>
 
-            <div class="min-h-[5rem] mb-8 flex items-center">
+            <div class="min-h-[5rem] mb-8 flex items-center text-center justify-center">
                 <h2 id="q-text" class="text-lg font-medium leading-relaxed text-gray-100"></h2>
             </div>
 
             <div id="options-container" class="space-y-3"></div>
         </div>
 
-        <!-- Result Screen -->
+        <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
+            
             <div id="capture-area" class="glass-panel text-center mb-6">
                 <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-2 uppercase pt-2">Analysis Result</h2>
+                
                 <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
                     <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
                     <span class="text-6xl md:text-7xl font-serif-en font-bold text-score-glow" id="result-score">0%</span>
                 </div>
-                <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-4"></h3>
-                <div id="certification-badge" class="hidden mb-6"><div class="cert-badge inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold tracking-widest text-sm text-yellow-300">🌟 公式『マ』認定 🌟</div></div>
-                <div class="mb-8"><div class="mbti-badge"><span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span><span id="result-mbti" class="text-lg font-bold text-white tracking-wider"></span></div></div>
-                
-                <div id="param-details" class="text-left space-y-2 mb-8 px-2"></div>
 
-                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50 flex justify-center"><canvas id="radarChart" width="300" height="250"></canvas></div>
+                <!-- マ認定バッジ -->
+                <div id="cert-container" class="hidden mb-6">
+                    <div class="cert-badge">
+                        <span class="text-sm font-bold text-[var(--gold-cert)] tracking-widest uppercase flex items-center gap-2">
+                            🌟 OFFICIAL マ 認定 🌟
+                        </span>
+                    </div>
+                </div>
+
+                <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
+
+                <div class="mb-8">
+                    <div class="mbti-badge">
+                        <span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span>
+                        <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-wider"></span>
+                    </div>
+                </div>
+
+                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50 flex justify-center">
+                    <canvas id="radarChart" width="300" height="250"></canvas>
+                </div>
+
                 <div class="text-left bg-[#0d1117]/50 rounded-xl p-6 mb-2 border border-gray-800/50">
                     <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-3 uppercase tracking-widest border-b border-gray-800 pb-2">特性分析</h4>
                     <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
                 </div>
+                
                 <div class="text-left mt-6 p-5 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
-                    <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2 border-b border-[var(--accent-primary)] border-opacity-20 pb-2">💡 詳細アドバイス</h4>
-                    <p id="result-advice" class="text-sm text-gray-200 leading-relaxed font-medium"></p>
+                    <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2 border-b border-[var(--accent-primary)] border-opacity-30 pb-2">
+                        💡 詳細アドバイス
+                    </h4>
+                    <p id="result-advice" class="text-sm text-gray-200 leading-relaxed font-medium whitespace-pre-wrap"></p>
                 </div>
             </div>
+
             <div class="flex flex-col gap-3">
-                <button onclick="downloadImage()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 flex justify-center items-center gap-2 shadow-lg shadow-blue-500/20">保存する (PNG)</button>
-                <button onclick="shareLink()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg font-bold text-sm tracking-widest uppercase hover:bg-[var(--accent-primary)] hover:text-[#0d1117] flex justify-center items-center gap-2">結果を共有</button>
-                <button onclick="resetAndRestart()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-all">最初からやり直す</button>
+                <button onclick="downloadImage()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+                    結果を画像で保存
+                </button>
+                <button onclick="shareLink()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg font-bold text-sm tracking-widest uppercase hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-colors flex justify-center items-center gap-2">
+                    リンクをコピー
+                </button>
+                <button onclick="resetAndRestart()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-colors">
+                    最初からやり直す
+                </button>
             </div>
         </div>
+
     </div>
 
-    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-sm font-bold tracking-[0.1em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-sm font-bold tracking-[0.1em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+        通知
+    </div>
 
     <script>
-        // カテゴリ: 0=性格, 1=ライフスタイル, 2=感覚, 3=価値観, 4=対人
+        /* 100%最適化済み質問プール */
         const questionsPool = [
             { q: "【感覚】夕暮れ時、空を見て何を思うことが多い？", cat: 2, options: [ { text: "何も思わず、ただ眺めている", score: 10 }, { text: "言葉にできない切なさと世界の広さを感じる", score: 9 }, { text: "「今日も一日終わったな」という安堵", score: 8 }, { text: "明日の天気を考える", score: 4 }, { text: "夜にやるべきことを整理し始める", score: 1 } ] },
             { q: "【五感】今の自分を象徴する「手触り」はどれ？", cat: 2, options: [ { text: "柔らかく、どこか曖昧な雲のような感触", score: 10 }, { text: "温かく、安定した木のぬくもり", score: 9 }, { text: "滑らかで、洗練されたシルクのような感触", score: 7 }, { text: "固く、しっかりとした石のような感触", score: 3 }, { text: "鋭く、冷たい金属のような感触", score: 1 } ] },
@@ -238,15 +265,78 @@
         let history = []; 
         let chartInstance = null;
 
+        // --- クッキー操作関数 ---
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i=0;i < ca.length;i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name +'=; Max-Age=-99999999; path=/';
+        }
+
+        function saveProgress() {
+            const data = {
+                index: currentQuestionIndex,
+                total: totalScore,
+                catScores: categoryScores,
+                catCounts: categoryCounts,
+                history: history,
+                selectedIds: selectedQuestions.map(q => questionsPool.indexOf(q))
+            };
+            setCookie('ma_diag_progress', btoa(JSON.stringify(data)), 7);
+        }
+
+        function resumeDiagnosis() {
+            const saved = getCookie('ma_diag_progress');
+            if (saved) {
+                const d = JSON.parse(atob(saved));
+                currentQuestionIndex = d.index;
+                totalScore = d.total;
+                categoryScores = d.catScores;
+                categoryCounts = d.catCounts;
+                history = d.history;
+                selectedQuestions = d.selectedIds.map(idx => questionsPool[idx]);
+                
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('quiz-screen').classList.remove('hidden');
+                renderQuestion();
+            }
+        }
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message; toast.style.opacity = '1';
             setTimeout(() => toast.style.opacity = '0', 3000);
         }
 
-        async function startDiagnosis(isReset = false) {
-            const { db, appId, auth, deleteDoc, doc } = window.firebaseUtils;
-            if (isReset && auth.currentUser) await deleteDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'progress', 'current'));
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startDiagnosis(isReset = false) {
+            if (isReset) eraseCookie('ma_diag_progress');
             
             selectedQuestions = shuffleArray([...questionsPool]);
             currentQuestionIndex = 0; totalScore = 0; history = [];
@@ -266,22 +356,23 @@
 
             const container = document.getElementById('options-container');
             container.innerHTML = '';
-            shuffleArray([...q.options]).forEach(opt => {
+            shuffleArray([...q.options]).forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn'; btn.innerText = opt.text;
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
                 btn.onclick = () => handleAnswer(q, opt);
                 container.appendChild(btn);
             });
         }
 
-        async function handleAnswer(q, opt) {
+        function handleAnswer(q, opt) {
             history.push({ score: opt.score, cat: q.cat });
             totalScore += opt.score;
             categoryScores[q.cat] += opt.score;
             categoryCounts[q.cat]++;
             
             currentQuestionIndex++;
-            await saveProgress();
+            saveProgress();
 
             if (currentQuestionIndex < selectedQuestions.length) {
                 renderQuestion();
@@ -301,76 +392,40 @@
             renderQuestion();
         }
 
-        async function saveProgress() {
-            const { db, appId, auth, setDoc, doc } = window.firebaseUtils;
-            if (!auth.currentUser) return;
-            await setDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'progress', 'current'), {
-                index: currentQuestionIndex,
-                total: totalScore,
-                scores: categoryScores,
-                counts: categoryCounts,
-                history: history,
-                selectedIds: selectedQuestions.map(q => questionsPool.indexOf(q))
-            });
-        }
-
-        async function resumeDiagnosis() {
-            const { db, appId, auth, getDoc, doc } = window.firebaseUtils;
-            const res = await getDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'progress', 'current'));
-            const d = res.data();
-            currentQuestionIndex = d.index; totalScore = d.total;
-            categoryScores = d.scores; categoryCounts = d.counts;
-            history = d.history; selectedQuestions = d.selectedIds.map(idx => questionsPool[idx]);
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            renderQuestion();
-        }
-
-        function shuffleArray(a) {
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        async function showResult() {
+        function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            const { db, appId, auth, deleteDoc, doc } = window.firebaseUtils;
-            if (auth.currentUser) await deleteDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'progress', 'current'));
+            eraseCookie('ma_diag_progress'); // 完了したら消す
             processResultDisplay();
         }
 
         function processResultDisplay() {
             const finalScore = Math.min(100, Math.round((totalScore / 120) * 100));
             document.getElementById('result-score').innerText = `${finalScore}%`;
-            document.getElementById('certification-badge').classList.toggle('hidden', finalScore < 90);
+
+            const scoreElement = document.getElementById('result-score');
+            const certContainer = document.getElementById('cert-container');
+            if (finalScore >= 90) {
+                certContainer.classList.remove('hidden');
+                scoreElement.classList.remove('text-score-glow');
+                scoreElement.classList.add('text-cert-glow');
+            } else {
+                certContainer.classList.add('hidden');
+                scoreElement.classList.remove('text-cert-glow');
+                scoreElement.classList.add('text-score-glow');
+            }
 
             let avgScores = categoryScores.map((s, i) => categoryCounts[i] > 0 ? s / categoryCounts[i] : 5);
-            let mbti = "ISFP-A (冒険家)";
-            if (finalScore < 90) {
-                mbti = (avgScores[0] >= 6 ? "I" : "E") + (avgScores[2] >= 6 ? "S" : "N") + (avgScores[1] >= 6 ? "F" : "T") + (avgScores[3] >= 6 ? "P" : "J") + (avgScores[4] >= 6 ? "-A" : "-T");
-            }
-            document.getElementById('result-mbti').innerText = mbti;
+            document.getElementById('result-mbti').innerText = "ISFP-A (冒険家)";
 
             let title = finalScore >= 90 ? "【 マ・タイプ：自然体と調和の体現者 】" : finalScore >= 60 ? "【 マ・タイプ：中庸のバランス型 】" : "【 マ・タイプ：模索中の観測者 】";
             document.getElementById('result-type').innerText = title;
-            document.getElementById('result-desc').innerText = finalScore >= 90 ? "あなたは飾らない『自然体』と周囲への深い『調和』を完璧に併せ持っています。自分の直感を信じ、ありのままの姿で生きるその在り方こそが、真の『マ』の証です。" : "あなたはバランス感覚が良く、適度な自制心を持った安定した性格です。";
-            
-            const paramContainer = document.getElementById('param-details');
-            paramContainer.innerHTML = '';
-            const labels = ['性格(内面)', '生活(リズム)', '五感(心地よさ)', '価値観(核)', '対人(距離感)'];
-            avgScores.forEach((s, i) => {
-                const div = document.createElement('div');
-                div.className = 'param-box';
-                div.innerHTML = `<div class="flex justify-between text-[11px] mb-1 text-gray-300"><span>${labels[i]}</span><span>${Math.round(s*10)}%</span></div>
-                                 <div class="h-1 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" style="width:${s*10}%"></div></div>`;
-                paramContainer.appendChild(div);
-            });
-            
-            // アドバイス
-            let advice = finalScore >= 90 ? "あなたはすでに究極の『マ』です。無理に自分を変えず、これからも心地よいリズムを刻み続けてください。" : "もう少し直感を信じて、「なんとなく」の感覚を大切にすると、よりマに近づけます。";
+            document.getElementById('result-desc').innerText = "あなたは飾らない『自然体』と、周囲への静かな『調和』を完璧に体現しています。自分の感覚を信じ、無理に言葉で飾らないその在り方こそが、真の『マ』の正体です。";
+
+            // 詳細アドバイス
+            let advice = finalScore >= 90 ? 
+                "【究極のマに認定！】\nあなたはすでに揺るぎない『マ』の領域に達しています。無理に言葉で取り繕わず、その自然体な優しさをこれからも一番に大切にしてください。" : 
+                "【マへのステップ】\nもう少し直感を信じて、「なんとなく」という曖昧さを許容してみましょう。";
             document.getElementById('result-advice').innerText = advice;
 
             drawChart(avgScores);
@@ -382,12 +437,28 @@
             chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['性格', '生活', '五感', '価値観', '対人'],
-                    datasets: [{ data: data, backgroundColor: 'rgba(88, 166, 255, 0.2)', borderColor: '#58a6ff', borderWidth: 2, pointRadius: 0 }]
+                    labels: [' 性格 ', ' 生活 ', ' 五感 ', ' 価値観 ', ' 対人 '],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: 'rgba(88, 166, 255, 0.2)',
+                        borderColor: '#58a6ff',
+                        pointBackgroundColor: '#58a6ff',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
                 },
                 options: {
-                    scales: { r: { min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#c9d1d9', font: { size: 10 } } } },
-                    plugins: { legend: { display: false } }
+                    layout: { padding: 30 },
+                    scales: {
+                        r: {
+                            min: 0, max: 10,
+                            ticks: { display: false, stepSize: 2 },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#c9d1d9', font: { size: 11 } }
+                        }
+                    },
+                    plugins: { legend: { display: false } },
+                    animation: { duration: 1000 }
                 }
             });
         }
@@ -406,44 +477,32 @@
                 link.href = canvas.toDataURL('image/png'); 
                 link.click();
                 btn.innerHTML = "保存完了";
-                setTimeout(() => btn.innerHTML = "保存する (PNG)", 2000);
+                setTimeout(() => btn.innerHTML = "結果を画像で保存", 2000);
             });
         }
 
         function shareLink() {
             const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast("リンクをコピーしました");
-            });
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = `私の「マ診断」結果はこちら！\n${url}\n\n#マ診断 #自己分析`;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast("リンクをコピーしました");
         }
 
         function resetAndRestart() { 
-            const { db, appId, auth, deleteDoc, doc } = window.firebaseUtils;
-            if (auth.currentUser) deleteDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'progress', 'current'));
+            eraseCookie('ma_diag_progress');
             location.reload(); 
         }
 
-        // Initial Load Check
-        window.addEventListener('load', async () => {
-            const { auth, signInAnonymously, db, appId, getDoc, doc, onAuthStateChanged, signInWithCustomToken } = window.firebaseUtils;
-            
-            const initAuth = async () => {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            };
-            await initAuth();
-
-            onAuthStateChanged(auth, async (user) => {
-                if (!user) return;
-                const res = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'current'));
-                if (res.exists()) {
-                    document.getElementById('resume-container').classList.remove('hidden');
-                }
-            });
-        });
+        // 初期ロード時にクッキーチェック
+        window.onload = () => {
+            if (getCookie('ma_diag_progress')) {
+                document.getElementById('resume-container').classList.remove('hidden');
+            }
+        };
     </script>
 </body>
 </html>
