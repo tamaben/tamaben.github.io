@@ -135,8 +135,10 @@
             transform: translateY(0);
         }
 
+        /* SNSエクスポート用の1080x1080完全固定レイアウト */
         #sns-export-area {
             position: fixed;
+            top: 0;
             left: -9999px;
             width: 1080px;
             height: 1080px;
@@ -145,8 +147,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 80px;
+            box-sizing: border-box;
             background-image: radial-gradient(circle at 10% 10%, #f0f4f1 0%, transparent 50%);
+            z-index: -100;
         }
     </style>
 </head>
@@ -154,6 +157,7 @@
 
     <div class="app-wrapper">
         
+        <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
             <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Detection System</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
@@ -173,6 +177,7 @@
             </button>
         </div>
 
+        <!-- 質問画面 -->
         <div id="quiz-screen" class="hidden glass-panel p-8 md:p-12 fade-in">
             <div class="flex justify-between items-center mb-10">
                 <button onclick="goBack()" id="back-btn" class="text-[10px] tracking-widest font-bold text-gray-400 hover:text-[var(--accent-green)] transition-all flex items-center gap-1 invisible uppercase">
@@ -190,6 +195,7 @@
             <div id="options-container" class="space-y-1"></div>
         </div>
 
+        <!-- 分析ローディング画面 -->
         <div id="loading-screen" class="hidden glass-panel p-12 md:p-16 text-center fade-in">
             <div class="mb-10 relative flex justify-center items-center">
                 <svg class="animate-spin h-14 w-14 text-[var(--accent-green)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -204,6 +210,7 @@
             <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase font-bold">マ度を精密算出しています</p>
         </div>
 
+        <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             <div id="capture-area" class="glass-panel text-center mb-8 bg-white" style="padding-bottom: 40px;">
                 
@@ -260,17 +267,17 @@
         </div>
     </div>
 
-    <!-- SNS保存用 -->
+    <!-- SNS用 1080x1080 ピクセルパーフェクトレイアウト -->
     <div id="sns-export-area">
-        <div style="font-family: 'Outfit', sans-serif; font-size: 36px; color: #27422f; letter-spacing: 0.6em; margin-bottom: 60px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
-        <div style="font-family: 'Outfit', sans-serif; font-size: 250px; font-weight: 800; color: #27422f; margin-bottom: 20px; line-height: 1;" id="sns-score">0.0%</div>
-        <div style="background: #edf1ee; padding: 20px 60px; border-radius: 60px; font-size: 44px; color: #27422f; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 80px;" id="sns-mbti">ISFP-A</div>
-        <div style="background: #ffffff; padding: 60px; border-radius: 80px; border: 2px solid #eee; width: 850px; display: flex; justify-content: center;">
-            <div style="width: 100%; max-width: 650px; height: 650px; position: relative;">
+        <div style="font-family: 'Outfit', sans-serif; font-size: 32px; color: #27422f; letter-spacing: 0.5em; margin-bottom: 30px; font-weight: bold; text-transform: uppercase;">MA ANALYSIS</div>
+        <div style="font-family: 'Outfit', sans-serif; font-size: 160px; font-weight: 800; color: #27422f; margin-bottom: 10px; line-height: 1;" id="sns-score">0.0%</div>
+        <div style="background: #edf1ee; padding: 12px 40px; border-radius: 40px; font-size: 28px; color: #27422f; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 40px;" id="sns-mbti">ISFP-A</div>
+        <div style="background: #ffffff; padding: 40px; border-radius: 60px; border: 2px solid #eee; width: 750px; height: 500px; display: flex; justify-content: center; align-items: center; box-sizing: border-box;">
+            <div style="width: 100%; max-width: 420px; height: 420px; position: relative;">
                 <canvas id="snsChart"></canvas>
             </div>
         </div>
-        <div style="margin-top: 100px; color: #8ca38a; font-size: 24px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY PORTRAIT</div>
+        <div style="margin-top: 50px; color: #8ca38a; font-size: 20px; letter-spacing: 0.5em; font-family: 'Cormorant Garamond'; font-weight: 600;">IDENTITY PORTRAIT</div>
     </div>
 
     <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
@@ -346,6 +353,7 @@
         }
         function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
+        // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
             if (reset) {
                 eraseCookie('ma_true_algo_perfect');
@@ -409,7 +417,6 @@
 
         function goBack() {
             if (currentIdx <= 0) return;
-            // 履歴管理が複雑になるため簡易無効化
         }
 
         function saveToCookie() {
@@ -433,6 +440,16 @@
                     finalizeResultAndDisplay(false);
                 }, 2500);
             }
+        }
+
+        function finalizeResultAndDisplay(skipAnim) {
+            eraseCookie('ma_true_algo_perfect');
+            const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+            const newUrl = window.location.pathname + '?d=' + encoded;
+            window.history.pushState({path: newUrl}, '', newUrl);
+            
+            processDisplay(skipAnim);
         }
 
         function processDisplay(skipAnim) {
@@ -527,7 +544,9 @@
 
         function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            const getChartConfig = (labelsFontSize) => ({
+            
+            // グラフ描画アニメーションのオプションを調整して遅延描画
+            const getChartConfig = (labelsFontSize, isSns) => ({
                 type: 'radar',
                 data: {
                     labels: ['内面', '現実', '共感', '柔軟', '安定'],
@@ -540,16 +559,18 @@
                             min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' }, 
                             pointLabels: { color: '#3a5a40', font: { size: labelsFontSize, weight: 'bold', family: 'Noto Sans JP' } } 
                         } 
-                    }, plugins: { legend: { display: false } }, animation: { duration: 1500 } 
+                    }, 
+                    plugins: { legend: { display: false } }, 
+                    animation: isSns ? false : { duration: 1500 } 
                 }
             });
 
             if (window.radarChartInstance) window.radarChartInstance.destroy();
-            window.radarChartInstance = new Chart(ctx, getChartConfig(12));
+            window.radarChartInstance = new Chart(ctx, getChartConfig(12, false));
 
             const snsCtx = document.getElementById('snsChart').getContext('2d');
             if (window.snsChartInstance) window.snsChartInstance.destroy();
-            window.snsChartInstance = new Chart(snsCtx, getChartConfig(28));
+            window.snsChartInstance = new Chart(snsCtx, getChartConfig(28, true));
         }
 
         function downloadImage(type) {
@@ -558,32 +579,70 @@
             showToast("画像を生成しています...");
             
             const target = document.getElementById(targetId);
-            if(type === 'sns') target.style.left = '0';
             
-            html2canvas(target, { 
-                backgroundColor: "#ffffff", scale: 2, logging: false, useCORS: true,
+            // html2canvasで確実にキャプチャするための前処理
+            const originalCssText = target.style.cssText;
+            
+            if (type === 'sns') {
+                target.style.position = 'absolute';
+                target.style.top = '0';
+                target.style.left = '0';
+                target.style.zIndex = '-9999';
+            }
+            
+            const options = { 
+                backgroundColor: "#ffffff", 
+                logging: false, 
+                useCORS: true,
                 onclone: (clonedDoc) => {
                     const clonedEl = clonedDoc.getElementById(targetId);
-                    clonedEl.classList.add('capture-flat-mode');
-                    clonedEl.style.width = "520px"; 
-                    clonedEl.style.maxWidth = "none";
-                    clonedEl.style.backdropFilter = "none";
-                    clonedEl.style.background = "#ffffff";
-                    
-                    clonedEl.querySelectorAll('.anim-ready').forEach(el => {
-                        el.style.opacity = '1';
-                        el.style.transform = 'none';
-                    });
-                    clonedEl.querySelectorAll('.content-wrapper').forEach(b => {
-                        b.style.marginBottom = '40px';
-                        b.style.display = 'block';
-                    });
+                    if (type === 'sns') {
+                        // SNS用は正確に1080pxを指定
+                        clonedEl.style.position = 'relative';
+                        clonedEl.style.left = '0px';
+                        clonedEl.style.top = '0px';
+                        clonedEl.style.width = '1080px';
+                        clonedEl.style.height = '1080px';
+                        clonedEl.style.display = 'flex';
+                    } else {
+                        clonedEl.classList.add('capture-flat-mode');
+                        clonedEl.style.width = "520px"; 
+                        clonedEl.style.maxWidth = "none";
+                        clonedEl.style.backdropFilter = "none";
+                        clonedEl.style.background = "#ffffff";
+                        
+                        clonedEl.querySelectorAll('.anim-ready').forEach(el => {
+                            el.style.opacity = '1';
+                            el.style.transform = 'none';
+                        });
+                        clonedEl.querySelectorAll('.content-wrapper').forEach(b => {
+                            b.style.marginBottom = '40px';
+                            b.style.display = 'block';
+                        });
+                    }
                 }
-            }).then(canvas => {
+            };
+
+            if (type === 'sns') {
+                options.scale = 1;
+                options.width = 1080;
+                options.height = 1080;
+                options.windowWidth = 1080;
+                options.windowHeight = 1080;
+            } else {
+                options.scale = 2;
+            }
+
+            html2canvas(target, options).then(canvas => {
+                if (type === 'sns') target.style.cssText = originalCssText;
+                
                 const link = document.createElement('a'); 
                 link.download = fileName; link.href = canvas.toDataURL('image/png'); link.click();
-                if(type === 'sns') target.style.left = '-9999px';
                 showToast("保存完了しました");
+            }).catch(e => {
+                if (type === 'sns') target.style.cssText = originalCssText;
+                showToast("画像生成に失敗しました");
+                console.error(e);
             });
         }
 
@@ -645,7 +704,6 @@
             const d = params.get('d');
             if (d) {
                 try {
-                    // 古い形式のURLにも対応するためのデコード処理
                     let decodedStr;
                     try {
                         decodedStr = decodeURIComponent(escape(atob(d.split('&')[0])));
@@ -658,11 +716,9 @@
                     }
                     const data = JSON.parse(decodedStr);
                     
-                    // 新旧両方のデータ形式に対応
                     totalScore = data.s || data.tot || 0; 
                     catScores = data.cs || [0,0,0,0,0]; 
                     
-                    // catCountsが空や0除算になるのを防ぐ
                     if (data.cc && data.cc.length === 5) {
                         catCounts = data.cc;
                     } else {
@@ -675,7 +731,6 @@
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
                     
-                    // DOMの更新を待ってから結果処理へ
                     setTimeout(() => {
                         finalizeResultAndDisplay(true); 
                     }, 100);
@@ -693,7 +748,6 @@
         function finalizeResultAndDisplay(skipAnim) {
             processDisplay(skipAnim);
             
-            // 履歴から復元された場合はCookieを消去して初期状態に戻せるようにする
             eraseCookie('ma_true_algo_perfect');
             const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
