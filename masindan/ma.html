@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断 - マ度測定システム</title>
+    <title>マ診断 - 真実の「マ度」測定システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -150,7 +150,7 @@
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
                 マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかがわかるものです。<br><br>
-                全40問のユニークな質問から、完全にランダムに抽出された10問に直感でお答えください。
+                全40問のユニークな質問から完全にランダムに抽出された10問に、直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -220,7 +220,7 @@
                     <canvas id="radarChart" width="300" height="300"></canvas>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-10">
+                <div class="text-left px-8 space-y-12 pb-8">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
@@ -253,7 +253,6 @@
 
     <script>
         // --- 完全にユニークな全40問の質問プール ---
-        // マ本人の回答を確実に10点とする。
         const questionsPool = [
             { id: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
             { id: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
@@ -303,7 +302,6 @@
         let catScores = [0, 0, 0, 0, 0];
         let catCounts = [0, 0, 0, 0, 0];
         let mbtiScore = {I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0};
-        let radarChart = null;
 
         function setCookie(name, val, days) {
             const d = new Date();
@@ -399,12 +397,10 @@
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
 
-            // プログレスバーのアニメーション
             setTimeout(() => {
                 document.getElementById('calc-progress').style.width = '100%';
             }, 50);
 
-            // ローディング演出後に結果画面へ
             setTimeout(() => {
                 document.getElementById('loading-screen').classList.add('hidden');
                 document.getElementById('result-screen').classList.remove('hidden');
@@ -420,8 +416,15 @@
         }
 
         function processDisplay() {
-            // 純粋な計算式（10点 × 10問 = 100点満点）。本人が自身の回答を選べば確実に100%になる。
-            const final = Math.min(100, (totalScore / 100) * 100);
+            // 純粋な計算式（10点 × 10問 = 100点満点）。
+            let final = Math.min(100, Math.round((totalScore / 100) * 100));
+            
+            // 5%未満のブレ（95%以上）なら「まさひろ本人である」と確信して100%にロックする。
+            // それ以下なら（5%以上変な回答があるなら）ロックを解除して生のスコアを表示する。
+            if (final >= 95) {
+                final = 100;
+            }
+
             const displayScore = final === 100 ? "100.0" : final.toFixed(1);
             
             document.getElementById('result-score').innerText = `${displayScore}%`;
@@ -442,8 +445,7 @@
                 "マ度 100.0% —— システムの計算により、あなたが他の誰でもない『まさひろ本人』であることが完全に証明されました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
-            // 一番スコアが低いカテゴリを補完して、もし100%だった場合は全項目MAXの正五角形にする
-            let avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : (final / 10));
+            let avg = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
             if (final === 100) {
                 avg = [10, 10, 10, 10, 10]; // マ本人ならグラフも完全体に
             }
@@ -461,8 +463,8 @@
                 },
                 options: { scales: { r: { min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' }, pointLabels: { color: '#3a5a40', font: { size: 12, weight: 'bold', family: 'Noto Sans JP' } } } }, plugins: { legend: { display: false } }, animation: { duration: 1500 } }
             };
-            if (radarChart) radarChart.destroy();
-            radarChart = new Chart(ctx, config);
+            if (window.radarChart) window.radarChart.destroy();
+            window.radarChart = new Chart(ctx, config);
             const snsCtx = document.getElementById('snsChart').getContext('2d');
             new Chart(snsCtx, { ...config, options: { ...config.options, scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40', family: 'Noto Sans JP' } } } } });
         }
