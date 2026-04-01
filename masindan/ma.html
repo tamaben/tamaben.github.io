@@ -6,6 +6,8 @@
     <title>マ診断 - 自己分析＆価値観測定システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 画像保存用ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
@@ -96,6 +98,16 @@
             display: inline-block;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
+        /* 画像保存時に背景を透過させないためのスタイル */
+        #capture-area {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(88, 166, 255, 0.03) 0%, transparent 40%);
+            padding: 2rem;
+            border-radius: 1.25rem;
+        }
     </style>
 </head>
 <body>
@@ -141,40 +153,65 @@
         </div>
 
         <!-- 結果画面 -->
-        <div id="result-screen" class="hidden glass-panel p-6 md:p-10 text-center fade-in">
-            <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-2 uppercase">Analysis Result</h2>
+        <div id="result-screen" class="hidden fade-in">
             
-            <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
-                <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
-                <span class="text-6xl md:text-7xl font-serif-en font-bold text-gradient drop-shadow-md" id="result-score">0%</span>
-            </div>
+            <!-- 保存用キャプチャ領域 -->
+            <div id="capture-area" class="glass-panel text-center mb-6">
+                <h2 class="font-serif-en text-[var(--accent-primary)] tracking-[0.4em] text-xs mb-2 uppercase pt-2">Analysis Result</h2>
+                
+                <div class="flex justify-center items-baseline gap-2 mt-4 mb-2">
+                    <span class="text-sm text-[var(--text-muted)] tracking-widest uppercase">マ度:</span>
+                    <span class="text-6xl md:text-7xl font-serif-en font-bold text-gradient drop-shadow-md" id="result-score">0%</span>
+                </div>
 
-            <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
+                <h3 id="result-type" class="text-xl md:text-2xl font-bold text-white tracking-widest mb-6"></h3>
 
-            <!-- 予想MBTI -->
-            <div class="mb-8">
-                <div class="mbti-badge">
-                    <span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span>
-                    <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-wider"></span>
+                <!-- 予想MBTI -->
+                <div class="mb-8">
+                    <div class="mbti-badge">
+                        <span class="text-[10px] text-[var(--accent-primary)] tracking-widest uppercase block mb-1">Expected Personality</span>
+                        <span id="result-mbti" class="text-lg md:text-xl font-bold text-white tracking-wider"></span>
+                    </div>
+                </div>
+
+                <!-- グラフ領域 -->
+                <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50">
+                    <canvas id="radarChart" width="300" height="250"></canvas>
+                </div>
+
+                <div class="text-left bg-[#0d1117]/50 rounded-xl p-6 mb-2 border border-gray-800/50">
+                    <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-3 uppercase tracking-widest border-b border-gray-800 pb-2">特性分析</h4>
+                    <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
+                </div>
+                
+                <!-- ワンポイントアドバイス -->
+                <div class="text-left mt-6 p-4 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
+                    <h4 class="text-xs text-white font-bold mb-2 uppercase tracking-widest flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[var(--accent-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        マになるためのワンポイント
+                    </h4>
+                    <p id="result-advice" class="text-sm text-gray-200 leading-relaxed font-medium"></p>
                 </div>
             </div>
 
-            <!-- グラフ領域 -->
-            <div class="bg-[#0d1117]/50 rounded-xl p-4 mb-8 border border-gray-800/50">
-                <canvas id="radarChart" width="300" height="250"></canvas>
-            </div>
-
-            <div class="text-left bg-[#0d1117]/50 rounded-xl p-6 mb-8 border border-gray-800/50">
-                <h4 class="text-xs text-[var(--accent-primary)] font-bold mb-3 uppercase tracking-widest border-b border-gray-800 pb-2">特性分析</h4>
-                <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
-            </div>
-
+            <!-- 操作ボタン群（画像保存対象外） -->
             <div class="flex flex-col gap-3">
-                <button onclick="shareResult()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
-                    結果をコピーして共有する
+                <button onclick="downloadImage()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    結果を画像で保存する
                 </button>
-                <button onclick="location.reload()" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-colors">
-                    もう一度診断する
+                <button onclick="shareLink()" class="w-full py-4 border border-[var(--accent-primary)] text-[var(--accent-primary)] rounded-lg font-bold text-sm tracking-widest uppercase hover:bg-[var(--accent-primary)] hover:text-[#0d1117] transition-colors flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    結果のリンクをコピー
+                </button>
+                <button onclick="location.href = window.location.pathname" class="w-full py-4 border border-gray-700 text-gray-400 rounded-lg font-bold text-sm tracking-widest uppercase hover:text-white transition-colors">
+                    最初からやり直す
                 </button>
             </div>
         </div>
@@ -182,25 +219,31 @@
     </div>
 
     <!-- 通知トースト -->
-    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-xs font-bold tracking-[0.2em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50">
-        結果をコピーしました
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 bg-[var(--accent-primary)] text-[#0d1117] px-8 py-3 rounded-full text-sm font-bold tracking-[0.1em] shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+        通知
     </div>
 
     <script>
         /*
-         * リリース用完全版ロジック
-         * ユーザーの等身大の回答（大きな失敗が怖い、心地よいデザインが好き、など）を完全に10点(最高点)にマッピング
+         * ISFP-A (マ本人) のリアルな回答を10点に最適化した最終ロジック
+         * 様々な場面(SNS、仕事、買物等)を新たに追加
          * カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
          */
         const questionsPool = [
-            // 価値観・行動
-            { q: "【価値観】ルールや規則についての考え方に最も近いものは？", cat: 3, options: [ { text: "状況に合わせて柔軟に変えたり、自分の感覚で判断する方が良い", score: 10 }, { text: "基本的には守るが、意味のないルールは好きではない", score: 8 }, { text: "どちらともいえない・普通", score: 5 }, { text: "社会を成り立たせるために、全員が厳格に守るべきだ", score: 2 }, { text: "ルールは自分が作って人を従わせるものだ", score: 0 } ] },
+            // --- 新規追加の場面（SNS、買い物、仕事・作業など） ---
+            { q: "【SNS】SNS（XやInstagramなど）との付き合い方は？", cat: 0, options: [ { text: "主に見る専門で、自分のことはあまり発信しない", score: 10 }, { text: "気の合う友人とのやり取りだけ楽しむ", score: 8 }, { text: "普通に投稿もするし見る", score: 5 }, { text: "有益な情報を発信して多くの人に見られたい", score: 2 }, { text: "常に自分の状況をアピールし、いいねを集めたい", score: 0 } ] },
+            { q: "【買物】服や雑貨など、何かを買う時の決め手は？", cat: 2, options: [ { text: "直感。なんとなく「いいな」と惹かれたら", score: 10 }, { text: "自分の感覚に合っていて、心地よく使えるか", score: 8 }, { text: "コスパとデザインのバランス", score: 5 }, { text: "事前にスペックや口コミを徹底的に比較する", score: 2 }, { text: "最新トレンドか、人からどう見られるか", score: 0 } ] },
+            { q: "【仕事/作業】タスクや趣味の進め方で一番近いのは？", cat: 3, options: [ { text: "気分が乗った時に自分のペースで一気に進める", score: 10 }, { text: "締め切りは守るが、やり方は自由にしたい", score: 8 }, { text: "与えられた通りに普通にこなす", score: 5 }, { text: "明確な計画やマニュアルに沿って進める", score: 2 }, { text: "自分がリーダーになり、全員の動きを管理する", score: 0 } ] },
+            { q: "【日常】予定のない日の急な誘い。どう対応する？", cat: 1, options: [ { text: "その時の気分で決める", score: 10 }, { text: "行きたければ行くし、面倒なら断る", score: 8 }, { text: "とりあえず行く", score: 5 }, { text: "予定が崩れるのが嫌なので基本断る", score: 2 }, { text: "むしろ自分からもっと人を集めて大規模にする", score: 0 } ] },
+            
+            // --- 価値観・行動 ---
+            { q: "【価値観】ルールや規則についての考え方に最も近いものは？", cat: 3, options: [ { text: "状況に合わせて柔軟に変えたり、感覚で判断する方が良い", score: 10 }, { text: "基本的には守るが、意味のないルールは好きではない", score: 8 }, { text: "どちらともいえない・普通", score: 5 }, { text: "社会を成り立たせるために、全員が厳格に守るべきだ", score: 2 }, { text: "ルールは自分が作って人を従わせるものだ", score: 0 } ] },
             { q: "【行動】友人との待ち合わせ。あなたのよくあるパターンは？", cat: 3, options: [ { text: "その時の気分や状況による", score: 10 }, { text: "なんとなく準備して、ピッタリか数分遅れるくらい", score: 8 }, { text: "急いで向かって、ギリギリ間に合うことが多い", score: 5 }, { text: "必ず5分〜10分前には到着して待っている", score: 2 }, { text: "事前に綿密なスケジュールを組み、絶対に遅刻しない", score: 0 } ] },
             { q: "【対人】他人が明らかに間違った選択（失敗しそうな事）をしようとしている時、どうしますか？", cat: 1, options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは止めない。波風を立てず見守る", score: 8 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 5 }, { text: "論理的に間違いを指摘し、正しい選択をするよう説得する", score: 2 }, { text: "絶対に止めに入り、自分のやり方に従わせる", score: 0 } ] },
-            { q: "【思考】何かトラブルが起きたとき、最初にどこにフォーカスしますか？", cat: 0, options: [{ text: "「とりあえず今はどうしよう」と、目の前の現実や自分の感覚", score: 10 }, { text: "周囲の人がどう感じているか、雰囲気が悪くならないか", score: 8 }, { text: "わからない・ケースバイケース", score: 5 }, { text: "「なぜ起きたか」という根本的な原因究明", score: 2 }, { text: "「誰の責任か」を明確にし、直ちにシステムを改善すること", score: 0 } ] },
+            { q: "【思考】何かトラブルが起きたとき、最初にどこにフォーカスしますか？", cat: 0, options: [{ text: "「とりあえず今はどうしよう」と、目の前の現実や自分の感覚", score: 10 }, { text: "周囲の人がどう感じているか、雰囲気が悪くならないか", score: 8 }, { text: "わからない・ケースバイケース", score: 5 }, { text: "「なぜ起きたか」という根本的な原因究明", score: 2 }, { text: "「誰の責任か」を明確にし、直ちに改善すること", score: 0 } ] },
             { q: "【環境】作業や趣味をする「自分の空間」の整理整頓についてはどうですか？", cat: 2, options: [ { text: "気分が乗った時に一気に片付ける", score: 10 }, { text: "多少散らかっていても、自分がどこに何があるか分かればそれでいい", score: 8 }, { text: "普通。そこそこ綺麗にしている", score: 5 }, { text: "常に完璧に整理整頓されていないと落ち着かない", score: 2 }, { text: "モノの配置ルールを厳格に決め、1ミリのズレも許さない", score: 0 } ] },
 
-            // 既存ベースの質問（100%完全チューニング済）
+            // --- 既存ベース（100%完全チューニング済） ---
             { q: "物や人に対して、「完璧さ」と「少しの歪み」どちらに惹かれますか？", cat: 2, options: [ { text: "どちらともいえない・特に何も感じない", score: 10 }, { text: "わからない。または、バランスが取れていて普通に整っているもの", score: 8 }, { text: "どちらかと言えば完璧なもの", score: 5 }, { text: "圧倒的に「歪み」や「欠落」「影」の部分に美しさを感じる", score: 2 }, { text: "完全無欠で非の打ち所がない、絶対的な完璧さ", score: 0 } ] },
             { q: "何もない休日、あなたはどう過ごすのが好きですか？", cat: 3, options: [ { text: "その日の気分で、なんとなく過ごす", score: 10 }, { text: "疲れていたら寝るし、気が向いたら趣味をする", score: 8 }, { text: "特に決まりはない", score: 5 }, { text: "事前に予定を詰め込んで、アクティブに遊ぶ", score: 2 }, { text: "誰にも会わず、世界との関わりを完全に断つ", score: 0 } ] },
             { q: "大人数での飲み会や集まりに参加したとき、あなたはどうなりますか？", cat: 1, options: [ { text: "誘われれば行くし、それなりに楽しんで帰る", score: 10 }, { text: "端の方で、仲の良い少人数とだけ話す", score: 8 }, { text: "状況による・あまり行かない", score: 5 }, { text: "エネルギーをもらえる。中心になって会話を回す", score: 2 }, { text: "ひどく消耗するため、絶対に断る", score: 0 } ] },
@@ -223,6 +266,35 @@
         // グラフ用カテゴリ別スコア (0:自然体, 1:調和, 2:感覚, 3:柔軟性, 4:自己受容)
         let categoryScores = [0, 0, 0, 0, 0];
         let categoryCounts = [0, 0, 0, 0, 0];
+        let chartInstance = null;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 3000);
+        }
+
+        // 初期ロード時にURLパラメータから結果を復元するかチェック
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const dataParam = params.get('d');
+            
+            if (dataParam) {
+                try {
+                    const data = JSON.parse(atob(dataParam));
+                    totalScore = data.s;
+                    categoryScores = data.cs;
+                    categoryCounts = data.cc;
+                    
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('result-screen').classList.remove('hidden');
+                    processResultDisplay();
+                } catch(e) {
+                    console.error("データの復元に失敗しました", e);
+                }
+            }
+        };
 
         function shuffleArray(array) {
             const arr = [...array];
@@ -234,6 +306,11 @@
         }
 
         function startDiagnosis() {
+            // URLパラメータをクリア
+            if(window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             selectedQuestions = shuffleArray(questionsPool).slice(0, 10);
             currentQuestionIndex = 0;
             totalScore = 0;
@@ -288,46 +365,67 @@
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
 
+            processResultDisplay();
+
+            // URLに結果をエンコードして付与（リンク共有用）
+            const data = { s: totalScore, cs: categoryScores, cc: categoryCounts };
+            const encoded = btoa(JSON.stringify(data));
+            const newUrl = window.location.pathname + '?d=' + encoded;
+            if(window.history.replaceState) {
+                window.history.replaceState({path: newUrl}, '', newUrl);
+            }
+        }
+
+        function processResultDisplay() {
             document.getElementById('result-score').innerText = `${totalScore}%`;
 
             let title = "";
             let description = "";
             let expectedMBTI = "";
+            let advice = "";
 
             if (totalScore >= 80) {
                 title = "【 マ・タイプ：自然体と調和の体現者 】";
                 expectedMBTI = "ISFP (冒険家) - A型 (自己主張型)";
                 description = "あなたは、無用な装飾を持たず、等身大で飾らない「自然体」の極致にいます。複雑な感情を無理に言葉にせず、フラットでニュートラルな視点を保ちながら、他者への気遣いや調和も大切にする平和主義者です。その柔軟性と、現実をありのままに受け入れる適度な自己肯定感（-A要素）こそが、この診断における真の『マ要素』の完全な体現です。";
+                advice = "あなたはすでに立派な『マ』です。無理に言葉で取り繕わず、自分の直感や「心地よさ」、そしてその自然体な優しさをこれからも一番に大切にしてください。";
             } else if (totalScore >= 60) {
                 title = "【 マ・タイプ：中庸のバランス型 】";
                 expectedMBTI = "ISFJ (擁護者) または INFP (仲介者)";
                 description = "あなたは、自然体でありながらも、少し周囲に気を使いすぎたり、理想を追い求める側面を持っています。日常の中で無理のない範囲で自分のペースを守りながら、周囲ともうまくやっていける適応力を持っています。";
+                advice = "少しだけ肩の力を抜いて、「なんとなく」という直感を信じてみましょう。完璧を求めすぎないことが『マ』への近道です。";
             } else if (totalScore >= 40) {
                 title = "【 マ・タイプ：論理または行動重視型 】";
                 expectedMBTI = "ISTP (巨匠) または ENFP (広報運動家)";
                 description = "あなたは、「なんとなく」の自然体な状態からは少し外れており、物事に対して明確な理由や論理を求めるか、あるいは外に向かって行動を起こすエネルギーが強い傾向があります。";
+                advice = "頭で考えすぎず、自分の心が「心地よい」と感じるものを優先してみてください。余白を楽しむ心の余裕が鍵となります。";
             } else {
                 title = "【 マ・タイプ：対極の存在 】";
                 expectedMBTI = "ESTJ (幹部) または ENTJ (指揮官)";
                 description = "あなたは、極端に論理的で支配的、あるいは計画性が非常に高い気質を持っています。フラットで自然体な「真のマ要素」とは対極に位置する、非常に強い個性とリーダーシップを持っています。";
+                advice = "まずは「わからない」と素直に言える勇気を持ちましょう。白黒つけず、曖昧なままにしておくことで見えてくる『マ』の世界があります。";
             }
 
             document.getElementById('result-type').innerText = title;
             document.getElementById('result-mbti').innerText = expectedMBTI;
             document.getElementById('result-desc').innerText = description;
+            document.getElementById('result-advice').innerText = advice;
 
-            // グラフ描画処理
             drawChart();
         }
 
         function drawChart() {
-            // カテゴリごとの平均を計算 (0〜10のスケール)
             let chartData = categoryScores.map((score, i) => {
-                return categoryCounts[i] > 0 ? (score / categoryCounts[i]) : 5; // 出題されなかったカテゴリは中央値5
+                return categoryCounts[i] > 0 ? (score / categoryCounts[i]) : 5;
             });
 
             const ctx = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx, {
+            
+            if (chartInstance) {
+                chartInstance.destroy(); // 既存のチャートがあれば破棄
+            }
+
+            chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['自然体 (等身大)', '調和 (周囲への配慮)', '感覚 (心地よさ)', '柔軟性 (臨機応変)', '自己受容 (-A要素)'],
@@ -356,29 +454,48 @@
                     },
                     plugins: {
                         legend: { display: false }
-                    }
+                    },
+                    animation: { duration: 1000 }
                 }
             });
         }
 
-        function shareResult() {
-            const score = document.getElementById('result-score').innerText;
-            const title = document.getElementById('result-type').innerText;
-            const mbti = document.getElementById('result-mbti').innerText;
+        // 画像として保存する関数
+        function downloadImage() {
+            showToast("画像を生成しています...");
             
-            // ログは出力せず、結果のみをコピーする仕様に変更
-            let shareText = `【マ診断 - 自己分析＆価値観測定】\nスコア: ${score}\nランク: ${title}\n予想MBTI: ${mbti}\n\n#マ診断 #MBTI #自己分析`;
+            const captureArea = document.getElementById('capture-area');
+            
+            // html2canvasを実行
+            html2canvas(captureArea, {
+                backgroundColor: "#0d1117", // 背景色を指定して透過を防ぐ
+                scale: 2 // 高画質化
+            }).then(canvas => {
+                // aタグを作成してダウンロードを発火
+                const link = document.createElement('a');
+                link.download = 'マ診断_結果.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast("画像を保存しました！");
+            }).catch(err => {
+                console.error(err);
+                showToast("画像の生成に失敗しました。");
+            });
+        }
 
+        // リンクをコピーする関数
+        function shareLink() {
+            // 現在のURL（クエリパラメータとして結果がエンコードされている）をコピー
+            const url = window.location.href;
+            
             const dummy = document.createElement('textarea');
             document.body.appendChild(dummy);
-            dummy.value = shareText;
+            dummy.value = `私の「マ診断」結果はこちら！\n${url}\n\n#マ診断 #自己分析`;
             dummy.select();
             document.execCommand('copy');
             document.body.removeChild(dummy);
 
-            const toast = document.getElementById('toast');
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 2500);
+            showToast("結果のリンクをコピーしました！");
         }
     </script>
 </body>
