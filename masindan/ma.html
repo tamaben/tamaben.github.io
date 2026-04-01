@@ -108,23 +108,13 @@
             transform: scale(1.5);
         }
 
-        /* グラフのレイアウト崩れを防ぐ固定コンテナ */
-        .chart-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 280px;
-            aspect-ratio: 1 / 1;
-            margin: 0 auto;
-        }
-
-        /* 画像保存時の強制スタイル */
         .capture-flat-mode {
             background: #ffffff !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             box-shadow: none !important;
             border: 1px solid #f0f0f0 !important;
-            width: 520px !important; /* PC/スマホ問わず幅を固定して崩れを防ぐ */
+            width: 520px !important; 
             max-width: none !important;
             padding: 40px !important;
         }
@@ -133,6 +123,17 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 順番に表示させるためのアニメーション用クラス */
+        .anim-ready {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .anim-show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         #sns-export-area {
@@ -156,7 +157,7 @@
         
         <!-- スタート画面 -->
         <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
-            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Element Detection</p>
+            <p class="text-[var(--soft-green)] font-serif-en tracking-[0.5em] text-[11px] mb-4 uppercase font-bold">Identity Detection System</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-tight text-gray-800 font-outfit">マ診断</h1>
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
@@ -210,45 +211,63 @@
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             <div id="capture-area" class="glass-panel text-center mb-8 bg-white" style="padding-bottom: 40px;">
-                <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Report</div>
                 
-                <div class="mb-10">
+                <!-- 順次表示: ヘッダー＆スコア -->
+                <div class="anim-ready" id="anim-header">
+                    <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Report</div>
                     <div class="text-[11px] text-gray-400 tracking-[0.4em] uppercase mb-4 font-bold">あなたのマ度（マ要素）</div>
                     <div class="font-outfit score-display" id="result-score">0.0%</div>
                 </div>
 
-                <div id="cert-badge" class="hidden mb-12">
-                    <div class="py-2.5 px-8 bg-green-50/50 border border-[var(--leaf-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em]">
-                        🌟 マ 本人認定
+                <!-- 順次表示: バッジ＆MBTI -->
+                <div class="anim-ready" id="anim-badge">
+                    <div id="cert-badge" class="hidden mb-12">
+                        <div class="py-2.5 px-8 bg-green-50/50 border border-[var(--leaf-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em]">
+                            🌟 マ 本人認定
+                        </div>
+                    </div>
+                    <div class="mb-10">
+                        <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
                     </div>
                 </div>
 
-                <div class="mb-10">
-                    <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
-                </div>
-
-                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner">
-                    <!-- グラフの親要素に高さを明示的に指定して潰れるのを防ぎます -->
+                <!-- 順次表示: グラフ (高さを明示して潰れ防止) -->
+                <div class="mb-12 flex justify-center bg-gray-50/50 rounded-[2.5rem] p-6 border border-white mx-4 shadow-inner anim-ready" id="anim-chart">
                     <div style="position: relative; width: 100%; max-width: 280px; height: 280px;">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-14">
+                <!-- 順次表示: テキスト解析 -->
+                <div class="text-left px-8 pb-4 anim-ready" id="anim-text">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
                     </div>
                 </div>
+
+                <!-- 順次表示: ワンポイントアドバイス -->
+                <div class="text-left px-8 pb-6 anim-ready" id="anim-advice">
+                    <div class="content-wrapper mt-4 bg-green-50/50 p-6 rounded-2xl border border-green-100 shadow-sm">
+                        <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
+                            🌿 マ度を高めるワンポイント
+                        </h4>
+                        <p id="result-advice" class="text-[13px] text-gray-700 leading-relaxed font-medium"></p>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="flex flex-col gap-4">
+            <!-- 順次表示: ボタン類 -->
+            <div class="flex flex-col gap-4 anim-ready" id="anim-buttons">
                 <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase shadow-xl">SNS用(正方形)を保存</button>
-                <button onclick="downloadImage('full')" class="w-full py-4 text-[var(--accent-green)] font-bold text-xs tracking-widest uppercase border border-[var(--accent-green)] rounded-2xl hover:bg-white transition-all">フルレポートを保存</button>
+                <button onclick="downloadImage('full')" class="w-full py-4 bg-white text-[var(--accent-green)] border border-[var(--accent-green)] rounded-2xl font-bold text-xs tracking-widest uppercase hover:bg-gray-50 transition-all">フルレポートを保存</button>
                 <button onclick="shareLink()" id="share-btn" class="w-full py-3 text-[10px] text-gray-400 tracking-widest uppercase border-b border-gray-200 hover:text-[var(--accent-green)] transition-all mt-4">結果を共有する</button>
             </div>
             
-            <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-300 tracking-[0.4em] uppercase hover:text-gray-500 transition-all">最初からやり直す</button>
+            <div class="anim-ready mt-12 mb-10 text-center" id="anim-reset">
+                <button onclick="resetAndRestart()" class="text-[10px] text-gray-400 tracking-[0.4em] uppercase hover:text-gray-600 transition-all">最初からやり直す</button>
+            </div>
         </div>
     </div>
 
@@ -258,7 +277,7 @@
         <div style="font-family: 'Outfit', sans-serif; font-size: 250px; font-weight: 800; color: #27422f; margin-bottom: 20px; line-height: 1;" id="sns-score">0.0%</div>
         <div style="background: #edf1ee; padding: 20px 60px; border-radius: 60px; font-size: 44px; color: #27422f; font-family: 'Noto Sans JP'; font-weight: bold; margin-bottom: 80px;" id="sns-mbti">ISFP-A</div>
         <div style="background: #ffffff; padding: 60px; border-radius: 80px; border: 2px solid #eee; width: 850px; display: flex; justify-content: center;">
-            <div style="width: 100%; max-width: 650px; aspect-ratio: 1/1; position: relative;">
+            <div style="width: 100%; max-width: 650px; height: 650px; position: relative;">
                 <canvas id="snsChart"></canvas>
             </div>
         </div>
@@ -269,7 +288,6 @@
 
     <script>
         // --- 完全にユニークな全40問の質問プール ---
-        // マ本人の回答を確実に10点とする。
         const questionsPool = [
             { id: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
             { id: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
@@ -339,9 +357,11 @@
 
         // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
-            if (reset) eraseCookie('ma_true_algo_perfect');
+            if (reset) {
+                eraseCookie('ma_true_algo_perfect');
+                sessionStorage.removeItem('ma_anim_done'); // やり直し時はアニメを復活
+            }
             
-            // 40問のユニークプールから完全にランダムに10問を抽出
             let shuffledPool = [...questionsPool].sort(() => Math.random() - 0.5);
             selectedQuestions = shuffledPool.slice(0, 10);
 
@@ -399,7 +419,7 @@
 
         function goBack() {
             if (currentIdx <= 0) return;
-            // 履歴管理が複雑になるため、戻る場合は再開機能やリロードに依存
+            // 戻る時は状態が複雑になるため簡易無効化
         }
 
         function saveToCookie() {
@@ -409,37 +429,43 @@
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-
-            setTimeout(() => {
-                document.getElementById('calc-progress').style.width = '100%';
-            }, 50);
-
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
+            
+            const skipAnim = sessionStorage.getItem('ma_anim_done');
+            if (skipAnim) {
+                // 2回目はローディングなしで即表示
                 document.getElementById('result-screen').classList.remove('hidden');
-                eraseCookie('ma_true_algo_perfect');
-                
-                const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-                const newUrl = window.location.pathname + '?d=' + encoded;
-                window.history.pushState({path: newUrl}, '', newUrl);
-
-                processDisplay();
-            }, 2500);
+                finalizeResultAndDisplay(true);
+            } else {
+                // 1回目はローディングとワクワク演出
+                document.getElementById('loading-screen').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('calc-progress').style.width = '100%'; }, 50);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('result-screen').classList.remove('hidden');
+                    finalizeResultAndDisplay(false);
+                }, 2500);
+            }
         }
 
-        function processDisplay() {
-            // 純粋な計算式。本人が自身の回答を選べば確実に100%になる。
-            const final = Math.min(100, (totalScore / 100) * 100);
+        function finalizeResultAndDisplay(skipAnim) {
+            eraseCookie('ma_true_algo_perfect');
+            const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+            const newUrl = window.location.pathname + '?d=' + encoded;
+            window.history.pushState({path: newUrl}, '', newUrl);
+            
+            processDisplay(skipAnim);
+        }
+
+        function processDisplay(skipAnim) {
+            let final = Math.min(100, (totalScore / 100) * 100);
+            if (final >= 95) final = 100; // 5%未満のブレは100%にロック
+
             const displayScore = final === 100 ? "100.0" : final.toFixed(1);
             
-            document.getElementById('result-score').innerText = `${displayScore}%`;
             document.getElementById('sns-score').innerText = `${displayScore}%`;
 
-            if (final === 100) {
-                document.getElementById('cert-badge').classList.remove('hidden');
-            }
+            if (final === 100) document.getElementById('cert-badge').classList.remove('hidden');
 
             const mMap = {"ISFP":"冒険家","ISFJ":"擁護者","ISTP":"巨匠","ISTJ":"管理者","INFP":"仲介者","INFJ":"提唱者","INTP":"論理学者","INTJ":"建築家","ESFP":"エンターテイナー","ESFJ":"領事","ESTP":"起業家","ESTJ":"幹部","ENFP":"広報運動家","ENFJ":"主人公","ENTP":"討論者","ENTJ":"指揮官"};
             const core = (mbtiScore.I >= mbtiScore.E ? "I" : "E") + (mbtiScore.S >= mbtiScore.N ? "S" : "N") + (mbtiScore.F >= mbtiScore.T ? "F" : "T") + (mbtiScore.P >= mbtiScore.J ? "P" : "J");
@@ -452,21 +478,83 @@
                 "マ度 100.0% —— システムの計算により、あなたが他の誰でもない『まさひろ本人』であることが完全に証明されました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
+            // アドバイスの計算
             let avgData = catScores.map((s, i) => catCounts[i] > 0 ? s / catCounts[i] : 5);
-            
-            // バグ修正：引数名(avg)とスコープの被りを解消し、明確にデータを渡す
+            let minIdx = 0, minVal = 11;
+            avgData.forEach((v, i) => { if (v < minVal) { minVal = v; minIdx = i; } });
+
             if (final === 100) {
-                avgData = [10, 10, 10, 10, 10]; // マ本人ならグラフも完全な正五角形に補正
+                document.getElementById('result-advice').innerText = "あなたはすでに完全なる『マ』です。今のまま、自分の感覚と価値観を信じて突き進んでください。";
+                avgData = [10, 10, 10, 10, 10]; // グラフを完全体に
+            } else {
+                const adviceList = [
+                    "自分の本当の気持ちや『好き』という感覚を、もっと最優先にしてみてください。",
+                    "頭で考えすぎず、五感で感じる心地よさや『なんとなく』の直感に従って行動してみましょう。",
+                    "他人の感情に寄り添うことも大切ですが、時には『自分には関係ない』と割り切るドライさもマ度を高めます。",
+                    "予定やルールに縛られすぎず、その時の気分や偶然の流れに身を任せる余白を作ってみてください。",
+                    "過去の失敗や自分の弱さを、直すべき欠点ではなく『自分らしい魅力』としてそのまま受け入れてみましょう。"
+                ];
+                document.getElementById('result-advice').innerText = adviceList[minIdx];
             }
 
-            renderCharts(avgData);
+            // アニメーション分岐
+            const scoreEl = document.getElementById('result-score');
+            if (skipAnim) {
+                // 2回目（アニメスキップ）
+                document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
+                scoreEl.innerText = `${displayScore}%`;
+                renderCharts(avgData);
+            } else {
+                // 1回目（ワクワク演出）
+                sessionStorage.setItem('ma_anim_done', '1');
+                
+                // カウントアップ
+                animateValue(scoreEl, 0, final, 2200);
+
+                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-advice', 'anim-buttons', 'anim-reset'];
+                let delay = 0;
+
+                animBlocks.forEach((id, index) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(id);
+                        if(el) {
+                            el.classList.add('anim-show');
+                            // グラフが表示された瞬間に描画する
+                            if (id === 'anim-chart') renderCharts(avgData);
+                            
+                            // 下部の要素が出た時に自動でスクロールして見やすくする
+                            if (index >= 2 && index < animBlocks.length - 1) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }
+                    }, delay);
+                    delay += 600; // 0.6秒ごとに順番に出現
+                });
+            }
         }
 
-        // 引数を使ってグラフを描画する（内部での上書きバグを排除）
+        // カウントアップ関数
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 4); // 徐々に遅くなるイージング
+                const current = easeProgress * (end - start) + start;
+                
+                obj.innerText = (current === 100) ? "100.0%" : current.toFixed(1) + "%";
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerText = (end === 100) ? "100.0%" : end.toFixed(1) + "%";
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
         function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            
-            // 設定オブジェクトを共有するとバグの原因になるため、個別に生成します
             const getChartConfig = (labelsFontSize) => ({
                 type: 'radar',
                 data: {
@@ -474,17 +562,13 @@
                     datasets: [{ data: dataArray, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
                 },
                 options: { 
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     scales: { 
                         r: { 
-                            min: 0, max: 10, ticks: { display: false }, 
-                            grid: { color: 'rgba(0,0,0,0.05)' }, 
+                            min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' }, 
                             pointLabels: { color: '#3a5a40', font: { size: labelsFontSize, weight: 'bold', family: 'Noto Sans JP' } } 
                         } 
-                    }, 
-                    plugins: { legend: { display: false } }, 
-                    animation: { duration: 1500 } 
+                    }, plugins: { legend: { display: false } }, animation: { duration: 1500 } 
                 }
             });
 
@@ -509,11 +593,16 @@
                 onclone: (clonedDoc) => {
                     const clonedEl = clonedDoc.getElementById(targetId);
                     clonedEl.classList.add('capture-flat-mode');
-                    clonedEl.style.width = "520px"; // PC/スマホ問わず幅を固定してレイアウト崩れを防ぐ
+                    clonedEl.style.width = "520px"; 
                     clonedEl.style.maxWidth = "none";
                     clonedEl.style.backdropFilter = "none";
                     clonedEl.style.background = "#ffffff";
                     
+                    // アニメーション中のクラスを強制的に表示状態にする
+                    clonedEl.querySelectorAll('.anim-ready').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                    });
                     clonedEl.querySelectorAll('.content-wrapper').forEach(b => {
                         b.style.marginBottom = '40px';
                         b.style.display = 'block';
@@ -527,7 +616,6 @@
             });
         }
 
-        // iOS(iPhone)ネイティブの共有メニュー(Share API)を使用
         function shareLink() {
             const url = window.location.href;
             const score = document.getElementById('result-score').innerText;
@@ -575,7 +663,11 @@
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        function resetAndRestart() { eraseCookie('ma_true_algo_perfect'); location.href = window.location.pathname; }
+        function resetAndRestart() { 
+            eraseCookie('ma_true_algo_perfect'); 
+            sessionStorage.removeItem('ma_anim_done'); // やり直し時はワクワク演出を復活
+            location.href = window.location.pathname; 
+        }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
@@ -586,12 +678,18 @@
                     totalScore = data.s || 0; catScores = data.cs || [0,0,0,0,0]; catCounts = data.cc || [1,1,1,1,1]; mbtiScore = data.m || {};
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
-                    setTimeout(processDisplay, 300);
+                    
+                    // URL共有から来た場合は最初から全て表示（アニメなし）
+                    finalizeResultAndDisplay(true); 
                 } catch(e) {}
             } else if (getCookie('ma_true_algo_perfect')) {
                 document.getElementById('resume-container').classList.remove('hidden');
             }
         };
+
+        function finalizeResultAndDisplay(skipAnim) {
+            processDisplay(skipAnim);
+        }
     </script>
 </body>
 </html>
