@@ -6,9 +6,9 @@
     "subject": "英語",
     "title": "Unit 1 受動態 1",
     "tags": ["中3", "英語", "文法", "受動態", "過去分詞", "be動詞"],
-    "pdfBasic": "Print/chu3-en1.pdf",
+    "pdfBasic": "print/chu3-en1.pdf",
     "pdfAdv": "#",
-    "pdfAns": "Print/chu3-en1-cota.pdf"
+    "pdfAns": "print/chu3-en1-cota.pdf"
   },
   {
     "id": "j3-e-02",
@@ -17,8 +17,8 @@
     "subject": "英語",
     "title": "Unit 2 現在完了形 1",
     "tags": ["中3", "英語", "文法", "現在完了", "過去分詞", "have"],
-    "pdfBasic": "Print/chu3-en2.pdf",
+    "pdfBasic": "print/chu3-en2.pdf",
     "pdfAdv": "#",
-    "pdfAns": "Print/chu3-en2-cota.pdf"
+    "pdfAns": "print/chu3-en2-cota.pdf"
   }
 ]
