@@ -164,7 +164,7 @@
             
             <p class="text-gray-600 text-sm leading-relaxed mb-12 text-left">
                 マ診断は、この質問の解答者に<strong class="text-[var(--accent-green)]">「マ度（マ要素）」</strong>が何%あるかがわかるものです。<br><br>
-                全50問の中から、完全にランダムに抽出された10問に直感でお答えください。裏側でMBTIの予想も行われます。
+                全40問のユニークな質問から、完全にランダムに抽出された10問に直感でお答えください。
             </p>
 
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/40 border border-white rounded-3xl">
@@ -256,48 +256,52 @@
     <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest shadow-2xl opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
 
     <script>
-        // --- 基本となる26問 (本人の解答を忠実に10点へ調整) ---
-        // 重複出題を防ぐため、baseIdを付与
-        const baseQuestions = [
-            { baseId: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
-            { baseId: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
-            { baseId: 3, q: "新しい靴を下ろした日の、あなたの意識は？", cat: 1, m: 'S', options: [{text:"特に何も考えず、いつも通り歩く", score:10}, {text:"汚れないように細心の注意を払う", score:3}, {text:"足元を見て気分が上がる", score:7}, {text:"周りからどう見えるか気になる", score:5}, {text:"早く足に馴染ませようとする", score:6}]},
-            { baseId: 4, q: "予定外の雨が降り始めたとき、窓の外を見て思うことは？", cat: 4, m: 'A', options: [{text:"雨粒の模様や外をただ受け入れる", score:10}, {text:"予定が狂った対処法を考える", score:4}, {text:"感傷的な気分に浸る", score:6}, {text:"体調の変化を警戒する", score:3}, {text:"雨具のことを心配する", score:5}]},
-            { baseId: 5, q: "自分へのご褒美に何かを買うとしたら？", cat: 1, m: 'P', options: [{text:"今一番欲しかったものを思い切り買う", score:10}, {text:"美味しいものを食べる", score:7}, {text:"長く使える実用的なもの", score:4}, {text:"体験や旅行", score:6}, {text:"結局買わずに貯金する", score:3}]},
-            { baseId: 6, q: "懐かしい匂いを嗅いだ瞬間、あなたの心はどう動きますか？", cat: 1, m: 'S', options: [{text:"「ああ、あの時の匂いだ」と客観的に認識する", score:10}, {text:"当時の感情が鮮明に蘇る", score:6}, {text:"情景が頭に浮かぶ", score:7}, {text:"匂いについて分析する", score:3}, {text:"すぐに別の思考に移る", score:5}]},
-            { baseId: 7, q: "知らない名前の野菜を貰ったときの反応は？", cat: 1, m: 'P', options: [{text:"とりあえず適当に調理して食べてみる", score:10}, {text:"レシピを検索して忠実に作る", score:4}, {text:"誰かにあげるか捨てる", score:2}, {text:"美味しそうな調理法を想像する", score:7}, {text:"しばらく放置してしまう", score:5}]},
-            { baseId: 8, q: "道端で誰かが落とした手袋を見つけたとき", cat: 4, m: 'T', options: [{text:"自分には関係のないことだと無視する", score:10}, {text:"持ち主の物語を想像し切なくなる", score:5}, {text:"目立つ場所に置き直す", score:7}, {text:"警察に届けるか迷う", score:4}, {text:"スマホで撮影する", score:3}]},
-            { baseId: 9, q: "カフェで隣の席から話し声が聞こえてくるとき", cat: 2, m: 'F', options: [{text:"自分も会話に混ざりたくなる", score:10}, {text:"話の内容が気になって、つい耳を立ててしまう", score:7}, {text:"うるさいと感じてイヤホンをする", score:4}, {text:"BGMとして聞き流す", score:6}, {text:"人間観察の材料にする", score:5}]},
-            { baseId: 10, q: "知らない名前のスパイスが効いた料理を食べた時", cat: 1, m: 'Se', options: [{text:"自分の口に合うかどうかだけで判断する", score:10}, {text:"どんなスパイスが使われているか分析する", score:3}, {text:"未知の刺激をダイレクトに受ける", score:7}, {text:"美味しいかどうか結論をすぐ出す", score:6}, {text:"誰かに共有したくなる", score:5}]},
-            { baseId: 11, q: "誰かに道を聞かれたときのあなたの態度は？", cat: 4, m: 'F', options: [{text:"大まかな方向だけ教えて、あとは任せる", score:10}, {text:"スマホで完璧に案内する", score:4}, {text:"丁寧に教えようとする", score:7}, {text:"忙しいので断る", score:2}, {text:"明るく安心させる", score:5}]},
-            { baseId: 12, q: "深夜、自分一人だけが起きている感覚のとき", cat: 1, m: 'J', options: [{text:"早く寝なければという義務感が先に立つ", score:10}, {text:"自由を感じる", score:6}, {text:"少し不安になる", score:4}, {text:"何かを創作したくなる", score:7}, {text:"明日を整理する", score:5}]},
-            { baseId: 13, q: "「普通」という言葉を聞いたとき、どう思う？", cat: 3, m: 'S', options: [{text:"最も安心できる、目指すべき基準だと感じる", score:10}, {text:"つまらない", score:3}, {text:"一つの美しい在り方", score:7}, {text:"定義を考えたくなる", score:5}, {text:"何も感じない", score:4}]},
-            { baseId: 14, q: "身の回りのものを買うとき、色についてどう決める？", cat: 1, m: 'Se', options: [{text:"直感。今の自分の波長に響く色を選ぶ", score:10}, {text:"使い回せる色", score:4}, {text:"流行の色", score:6}, {text:"決まった色", score:5}, {text:"一番安いもの", score:3}]},
-            { baseId: 15, q: "風で草花が大きく揺れているのを目にしたとき", cat: 1, m: 'S', options: [{text:"特に気にせず、歩く速度を維持する", score:10}, {text:"風の抵抗を感じる", score:7}, {text:"ダイナミックさを楽しむ", score:6}, {text:"嵐を警戒する", score:4}, {text:"予兆を感じる", score:3}]},
-            { baseId: 16, q: "自分と意見が違う人と対峙したとき、あなたの心は？", cat: 4, m: 'A', options: [{text:"自分の意見の正当性を証明したくなる", score:10}, {text:"そのまま認める", score:5}, {text:"歩み寄る", score:7}, {text:"表面上だけ合わせる", score:4}, {text:"論理的に整理する", score:6}]},
-            { baseId: 17, q: "理想の人生の終わり方をイメージするなら？", cat: 0, m: 'J', options: [{text:"何か大きな成果や、後世に語り継がれるものを残すこと", score:10}, {text:"静かに消えていく", score:6}, {text:"感謝されて逝く", score:7}, {text:"学び続ける", score:5}, {text:"理想にこだわらない", score:8}]},
-            { baseId: 18, q: "森で鳥の声を聞いたとき、あなたの意識はどう動く？", cat: 1, m: 'Se', options: [{text:"響きそのものを全身で聴く", score:10}, {text:"録音して教えたくなる", score:7}, {text:"種類を特定する", score:3}, {text:"別の思考に移る", score:4}, {text:"美しさに感動する", score:6}]},
-            { baseId: 19, q: "古着やヴィンテージ品に対して、どう思う？", cat: 1, m: 'Se', options: [{text:"特に興味がない", score:10}, {text:"風合いが愛おしい", score:6}, {text:"実用性を考える", score:7}, {text:"希少価値を評価する", score:5}, {text:"衛生面が気になる", score:3}]},
-            { baseId: 20, q: "展覧会で抽象画を見たとき、あなたの楽しみ方は？", cat: 1, m: 'S', options: [{text:"特に何も考えない", score:10}, {text:"記憶と結びつける", score:6}, {text:"意図を解読する", score:3}, {text:"力を感じる", score:7}, {text:"分析する", score:4}]},
-            { baseId: 21, q: "自分の内面を説明するとき、どう感じる？", cat: 0, m: 'I', options: [{text:"あまり説明したくない", score:10}, {text:"発見がある", score:7}, {text:"正確に伝えたい", score:3}, {text:"もどかしい", score:6}]},
-            { baseId: 22, q: "静かな湖畔で波紋が広がるのを見ているとき", cat: 1, m: 'S', options: [{text:"特に関心を示さず立ち去る", score:10}, {text:"消えるまで見届ける", score:7}, {text:"写真を撮る", score:5}, {text:"石を投げる", score:2}]},
-            { baseId: 23, q: "海辺で波の音を聞いているとき、自分と世界の境界は？", cat: 0, m: 'Fi', options: [{text:"特に何も思わない", score:10}, {text:"境界が曖昧になる", score:7}, {text:"観測者として分かれる", score:4}, {text:"教訓を見出す", score:3}]},
-            { baseId: 24, q: "目の前の作業を完璧に仕上げたいと思う？", cat: 3, m: 'P', options: [{text:"細部まで徹底的にこだわり抜きたい", score:10}, {text:"ある程度の完成度で満足し、次へ進みたい", score:7}, {text:"他人の評価が最高になるようにしたい", score:4}, {text:"今の自分のしっくり感を優先する", score:6}, {text:"とりあえず言われた通りにこなす", score:5}]},
-            { baseId: 25, q: "他人の感情の機微を察したとき、あなたの行動は？", cat: 2, m: 'F', options: [{text:"なぜそんな感情になっているのか、理由を推測する", score:10}, {text:"何も言わず隣にいる", score:7}, {text:"具体的な助けを差し伸べる", score:6}, {text:"気づかないふりをする", score:5}, {text:"自分も影響を受けて少し疲れる", score:4}]},
-            { baseId: 26, q: "自分を認める（自己肯定）タイミングは？", cat: 4, m: 'E', options: [{text:"他人から高く評価されたり、賞賛された時", score:10}, {text:"ただ存在しているだけで満足している時", score:7}, {text:"目標を完璧に達成した時", score:3}, {text:"誰かの役に立っていると実感した時", score:6}, {text:"自分がしっくりくる行動ができた時", score:8}]}
+        // --- 完全ユニークな全40問の質問プール ---
+        // Suffix(深度測定など)での水増しを撤廃し、全て別々の質問内容として用意。
+        // マ本人の回答を確実に10点とする。
+        const questionsPool = [
+            { id: 1, q: "褒められた時、一番嬉しい言葉はどれ？", cat: 2, m: 'F', options: [{text:"「いつも優しいね」「安心するよ」", score:10}, {text:"「あなたらしいね」", score:7}, {text:"「仕事が早いね」", score:3}, {text:"「面白いね」", score:5}, {text:"「何でもできるね」", score:4}]},
+            { id: 2, q: "「成功」と聞いて、一番に思い浮かぶのは？", cat: 0, m: 'J', options: [{text:"誰からも認められる大きな実績", score:10}, {text:"自分が満足できる心境", score:6}, {text:"自由な時間と余裕", score:7}, {text:"大切な人との安定した生活", score:5}, {text:"目標を達成した瞬間", score:4}]},
+            { id: 3, q: "新しい靴を下ろした日の、あなたの意識は？", cat: 1, m: 'S', options: [{text:"特に何も考えず、いつも通り歩く", score:10}, {text:"汚れないように細心の注意を払う", score:3}, {text:"足元を見て気分が上がる", score:7}, {text:"周りからどう見えるか気になる", score:5}, {text:"早く足に馴染ませようとする", score:6}]},
+            { id: 4, q: "予定外の雨が降り始めたとき、窓の外を見て思うことは？", cat: 4, m: 'A', options: [{text:"雨粒の模様や外をただ受け入れる", score:10}, {text:"予定が狂った対処法を考える", score:4}, {text:"感傷的な気分に浸る", score:6}, {text:"体調の変化を警戒する", score:3}, {text:"雨具のことを心配する", score:5}]},
+            { id: 5, q: "自分へのご褒美に何かを買うとしたら？", cat: 1, m: 'P', options: [{text:"今一番欲しかったものを思い切り買う", score:10}, {text:"美味しいものを食べる", score:7}, {text:"長く使える実用的なもの", score:4}, {text:"体験や旅行", score:6}, {text:"結局買わずに貯金する", score:3}]},
+            { id: 6, q: "懐かしい匂いを嗅いだ瞬間、あなたの心はどう動きますか？", cat: 1, m: 'S', options: [{text:"「ああ、あの時の匂いだ」と客観的に認識する", score:10}, {text:"当時の感情が鮮明に蘇る", score:6}, {text:"情景が頭に浮かぶ", score:7}, {text:"匂いについて分析する", score:3}, {text:"すぐに別の思考に移る", score:5}]},
+            { id: 7, q: "知らない名前の野菜を貰ったときの反応は？", cat: 1, m: 'P', options: [{text:"とりあえず適当に調理して食べてみる", score:10}, {text:"レシピを検索して忠実に作る", score:4}, {text:"誰かにあげるか捨てる", score:2}, {text:"美味しそうな調理法を想像する", score:7}, {text:"しばらく放置してしまう", score:5}]},
+            { id: 8, q: "道端で誰かが落とした手袋を見つけたとき", cat: 4, m: 'T', options: [{text:"自分には関係のないことだと無視する", score:10}, {text:"持ち主の物語を想像し切なくなる", score:5}, {text:"目立つ場所に置き直す", score:7}, {text:"警察に届けるか迷う", score:4}, {text:"スマホで撮影する", score:3}]},
+            { id: 9, q: "カフェで隣の席から話し声が聞こえてくるとき", cat: 2, m: 'F', options: [{text:"自分も会話に混ざりたくなる", score:10}, {text:"話の内容が気になって、つい耳を立ててしまう", score:7}, {text:"うるさいと感じてイヤホンをする", score:4}, {text:"BGMとして聞き流す", score:6}, {text:"人間観察の材料にする", score:5}]},
+            { id: 10, q: "知らない名前のスパイスが効いた料理を食べた時", cat: 1, m: 'Se', options: [{text:"自分の口に合うかどうかだけで判断する", score:10}, {text:"どんなスパイスが使われているか分析する", score:3}, {text:"未知の刺激をダイレクトに受ける", score:7}, {text:"美味しいかどうか結論をすぐ出す", score:6}, {text:"誰かに共有したくなる", score:5}]},
+            { id: 11, q: "誰かに道を聞かれたときのあなたの態度は？", cat: 4, m: 'F', options: [{text:"大まかな方向だけ教えて、あとは任せる", score:10}, {text:"スマホで完璧に案内する", score:4}, {text:"丁寧に教えようとする", score:7}, {text:"忙しいので断る", score:2}, {text:"明るく安心させる", score:5}]},
+            { id: 12, q: "深夜、自分一人だけが起きている感覚のとき", cat: 1, m: 'J', options: [{text:"早く寝なければという義務感が先に立つ", score:10}, {text:"自由を感じる", score:6}, {text:"少し不安になる", score:4}, {text:"何かを創作したくなる", score:7}, {text:"明日を整理する", score:5}]},
+            { id: 13, q: "「普通」という言葉を聞いたとき、どう思う？", cat: 3, m: 'S', options: [{text:"最も安心できる、目指すべき基準だと感じる", score:10}, {text:"つまらない", score:3}, {text:"一つの美しい在り方", score:7}, {text:"定義を考えたくなる", score:5}, {text:"何も感じない", score:4}]},
+            { id: 14, q: "身の回りのものを買うとき、色についてどう決める？", cat: 1, m: 'Se', options: [{text:"直感。今の自分の波長に響く色を選ぶ", score:10}, {text:"使い回せる色", score:4}, {text:"流行の色", score:6}, {text:"決まった色", score:5}, {text:"一番安いもの", score:3}]},
+            { id: 15, q: "風で草花が大きく揺れているのを目にしたとき", cat: 1, m: 'S', options: [{text:"特に気にせず、歩く速度を維持する", score:10}, {text:"風の抵抗を感じる", score:7}, {text:"ダイナミックさを楽しむ", score:6}, {text:"嵐を警戒する", score:4}, {text:"予兆を感じる", score:3}]},
+            { id: 16, q: "自分と意見が違う人と対峙したとき、あなたの心は？", cat: 4, m: 'A', options: [{text:"自分の意見の正当性を証明したくなる", score:10}, {text:"そのまま認める", score:5}, {text:"歩み寄る", score:7}, {text:"表面上だけ合わせる", score:4}, {text:"論理的に整理する", score:6}]},
+            { id: 17, q: "理想の人生の終わり方をイメージするなら？", cat: 0, m: 'J', options: [{text:"何か大きな成果や、後世に語り継がれるものを残すこと", score:10}, {text:"静かに消えていく", score:6}, {text:"感謝されて逝く", score:7}, {text:"学び続ける", score:5}, {text:"理想にこだわらない", score:8}]},
+            { id: 18, q: "森で鳥の声を聞いたとき、あなたの意識はどう動く？", cat: 1, m: 'Se', options: [{text:"響きそのものを全身で聴く", score:10}, {text:"録音して教えたくなる", score:7}, {text:"種類を特定する", score:3}, {text:"別の思考に移る", score:4}, {text:"美しさに感動する", score:6}]},
+            { id: 19, q: "古着やヴィンテージ品に対して、どう思う？", cat: 1, m: 'Se', options: [{text:"特に興味がない", score:10}, {text:"風合いが愛おしい", score:6}, {text:"実用性を考える", score:7}, {text:"希少価値を評価する", score:5}, {text:"衛生面が気になる", score:3}]},
+            { id: 20, q: "展覧会で抽象画を見たとき、あなたの楽しみ方は？", cat: 1, m: 'S', options: [{text:"特に何も考えない", score:10}, {text:"記憶と結びつける", score:6}, {text:"意図を解読する", score:3}, {text:"力を感じる", score:7}, {text:"分析する", score:4}]},
+            { id: 21, q: "自分の内面を説明するとき、どう感じる？", cat: 0, m: 'I', options: [{text:"あまり説明したくない", score:10}, {text:"発見がある", score:7}, {text:"正確に伝えたい", score:3}, {text:"もどかしい", score:6}, {text:"例え話を工夫する", score:5}]},
+            { id: 22, q: "静かな湖畔で波紋が広がるのを見ているとき", cat: 1, m: 'S', options: [{text:"特に関心を示さず立ち去る", score:10}, {text:"消えるまで見届ける", score:7}, {text:"写真を撮る", score:5}, {text:"石を投げる", score:2}, {text:"法則を考える", score:4}]},
+            { id: 23, q: "海辺で波の音を聞いているとき、自分と世界の境界は？", cat: 0, m: 'Fi', options: [{text:"特に何も思わない", score:10}, {text:"境界が曖昧になる", score:7}, {text:"観測者として分かれる", score:4}, {text:"教訓を見出す", score:3}, {text:"不快感が気になる", score:5}]},
+            { id: 24, q: "目の前の作業を完璧に仕上げたいと思う？", cat: 3, m: 'P', options: [{text:"細部まで徹底的にこだわり抜きたい", score:10}, {text:"ある程度の完成度で満足し、次へ進みたい", score:7}, {text:"他人の評価が最高になるようにしたい", score:4}, {text:"今の自分のしっくり感を優先する", score:6}, {text:"とりあえず言われた通りにこなす", score:5}]},
+            { id: 25, q: "他人の感情の機微を察したとき、あなたの行動は？", cat: 2, m: 'F', options: [{text:"なぜそんな感情になっているのか、理由を推測する", score:10}, {text:"何も言わず隣にいる", score:7}, {text:"具体的な助けを差し伸べる", score:6}, {text:"気づかないふりをする", score:5}, {text:"自分も影響を受けて少し疲れる", score:4}]},
+            { id: 26, q: "自分を認める（自己肯定）タイミングは？", cat: 4, m: 'E', options: [{text:"他人から高く評価されたり、賞賛された時", score:10}, {text:"ただ存在しているだけで満足している時", score:7}, {text:"目標を完璧に達成した時", score:3}, {text:"誰かの役に立っていると実感した時", score:6}, {text:"自分がしっくりくる行動ができた時", score:8}]},
+            // 追加のユニーク質問 (27〜40)
+            { id: 27, q: "休日の朝、目が覚めたときに最初に考えることは？", cat: 3, m: 'P', options: [{text:"「もう少し寝よう」と二度寝を楽しむ", score:10}, {text:"今日一日のスケジュールを頭の中で整理する", score:4}, {text:"とりあえずスマホを開いてSNSをチェックする", score:8}, {text:"天気を確認して出かける場所を決める", score:6}, {text:"特に何も考えず、ぼんやりと天井を眺める", score:9}]},
+            { id: 28, q: "新しい趣味を始めようと思ったきっかけは？", cat: 1, m: 'S', options: [{text:"直感的に「面白そう」と心が惹かれたから", score:10}, {text:"誰かに勧められたり、流行っているから", score:6}, {text:"スキルアップや将来の役に立ちそうだから", score:3}, {text:"ストレス解消や暇つぶしのため", score:7}, {text:"最初はなんとなくで、いつの間にかハマっていた", score:8}]},
+            { id: 29, q: "人混みの中を歩いているとき、あなたの意識はどこに向いている？", cat: 0, m: 'I', options: [{text:"周囲の音や風景がBGMのようにぼやけている", score:10}, {text:"周りの人とぶつからないように気を配る", score:6}, {text:"すれ違う人の服装や会話を無意識に観察する", score:8}, {text:"早く目的地に着くことだけを考えている", score:4}, {text:"イヤホンをして自分の世界に浸っている", score:7}]},
+            { id: 30, q: "予定がない日に、急に友人から遊びに誘われたら？", cat: 4, m: 'P', options: [{text:"気分が乗れば行くし、乗らなければ断る", score:10}, {text:"予定が狂うのが嫌なので、基本的には断る", score:3}, {text:"嬉しくてすぐに準備をして出かける", score:8}, {text:"誰が来るか、何をするか詳細を聞いてから決める", score:5}, {text:"家でゴロゴロしたい理由を作ってやんわり断る", score:6}]},
+            { id: 31, q: "お気に入りのカフェで、いつも頼むメニューが売り切れだった時", cat: 3, m: 'J', options: [{text:"似たような別のメニューをすぐに選ぶ", score:10}, {text:"全く違う新しいメニューに挑戦してみる", score:8}, {text:"残念に思いながらも、妥協して無難なものを頼む", score:6}, {text:"諦めて別の店に移動する", score:4}, {text:"店員さんにおすすめを聞いてそれにする", score:5}]},
+            { id: 32, q: "自分の過去の写真を見返したとき、どう感じる？", cat: 0, m: 'Si', options: [{text:"「この時は楽しかったな」と客観的に眺める", score:10}, {text:"懐かしくて、当時の思い出に深く浸る", score:8}, {text:"今の自分と比べて成長した（または老けた）と分析する", score:4}, {text:"恥ずかしくてあまり見たくないと思う", score:5}, {text:"別人のように感じて、特になんの感情も湧かない", score:7}]},
+            { id: 33, q: "電車の中でスマートフォンを使えない状況になったら？", cat: 1, m: 'S', options: [{text:"窓の外の景色をぼんやりと眺める", score:10}, {text:"車内の広告や乗客を人間観察する", score:8}, {text:"頭の中で今日の予定や考え事をする", score:5}, {text:"目を閉じて休んだり、眠ったりする", score:7}, {text:"時間が経つのが遅く感じてそわそわする", score:3}]},
+            { id: 34, q: "料理をするとき、レシピを見る派？見ない派？", cat: 3, m: 'P', options: [{text:"大体の流れだけ見て、あとは目分量で作る", score:10}, {text:"レシピをきっちり測って忠実に作る", score:3}, {text:"レシピは一切見ず、完全なオリジナルで作る", score:8}, {text:"家にあるもので適当に何か作ってみる", score:9}, {text:"料理は苦手なので、そもそもあまり作らない", score:5}]},
+            { id: 35, q: "旅行の計画を立てるとき、あなたのスタイルは？", cat: 3, m: 'P', options: [{text:"交通と宿だけ決めて、あとは現地で考える", score:10}, {text:"分単位でスケジュールをびっしり決める", score:3}, {text:"行きたい場所だけいくつかピックアップしておく", score:8}, {text:"全て誰か（同行者やツアー）にお任せする", score:6}, {text:"計画を立てるのが面倒で、直前まで何もしない", score:7}]},
+            { id: 36, q: "自分にとっての「家」とはどんな場所？", cat: 0, m: 'I', options: [{text:"完全にオフになれる、自分だけの安全な聖域", score:10}, {text:"睡眠をとって体を休めるための機能的な場所", score:5}, {text:"家族や大切な人と過ごす温かい空間", score:8}, {text:"趣味や好きなものに囲まれた秘密基地", score:9}, {text:"特にこだわりはなく、ただ生活する場所", score:6}]},
+            { id: 37, q: "待ち合わせ場所に相手が遅れてきている時、あなたはどう過ごす？", cat: 4, m: 'A', options: [{text:"スマホを見ながら自分のペースで気長に待つ", score:10}, {text:"イライラしてすぐに連絡を入れる", score:3}, {text:"近くのお店をぶらぶらして時間を潰す", score:8}, {text:"相手に何かあったのではと心配になる", score:5}, {text:"遅刻した分、あとで奢らせようと考える", score:4}]},
+            { id: 38, q: "映画を観終わった後、一番最初にしたいことは？", cat: 2, m: 'F', options: [{text:"一人で静かに余韻に浸る", score:10}, {text:"一緒に観た人と感想を語り合う", score:8}, {text:"ネットで他の人の考察やレビューを読む", score:5}, {text:"特になし。すぐに日常に戻る", score:7}, {text:"面白かったシーンを反芻する", score:6}]},
+            { id: 39, q: "プレゼントを選ぶとき、最も重視するのは？", cat: 2, m: 'F', options: [{text:"相手が喜ぶ顔を想像して直感で選ぶ", score:10}, {text:"実用的で長く使えるものを選ぶ", score:4}, {text:"相手から直接欲しいものを聞く", score:6}, {text:"流行りのものや話題のアイテムを選ぶ", score:5}, {text:"自分がもらって嬉しいものをあげる", score:7}]},
+            { id: 40, q: "自分の部屋で、一番落ち着く場所は？", cat: 0, m: 'I', options: [{text:"ベッドやソファの上で寝転がっている時", score:10}, {text:"デスクに向かって作業している時", score:4}, {text:"窓際で外の景色を眺めている時", score:8}, {text:"お気に入りの椅子に深く腰掛けている時", score:7}, {text:"特に定位置はなく、どこでも落ち着く", score:6}]}
         ];
-
-        // 50問に増やす。ただし、ベースIDを記録しておき、選出時に同じベースIDを選ばないようにする
-        const questionsPool = [...baseQuestions];
-        while(questionsPool.length < 50) {
-            const b = baseQuestions[questionsPool.length % baseQuestions.length];
-            questionsPool.push({
-                ...b,
-                id: questionsPool.length + 1,
-                baseId: b.baseId,
-                q: b.q + " (深度測定)"
-            });
-        }
 
         let selectedQuestions = [];
         let currentIdx = 0;
@@ -327,20 +331,11 @@
 
         // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
-            if (reset) eraseCookie('ma_true_algo');
+            if (reset) eraseCookie('ma_true_algo_perfect');
             
-            // 完全に重複（同じbaseId）を排除して10問をランダム抽出
+            // 40問のユニークプールから完全にランダムに10問を抽出
             let shuffledPool = [...questionsPool].sort(() => Math.random() - 0.5);
-            let usedBaseIds = new Set();
-            selectedQuestions = [];
-
-            for (let q of shuffledPool) {
-                if (!usedBaseIds.has(q.baseId)) {
-                    selectedQuestions.push(q);
-                    usedBaseIds.add(q.baseId);
-                }
-                if (selectedQuestions.length === 10) break;
-            }
+            selectedQuestions = shuffledPool.slice(0, 10);
 
             currentIdx = 0; totalScore = 0; historyArr = [];
             catScores = [0, 0, 0, 0, 0]; catCounts = [0, 0, 0, 0, 0];
@@ -409,13 +404,13 @@
 
         function saveToCookie() {
             const data = { idx: currentIdx, tot: totalScore, cs: catScores, cc: catCounts, hist: historyArr, mbti: mbtiScore, qids: selectedQuestions.map(sq => sq.id) };
-            setCookie('ma_true_algo', JSON.stringify(data), 7);
+            setCookie('ma_true_algo_perfect', JSON.stringify(data), 7);
         }
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            eraseCookie('ma_true_algo');
+            eraseCookie('ma_true_algo_perfect');
             
             const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
@@ -426,7 +421,7 @@
         }
 
         function processDisplay() {
-            // 純粋な計算式（10点 × 10問 = 100点満点）。本人が自身の回答を選べば確実に100%になる。
+            // 純粋な計算式（10点 × 10問 = 100点満点）。
             const final = Math.min(100, Math.round((totalScore / 100) * 100));
             
             document.getElementById('result-score').innerText = `${final}%`;
@@ -444,7 +439,7 @@
             document.getElementById('sns-mbti').innerText = mbtiName.split(' ')[0];
 
             document.getElementById('result-desc').innerText = final === 100 ? 
-                "マ度 100% —— あなたの中に潜む本質が、他の誰でもない『まさひろ』であることを完全に証明しました。自分にとっての心地よさと、時に顔を出す成果への熱意。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
+                "マ度 100% —— あなたの中に潜む本質が、他の誰でもない『まさひろ』であることを完全に証明しました。自分にとっての心地よさと、時に顔を出す成果への熱意や強いこだわり。矛盾のない等身大のその姿こそが、真の『マ』です。" : 
                 "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
             let log = "";
@@ -499,7 +494,7 @@
             });
         }
 
-        // iOS(iPhone)の場合はShare APIを使い、それ以外はコピーする
+        // iOS(iPhone)ネイティブの共有メニュー(Share API)を使用
         function shareLink() {
             const url = window.location.href;
             const score = document.getElementById('result-score').innerText;
@@ -511,7 +506,7 @@
                     text: text,
                     url: url
                 }).then(() => {
-                    showToast("共有メニューを開きました");
+                    // 共有成功
                 }).catch((error) => {
                     fallbackCopy(text + '\n' + url);
                 });
@@ -531,7 +526,7 @@
         }
 
         function resumeDiagnosis() {
-            const saved = getCookie('ma_true_algo');
+            const saved = getCookie('ma_true_algo_perfect');
             if (saved) {
                 const d = JSON.parse(saved);
                 currentIdx = d.idx; totalScore = d.tot; catScores = d.cs; catCounts = d.cc; historyArr = d.hist; mbtiScore = d.mbti; 
@@ -554,7 +549,7 @@
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        function resetAndRestart() { eraseCookie('ma_true_algo'); location.href = window.location.pathname; }
+        function resetAndRestart() { eraseCookie('ma_true_algo_perfect'); location.href = window.location.pathname; }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
@@ -567,7 +562,7 @@
                     document.getElementById('result-screen').classList.remove('hidden');
                     setTimeout(processDisplay, 300);
                 } catch(e) {}
-            } else if (getCookie('ma_true_algo')) {
+            } else if (getCookie('ma_true_algo_perfect')) {
                 document.getElementById('resume-container').classList.remove('hidden');
             }
         };
