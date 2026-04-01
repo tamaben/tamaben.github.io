@@ -98,7 +98,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* 90%以上で表示される「マ認定」バッジのスタイル */
         .cert-badge {
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(218, 165, 32, 0.05) 100%);
             border: 1px solid rgba(255, 215, 0, 0.5);
@@ -210,7 +209,7 @@
                     <p id="result-desc" class="text-sm text-gray-300 leading-loose"></p>
                 </div>
                 
-                <!-- ワンポイントアドバイス（動的生成） -->
+                <!-- ワンポイントアドバイス -->
                 <div class="text-left mt-6 p-5 rounded-xl border border-[var(--accent-primary)] border-opacity-30 bg-[var(--accent-dim)]">
                     <h4 class="text-xs text-white font-bold mb-3 uppercase tracking-widest flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[var(--accent-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -222,7 +221,7 @@
                 </div>
             </div>
 
-            <!-- 操作ボタン群（画像保存対象外） -->
+            <!-- 操作ボタン群 -->
             <div class="flex flex-col gap-3">
                 <button onclick="downloadImage()" class="w-full py-4 bg-[var(--accent-primary)] text-[#0d1117] rounded-lg font-bold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,22 +249,17 @@
     </div>
 
     <script>
-        /*
-         * ISFP-A (マ本人) のリアルな回答を10点に最適化した最終ロジック
-         * カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
-         */
+        // カテゴリ(cat): 0=自然体(Nature), 1=調和(Harmony), 2=感覚(Sense), 3=柔軟性(Flex), 4=自己受容(Accept)
         const questionsPool = [
             { q: "【SNS】SNS（XやInstagramなど）との付き合い方は？", cat: 0, options: [ { text: "主に見る専門で、自分のことはあまり発信しない", score: 10 }, { text: "気の合う友人とのやり取りだけ楽しむ", score: 8 }, { text: "普通に投稿もするし見る", score: 5 }, { text: "有益な情報を発信して多くの人に見られたい", score: 2 }, { text: "常に自分の状況をアピールし、いいねを集めたい", score: 0 } ] },
             { q: "【買物】服や雑貨など、何かを買う時の決め手は？", cat: 2, options: [ { text: "直感。なんとなく「いいな」と惹かれたら", score: 10 }, { text: "自分の感覚に合っていて、心地よく使えるか", score: 8 }, { text: "コスパとデザインのバランス", score: 5 }, { text: "事前にスペックや口コミを徹底的に比較する", score: 2 }, { text: "最新トレンドか、人からどう見られるか", score: 0 } ] },
             { q: "【仕事/作業】タスクや趣味の進め方で一番近いのは？", cat: 3, options: [ { text: "気分が乗った時に自分のペースで一気に進める", score: 10 }, { text: "締め切りは守るが、やり方は自由にしたい", score: 8 }, { text: "与えられた通りに普通にこなす", score: 5 }, { text: "明確な計画やマニュアルに沿って進める", score: 2 }, { text: "自分がリーダーになり、全員の動きを管理する", score: 0 } ] },
             { q: "【日常】予定のない日の急な誘い。どう対応する？", cat: 1, options: [ { text: "その時の気分で決める", score: 10 }, { text: "行きたければ行くし、面倒なら断る", score: 8 }, { text: "とりあえず行く", score: 5 }, { text: "予定が崩れるのが嫌なので基本断る", score: 2 }, { text: "むしろ自分からもっと人を集めて大規模にする", score: 0 } ] },
-            
             { q: "【価値観】ルールや規則についての考え方に最も近いものは？", cat: 3, options: [ { text: "状況に合わせて柔軟に変えたり、感覚で判断する方が良い", score: 10 }, { text: "基本的には守るが、意味のないルールは好きではない", score: 8 }, { text: "どちらともいえない・普通", score: 5 }, { text: "社会を成り立たせるために、全員が厳格に守るべきだ", score: 2 }, { text: "ルールは自分が作って人を従わせるものだ", score: 0 } ] },
             { q: "【行動】友人との待ち合わせ。あなたのよくあるパターンは？", cat: 3, options: [ { text: "その時の気分や状況による", score: 10 }, { text: "なんとなく準備して、ピッタリか数分遅れるくらい", score: 8 }, { text: "急いで向かって、ギリギリ間に合うことが多い", score: 5 }, { text: "必ず5分〜10分前には到着して待っている", score: 2 }, { text: "事前に綿密なスケジュールを組み、絶対に遅刻しない", score: 0 } ] },
             { q: "【対人】他人が明らかに間違った選択（失敗しそうな事）をしようとしている時、どうしますか？", cat: 1, options: [ { text: "相手との関係性によって対応を変える", score: 10 }, { text: "強くは止めない。波風を立てず見守る", score: 8 }, { text: "やんわりと「大丈夫？」とだけ声をかける", score: 5 }, { text: "論理的に間違いを指摘し、正しい選択をするよう説得する", score: 2 }, { text: "絶対に止めに入り、自分のやり方に従わせる", score: 0 } ] },
             { q: "【思考】何かトラブルが起きたとき、最初にどこにフォーカスしますか？", cat: 0, options: [{ text: "「とりあえず今はどうしよう」と、目の前の現実や自分の感覚", score: 10 }, { text: "周囲の人がどう感じているか、雰囲気が悪くならないか", score: 8 }, { text: "わからない・ケースバイケース", score: 5 }, { text: "「なぜ起きたか」という根本的な原因究明", score: 2 }, { text: "「誰の責任か」を明確にし、直ちに改善すること", score: 0 } ] },
             { q: "【環境】作業や趣味をする「自分の空間」の整理整頓についてはどうですか？", cat: 2, options: [ { text: "気分が乗った時に一気に片付ける", score: 10 }, { text: "多少散らかっていても、自分がどこに何があるか分かればそれでいい", score: 8 }, { text: "普通。そこそこ綺麗にしている", score: 5 }, { text: "常に完璧に整理整頓されていないと落ち着かない", score: 2 }, { text: "モノの配置ルールを厳格に決め、1ミリのズレも許さない", score: 0 } ] },
-
             { q: "物や人に対して、「完璧さ」と「少しの歪み」どちらに惹かれますか？", cat: 2, options: [ { text: "どちらともいえない・特に何も感じない", score: 10 }, { text: "わからない。または、バランスが取れていて普通に整っているもの", score: 8 }, { text: "どちらかと言えば完璧なもの", score: 5 }, { text: "圧倒的に「歪み」や「欠落」「影」の部分に美しさを感じる", score: 2 }, { text: "完全無欠で非の打ち所がない、絶対的な完璧さ", score: 0 } ] },
             { q: "何もない休日、あなたはどう過ごすのが好きですか？", cat: 3, options: [ { text: "その日の気分で、なんとなく過ごす", score: 10 }, { text: "疲れていたら寝るし、気が向いたら趣味をする", score: 8 }, { text: "特に決まりはない", score: 5 }, { text: "事前に予定を詰め込んで、アクティブに遊ぶ", score: 2 }, { text: "誰にも会わず、世界との関わりを完全に断つ", score: 0 } ] },
             { q: "大人数での飲み会や集まりに参加したとき、あなたはどうなりますか？", cat: 1, options: [ { text: "誘われれば行くし、それなりに楽しんで帰る", score: 10 }, { text: "端の方で、仲の良い少人数とだけ話す", score: 8 }, { text: "状況による・あまり行かない", score: 5 }, { text: "エネルギーをもらえる。中心になって会話を回す", score: 2 }, { text: "ひどく消耗するため、絶対に断る", score: 0 } ] },
@@ -284,12 +278,9 @@
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let totalScore = 0;
-        
         let categoryScores = [0, 0, 0, 0, 0];
         let categoryCounts = [0, 0, 0, 0, 0];
         let chartInstance = null;
-
-        const categoryNames = ['自然体', '調和', '感覚', '柔軟性', '自己受容'];
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -301,14 +292,12 @@
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             const dataParam = params.get('d');
-            
             if (dataParam) {
                 try {
                     const data = JSON.parse(atob(dataParam));
                     totalScore = data.s;
                     categoryScores = data.cs;
                     categoryCounts = data.cc;
-                    
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
                     processResultDisplay();
@@ -331,7 +320,6 @@
             if(window.history.replaceState) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
-
             selectedQuestions = shuffleArray(questionsPool).slice(0, 10);
             currentQuestionIndex = 0;
             totalScore = 0;
@@ -340,13 +328,11 @@
             
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
-            
             renderQuestion();
         }
 
         function renderQuestion() {
             const q = selectedQuestions[currentQuestionIndex];
-            
             document.getElementById('q-counter').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / 10`;
             document.getElementById('q-progress').style.width = `${((currentQuestionIndex + 1) / 10) * 100}%`;
             document.getElementById('q-text').innerText = q.q;
@@ -354,7 +340,10 @@
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             
-            q.options.forEach((opt) => {
+            // 選択肢の表示順をランダムにシャッフル（固定位置クリックによる高得点を防止）
+            const shuffledOptions = shuffleArray(q.options);
+            
+            shuffledOptions.forEach((opt) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt.text;
@@ -369,7 +358,6 @@
             categoryCounts[questionObj.cat] += 1;
 
             currentQuestionIndex++;
-
             const quizScreen = document.getElementById('quiz-screen');
             if (currentQuestionIndex < selectedQuestions.length) {
                 quizScreen.style.opacity = '0';
@@ -399,7 +387,6 @@
         function processResultDisplay() {
             document.getElementById('result-score').innerText = `${totalScore}%`;
 
-            // 90%以上でマ認定バッジを表示
             if (totalScore >= 90) {
                 document.getElementById('certification-badge').classList.remove('hidden');
             } else {
@@ -432,24 +419,20 @@
             document.getElementById('result-mbti').innerText = expectedMBTI;
             document.getElementById('result-desc').innerText = description;
 
-            // カテゴリごとの平均を計算して、強み・弱みを判定し動的アドバイスを生成
             let chartData = categoryScores.map((score, i) => {
                 return categoryCounts[i] > 0 ? (score / categoryCounts[i]) : 5;
             });
 
-            // 動的アドバイス生成ロジック
             let maxScore = Math.max(...chartData);
             let minScore = Math.min(...chartData);
             let strongIndex = chartData.indexOf(maxScore);
             let weakIndex = chartData.indexOf(minScore);
             
-            // 全て同点(またはほぼ同点)の場合は全体的なアドバイス
             if (maxScore === minScore || (maxScore - minScore < 2)) {
-                strongIndex = 0; // デフォルト
+                strongIndex = 0;
             }
 
             let adviceStr = "";
-
             if (totalScore >= 90) {
                 adviceStr += "見事『マ認定』です！あなたの等身大でフラットな感覚は素晴らしい才能です。";
             } else if (totalScore >= 70) {
@@ -458,43 +441,35 @@
                 adviceStr += "少し肩に力が入りすぎているかもしれません。";
             }
 
-            // 強み（最大カテゴリ）に基づくテキスト
             const strengthTexts = [
-                "特に「飾らず直感に従う力」が突出しています。今のまま、自分のペースを崩さずにいてください。", // 0:自然体
-                "特に「周囲への優しい配慮」があなたの最大の武器です。ただ、自分の本音も同じくらい大切にしてあげてください。", // 1:調和
-                "特に「心地よいものを嗅ぎ分けるセンス」が抜群です。日常の小さな『好き』をもっと集めてみましょう。", // 2:感覚
-                "特に「状況に合わせる臨機応変さ」がピカイチです。計画通りにいかない時こそ、あなたの魅力が輝きます。", // 3:柔軟性
-                "特に「過去や影を受け入れる心の強さ」があります。そのブレない安定感が、周りに安心感を与えています。" // 4:自己受容
+                "特に「飾らず直感に従う力」が突出しています。今のまま、自分のペースを崩さずにいてください。",
+                "特に「周囲への優しい配慮」があなたの最大の武器です。ただ、自分の本音も同じくらい大切にしてあげてください。",
+                "特に「心地よいものを嗅ぎ分けるセンス」が抜群です。日常の小さな『好き』をもっと集めてみましょう。",
+                "特に「状況に合わせる臨機応変さ」がピカイチです。計画通りにいかない時こそ、あなたの魅力が輝きます。",
+                "特に「過去や影を受け入れる心の強さ」があります。そのブレない安定感が、周りに安心感を与えています。"
             ];
 
-            // 弱点またはアドバイスポイント（最小カテゴリ）に基づくテキスト
             const weakTexts = [
-                "時には難しく考えず、「なんか違う」という理由だけで行動しても大丈夫です。", // 0:自然体が低い
-                "周りに合わせすぎず、たまには「少しわがままかな？」と思うくらい自分のやり方を貫いてみましょう。", // 1:調和が低い
-                "効率や正解よりも、「なんか好き」という直感的な無駄を大切にすることで、よりマに近づきます。", // 2:感覚が低い
-                "ルールや計画に縛られず、「まあいっか」と手放す余白を持つと、心がもっと軽くなりますよ。", // 3:柔軟性が低い
-                "自分の影や失敗に囚われそうになったら、それもあなたを形作る『美しい一部』だと肯定してあげてください。" // 4:自己受容が低い
+                "時には難しく考えず、「なんか違う」という理由だけで行動しても大丈夫です。",
+                "周りに合わせすぎず、たまには「少しわがままかな？」と思うくらい自分のやり方を貫いてみましょう。",
+                "効率や正解よりも、「なんか好き」という直感的な無駄を大切にすることで、よりマに近づきます。",
+                "ルールや計画に縛られず、「まあいっか」と手放す余白を持つと、心がもっと軽くなりますよ。",
+                "自分の影や失敗に囚われそうになったら、それもあなたを形作る『美しい一部』だと肯定してあげてください。"
             ];
 
             adviceStr += "\n\n" + strengthTexts[strongIndex];
             
-            // 満点近くなければ、弱点アドバイスを追加
             if (totalScore < 90 && maxScore !== minScore) {
                 adviceStr += " " + weakTexts[weakIndex];
             }
 
             document.getElementById('result-advice').innerText = adviceStr;
-
             drawChart(chartData);
         }
 
         function drawChart(chartData) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
+            if (chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
@@ -512,25 +487,17 @@
                     }]
                 },
                 options: {
-                    layout: {
-                        padding: { left: 20, right: 20, top: 20, bottom: 20 }
-                    },
+                    layout: { padding: { left: 20, right: 20, top: 20, bottom: 20 } },
                     scales: {
                         r: {
-                            min: 0,
-                            max: 10,
+                            min: 0, max: 10,
                             ticks: { display: false, stepSize: 2 },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { 
-                                color: '#c9d1d9', 
-                                font: { size: 10, family: "'Noto Sans JP', sans-serif" } 
-                            },
+                            pointLabels: { color: '#c9d1d9', font: { size: 10, family: "'Noto Sans JP', sans-serif" } },
                             angleLines: { color: 'rgba(255, 255, 255, 0.1)' }
                         }
                     },
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     animation: { duration: 1000 }
                 }
             });
@@ -539,7 +506,6 @@
         function downloadImage() {
             showToast("画像を生成しています...");
             const captureArea = document.getElementById('capture-area');
-            
             html2canvas(captureArea, {
                 backgroundColor: "#0d1117",
                 scale: 2
