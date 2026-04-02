@@ -32,6 +32,7 @@
                 radial-gradient(circle at 90% 80%, rgba(39, 66, 47, 0.15) 0%, transparent 45%),
                 linear-gradient(135deg, #ffffff 0%, #edf1ee 100%);
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
@@ -157,6 +158,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .anim-ready {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .anim-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         #sns-export-area {
             position: fixed;
             left: -9999px;
@@ -170,9 +181,48 @@
             padding: 80px;
             background-image: radial-gradient(circle at 10% 10%, #f0f4f1 0%, transparent 50%);
         }
+
+        /* ===== 新規追加アニメーション ===== */
+        
+        /* 心が洗い出されるエフェクト（質問切替時） */
+        .purify-effect {
+            animation: purify 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        @keyframes purify {
+            0% { filter: blur(12px) contrast(1.1) brightness(1.2); opacity: 0; transform: scale(0.97); }
+            100% { filter: blur(0) contrast(1) brightness(1); opacity: 1; transform: scale(1); }
+        }
+
+        /* 暗い中間画面からのモワッと明転エフェクト */
+        .dark-to-light {
+            animation: darkToLight 2.5s ease-in-out forwards;
+        }
+        @keyframes darkToLight {
+            0% { background-color: #030604; backdrop-filter: blur(0px); opacity: 1; }
+            50% { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); opacity: 1; }
+            100% { background-color: rgba(255, 255, 255, 0); backdrop-filter: blur(0px); opacity: 0; pointer-events: none; }
+        }
+
+        /* ボタンの神秘的な明滅 */
+        .pulse-slow {
+            animation: pulseSlow 3s infinite;
+        }
+        @keyframes pulseSlow {
+            0%, 100% { opacity: 0.4; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+            50% { opacity: 1; text-shadow: 0 0 25px rgba(255,255,255,0.8); }
+        }
     </style>
 </head>
 <body>
+
+    <!-- 結果表示前の中間ダークスクリーン -->
+    <div id="reveal-screen" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#030604] transition-opacity duration-1000 opacity-0">
+        <button id="reveal-btn" onclick="revealResult()" class="text-gray-300 hover:text-white text-sm tracking-[0.8em] font-serif-en pulse-slow transition-colors duration-500 py-6 px-10 border border-transparent hover:border-white/20 rounded-full outline-none">
+            結果を見る
+        </button>
+        <!-- モワッと明転するためのオーバーレイ -->
+        <div id="reveal-overlay" class="absolute inset-0 pointer-events-none opacity-0"></div>
+    </div>
 
     <div class="app-wrapper">
         
@@ -206,41 +256,43 @@
                 <span id="q-counter" class="text-xs font-outfit text-gray-400">01 / 10</span>
             </div>
 
-            <div class="min-h-[10rem] mb-12 flex flex-col items-center text-center justify-center">
-                <span id="q-cat" class="text-[9px] uppercase tracking-[0.4em] text-[var(--leaf-green)] mb-4 font-bold font-serif-en">Analysis</span>
-                <h2 id="q-text" class="text-xl md:text-2xl font-bold text-[var(--accent-green)] leading-relaxed px-2"></h2>
+            <!-- 洗い出しエフェクトをかけるためのラッパー -->
+            <div id="purify-wrapper">
+                <div class="min-h-[10rem] mb-12 flex flex-col items-center text-center justify-center">
+                    <span id="q-cat" class="text-[9px] uppercase tracking-[0.4em] text-[var(--leaf-green)] mb-4 font-bold font-serif-en">Analysis</span>
+                    <h2 id="q-text" class="text-xl md:text-2xl font-bold text-[var(--accent-green)] leading-relaxed px-2"></h2>
+                </div>
+                <div id="options-container" class="space-y-2"></div>
             </div>
-
-            <div id="options-container" class="space-y-2"></div>
         </div>
 
         <!-- 結果画面 -->
         <div id="result-screen" class="hidden fade-in">
             <div id="capture-area" class="glass-panel text-center mb-8 bg-white" style="padding-bottom: 40px;">
-                <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Report</div>
-                
-                <div class="mb-10">
+                <div class="anim-ready" id="anim-header">
+                    <div class="font-serif-en text-[var(--leaf-green)] tracking-[0.6em] text-[10px] mb-8 uppercase pt-10 font-bold">Analysis Report</div>
                     <div class="text-[11px] text-gray-400 tracking-[0.4em] uppercase mb-4 font-bold">あなたのマ度（マ要素）</div>
                     <div class="font-outfit score-display" id="result-score">0%</div>
                 </div>
 
-                <div id="cert-badge" class="hidden mb-12">
-                    <div class="py-2.5 px-8 bg-green-50/50 border border-[var(--leaf-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em]">
-                        🌟 マ 本人認定
+                <div class="anim-ready" id="anim-badge">
+                    <div id="cert-badge" class="hidden mb-12">
+                        <div class="py-2.5 px-8 bg-green-50/50 border border-[var(--leaf-green)] text-[var(--accent-green)] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em]">
+                            🌟 マ 本人認定
+                        </div>
+                    </div>
+                    <div class="mb-10">
+                        <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
                     </div>
                 </div>
 
-                <div class="mb-10">
-                    <div class="inline-block bg-[var(--leaf-green)] text-white px-8 py-2.5 rounded-full text-xs font-bold tracking-widest shadow-sm" id="result-mbti">分析中</div>
-                </div>
-
-                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-8 border border-white mx-4 shadow-inner">
+                <div class="mb-12 flex justify-center bg-white/50 rounded-[2.5rem] p-8 border border-white mx-4 shadow-inner anim-ready" id="anim-chart">
                     <div style="position: relative; width: 100%; max-width: 280px; height: 280px;">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
-                <div class="text-left px-8 space-y-12 pb-6">
+                <div class="text-left px-8 space-y-12 pb-6 anim-ready" id="anim-text">
                     <div class="content-wrapper">
                         <h4 class="text-[10px] text-[var(--accent-green)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--mint-green)] pb-2">特性解析</h4>
                         <p id="result-desc" class="text-sm text-gray-600 leading-loose"></p>
@@ -248,13 +300,15 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-4 anim-ready" id="anim-buttons">
                 <button onclick="downloadImage('sns')" class="w-full py-5 btn-green text-sm uppercase shadow-xl">SNS用(正方形)を保存</button>
                 <button onclick="downloadImage('full')" class="w-full py-4 text-[var(--accent-green)] font-bold text-xs tracking-widest uppercase border border-[var(--accent-green)] rounded-2xl hover:bg-white transition-all">フルレポートを保存</button>
                 <button onclick="shareLink()" id="share-btn" class="w-full py-3 text-[10px] text-gray-400 tracking-widest uppercase border-b border-gray-200 hover:text-[var(--accent-green)] transition-all mt-4">結果を共有する</button>
             </div>
             
-            <button onclick="resetAndRestart()" class="w-full mt-12 mb-10 text-[10px] text-gray-300 tracking-[0.4em] uppercase hover:text-gray-500 transition-all">最初からやり直す</button>
+            <div class="anim-ready mt-12 mb-10 text-center" id="anim-reset">
+                <button onclick="resetAndRestart()" class="text-[10px] text-gray-300 tracking-[0.4em] uppercase hover:text-gray-500 transition-all">最初からやり直す</button>
+            </div>
         </div>
     </div>
 
@@ -285,9 +339,6 @@
 
     <script>
         // --- 質問プール（マ要素：7問抽出用、MBTI：3問抽出用） ---
-        // マ要素(MA)は14点満点。MBTIは1点満点。
-        // 全く異なる5つのアプローチの選択肢を用意
-
         const maQuestions = [
             { q: "誰かにプレゼントをもらった時の内面は？", type: 'ma', cat: 2, options: [{text:"自分の好みを分かってくれているかに感動する", score:14}, {text:"相手が選んでくれた気持ちそのものが嬉しい", score:10}, {text:"お返しの金額やタイミングをすぐに計算する", score:6}, {text:"実用的かどうかを冷静に判断する", score:3}, {text:"大袈裟に喜んで、その場の空気を盛り上げる", score:0}]},
             { q: "森で鳥の声を聞いたときの意識は？", type: 'ma', cat: 1, options: [{text:"響きそのものを全身で聴く", score:14}, {text:"美しいと感じて深く感動する", score:10}, {text:"その鳥の種類や生態を特定したくなる", score:6}, {text:"録音して誰かに教えたくなる", score:3}, {text:"特に何も考えず、別の思考に移る", score:0}]},
@@ -363,19 +414,11 @@
         let selectedQuestions = [];
         let currentIdx = 0;
         let totalScore = 0;
-        
-        // チャート用
         let catScores = [0, 0, 0, 0, 0];
         let catCounts = [0, 0, 0, 0, 0];
-        
-        // MBTI用
         let mbtiScore = {I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, A:0, T_:0};
-        
-        // ログ用
         let historyArr = [];
-        let radarChart = null;
 
-        // --- クッキー ---
         function setCookie(name, val, days) {
             const d = new Date();
             d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -402,11 +445,12 @@
             return arr;
         }
 
-        // --- 診断ロジック ---
         function startDiagnosis(reset = false) {
-            if (reset) eraseCookie('ma_ultimate_algo');
+            if (reset) {
+                eraseCookie('ma_ultimate_algo');
+                sessionStorage.removeItem('ma_anim_done');
+            }
             
-            // 割合の制御: マ要素7問, MBTI3問
             const selectedMa = shuffleArray(maQuestions).slice(0, 7);
             const selectedMbti = shuffleArray(mbtiQuestions).slice(0, 3);
             selectedQuestions = shuffleArray([...selectedMa, ...selectedMbti]);
@@ -429,6 +473,12 @@
         }
 
         function renderQuestion() {
+            // モワッと心が洗い出されるエフェクト
+            const wrapper = document.getElementById('purify-wrapper');
+            wrapper.classList.remove('purify-effect');
+            void wrapper.offsetWidth; 
+            wrapper.classList.add('purify-effect');
+
             const q = selectedQuestions[currentIdx];
             document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
             document.getElementById('q-text').innerText = q.q;
@@ -441,7 +491,7 @@
             container.innerHTML = '';
             [...q.options].sort(() => Math.random() - 0.5).forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn fade-in';
+                btn.className = 'option-btn';
                 btn.innerText = opt.text;
                 btn.onclick = () => handleAnswer(q, opt);
                 container.appendChild(btn);
@@ -449,7 +499,6 @@
         }
 
         function handleAnswer(q, opt) {
-            // MBTIの加算
             if (opt.mbti) {
                 for (let key in opt.mbti) {
                     mbtiScore[key] += opt.mbti[key];
@@ -466,8 +515,11 @@
 
             currentIdx++;
             saveToCookie();
-            if (currentIdx < 10) renderQuestion();
-            else showResult();
+            if (currentIdx < 10) {
+                renderQuestion();
+            } else {
+                showResult();
+            }
         }
 
         function goBack() {
@@ -492,7 +544,6 @@
         }
 
         function saveToCookie() {
-            // qidsはオブジェクトの内容を特定するのが難しいのでインデックスではなく問題文で保存するか簡略化する
             const data = { idx: currentIdx, tot: totalScore, cs: catScores, cc: catCounts, hist: historyArr, mbti: mbtiScore, qArray: selectedQuestions };
             setCookie('ma_ultimate_algo', JSON.stringify(data), 7);
         }
@@ -519,9 +570,56 @@
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            eraseCookie('ma_ultimate_algo');
             
+            const skipAnim = sessionStorage.getItem('ma_anim_done');
+            if (skipAnim) {
+                document.getElementById('result-screen').classList.remove('hidden');
+                finalizeResultAndDisplay(true);
+            } else {
+                // 1. ローディング画面表示
+                document.getElementById('loading-screen').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('calc-progress').style.width = '100%'; }, 50);
+                
+                // 2. ローディング後にダークスクリーン（中間画面）へ移行
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    const revealScreen = document.getElementById('reveal-screen');
+                    revealScreen.classList.remove('hidden');
+                    // フェードイン
+                    setTimeout(() => { revealScreen.style.opacity = '1'; }, 50);
+                }, 2000);
+            }
+        }
+
+        // 「結果を見る」ボタンを押した時の処理
+        function revealResult() {
+            const revealBtn = document.getElementById('reveal-btn');
+            const revealOverlay = document.getElementById('reveal-overlay');
+            const revealScreen = document.getElementById('reveal-screen');
+
+            // ボタンを消す
+            revealBtn.style.opacity = '0';
+            revealBtn.style.pointerEvents = 'none';
+
+            // モワッと明転するアニメーション
+            revealOverlay.classList.add('dark-to-light');
+            
+            // 明るくなるタイミングで裏側に結果画面を準備
+            setTimeout(() => {
+                document.getElementById('result-screen').classList.remove('hidden');
+                finalizeResultAndDisplay(false);
+            }, 1200);
+
+            // アニメーション完了後にダークスクリーンを完全に消す
+            setTimeout(() => {
+                revealScreen.classList.add('hidden');
+                revealScreen.style.opacity = '0';
+                revealOverlay.classList.remove('dark-to-light');
+            }, 2500);
+        }
+
+        function finalizeResultAndDisplay(skipAnim) {
+            eraseCookie('ma_ultimate_algo');
             const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
             const newUrl = window.location.pathname + '?d=' + encoded;
@@ -532,17 +630,22 @@
                 console.warn("プレビュー環境のためURL書き換えをスキップしました");
             }
 
-            setTimeout(processDisplay, 200);
+            processDisplay(skipAnim);
         }
 
-        function processDisplay() {
-            // 合計満点は MA(14点x7問=98) + MBTI(1点x3問=3) = 101点
+        function processDisplay(skipAnim) {
             const final = Math.min(100, totalScore);
             
             document.getElementById('result-score').innerText = `${final}%`;
             document.getElementById('sns-score').innerText = `${final}%`;
 
-            if (final >= 98) document.getElementById('cert-badge').classList.remove('hidden');
+            if (final >= 98) {
+                document.getElementById('cert-badge').classList.remove('hidden');
+                document.getElementById('sns-cert-badge').style.display = 'block';
+            } else {
+                document.getElementById('cert-badge').classList.add('hidden');
+                document.getElementById('sns-cert-badge').style.display = 'none';
+            }
 
             const i_e = mbtiScore.I >= mbtiScore.E ? "I" : "E";
             const s_n = mbtiScore.S >= mbtiScore.N ? "S" : "N";
@@ -558,19 +661,57 @@
 
             document.getElementById('result-desc').innerText = final >= 95 ? 
                 "あなたは、飾らない自然体の振る舞いと、揺るぎない独自の存在感（まさひろ性）を完全に一致させています。今の瞬間の心地よさを誰よりも信じて生きるその在り方は、真の『マ』の正体そのものです。" : 
-                "あなたは周囲との調和を大切にしながら、自分の感覚も信じることができる、非常に安定したマの素養を持っています。";
+                "あなたには一定のマ要素が存在します。自分の直感や実績への意識、そして何気ない日常の感覚をより大切にすることで、さらなるマ度に近づくことができるでしょう。";
 
-            const tips = ["こだわりは、あなたを守る聖域。","直感は、あなたを導く唯一の真実。","成果への渇望も、マの重要な欠片。","義務感さえも自分のリズムに変えて。"];
-            document.getElementById('result-advice').innerText = tips[final % tips.length];
-
-            let log = "";
-            historyArr.forEach((h, i) => { 
-                let typeMark = h.type === 'mbti' ? "[MBTI問] " : "[マ要素問] ";
-                log += `Q${String(i+1).padStart(2,'0')} ${typeMark}: ${h.q}\n=> ${h.a} (Score: ${h.score}pt)\n\n`; 
+            // 精度ログの構築
+            let logHtml = "";
+            historyArr.forEach((h, i) => {
+                let typeMark = h.type === 'mbti' ? "[MBTI] " : "[MA] ";
+                logHtml += `<div class="mb-4 pb-2 border-b border-[var(--soft-green)]">
+                    <div class="text-[var(--leaf-green)] font-bold mb-1">[Q${String(i+1).padStart(2,'0')}] ${typeMark} ${h.q}</div>
+                    <div class="text-white">=> ${h.a} <span class="text-[var(--accent-green)] bg-white px-1 rounded ml-1">Score: ${h.score}</span></div>
+                </div>`;
             });
-            document.getElementById('adjustment-log').innerText = log;
+            document.getElementById('adjustment-log').innerHTML = logHtml;
 
-            renderCharts();
+            const scoreEl = document.getElementById('result-score');
+            const avgData = catScores.map((s, i) => catCounts[i] > 0 ? (s / catCounts[i]) * (10/14) : 5);
+
+            if (skipAnim) {
+                document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
+                scoreEl.innerText = `${final}%`;
+                renderCharts(avgData);
+            } else {
+                sessionStorage.setItem('ma_anim_done', '1');
+                animateValue(scoreEl, 0, final, 3000);
+
+                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-buttons', 'anim-reset'];
+                let delay = 500;
+
+                animBlocks.forEach((id, index) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(id);
+                        if(el) {
+                            el.classList.add('anim-show');
+                            if (id === 'anim-chart') renderCharts(avgData);
+                            
+                            // 滑らかにスクロールして見せる
+                            if (index >= 2 && index < animBlocks.length) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+
+                            // 最後まで出たら、余韻を残して一番上に戻る
+                            if (index === animBlocks.length - 1) {
+                                setTimeout(() => {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }, 2000);
+                            }
+                        }
+                    }, delay);
+                    // 一つずつ少し滑らかな間を入れる (1.2秒)
+                    delay += 1200;
+                });
+            }
         }
 
         // 3本指トリプルタップ (隠しログ表示)
@@ -603,16 +744,33 @@
             }
         }
 
-        function renderCharts() {
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                const current = Math.floor(easeProgress * (end - start) + start);
+                
+                obj.innerText = `${current}%`;
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerText = `${end}%`;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            // MA質問の最高点は14なので、14を10としてスケール変換
-            const avg = catScores.map((s, i) => catCounts[i] > 0 ? (s / catCounts[i]) * (10/14) : 5);
             
             const config = {
                 type: 'radar',
                 data: {
                     labels: ['内面', '現実', '共感', '柔軟', '安定'],
-                    datasets: [{ data: avg, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
+                    datasets: [{ data: dataArray, backgroundColor: 'rgba(58, 90, 64, 0.15)', borderColor: '#3a5a40', borderWidth: 3, pointRadius: 0 }]
                 },
                 options: { 
                     responsive: true, 
@@ -628,11 +786,12 @@
                     animation: { duration: 1500 } 
                 }
             };
-            if (radarChart) radarChart.destroy();
-            radarChart = new Chart(ctx, config);
+            if (window.radarChartInstance) window.radarChartInstance.destroy();
+            window.radarChartInstance = new Chart(ctx, config);
             
             const snsCtx = document.getElementById('snsChart').getContext('2d');
-            new Chart(snsCtx, { ...config, options: { ...config.options, scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40' } } } } });
+            if (window.snsChartInstance) window.snsChartInstance.destroy();
+            window.snsChartInstance = new Chart(snsCtx, { ...config, options: { ...config.options, animation: false, scales: { r: { ...config.options.scales.r, pointLabels: { font: { size: 28 }, color: '#3a5a40' } } } } });
         }
 
         function downloadImage(type) {
@@ -652,6 +811,10 @@
                     clonedEl.style.background = "#ffffff";
                     
                     if(type === 'full') {
+                        clonedEl.querySelectorAll('.anim-ready').forEach(el => {
+                            el.style.opacity = '1';
+                            el.style.transform = 'none';
+                        });
                         clonedEl.querySelectorAll('.content-wrapper').forEach(b => {
                             b.style.marginBottom = '50px';
                             b.style.display = 'block';
@@ -686,7 +849,11 @@
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        function resetAndRestart() { eraseCookie('ma_ultimate_algo'); location.href = window.location.pathname; }
+        function resetAndRestart() { 
+            eraseCookie('ma_ultimate_algo'); 
+            sessionStorage.removeItem('ma_anim_done');
+            location.href = window.location.pathname; 
+        }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
@@ -701,7 +868,7 @@
                     totalScore = data.s || 0; catScores = data.cs || [0,0,0,0,0]; catCounts = data.cc || [1,1,1,1,1]; mbtiScore = data.m || {};
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('result-screen').classList.remove('hidden');
-                    setTimeout(processDisplay, 300);
+                    setTimeout(() => { processDisplay(true); }, 300);
                 } catch(e) { console.error(e); }
             } else if (getCookie('ma_ultimate_algo')) {
                 document.getElementById('resume-container').classList.remove('hidden');
