@@ -202,15 +202,13 @@
     </div>
 
     <script>
-        // 本人の発言・ログから完全に最適化されたマ要素100%データベース
+        // --- 100%マ要素（まさひろさんの思考）データベース ---
         const questionsPool =[
-            // 🌟 今回新規追加された「本人のリアルなマ要素」確定枠
             { q: "Q. 休日に家から一歩も出ない日、どんな風に過ごすことが多い？", type: 'select', options:[{ text: "スマホやPCを触って、ゴロゴロと無駄な時間を過ごす", score: 10, mbti: {P:2, I:1} }, { text: "溜まっていた家事や部屋の掃除を一気に片付ける", score: 0, mbti: {J:2} }, { text: "資格の勉強やスキルアップのための自己研鑽", score: 2, mbti: {T:1, J:1} }, { text: "新しい料理に挑戦したり、手の込んだ趣味に没頭する", score: 5, mbti: {Se:1, Fi:1} }] },
             { q: "Q. 日常生活で一番「イラッ」とするのはどんな時？", type: 'select', options:[{ text: "自分の作業や集中していることを邪魔された時", score: 10, mbti: {I:2, Te:1} }, { text: "約束の時間やルールを守らない人を見た時", score: 0, mbti: {J:2} }, { text: "他人の好きなものや趣味を頭ごなしに否定された時", score: 5, mbti: {Fi:2} }, { text: "非論理的で理不尽な感情をぶつけられた時", score: 2, mbti: {T:2} }] },
             { q: "Q. 欲しいものを見つけた時のあなたの行動パターンは？", type: 'select', options:[{ text: "何も考えずに、直感でパッと買ってしまうことがある", score: 10, mbti: {Se:2, P:1} }, { text: "本当に必要か何日も熟考してから買う", score: 0, mbti: {J:2, Te:1} }, { text: "口コミやレビューを隅々まで比較して決める", score: 2, mbti: {T:1, J:1} }, { text: "誰かにおすすめされたり、流行っているものを買う", score: 5, mbti: {Fe:1} }] },
             { q: "Q. 日々の「食事」に関して、どのようなこだわりがありますか？", type: 'select', options:[{ text: "絶対の決まりはなく、その時の気分で自由に決める", score: 10, mbti: {P:2, Se:1} }, { text: "栄養バランスや健康を第一に考えて選ぶ", score: 0, mbti: {J:1, Si:1} }, { text: "行きつけの店や、いつもと同じメニューを頼むことが多い", score: 2, mbti: {Si:2} }, { text: "話題のグルメやSNSで見た新しいお店を開拓する", score: 5, mbti: {Ne:1, Fe:1} }] },
             
-            // 過去ログから確定している「10点」の選択肢群
             { q: "Q. 自分にとって一番「無駄だな」と感じる時間は？", type: 'select', options:[{ text: "終わりの見えない形だけの会議や説教", score: 0, mbti: {Te:2} }, { text: "気を使わなければいけない表面的な飲み会", score: 2, mbti: {Fi:2, I:1} }, { text: "休日に一歩も外に出ずダラダラしてしまった時間", score: 10, mbti: {Se:1, J:1} }, { text: "自分が心地よければ、どんな時間も無駄とは思わない", score: 5, mbti: {P:2, Fi:1} }] },
             { q: "Q. 部屋に飾るならどんなアートがいい？", type: 'select', options:[{ text: "有名な画家の価値ある作品", score: 0, mbti: {Te:1, J:1} }, { text: "何も飾らないのが一番すっきりして好き", score: 10, mbti: {I:1, S:1, P:1} }, { text: "自分が直感で「好き」と感じた無名の作品", score: 5, mbti: {Fi:2} }, { text: "部屋のインテリアに馴染むお洒落なもの", score: 2, mbti: {Se:1, Fe:1} }] },
             { q: "Q. プレッシャーがかかる大きな本番の前、あなたはどうなりますか？", type: 'situation', options:[{ label: "A", text: "現実逃避をして、全く関係のないことをし始める", score: 10, mbti: {P:2, Fi:1} }, { label: "B", text: "「なんとかなる」と開き直って、逆にリラックスできる", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "極度の緊張で食欲がなくなり、落ち着きがなくなる", score: 0, mbti: {F:1} }, { label: "D", text: "準備を完璧にするため、ギリギリまで確認作業に没頭する", score: 0, mbti: {J:2, I:1} }] },
@@ -221,6 +219,7 @@
             { q: "Q. 待ち合わせ場所にはどのくらい前に着く？", type: 'select', options:[{ text: "大体時間ピッタリか、少し遅れる", score: 10, mbti: {P:2} }, { text: "15分以上前には必ず着いている", score: 0, mbti: {J:2} }, { text: "5分前には着くようにしている", score: 5, mbti: {J:1} }, { text: "相手が着いたと連絡が来てから家を出る", score: 2, mbti: {P:2, I:1} }] },
             { q: "Q. スマホの通知が溜まっていると気になる。", type: 'scale', options:[{ text: "全く気にならない", score: 10, mbti: {P:2} }, { text: "あまり気にならない", score: 5, mbti: {P:1} }, { text: "まあ気になる", score: 2, mbti: {J:1} }, { text: "とても気になる（すぐ消す）", score: 0, mbti: {J:2} }] },
             { q: "Q. 自分のこだわりや美学は、誰に何と言われようと絶対に曲げたくない。", type: 'scale', options:[{ text: "強くそう思う", score: 8, mbti: {Fi:2, J:1} }, { text: "そう思う", score: 10, mbti: {Fi:1} }, { text: "あまり思わない", score: 2, mbti: {Fe:1, P:1} }, { text: "全く思わない", score: 0, mbti: {Fe:2} }] },
+            { q: "Q. 直感で「いいな」と思ったものは、後先考えずに買ってしまうことが多い。", type: 'scale', options:[{ text: "とても当てはまる", score: 5, mbti: {P:2, Se:1} }, { text: "まあ当てはまる", score: 10, mbti: {P:1} }, { text: "あまり当てはまらない", score: 2, mbti: {J:1} }, { text: "全く当てはまらない", score: 0, mbti: {J:2} }] },
             { q: "Q. 寝る前に明日着る服を決めておくタイプだ。", type: 'scale', options:[{ text: "全く思わない（朝決める）", score: 10, mbti: {P:2} }, { text: "あまり思わない", score: 5, mbti: {P:1} }, { text: "まあそう思う", score: 2, mbti: {J:1} }, { text: "とてもそう思う", score: 0, mbti: {J:2} }] },
             { q: "Q. 知らない名前のスパイスが効いた料理を食べた時の反応は？", type: 'situation', options:[{ label: "A", text: "自分の口に合うかどうかだけで判断する", score: 10, mbti: {Se:2} }, { label: "B", text: "未知の刺激をダイレクトに受け止める", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "珍しい味であることをすぐに誰かに共有する", score: 2, mbti: {E:2} }, { label: "D", text: "どんなスパイスが使われているか分析する", score: 0, mbti: {T:2, N:1} }] },
             { q: "Q. 子供の頃の記憶で一番鮮明に残っているのは？", type: 'select', options:[{ text: "記憶が曖昧で、あまりよく覚えていない", score: 10, mbti: {P:1, N:1} }, { text: "誰かに怒られたり褒められた時の「感情」", score: 5, mbti: {F:2} }, { text: "その時の情景の「色」や「空気の匂い」", score: 2, mbti: {Se:2} }, { text: "自分が何かのテストで取った「成績」", score: 0, mbti: {T:1, J:1} }] },
@@ -236,10 +235,16 @@
 
         let selectedQuestions =[]; let currentIdx = 0; let historyArr =[]; let devLogText = "";
 
+        // 後方互換性（過去のシェアURLも読み込めるようにするデコーダー）
         function decodeUrlData(d) {
             let decodedStr;
-            try { decodedStr = decodeURIComponent(escape(atob(d.split('&')[0]))); } catch (e) {
-                try { decodedStr = decodeURIComponent(atob(d.split('&')[0])); } catch (e2) { return null; }
+            try { decodedStr = decodeURIComponent(escape(atob(d.split('&')[0]))); } 
+            catch (e1) {
+                try { decodedStr = atob(d.split('&')[0]); } 
+                catch (e2) {
+                    try { decodedStr = decodeURIComponent(atob(d.split('&')[0])); } 
+                    catch (e3) { return null; }
+                }
             }
             try { return JSON.parse(decodedStr); } catch(e) { return null; }
         }
@@ -262,7 +267,7 @@
         }
 
         function startDiagnosis(reset = false) {
-            if (reset) eraseCookie('ma_adv_system_v7');
+            if (reset) eraseCookie('ma_adv_system_v8');
             selectedQuestions = shuffleArray(questionsPool).slice(0, 10);
             currentIdx = 0; historyArr =[]; devLogText = "";
             document.getElementById('start-screen').classList.add('hidden');
@@ -311,10 +316,10 @@
 
         function goBack() { if (currentIdx <= 0) return; currentIdx--; historyArr.pop(); saveToCookie(); renderQuestion(); }
 
-        function saveToCookie() { setCookie('ma_adv_system_v7', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); }
+        function saveToCookie() { setCookie('ma_adv_system_v8', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); }
 
         function resumeDiagnosis() {
-            const saved = getCookie('ma_adv_system_v7');
+            const saved = getCookie('ma_adv_system_v8');
             if (saved) {
                 const d = JSON.parse(saved); currentIdx = d.idx; historyArr = d.hist; selectedQuestions = d.qArray;
                 document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden');
@@ -337,7 +342,7 @@
             setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
         }
 
-        // --- マ度(素点)をベースにした絶対的アルゴリズム ---
+        // --- 純粋な「マ度」をベースにした完全調整アルゴリズム ---
         function calculateAdvancedScore(hist) {
             let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
             const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
@@ -365,7 +370,7 @@
             devLogText += `Cosine Similarity: ${(similarity * 100).toFixed(1)}%\n`;
             devLogText += `Cognitive Dissonance (Penalty): -${penalty} (Tolerance:${tolerance})\n`;
 
-            // マ度を正確に算出するため、rawScore（純粋な素点）をベースとする
+            // マ度を正確に算出するため、rawScore（純粋なマ要素の素点）をベースとする
             let finalPercent = rawScore;
             
             if (rawScore === 100) {
@@ -391,7 +396,7 @@
         function generateAdvancedProfileText(final, v) {
             if (final >= 99) return "【完全同期確認】\nあなたは、今この瞬間の心地よさを五感で楽しむ力や、何にも縛られないマイペースさ、そして自分の実績や他者の気持ちも大切にする多面的な要素を完璧なバランスで併せ持っています。その矛盾のないしなやかで合理的な在り方こそが、真の『マ』の正体そのものです。";
 
-            let text = "あなたの回答傾向を解析した結果、";
+            let text = "あなたの深層心理を解析した結果、";
             if (v.Fi > v.Fe && v.Fi > v.T) text += "自分の中に確固たる美学や心地よさの基準を持ち、それに従って生きる強さが見られます。";
             else if (v.Fe >= v.Fi) text += "周囲との調和や、他者の感情を思いやる優しさが非常に強く出ています。";
             else if (v.T > v.F && v.T > v.Fi) text += "感情に流されず、事実と論理に基づいて合理的・客観的に物事を判断する知性が際立っています。";
@@ -402,28 +407,51 @@
             if (v.J > v.P) text += "計画的で秩序を重んじる一面があり、";
             else text += "型に縛られない柔軟な行動力があり、";
 
-            text += `マの持つ「自由でしなやかな要素」とはベクトルが${final < 50 ? '大きく異なりますが' : '少し違いますが'}、あなたにはあなただけの素晴らしい強みとアイデンティティが証明されています。`;
+            text += `マの持つ「自由でしなやかな要素」とは${final < 50 ? '大きく異なりますが' : '少し違いますが'}、あなたにはあなただけの素晴らしい強みとアイデンティティが証明されています。`;
 
             return text;
         }
 
         function finalizeResultAndDisplay(skipAnim) {
-            eraseCookie('ma_adv_system_v7');
-            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ hist: historyArr }))));
+            eraseCookie('ma_adv_system_v8');
+            // 最新のURL生成 (バージョンフラグ v: 8 を付与して過去バージョンと区別)
+            const dataObj = { hist: historyArr, v: 8 };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj))));
             try { window.history.replaceState(null, '', window.location.pathname + '?d=' + encoded); } catch(e){}
-            processDisplay(skipAnim);
+            processDisplay(skipAnim, dataObj);
         }
 
-        function processDisplay(skipAnim) {
-            const calc = calculateAdvancedScore(historyArr);
-            const final = calc.final; const v = calc.vector;
+        function processDisplay(skipAnim, loadedData = null) {
+            let final = 0;
+            let v = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
+            let sim = null;
+
+            // 過去の共有URLからのアクセスかどうかの判定 (互換性維持)
+            if (loadedData && (loadedData.s !== undefined || loadedData.tot !== undefined) && !loadedData.v) {
+                // 過去バージョン (vフラグがない、かつ旧スコアが入っている)
+                final = loadedData.s !== undefined ? loadedData.s : loadedData.tot;
+                if (loadedData.m) v = Object.assign(v, loadedData.m);
+                else if (loadedData.mbti) v = Object.assign(v, loadedData.mbti);
+                
+                if (final >= 96) final = 100; // 旧バージョンの100%補正
+                
+                devLogText = "--- Legacy Version Data Loaded ---\nSaved Score: " + final + "\nAlgorithm: Legacy\n";
+                if (historyArr && historyArr.length > 0) devLogText += "History data is present but using legacy score.";
+                else devLogText += "Detailed history not available.";
+            } else {
+                // 最新バージョンの計算
+                const calc = calculateAdvancedScore(historyArr);
+                final = calc.final; 
+                v = calc.vector;
+                sim = calc.sim;
+            }
 
             if (final >= 99) document.getElementById('cert-badge').classList.remove('hidden');
 
             const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
             const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
             document.getElementById('result-mbti').innerText = (final >= 99) ? "ISFP-A" : `${i_e}${s_n}${f_t}${p_j}`;
-            document.getElementById('sync-rate').innerText = `Sync: ${(calc.sim * 100).toFixed(1)}%`;
+            document.getElementById('sync-rate').innerText = sim !== null ? `Sync: ${(sim * 100).toFixed(1)}%` : `Sync: Legacy`;
             document.getElementById('result-desc').innerText = generateAdvancedProfileText(final, v);
             document.getElementById('adjustment-log').innerText = devLogText;
 
@@ -506,15 +534,23 @@
             dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy); alert("結果のリンクをコピーしました！");
         }
 
-        function resetAndRestart() { eraseCookie('ma_adv_system_v7'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
+        function resetAndRestart() { eraseCookie('ma_adv_system_v8'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.get('d')) {
                 const data = decodeUrlData(params.get('d'));
-                if (data && data.hist) { historyArr = data.hist; document.getElementById('start-screen').classList.add('hidden'); document.getElementById('result-screen').classList.remove('hidden'); setTimeout(() => processDisplay(true), 300); }
-            } else if (getCookie('ma_adv_system_v7')) { document.getElementById('resume-container').classList.remove('hidden'); }
-        };
-    </script>
+                if (data) { 
+                    historyArr = data.hist ||[];
+document.getElementById('start-screen').classList.add('hidden');
+document.getElementById('result-screen').classList.remove('hidden');
+setTimeout(() => processDisplay(true, data), 300);
+}
+} else if (getCookie('ma_adv_system_v8')) {
+document.getElementById('resume-container').classList.remove('hidden');
+}
+};
+</script>
+
 </body>
 </html>
