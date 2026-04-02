@@ -469,7 +469,13 @@
             const data = { s: totalScore, cs: catScores, cc: catCounts, m: mbtiScore };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
             const newUrl = window.location.pathname + '?d=' + encoded;
-            window.history.pushState({path: newUrl}, '', newUrl);
+            
+            try {
+                // iframeのセキュリティ制限でエラーになる場合があるため、try-catchで囲む
+                window.history.pushState({path: newUrl}, '', newUrl);
+            } catch (e) {
+                console.warn("プレビュー環境のためURLの書き換えをスキップしました", e);
+            }
 
             processDisplay(skipAnim);
         }
