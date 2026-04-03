@@ -99,6 +99,10 @@
         #log-modal.show { opacity: 1; pointer-events: auto; }
         #log-modal .content { background: #ffffff; color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh; border-radius: 1.5rem; padding: 30px; overflow-y: auto; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 10px; }
+        
+        /* テキストのスタイル調整用 */
+        .desc-text p { margin-bottom: 0.75rem; }
+        .desc-text strong { display: inline-block; margin-bottom: 0.25rem; }
     </style>
 </head>
 <body>
@@ -166,18 +170,29 @@
                 <div style="position: relative; width: 100%; max-width: 280px; height: 280px;"><canvas id="radarChart"></canvas></div>
             </div>
             <div class="text-left px-8 space-y-10 pb-6">
+                <!-- 基本性格の深層プロファイリング -->
                 <div class="anim-ready" id="anim-text">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>深層プロファイリング</span>
                         <span class="text-[8px] text-[var(--accent-core)] font-serif-en" id="sync-rate">Sync: --%</span>
                     </h4>
-                    <p id="result-desc" class="text-[13.5px] text-gray-700 leading-loose font-medium"></p>
+                    <div id="result-desc" class="text-[13px] text-gray-700 leading-relaxed font-medium desc-text"></div>
                 </div>
+                
+                <!-- マとのギャップ分析 -->
+                <div class="anim-ready" id="anim-diff">
+                    <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
+                        <span>「マ」とのギャップ分析</span>
+                    </h4>
+                    <div id="result-diff" class="text-[13px] text-gray-700 leading-relaxed font-medium"></div>
+                </div>
+
+                <!-- ワンポイントアドバイス -->
                 <div class="bg-white/90 p-6 rounded-3xl border border-gray-100 shadow-sm anim-ready" id="anim-advice">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <span class="w-2 h-2 bg-[var(--accent-core)] rounded-full shadow-[0_0_8px_var(--accent-core)]"></span>AIによるワンポイント
+                        <span class="w-2 h-2 bg-[var(--accent-core)] rounded-full shadow-[0_0_8px_var(--accent-core)]"></span>AIからの本格アドバイス
                     </h4>
-                    <p id="result-advice" class="text-[13px] text-gray-600 leading-relaxed font-medium"></p>
+                    <div id="result-advice" class="text-[13px] text-gray-600 leading-relaxed font-medium"></div>
                 </div>
             </div>
         </div>
@@ -191,6 +206,7 @@
     </div>
 </div>
 
+<!-- 開発者ログモーダル -->
 <div id="log-modal">
     <div class="content relative">
         <h3 class="text-lg font-bold mb-2 text-[var(--accent-core)] font-serif-en">Vector Data Log</h3>
@@ -201,13 +217,12 @@
 </div>
 
 <script>
-    // --- 100%マ要素（まさひろさんの思考）データベース ---
+    // --- 100%マ要素データベース ---
     const questionsPool =[
         { q: "Q. 休日に家から一歩も出ない日、どんな風に過ごすことが多い？", type: 'select', options:[{ text: "スマホやPCを触って、ゴロゴロと無駄な時間を過ごす", score: 10, mbti: {P:2, I:1} }, { text: "溜まっていた家事や部屋の掃除を一気に片付ける", score: 0, mbti: {J:2} }, { text: "資格の勉強やスキルアップのための自己研鑽", score: 2, mbti: {T:1, J:1} }, { text: "新しい料理に挑戦したり、手の込んだ趣味に没頭する", score: 5, mbti: {Se:1, Fi:1} }] },
         { q: "Q. 日常生活で一番「イラッ」とするのはどんな時？", type: 'select', options:[{ text: "自分の作業や集中していることを邪魔された時", score: 10, mbti: {I:2, Te:1} }, { text: "約束の時間やルールを守らない人を見た時", score: 0, mbti: {J:2} }, { text: "他人の好きなものや趣味を頭ごなしに否定された時", score: 5, mbti: {Fi:2} }, { text: "非論理的で理不尽な感情をぶつけられた時", score: 2, mbti: {T:2} }] },
         { q: "Q. 欲しいものを見つけた時のあなたの行動パターンは？", type: 'select', options:[{ text: "何も考えずに、直感でパッと買ってしまうことがある", score: 10, mbti: {Se:2, P:1} }, { text: "本当に必要か何日も熟考してから買う", score: 0, mbti: {J:2, Te:1} }, { text: "口コミやレビューを隅々まで比較して決める", score: 2, mbti: {T:1, J:1} }, { text: "誰かにおすすめされたり、流行っているものを買う", score: 5, mbti: {Fe:1} }] },
         { q: "Q. 日々の「食事」に関して、どのようなこだわりがありますか？", type: 'select', options:[{ text: "絶対の決まりはなく、その時の気分で自由に決める", score: 10, mbti: {P:2, Se:1} }, { text: "栄養バランスや健康を第一に考えて選ぶ", score: 0, mbti: {J:1, Si:1} }, { text: "行きつけの店や、いつもと同じメニューを頼むことが多い", score: 2, mbti: {Si:2} }, { text: "話題のグルメやSNSで見た新しいお店を開拓する", score: 5, mbti: {Ne:1, Fe:1} }] },
-        
         { q: "Q. 自分にとって一番「無駄だな」と感じる時間は？", type: 'select', options:[{ text: "終わりの見えない形だけの会議や説教", score: 0, mbti: {Te:2} }, { text: "気を使わなければいけない表面的な飲み会", score: 2, mbti: {Fi:2, I:1} }, { text: "休日に一歩も外に出ずダラダラしてしまった時間", score: 10, mbti: {Se:1, J:1} }, { text: "自分が心地よければ、どんな時間も無駄とは思わない", score: 5, mbti: {P:2, Fi:1} }] },
         { q: "Q. 部屋に飾るならどんなアートがいい？", type: 'select', options:[{ text: "有名な画家の価値ある作品", score: 0, mbti: {Te:1, J:1} }, { text: "何も飾らないのが一番すっきりして好き", score: 10, mbti: {I:1, S:1, P:1} }, { text: "自分が直感で「好き」と感じた無名の作品", score: 5, mbti: {Fi:2} }, { text: "部屋のインテリアに馴染むお洒落なもの", score: 2, mbti: {Se:1, Fe:1} }] },
         { q: "Q. プレッシャーがかかる大きな本番の前、あなたはどうなりますか？", type: 'situation', options:[{ label: "A", text: "現実逃避をして、全く関係のないことをし始める", score: 10, mbti: {P:2, Fi:1} }, { label: "B", text: "「なんとかなる」と開き直って、逆にリラックスできる", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "極度の緊張で食欲がなくなり、落ち着きがなくなる", score: 0, mbti: {F:1} }, { label: "D", text: "準備を完璧にするため、ギリギリまで確認作業に没頭する", score: 0, mbti: {J:2, I:1} }] },
@@ -236,7 +251,6 @@
 
     function decodeUrlData(d) {
         let decodedStr;
-        // 修正ポイント：URLパラメータ化の際に消えてしまった「+」を復元する
         const b64 = d.split('&')[0].replace(/ /g, '+');
         try { decodedStr = decodeURIComponent(escape(atob(b64))); } 
         catch (e1) {
@@ -342,7 +356,6 @@
         setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
     }
 
-    // --- 純粋な「マ度」をベースにした完全調整アルゴリズム ---
     function calculateAdvancedScore(hist) {
         let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
         const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
@@ -366,97 +379,135 @@
         let conflictJ_P = Math.max(0, Math.min(mbtiVector.J, mbtiVector.P) - tolerance);
         let penalty = (conflictT_F + conflictJ_P) * 1.5;
 
-        devLogText += `\nRaw Score (マ度): ${rawScore}/100\n`;
+        devLogText += `\nRaw Score: ${rawScore}/100\n`;
         devLogText += `Cosine Similarity: ${(similarity * 100).toFixed(1)}%\n`;
-        devLogText += `Cognitive Dissonance (Penalty): -${penalty} (Tolerance:${tolerance})\n`;
 
-        // マ度を正確に算出するため、rawScore（純粋なマ要素の素点）をベースとする
         let finalPercent = rawScore;
-        
-        if (rawScore === 100) {
-            finalPercent = 100;
-            devLogText += `\n>> [SYSTEM OVERRIDE] Perfect Route Detected. Locked to 100%.\n`;
-        } else if (rawScore >= 94) {
-            // 本人が1〜2問だけ違う選択肢を選んだ場合のゆらぎも99.9%に着地させる絶対調整
-            finalPercent = 99.9;
-            devLogText += `\n>>[SYSTEM OVERRIDE] Near Perfect Route Detected. Output: 99.9%.\n`;
-        } else {
-            // 一般の受診者は類似度やペナルティを少し加味してスコアを揺らす
+        if (rawScore === 100) { finalPercent = 100; devLogText += `\n>> Perfect Route Locked.\n`; } 
+        else if (rawScore >= 94) { finalPercent = 99.9; devLogText += `\n>> Near Perfect Output: 99.9%.\n`; } 
+        else {
             finalPercent = (rawScore * 0.8) + (similarity * 20) - (penalty * 0.5);
             finalPercent = Math.max(0, Math.min(99, finalPercent));
         }
 
-        if (finalPercent !== 99.9) {
-            finalPercent = Math.round(finalPercent);
-        }
+        if (finalPercent !== 99.9) finalPercent = Math.round(finalPercent);
 
         return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
     }
 
-    function generateAdvancedProfileText(final, v) {
-        if (final >= 99) return "【完全同期確認】\nあなたは、今この瞬間の心地よさを五感で楽しむ力や、何にも縛られないマイペースさ、そして自分の実績や他者の気持ちも大切にする多面的な要素を完璧なバランスで併せ持っています。その矛盾のないしなやかで合理的な在り方こそが、真の『マ』の正体そのものです。";
+    // MBTI的な詳細な基本性格と強みを生成する関数
+    function generateDetailedProfile(v, final) {
+        if (final >= 99) return "<p>あなたは、今この瞬間の心地よさを五感で楽しむ力や、何にも縛られないマイペースさ、そして自分の実績や他者の気持ちも大切にする多面的な要素を完璧なバランスで併せ持っています。その矛盾のないしなやかで合理的な在り方こそが、真の『マ』の正体そのものです。</p>";
 
-        let text = "あなたの深層心理を解析した結果、";
-        if (v.Fi > v.Fe && v.Fi > v.T) text += "自分の中に確固たる美学や心地よさの基準を持ち、それに従って生きる強さが見られます。";
-        else if (v.Fe >= v.Fi) text += "周囲との調和や、他者の感情を思いやる優しさが非常に強く出ています。";
-        else if (v.T > v.F && v.T > v.Fi) text += "感情に流されず、事実と論理に基づいて合理的・客観的に物事を判断する知性が際立っています。";
+        const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
+        const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
 
-        if (v.Se >= v.N) text += "また、五感を通じて今の現実を味わい尽くす適応力に優れています。";
-        else if (v.N > v.S && v.N > v.Se) text += "また、目に見えない意味や未来の可能性を想像する直感的な思考が働いています。";
+        let text = "";
+        
+        text += `<p><strong class="text-[var(--accent-dark)] border-b border-[var(--accent-core)]/40 pb-0.5">【基本性格と行動原理】</strong><br>`;
+        if (i_e === "I") text += "あなたは自分の内面世界を大切にし、ひとりの時間でエネルギーを充電するタイプです。";
+        else text += "あなたは外界との繋がりを重視し、人との交流や新しい環境から刺激を得てエネルギーを高めるタイプです。";
+        
+        if (s_n === "S") text += "物事を現実的かつ具体的に捉え、過去の経験や五感から得られる確かな情報を信頼します。";
+        else text += "目に見えない可能性や未来のビジョン、物事の裏にある意味や繋がりを直感的に見出すことに長けています。";
+        
+        if (f_t === "F") text += "決断を下す際は、論理よりも自分や他者の「感情」「価値観」「調和」を優先する傾向があります。";
+        else text += "感情に流されず、客観的な事実や論理的整合性に基づき、合理的で公平な判断を下すことを得意とします。";
 
-        if (v.J > v.P) text += "計画的で秩序を重んじる一面があり、";
-        else text += "型に縛られない柔軟な行動力があり、";
+        if (p_j === "J") text += "計画的で秩序を好み、物事の決着を早くつけてスッキリしたいという欲求が強いです。</p>";
+        else text += "型に縛られず、臨機応変に状況に適応し、選択肢を開いたままにしておく自由を好みます。</p>";
 
-        text += `マの持つ「自由でしなやかな要素」とは${final < 50 ? '大きく異なりますが' : '少し違いますが'}、あなたにはあなただけの素晴らしい強みとアイデンティティが証明されています。`;
+        text += `<p><strong class="text-[var(--accent-dark)] border-b border-[var(--accent-core)]/40 pb-0.5">【独自の強みと葛藤】</strong><br>`;
+        if (v.Fi >= 8) text += "あなたの中には「絶対に譲れない美学」があり、ブレない自己を持っているのが最大の強みです。しかし、時に周囲との妥協点を見出すのに苦労することがあるかもしれません。";
+        else if (v.Fe >= 8) text += "場の空気を読み、人への共感力とサポート力が非常に高いです。その反面、自分の本当の気持ちを後回しにして気疲れしてしまう傾向があります。";
+        else if (v.Te >= 8 || v.T >= 8) text += "効率的に目標を達成する推進力と問題解決能力はピカイチです。ただし、他人の感情的な非合理性にイライラしがちな部分もあります。";
+        else if (v.Se >= 8) text += "「今、この瞬間」を全力で楽しみ、危機的状況でも咄嗟に動ける身体的・感覚的な反応力を持っています。長期的な計画を立てるのは少し苦手かもしれません。";
+        else text += "多角的な視点から物事を捉え、極端に偏ることなく柔軟な発想ができる優れたバランス感覚を持っています。";
+        text += `</p>`;
 
         return text;
+    }
+
+    // 「マ」とのギャップを分析する関数
+    function generateMaGapAnalysis(final, v) {
+        if (final >= 99) return `<p>あなたは「マ」そのものです。思考回路に一切のズレがなく、完全に同期しています。これ以上の分析は不要です。</p>`;
+
+        let text = `<p class="mb-3">「マ」の絶対的領域（100%の理想形）は、<strong class="text-[var(--accent-core)]">『今この瞬間の直感と心地よさに全振りし、計画や世間の枠組みに一切縛られない究極の自由』</strong>です。<br>この絶対領域とあなたを比較した際の決定的なギャップは以下の通りです。</p>`;
+        text += `<ul class="list-none space-y-3 mt-2 text-[12.5px]">`;
+
+        // PとJのギャップ
+        if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【秩序の壁】</strong><br>「マ」が面倒なことを限界まで後回しにして開き直るのに対し、あなたは「やるべきことは片付けて安心したい」「計画通りに進めたい」という責任感や秩序が働き、真のルーズさに振り切れません。</div></li>`;
+        else text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【時間の波乗り】</strong><br>計画に縛られない自由な行動力は「マ」と非常に近い性質を持っています。その場のノリや直感を優先できる素晴らしい素質があります。</div></li>`;
+
+        // FとTのギャップ
+        if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【論理のストッパー】</strong><br>「マ」が「なんか好き」という直感だけで突き進むのに対し、あなたは「それは効率的か？」「データに基づくか？」という論理的思考が働き、直感だけで生きることを脳が拒否しています。</div></li>`;
+
+        // Fe vs Fi (他人軸か自分軸か)
+        if (v.Fe > v.Fi) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【調和への囚われ】</strong><br>「マ」が他人にどう思われようと自分の心地よさを優先するのに対し、あなたは周囲の空気や他人の気持ちを気遣いすぎてしまうため、完全な自分軸に至れていません。</div></li>`;
+
+        // NとSのギャップ
+        if (v.N > (v.S + v.Se)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【思考の浮遊】</strong><br>「マ」が目の前の食事や風景の「現実の心地よさ」をダイレクトに味わうのに対し、あなたは「意味」や「別の可能性」など、目に見えない世界へ思考が飛んでしまうため、現実に深く根を下ろしきれていません。</div></li>`;
+
+        text += `</ul>`;
+
+        if (final < 50) text += `<p class="mt-4 text-[11.5px] text-gray-500 bg-gray-50 p-3 rounded-lg">※あなたの思考は「マ」とは対極に近いですが、それは決して劣っているという意味ではなく、論理的・計画的・利他的といった社会で重宝される素晴らしい別の才能を持っている証拠です。</p>`;
+
+        return text;
+    }
+
+    // パーソナライズされたAIアドバイス
+    function getPersonalizedAdvice(final, mbtiType) {
+        if (final >= 99) return "あなたは既に究極の領域に達しています。世間の常識や他人の声に迷うことなく、今まで通り自分の直感と『心地よさ』だけを信じて突き進んでください。それがあなたにとって常に正解になります。";
+
+        const i_e = mbtiType.charAt(0); const f_t = mbtiType.charAt(2); const p_j = mbtiType.charAt(3);
+        let advice = "";
+
+        if (p_j === "J" && f_t === "T") advice = "タスクの完了や効率化に囚われすぎて、息がつまることはありませんか？ 今のあなたに必要なのは、「無駄を楽しむ余裕」です。休日はあえて何の予定も立てず、生産性を全く無視した行動をとってみることで、新しい視点が開けるかもしれません。";
+        else if (p_j === "J" && f_t === "F") advice = "周囲のために先回りして計画を立てたり、気を揉んだりして疲れ果てていませんか？ 「マ」のように、時には「なんとかなる」と問題を放置する勇気を持ってみてください。あなたが手を離しても、意外と世界は平和に回り続けます。";
+        else if (p_j === "P" && f_t === "T") advice = "好奇心旺盛で情報収集力は高いですが、理屈で考えすぎて行動が伴わないことがあるかもしれません。頭の中で分析するのを一度やめて、五感（視覚、味覚、聴覚）で直接「心地よい」と感じるものに、ただ身を委ねる時間を作ってみてください。";
+        else if (i_e === "E" && f_t === "F") advice = "人に囲まれ、誰かのために動くことで輝くあなたですが、自分自身の内なる声（本当の欲求）を見失いがちです。スマホの通知を切り、自分ひとりのためだけにお金と時間を使う「究極の自己中心的な行動」を週に1回試してみてください。";
+        else advice = "「マ」の要素まであと一歩です。あなたは柔軟で自分なりの価値観を持っていますが、最後の最後で世間の目を気にしていませんか？ 直感で「これだ！」と思ったものは、後先考えずに思い切って飛びついてみることで、さらに人生の満足度が上がります。";
+        
+        return advice;
     }
 
     function finalizeResultAndDisplay(skipAnim) {
         eraseCookie('ma_adv_system_v8');
         const dataObj = { hist: historyArr, v: 8 };
-        // 修正ポイント：今後シェアURLを発行する際、Base64の記号がブラウザ上で誤作動しないようエンコード処理を追加
         const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataObj)))));
         try { window.history.replaceState(null, '', window.location.pathname + '?d=' + encoded); } catch(e){}
         processDisplay(skipAnim, dataObj);
     }
 
     function processDisplay(skipAnim, loadedData = null) {
-        let final = 0;
-        let v = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
-        let sim = null;
+        let final = 0; let v = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 }; let sim = null;
 
-        // 過去の共有URLからのアクセスかどうかの判定 (互換性維持)
         if (loadedData && (loadedData.s !== undefined || loadedData.tot !== undefined) && !loadedData.v) {
-            // 過去バージョン (vフラグがない、かつ旧スコアが入っている)
             final = loadedData.s !== undefined ? loadedData.s : loadedData.tot;
             if (loadedData.m) v = Object.assign(v, loadedData.m);
             else if (loadedData.mbti) v = Object.assign(v, loadedData.mbti);
-            
-            if (final >= 96) final = 100; // 旧バージョンの100%補正
-            
-            devLogText = "--- Legacy Version Data Loaded ---\nSaved Score: " + final + "\nAlgorithm: Legacy\n";
-            if (historyArr && historyArr.length > 0) devLogText += "History data is present but using legacy score.";
-            else devLogText += "Detailed history not available.";
+            if (final >= 96) final = 100;
+            devLogText = "--- Legacy Version Data Loaded ---\n";
         } else {
-            // 最新バージョンの計算
             const calc = calculateAdvancedScore(historyArr);
-            final = calc.final; 
-            v = calc.vector;
-            sim = calc.sim;
+            final = calc.final; v = calc.vector; sim = calc.sim;
         }
 
         if (final >= 99) document.getElementById('cert-badge').classList.remove('hidden');
 
         const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
         const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
-        document.getElementById('result-mbti').innerText = (final >= 99) ? "ISFP-A" : `${i_e}${s_n}${f_t}${p_j}`;
+        const mbtiType = (final >= 99) ? "ISFP-A" : `${i_e}${s_n}${f_t}${p_j}`;
+        
+        document.getElementById('result-mbti').innerText = mbtiType;
         document.getElementById('sync-rate').innerText = sim !== null ? `Sync: ${(sim * 100).toFixed(1)}%` : `Sync: Legacy`;
-        document.getElementById('result-desc').innerText = generateAdvancedProfileText(final, v);
+        
+        // --- テキスト生成部 ---
+        document.getElementById('result-desc').innerHTML = generateDetailedProfile(v, final);
+        document.getElementById('result-diff').innerHTML = generateMaGapAnalysis(final, v);
+        document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
+        
         document.getElementById('adjustment-log').innerText = devLogText;
-
-        const tips = ["自分の直感を信じ切ることが、最も論理的な解になることもあります。","時には効率を手放し、ただ「心地よさ」だけを追求してみてください。","面倒なことは後回しにしても、世界は意外とうまく回ります。","飾らないそのままのあなたが、一番の魅力です。"];
-        document.getElementById('result-advice').innerText = final >= 99 ? "何も変える必要はありません。そのままのあなたで存在し続けてください。" : tips[Math.floor(final) % tips.length];
 
         let inner = Math.min(10, ((v.I + v.Fi) * 1.5) || 3); let real = Math.min(10, ((v.S + v.Se) * 1.5) || 3);
         let empathy = Math.min(10, ((v.F + v.Fe + v.Fi) * 1.2) || 4); let flex = Math.min(10, (v.P * 1.5) || 3);
@@ -472,7 +523,7 @@
         } else {
             sessionStorage.setItem('ma_anim_done', '1');
             animateValue(scoreEl, 0, final, 4000, () => {
-                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
+                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-diff', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
                 animBlocks.forEach((id, index) => {
                     setTimeout(() => {
                         const el = document.getElementById(id);
@@ -480,7 +531,7 @@
                             if (index >= 2 && index < animBlocks.length) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             if (index === animBlocks.length - 1) setTimeout(() => document.getElementById('anim-header').scrollIntoView({ behavior: 'smooth', block: 'center' }), 2000);
                         }
-                    }, delay); delay += 1000;
+                    }, delay); delay += 800;
                 });
             });
         }
@@ -491,15 +542,8 @@
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
             const current = Math.floor((1 - Math.pow(1 - progress, 4)) * (end - start) + start);
-            
-            if (progress < 1) {
-                obj.innerText = `${current}%`;
-                window.requestAnimationFrame(step);
-            } else {
-                obj.innerText = end === 99.9 ? "99.9%" : `${end}%`;
-                if (!triggered && callback) callback();
-            }
-            
+            if (progress < 1) { obj.innerText = `${current}%`; window.requestAnimationFrame(step); } 
+            else { obj.innerText = end === 99.9 ? "99.9%" : `${end}%`; if (!triggered && callback) callback(); }
             if (!triggered && current >= (end / 2)) { triggered = true; if(callback) callback(); }
         }; window.requestAnimationFrame(step);
     }
