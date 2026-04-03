@@ -191,7 +191,6 @@
     </div>
 </div>
 
-<!-- 開発者ログモーダル -->
 <div id="log-modal">
     <div class="content relative">
         <h3 class="text-lg font-bold mb-2 text-[var(--accent-core)] font-serif-en">Vector Data Log</h3>
@@ -235,14 +234,15 @@
 
     let selectedQuestions = []; let currentIdx = 0; let historyArr = []; let devLogText = "";
 
-    // 後方互換性（過去のシェアURLも読み込めるようにするデコーダー）
     function decodeUrlData(d) {
         let decodedStr;
-        try { decodedStr = decodeURIComponent(escape(atob(d.split('&')[0]))); } 
+        // 修正ポイント：URLパラメータ化の際に消えてしまった「+」を復元する
+        const b64 = d.split('&')[0].replace(/ /g, '+');
+        try { decodedStr = decodeURIComponent(escape(atob(b64))); } 
         catch (e1) {
-            try { decodedStr = atob(d.split('&')[0]); } 
+            try { decodedStr = atob(b64); } 
             catch (e2) {
-                try { decodedStr = decodeURIComponent(atob(d.split('&')[0])); } 
+                try { decodedStr = decodeURIComponent(atob(b64)); } 
                 catch (e3) { return null; }
             }
         }
@@ -414,9 +414,9 @@
 
     function finalizeResultAndDisplay(skipAnim) {
         eraseCookie('ma_adv_system_v8');
-        // 最新のURL生成 (バージョンフラグ v: 8 を付与して過去バージョンと区別)
         const dataObj = { hist: historyArr, v: 8 };
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj))));
+        // 修正ポイント：今後シェアURLを発行する際、Base64の記号がブラウザ上で誤作動しないようエンコード処理を追加
+        const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataObj)))));
         try { window.history.replaceState(null, '', window.location.pathname + '?d=' + encoded); } catch(e){}
         processDisplay(skipAnim, dataObj);
     }
