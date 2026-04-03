@@ -80,35 +80,32 @@
             transform: scale(1) translateY(0);
         }
 
-        /* プレミアムカード（枠なし・シャドウのみ） */
+        /* 完全に背景なし・透明なカードコンテナ */
         .premium-card {
-            background: var(--bg-card);
-            border-radius: 1.5rem;
-            border: none; /* 枠線を削除 */
-            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+            background: transparent;
+            border: none;
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             height: 100%;
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+            overflow: visible;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        @media (min-width: 640px) { .premium-card { border-radius: 2rem; } }
         
         .premium-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(76, 175, 80, 0.12); /* ホバー時にテーマカラーの淡い影 */
         }
 
-        /* プレビューラッパー（枠線・背景色なし） */
+        /* プレビューラッパー（背景色なし） */
         .pdf-thumbnail-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1.414;
-            background: transparent; /* 背景色を削除 */
+            background: transparent;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem; /* 少し内側に余白を持たせる */
+            padding: 0.5rem;
             overflow: visible;
         }
 
@@ -118,16 +115,24 @@
             height: 100%;
             object-fit: contain;
             mix-blend-mode: multiply; /* 白背景を透過させて文字だけを残す */
-            opacity: 0.85; /* 少し馴染ませる */
-            filter: contrast(1.1); /* 文字をくっきり */
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* ぽよんとした動き */
+            opacity: 0.85; 
+            filter: contrast(1.1); 
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-origin: bottom center;
         }
         
         .premium-card:hover .pdf-canvas { 
-            transform: scale(1.08) rotate(-2deg); /* ホバーで少し拡大＆傾く */
+            transform: scale(1.08) rotate(-2deg);
             opacity: 1;
-            filter: contrast(1.2) drop-shadow(0 10px 15px rgba(0,0,0,0.1)); /* 浮き出るような影 */
+            filter: contrast(1.2) drop-shadow(0 15px 25px rgba(76, 175, 80, 0.15)); /* ホバー時にうっすら緑の影 */
+        }
+
+        /* テキストエリアのアニメーション */
+        .card-text-area {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .premium-card:hover .card-text-area {
+            transform: translateY(-4px);
         }
 
         .pdf-loading { position: absolute; color: var(--text-light); animation: pulse 2s infinite; z-index: -1; }
@@ -156,9 +161,9 @@
         }
 
         .badge-disabled {
-            background-color: #f1f5f9;
+            background-color: transparent;
             color: #94a3b8;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
         }
 
         .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
@@ -174,17 +179,16 @@
     <div class="blob" style="background: var(--blob-2); bottom: -10%; right: -10%; animation-delay: -5s;"></div>
 
     <header class="sticky top-0 z-[100] glass-nav">
-        <!-- ヘッダー内容は変更なし -->
         <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
             <button onclick="goHome()" class="active:scale-95 transition-all outline-none text-xl font-black text-[var(--accent-dark)] tracking-widest">
-                タマベン<!-- imgタグの代わりにテキスト配置（ロゴSVGがないため仮置き） -->
+                タマベン
             </button>
             <div class="flex items-center gap-3 md:gap-4">
                 <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2 fade-in-up">
                     <span class="text-[8px] md:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] leading-none mb-1">Your Pace</span>
                     <span id="user-grade-label" class="text-[10px] md:text-xs font-black text-[var(--text-main)]">未設定</span>
                 </div>
-                <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-sm hover:scale-105 transition-all outline-none">
+                <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-white/50 backdrop-blur-md border border-[var(--border-color)] shadow-sm hover:scale-105 transition-all outline-none">
                     <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[var(--text-muted)]"></i>
                 </button>
             </div>
@@ -201,12 +205,12 @@
                 </h1>
 
                 <div class="w-full max-w-3xl mx-auto px-2 sm:px-0 flex flex-col sm:flex-row gap-3">
-                    <div class="search-field flex-grow flex items-center rounded-full px-6 md:px-8 py-3 md:py-4">
+                    <div class="search-field flex-grow flex items-center rounded-full px-6 md:px-8 py-3 md:py-4 bg-white/80 backdrop-blur-md">
                         <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 text-[var(--text-light)] mr-3 md:mr-4"></i>
                         <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
                     </div>
                     
-                    <div class="search-field flex items-center rounded-full px-4 py-3 md:py-4 sm:w-48 shrink-0 relative">
+                    <div class="search-field flex items-center rounded-full px-4 py-3 md:py-4 sm:w-48 shrink-0 relative bg-white/80 backdrop-blur-md">
                         <i data-lucide="filter" class="w-5 h-5 text-[var(--text-light)] mr-2"></i>
                         <select id="material-filter" class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] text-sm cursor-pointer appearance-none" onchange="renderMaterials()">
                             <option value="all">すべて表示</option>
@@ -221,13 +225,14 @@
             </section>
 
             <div class="sticky top-16 sm:top-20 md:top-24 z-40 mb-8 md:mb-16 flex justify-center fade-in-up px-2" style="animation-delay: 0.3s;">
-                <div class="flex w-full max-w-sm bg-[var(--bg-sub)]/80 p-1.5 md:p-2 rounded-full border border-white backdrop-blur-xl shadow-sm">
+                <div class="flex w-full max-w-sm bg-[var(--bg-sub)]/60 p-1.5 md:p-2 rounded-full border border-white/50 backdrop-blur-xl shadow-sm">
                     <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">小学生</button>
                     <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill flex-1 py-2.5 md:py-3.5 rounded-full text-xs md:text-sm font-black">中学生</button>
                 </div>
             </div>
 
-            <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 mb-20 min-h-[40vh]">
+            <!-- gapを少し広めにとって、透明なカード同士の余白を美しく -->
+            <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-20 min-h-[40vh]">
                 <div class="col-span-full py-20 text-center loading-pulse">
                     <p class="text-[var(--text-light)] font-black tracking-widest uppercase text-xs md:text-sm">Finding materials...</p>
                 </div>
@@ -238,13 +243,13 @@
             <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 md:mb-10 transition-colors group outline-none">
                 <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm md:text-base">一覧に戻る</span>
             </button>
-            <div id="detail-content" class="bg-[var(--bg-card)] rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-none min-h-[50vh]"></div>
+            <!-- 詳細画面のコンテナも完全に透明化 -->
+            <div id="detail-content" class="bg-transparent border-none min-h-[50vh]"></div>
         </div>
 
     </main>
 
     <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#1b261c]/30 backdrop-blur-sm p-4 sm:p-6">
-        <!-- モーダル内容は変更なし -->
         <div class="modal-content rounded-[2.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
             <div class="text-center">
                 <h3 class="text-lg md:text-xl font-black text-[var(--text-main)] mb-6 md:mb-10">学年を自動設定</h3>
@@ -287,7 +292,6 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
-                // 解像度を高めにしてくっきりレンダリング
                 const viewport = page.getViewport({ scale: 1.5 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
@@ -340,17 +344,18 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                card.className = "premium-card cursor-pointer group card-appear flex flex-col bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-sub)]";
+                // カード自体の背景や枠線を全て排除
+                card.className = "premium-card cursor-pointer group card-appear flex flex-col";
                 card.innerHTML = `
                     <div class="pdf-thumbnail-wrapper">
                         <i data-lucide="loader-2" class="w-5 h-5 pdf-loading"></i>
                         <canvas id="${canvasId}" class="pdf-canvas"></canvas>
                     </div>
                     
-                    <div class="p-4 sm:p-5 flex-grow flex flex-col bg-[var(--bg-card)] rounded-t-2xl relative z-10">
+                    <div class="py-3 px-1 sm:px-2 flex-grow flex flex-col bg-transparent relative z-10 card-text-area">
                         <div class="flex items-center gap-2 mb-2 flex-wrap">
-                            <span class="px-2 py-1 bg-[var(--bg-sub)] text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg">${item.subject}</span>
-                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-light)]">${item.grade}</span>
+                            <span class="px-2 py-1 bg-white/40 backdrop-blur-sm text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg border border-white/50">${item.subject}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-muted)]">${item.grade}</span>
                             ${!hasAnyMaterial ? `<span class="badge-disabled px-2 py-1 text-[9px] sm:text-[10px] font-black rounded-lg">準備中</span>` : ''}
                         </div>
                         <h3 class="text-sm sm:text-base font-black text-[var(--text-main)] group-hover:text-[var(--accent-main)] transition-colors leading-snug flex-grow">${item.title}</h3>
@@ -379,35 +384,34 @@
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
-            // 詳細画面のプレビューも背景透過＆ドロップシャドウでおしゃれに
+            // 詳細画面も完全に背景を排除し、コンテンツだけが浮き出るデザインに
             document.getElementById('detail-content').innerHTML = `
-                <div class="flex flex-col md:flex-row">
-                    <div class="w-full md:w-5/12 bg-[var(--bg-sub)] flex items-center justify-center p-8 md:p-12 relative overflow-hidden group">
-                         <!-- 詳細画面のプレビュー枠線をなくし、乗算モードと影を追加 -->
-                         <div class="w-full aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-rotate-1">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[var(--text-light)] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-contain mix-blend-multiply opacity-90 drop-shadow-2xl transition-opacity duration-300 group-hover:opacity-100"></canvas>` : `<div class="text-[var(--text-light)] flex flex-col items-center gap-2"><i data-lucide="book-dashed" class="w-10 h-10 opacity-50"></i><span class="font-bold text-sm">教材準備中</span></div>`}
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12">
+                    <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
+                         <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-rotate-2">
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-6 h-6 pdf-loading text-[var(--text-light)] absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-contain mix-blend-multiply opacity-90 drop-shadow-2xl transition-opacity duration-300 group-hover:opacity-100"></canvas>` : `<div class="text-[var(--text-light)] flex flex-col items-center gap-2"><i data-lucide="book-dashed" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">教材準備中</span></div>`}
                          </div>
                     </div>
                     
-                    <div class="w-full md:w-7/12 p-6 sm:p-12 text-center md:text-left flex flex-col justify-center">
+                    <div class="w-full md:w-1/2 text-center md:text-left flex flex-col justify-center pt-4 md:pt-10">
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
-                            <span class="px-4 py-1.5 bg-[var(--bg-sub)] text-[var(--accent-dark)] text-[11px] font-black rounded-lg">${item.grade} / ${item.subject}</span>
+                            <span class="px-4 py-1.5 bg-white/40 backdrop-blur-sm text-[var(--accent-dark)] text-[11px] font-black rounded-lg border border-white/50">${item.grade} / ${item.subject}</span>
                             ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
                         </div>
-                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[var(--text-main)] mb-8 md:mb-10 leading-tight">${item.title}</h2>
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[var(--text-main)] mb-8 md:mb-12 leading-tight drop-shadow-sm">${item.title}</h2>
                         
                         <div class="flex flex-col gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 w-full">
-                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasBasic ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)]' : 'btn-disabled'} transition-all hover:shadow-md">
+                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasBasic ? 'bg-white/80 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)] hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-lg hover:-translate-y-1">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                                 ${hasBasic ? '基本問題をひらく' : '準備中'}
                             </button>
                             
-                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasAdv ? 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500' : 'btn-disabled'} transition-all hover:shadow-md">
+                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-xs md:text-sm border-2 ${hasAdv ? 'bg-white/80 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500 hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-lg hover:-translate-y-1">
                                 <i data-lucide="zap" class="w-5 h-5"></i>
                                 ${hasAdv ? '練習問題に挑戦' : '準備中'}
                             </button>
                             
-                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-3 md:p-4 rounded-2xl font-black text-xs md:text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-lg hover:bg-[var(--text-dark)] hover:-translate-y-1 hover:shadow-xl' : 'btn-disabled'} transition-all">
+                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-xs md:text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-xl hover:bg-[var(--text-dark)] hover:-translate-y-1' : 'btn-disabled'} transition-all">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
                                 ${hasAns ? '解答・解説を確認する' : '準備中'}
                             </button>
