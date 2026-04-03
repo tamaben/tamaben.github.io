@@ -114,13 +114,13 @@
             overflow: visible;
         }
 
-        /* PDFキャンバス（白背景固定・おしゃれな影・ワクワクする動き） */
+        /* PDFキャンバス（角丸なし・白背景固定・おしゃれな影・ワクワクする動き） */
         .pdf-canvas {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 余白を埋めて綺麗なプリントに見せる */
-            background-color: #ffffff; /* 白背景を強制！ */
-            border-radius: 8px; /* 少し角を丸めて紙っぽく */
+            object-fit: cover;
+            background-color: #ffffff; /* 白背景を強制 */
+            border-radius: 0; /* 角丸をなくし、PDFそのままの形に */
             box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); /* リアルな紙の影 */
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-origin: center bottom;
@@ -235,7 +235,6 @@
                 </div>
             </div>
 
-            <!-- プリント一覧のグリッド -->
             <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-20 min-h-[40vh]">
                 <div class="col-span-full py-20 text-center loading-pulse">
                     <i data-lucide="sparkles" class="w-8 h-8 text-[var(--accent-main)] mx-auto mb-3"></i>
@@ -248,7 +247,6 @@
             <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 md:mb-10 transition-colors group outline-none bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/60 shadow-sm w-fit">
                 <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm md:text-base">一覧に戻る</span>
             </button>
-            <!-- 詳細画面のコンテナ -->
             <div id="detail-content" class="bg-transparent border-none min-h-[50vh]"></div>
         </div>
 
@@ -297,7 +295,6 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
-                // 高解像度でレンダリングしてくっきり見せる
                 const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
@@ -374,8 +371,9 @@
                 if (item.pdfBasic && item.pdfBasic !== "#") { 
                     renderPDFThumbnail(item.pdfBasic, canvasId); 
                 } else { 
+                    // 教材がない場合も角丸をなくす
                     document.getElementById(canvasId).parentElement.innerHTML = `
-                        <div class="w-full h-full bg-white rounded-lg shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--text-light)] border-2 border-dashed border-[var(--border-color)]">
+                        <div class="w-full h-full bg-white shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--text-light)] border-2 border-dashed border-[var(--border-color)]">
                             <i data-lucide="hammer" class="w-8 h-8 opacity-50 mb-1"></i>
                             <span class="text-[10px] font-bold">教材つくってます！</span>
                         </div>`; 
@@ -394,13 +392,12 @@
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
-            // 詳細画面のプリントも白背景・シャドウ付きに！
+            // 詳細画面のPDFプレビューも角丸を削除（rounded-xl を削除）
             document.getElementById('detail-content').innerHTML = `
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
                     <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
-                         <!-- 詳細のキャンバス：白背景・リアルな影・ホバーで少し動く -->
                          <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02] group-hover:-rotate-1">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/50 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
                          </div>
                     </div>
                     
