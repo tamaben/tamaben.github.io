@@ -103,7 +103,6 @@
             overflow: visible;
         }
 
-        /* PDFキャンバス（そのままの画像として表示） */
         .pdf-canvas {
             width: 100%;
             height: 100%;
@@ -119,18 +118,16 @@
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
-        /* テキストエリアのアニメーション */
-        .card-text-area {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .premium-card:hover .card-text-area {
-            transform: translateY(-2px);
-        }
+        .card-text-area { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .premium-card:hover .card-text-area { transform: translateY(-2px); }
 
         .pdf-loading { position: absolute; color: var(--accent-main); animation: pulse 2s infinite; z-index: -1; }
 
         .search-field { background: var(--bg-card); border: 1.5px solid var(--border-color); transition: all 0.4s ease; }
         .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: scale(1.01); }
+
+        .form-input { background: var(--bg-card); border: 1.5px solid var(--border-color); transition: all 0.3s ease; }
+        .form-input:focus { border-color: var(--accent-main); box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1); outline: none; }
 
         .tab-pill { transition: all 0.4s ease; color: var(--text-muted); }
         .tab-pill.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
@@ -142,23 +139,14 @@
         #settings-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content { max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
 
-        .btn-disabled {
-            opacity: 0.5;
-            pointer-events: none;
-            background: var(--bg-sub) !important;
-            color: var(--text-muted) !important;
-            border-color: var(--border-color) !important;
-            cursor: not-allowed;
-            box-shadow: none !important;
-        }
-
-        .badge-disabled {
-            background-color: transparent;
-            color: #94a3b8;
-            border: 1px dashed #cbd5e1;
-        }
+        .btn-disabled { opacity: 0.5; pointer-events: none; background: var(--bg-sub) !important; color: var(--text-muted) !important; border-color: var(--border-color) !important; cursor: not-allowed; box-shadow: none !important; }
+        .badge-disabled { background-color: transparent; color: #94a3b8; border: 1px dashed #cbd5e1; }
 
         .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
+        
+        /* 生成中のプログレスバー */
+        .progress-bar-container { width: 100%; height: 8px; background: var(--bg-sub); border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent-main); width: 0%; transition: width 0.3s ease; }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
@@ -173,13 +161,18 @@
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
             <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
-                <img src="logo.svg" alt="タマベンロゴ" class="h-6 sm:h-8 md:h-10 w-auto">
+                <img src="logo.svg" alt="タマベンロゴ" class="h-6 sm:h-8 md:h-10 w-auto" onerror="this.outerHTML='<span class=\'font-black text-[var(--text-main)] text-xl md:text-2xl\'>タマベン</span>'">
             </button>
-            <div class="flex items-center gap-3 md:gap-4">
+            <div class="flex items-center gap-2 md:gap-4">
                 <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2 fade-in-up">
                     <span class="text-[8px] md:text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] leading-none mb-1">Your Pace</span>
                     <span id="user-grade-label" class="text-[10px] md:text-xs font-black text-[var(--text-main)]">未設定</span>
                 </div>
+                <!-- プリント作成ボタン（追加） -->
+                <button onclick="openCreateView()" class="h-10 px-3 md:h-12 md:px-5 flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent-main)] text-white shadow-sm hover:bg-[var(--accent-dark)] hover:-translate-y-1 transition-all outline-none">
+                    <i data-lucide="pen-tool" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    <span class="text-xs md:text-sm font-black hidden sm:inline">プリントを作る</span>
+                </button>
                 <button onclick="openSettingsModal()" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-white/70 backdrop-blur-md border border-[var(--border-color)] shadow-sm hover:scale-105 hover:bg-white transition-all outline-none">
                     <i data-lucide="user-round" class="w-4 h-4 md:w-5 md:h-5 text-[var(--text-muted)]"></i>
                 </button>
@@ -189,6 +182,7 @@
 
     <main class="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl pb-16">
         
+        <!-- 一覧画面 -->
         <div id="view-home">
             <section class="py-8 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
                 <h1 class="fluid-title font-black mb-10 md:mb-12 tracking-tight text-[var(--text-dark)] leading-[1.15]">
@@ -229,56 +223,9 @@
                     <p class="text-[var(--text-light)] font-black tracking-widest uppercase text-xs md:text-sm">教材を探しています...</p>
                 </div>
             </div>
+        </div>
 
-            <!-- ▼ タマベンのアプリ一覧 セクション ▼ -->
-            <section class="mt-12 md:mt-20 pt-12 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-4">
-                <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
-                    <i data-lucide="layout-grid" class="w-5 h-5 text-[var(--accent-main)]"></i>
-                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)] tracking-tight">タマベンのアプリ一覧</h2>
-                </div>
-                
-                <div class="flex flex-wrap justify-center gap-4 px-4">
-                    <a href="manabi.html" class="group w-full max-w-sm flex items-center gap-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-lg hover:border-[var(--accent-main)] transition-all transform hover:-translate-y-1">
-                        <div class="w-14 h-14 rounded-xl overflow-hidden shadow-sm border border-white/80 shrink-0">
-                            <img src="manabi.png" alt="Manabi Baton Icon" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'w-full h-full bg-[var(--bg-sub)] flex items-center justify-center text-[var(--accent-dark)]\'><i data-lucide=\'refresh-cw\' class=\'w-6 h-6\'></i></div>'">
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="font-black text-[var(--text-main)] text-base">Manabi Baton</h3>
-                            <p class="text-[10px] md:text-xs font-bold text-[var(--text-muted)] mt-0.5">学びのバトンを繋ごう</p>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-[var(--text-light)] group-hover:text-[var(--accent-main)] transition-colors group-hover:translate-x-1 transform"></i>
-                    </a>
-                </div>
-            </section>
-            
-            <!-- ▼ 公式メディア セクション ▼ -->
-            <section class="mt-8 pt-8 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-8">
-                <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
-                    <i data-lucide="radio" class="w-5 h-5 text-[var(--accent-main)]"></i>
-                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)] tracking-tight">公式メディア</h2>
-                </div>
-                
-                <div class="flex flex-wrap justify-center gap-4 px-4">
-                    <!-- YouTube (直接SVGで描画) -->
-                    <a href="https://youtube.com/@tamaben-tama?si=VB8MXIIjU5d5XfxZ" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="group flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-red-400 transition-all transform hover:-translate-y-1">
-                        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-7 h-7 text-[var(--text-light)] group-hover:text-red-500 transition-colors">
-                            <path d="M21.582 6.186a2.665 2.665 0 0 0-1.87-1.884C18.062 3.86 12 3.86 12 3.86s-6.062 0-7.712.442a2.665 2.665 0 0 0-1.87 1.884C2 7.846 2 12 2 12s0 4.154.448 5.814a2.665 2.665 0 0 0 1.87 1.884c1.65.442 7.712.442 7.712.442s6.062 0 7.712-.442a2.665 2.665 0 0 0 1.87-1.884C22 16.154 22 12 22 12s0-4.154-.418-5.814zM9.99 15.474v-6.948l6.19 3.474-6.19 3.474z"/>
-                        </svg>
-                    </a>
-                    
-                    <!-- Instagram (直接SVGで描画) -->
-                    <a href="https://www.instagram.com/masapiko_0622?igsh=MTl4ejFiZGl0MDllbg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="group flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-pink-500 transition-all transform hover:-translate-y-1">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7 text-[var(--text-light)] group-hover:text-pink-500 transition-colors">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                    </a>
-                </div>
-            </section>
-            <!-- ▲ 公式メディア セクション ▲ -->
-            </div>
-
+        <!-- 詳細画面 -->
         <div id="view-detail" class="hidden py-8 md:py-12">
             <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 md:mb-10 transition-colors group outline-none bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/60 shadow-sm w-fit">
                 <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm md:text-base">一覧に戻る</span>
@@ -286,14 +233,106 @@
             <div id="detail-content" class="bg-transparent border-none min-h-[50vh]"></div>
         </div>
 
-    </main>
+        <!-- ▼ 新設：プリント作成画面 ▼ -->
+        <div id="view-create" class="hidden py-8 md:py-12 max-w-3xl mx-auto fade-in-up">
+            <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 transition-colors group outline-none bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/60 shadow-sm w-fit">
+                <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i> <span class="text-sm">戻る</span>
+            </button>
+            
+            <div class="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 md:p-10 shadow-sm border border-[var(--border-color)]">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-[var(--bg-sub)] text-[var(--accent-main)] flex items-center justify-center">
+                        <i data-lucide="wand-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-black text-[var(--text-main)]">オリジナル教材を作る</h2>
+                        <p class="text-xs md:text-sm font-bold text-[var(--text-muted)] mt-1">AIがあなただけのプリントを自動生成します</p>
+                    </div>
+                </div>
 
-    <footer class="py-12 text-center opacity-50 hover:opacity-100 transition-opacity duration-500">
-        <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 mx-auto mb-4 grayscale hover:grayscale-0 transition-all duration-500" onerror="this.outerHTML='<span class=\'font-black text-[var(--text-main)] text-xl\'>タマベン</span>'">
-        <p class="text-[10px] text-[var(--text-light)] font-black tracking-[0.2em] uppercase">
-            &copy; 2026 Tamaben. Dedicated to every learner.
-        </p>
-    </footer>
+                <!-- 入力フォーム -->
+                <div id="create-form" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-black text-[var(--text-dark)] mb-2">学年</label>
+                            <div class="relative">
+                                <select id="create-grade" class="form-input w-full px-4 py-3 rounded-xl font-bold text-[var(--text-main)] appearance-none cursor-pointer text-sm">
+                                    <option value="小学1年生">小学1年生</option>
+                                    <option value="小学2年生">小学2年生</option>
+                                    <option value="小学3年生">小学3年生</option>
+                                    <option value="小学4年生">小学4年生</option>
+                                    <option value="小学5年生">小学5年生</option>
+                                    <option value="小学6年生">小学6年生</option>
+                                    <option value="中学1年生" selected>中学1年生</option>
+                                    <option value="中学2年生">中学2年生</option>
+                                    <option value="中学3年生">中学3年生</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 absolute right-4 top-3.5 text-[var(--text-light)] pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-[var(--text-dark)] mb-2">教科</label>
+                            <div class="relative">
+                                <select id="create-subject" class="form-input w-full px-4 py-3 rounded-xl font-bold text-[var(--text-main)] appearance-none cursor-pointer text-sm">
+                                    <option value="国語">国語</option>
+                                    <option value="算数/数学">算数 / 数学</option>
+                                    <option value="理科">理科</option>
+                                    <option value="社会">社会</option>
+                                    <option value="英語" selected>英語</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 absolute right-4 top-3.5 text-[var(--text-light)] pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-black text-[var(--text-dark)] mb-2">学習内容・テーマ <span class="text-[10px] text-[var(--text-muted)] font-normal ml-2">※なるべく具体的に</span></label>
+                        <textarea id="create-topic" rows="3" placeholder="例：be動詞の疑問文と否定文の基本問題。現在完了形の経験用法（ever, neverを使った穴埋め）など..." class="form-input w-full px-4 py-3 rounded-xl font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm resize-none"></textarea>
+                    </div>
+
+                    <div class="pt-4">
+                        <button onclick="startGeneration()" class="w-full py-4 rounded-2xl bg-[var(--text-main)] text-white font-black text-sm md:text-base shadow-[0_10px_20px_rgba(46,61,48,0.2)] hover:bg-[var(--text-dark)] hover:-translate-y-1 transition-all outline-none flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i> プリントを生成する
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 生成中UI (初期非表示) -->
+                <div id="generating-ui" class="hidden py-10 text-center flex flex-col items-center">
+                    <i data-lucide="loader-2" class="w-10 h-10 text-[var(--accent-main)] animate-spin mb-4"></i>
+                    <h3 class="text-lg font-black text-[var(--text-main)] mb-2">教材を生成しています...</h3>
+                    <p class="text-xs font-bold text-[var(--text-muted)] mb-6" id="generating-status">AIが問題を考えています</p>
+                    <div class="progress-bar-container max-w-xs mx-auto">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- 完成UI (初期非表示) -->
+                <div id="success-ui" class="hidden pt-6 text-center">
+                    <div class="w-16 h-16 rounded-full bg-green-100 text-[var(--accent-dark)] flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-[var(--text-main)] mb-2">プリントが完成しました！</h3>
+                    <p class="text-sm font-bold text-[var(--text-muted)] mb-8">さっそく確認してみましょう。</p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-white border-2 border-[var(--accent-main)] text-[var(--accent-dark)] font-black text-sm hover:bg-[var(--bg-sub)] transition-all">
+                            <i data-lucide="eye" class="w-4 h-4"></i> プレビューを見る
+                        </button>
+                        <button class="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[var(--accent-main)] text-white font-black text-sm hover:bg-[var(--accent-dark)] shadow-sm transition-all">
+                            <i data-lucide="download" class="w-4 h-4"></i> PDFでダウンロード
+                        </button>
+                    </div>
+                    <button onclick="resetCreateForm()" class="mt-8 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] underline decoration-dotted underline-offset-4">
+                        別のプリントを作る
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- ▲ プリント作成画面 ▲ -->
+
+    </main>
 
     <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#1b261c]/40 backdrop-blur-md p-4 sm:p-6">
         <div class="modal-content rounded-[2.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
@@ -428,6 +467,7 @@
 
         function openDetail(item, hasAnyMaterial) {
             document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-create').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
             
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
@@ -445,24 +485,13 @@
                     <div class="w-full md:w-1/2 text-center md:text-left flex flex-col justify-center pt-4 md:pt-10">
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
                             <span class="px-5 py-2 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-xs font-black rounded-xl shadow-sm border border-white">${item.grade} / ${item.subject}</span>
-                            ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
                         </div>
                         <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-main)] mb-8 md:mb-12 leading-tight tracking-tight">${item.title}</h2>
                         
                         <div class="flex flex-col gap-4 max-w-sm mx-auto md:mx-0 w-full">
-                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)] hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-[0_10px_25px_rgba(76,175,80,0.15)] hover:-translate-y-1">
+                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)] hover:bg-white' : 'btn-disabled'} transition-all">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                                 ${hasBasic ? '基本問題をひらく' : '準備中'}
-                            </button>
-                            
-                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasAdv ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500 hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-[0_10px_25px_rgba(251,146,60,0.15)] hover:-translate-y-1">
-                                <i data-lucide="zap" class="w-5 h-5"></i>
-                                ${hasAdv ? '練習問題に挑戦' : '準備中'}
-                            </button>
-                            
-                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-[0_10px_20px_rgba(46,61,48,0.2)] hover:bg-[var(--text-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(46,61,48,0.3)]' : 'btn-disabled'} transition-all">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                ${hasAns ? '解答・解説を確認する' : '準備中'}
                             </button>
                         </div>
                     </div>
@@ -473,8 +502,57 @@
             lucide.createIcons();
         }
 
-        function goHome() { document.getElementById('view-home').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); renderMaterials(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        
+        /* --- 画面遷移 --- */
+        function goHome() { 
+            document.getElementById('view-detail').classList.add('hidden');
+            document.getElementById('view-create').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden'); 
+            renderMaterials(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        function openCreateView() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-detail').classList.add('hidden');
+            document.getElementById('view-create').classList.remove('hidden');
+            resetCreateForm();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        /* --- プリント生成シミュレーション --- */
+        function startGeneration() {
+            const topic = document.getElementById('create-topic').value;
+            if(!topic) {
+                alert('学習内容・テーマを入力してください');
+                return;
+            }
+
+            // フォームを隠してローディング表示
+            document.getElementById('create-form').classList.add('hidden');
+            document.getElementById('generating-ui').classList.remove('hidden');
+            
+            const bar = document.getElementById('progress-bar');
+            const statusText = document.getElementById('generating-status');
+            
+            // フェイクローディングのアニメーション
+            setTimeout(() => { bar.style.width = '30%'; statusText.textContent = "AIが問題を考えています..."; }, 100);
+            setTimeout(() => { bar.style.width = '60%'; statusText.textContent = "レイアウトを整えています..."; }, 1500);
+            setTimeout(() => { bar.style.width = '90%'; statusText.textContent = "PDFを出力しています..."; }, 3000);
+            
+            setTimeout(() => {
+                document.getElementById('generating-ui').classList.add('hidden');
+                document.getElementById('success-ui').classList.remove('hidden');
+            }, 4000);
+        }
+
+        function resetCreateForm() {
+            document.getElementById('create-form').classList.remove('hidden');
+            document.getElementById('generating-ui').classList.add('hidden');
+            document.getElementById('success-ui').classList.add('hidden');
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('create-topic').value = '';
+        }
+
         /* --- ユーザー設定 --- */
         function saveBirthDate() {
             const val = document.getElementById('birthdate-input').value;
