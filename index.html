@@ -187,7 +187,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl pb-24 md:pb-32">
+    <main class="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl pb-16">
         
         <div id="view-home">
             <section class="py-8 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
@@ -230,17 +230,14 @@
                 </div>
             </div>
 
-            <!-- ▼ タマベンのアプリ一覧 セクション ▼ -->
-            <section class="mt-12 md:mt-20 pt-12 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-8">
+            <section class="mt-12 md:mt-20 pt-12 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-4">
                 <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
                     <i data-lucide="layout-grid" class="w-5 h-5 text-[var(--accent-main)]"></i>
                     <h2 class="text-lg md:text-xl font-black text-[var(--text-main)] tracking-tight">タマベンのアプリ一覧</h2>
                 </div>
                 
                 <div class="flex flex-wrap justify-center gap-4 px-4">
-                    <!-- Manabi Baton へのリンク -->
                     <a href="manabi.html" class="group w-full max-w-sm flex items-center gap-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-lg hover:border-[var(--accent-main)] transition-all transform hover:-translate-y-1">
-                        <!-- アプリアイコンを manabi.png に変更 -->
                         <div class="w-14 h-14 rounded-xl overflow-hidden shadow-sm border border-white/80 shrink-0">
                             <img src="manabi.png" alt="Manabi Baton Icon" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'w-full h-full bg-[var(--bg-sub)] flex items-center justify-center text-[var(--accent-dark)]\'><i data-lucide=\'refresh-cw\' class=\'w-6 h-6\'></i></div>'">
                         </div>
@@ -252,9 +249,25 @@
                     </a>
                 </div>
             </section>
-            <!-- ▲ タマベンのアプリ一覧 セクション ▲ -->
-
-        </div>
+            <section class="mt-8 pt-8 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-8">
+                <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
+                    <i data-lucide="radio" class="w-5 h-5 text-[var(--accent-main)]"></i>
+                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)] tracking-tight">公式メディア</h2>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4 px-4">
+                    <a href="https://youtube.com/@tamaben-tama?si=VB8MXIIjU5d5XfxZ" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-center gap-3 w-[160px] sm:w-auto px-6 py-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-red-400 transition-all transform hover:-translate-y-1">
+                        <i data-lucide="youtube" class="w-6 h-6 text-[var(--text-light)] group-hover:text-red-500 transition-colors"></i>
+                        <span class="font-black text-[var(--text-main)] text-sm">YouTube</span>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/masapiko_0622?igsh=MTl4ejFiZGl0MDllbg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-center gap-3 w-[160px] sm:w-auto px-6 py-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-pink-500 transition-all transform hover:-translate-y-1">
+                        <i data-lucide="instagram" class="w-6 h-6 text-[var(--text-light)] group-hover:text-pink-500 transition-colors"></i>
+                        <span class="font-black text-[var(--text-main)] text-sm">Instagram</span>
+                    </a>
+                </div>
+            </section>
+            </div>
 
         <div id="view-detail" class="hidden py-8 md:py-12">
             <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-6 md:mb-10 transition-colors group outline-none bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/60 shadow-sm w-fit">
@@ -264,6 +277,13 @@
         </div>
 
     </main>
+
+    <footer class="py-12 text-center opacity-50 hover:opacity-100 transition-opacity duration-500">
+        <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 mx-auto mb-4 grayscale hover:grayscale-0 transition-all duration-500" onerror="this.outerHTML='<span class=\'font-black text-[var(--text-main)] text-xl\'>タマベン</span>'">
+        <p class="text-[10px] text-[var(--text-light)] font-black tracking-[0.2em] uppercase">
+            &copy; 2026 Tamaben. Dedicated to every learner.
+        </p>
+    </footer>
 
     <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-[#1b261c]/40 backdrop-blur-md p-4 sm:p-6">
         <div class="modal-content rounded-[2.5rem] p-8 md:p-12 w-full max-w-sm shadow-2xl relative">
@@ -308,7 +328,6 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
-                // 高解像度でレンダリング
                 const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
