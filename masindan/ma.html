@@ -192,15 +192,7 @@
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>日常的にできる「マ」要素</span>
                     </h4>
-                    <div class="text-[12.5px] text-gray-700 leading-relaxed font-medium space-y-3">
-                        <p>「マ度」を100%に引き上げるためには、社会的な建前や効率を捨て、以下の要素を日常に取り入れてみてください。</p>
-                        <ul class="list-disc pl-5 space-y-2 text-gray-600">
-                            <li><strong class="text-[var(--accent-dark)]">予定を立てない休日を作る：</strong> 直前まで何も決めず、その日の気分だけで行動する。ダラダラする時間を肯定する。</li>
-                            <li><strong class="text-[var(--accent-dark)]">「なんとなく」で決断する：</strong> 損得や効率、レビューを調べずに「直感的に惹かれたもの」を即座に選ぶ。</li>
-                            <li><strong class="text-[var(--accent-dark)]">他人の期待を裏切る勇気：</strong> 場の空気を読んで無理に合わせず、自分の心地よさを最優先にする。</li>
-                            <li><strong class="text-[var(--accent-dark)]">五感に全集中する：</strong> 過去への反省や未来への不安を捨て、今食べているものの美味しさや、音の心地よさだけを全力で味わう。</li>
-                        </ul>
-                    </div>
+                    <div id="result-daily" class="text-[12.5px] text-gray-700 leading-relaxed font-medium space-y-3"></div>
                 </div>
 
                 <!-- ワンポイントアドバイス -->
@@ -467,6 +459,54 @@
 
         return text;
     }
+    
+    // --- 【新規】診断結果に合わせて動的に日常アクションを生成する関数 ---
+    function generateDailyActions(final, v) {
+        if (final >= 99) {
+            return `
+                <p>あなたはすでに「マ」の領域に到達しています。今の状態を維持するために以下の要素を意識してください。</p>
+                <ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">
+                    <li><strong class="text-[var(--accent-dark)]">今の心地よさを疑わない：</strong> 周りの声や世間の常識に惑わされず、自分の直感を信じ続ける。</li>
+                    <li><strong class="text-[var(--accent-dark)]">さらなる自由の探求：</strong> 思いつきで行動する範囲を、日常から少しずつ広げてみる。</li>
+                </ul>
+            `;
+        }
+
+        let actions = [];
+        
+        // P vs J (秩序への執着を解く)
+        if (v.J > v.P) {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">予定の空白を作る：</strong> 休日に「何も決めない時間」を意図的に作り、計画を手放してその瞬間の気分だけで動く練習をしてみましょう。</li>`);
+        } else {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">気の向くままに行動する：</strong> あなたの持つ柔軟性を活かし、ふと思いついた寄り道や予定変更を積極的に楽しんでください。</li>`);
+        }
+
+        // T vs F (効率・論理から直感へ)
+        if (v.T > (v.F + v.Fi + v.Fe)) {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">「なんとなく」で選ぶ：</strong> 食事や買い物の際、コスパやレビューなどのデータを一切無視し、直感だけで選ぶ経験を増やしてみてください。</li>`);
+        } else {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">感情に素直になる：</strong> 自分の「好き」や「心地よい」という感情を信じて、より直感的に選択する頻度を上げてみましょう。</li>`);
+        }
+
+        // Fe vs Fi (他人軸から自分軸へ)
+        if (v.Fe > v.Fi) {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">自己中心的な時間を設ける：</strong> 1日のうち少しでも、他人の目を完全に忘れ、自分だけが満たされるためだけの行動（好きなものを食べる、好きな音楽を聴く等）をとりましょう。</li>`);
+        } else if (v.Fi > v.Fe) {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">マイルールを貫く：</strong> あなたの中に既にある「こだわり」を妥協せず、周囲にどう思われても貫き通す強さを持ってみてください。</li>`);
+        }
+
+        // N vs S (思考から感覚へ)
+        if (v.N > (v.S + v.Se)) {
+            actions.push(`<li><strong class="text-[var(--accent-dark)]">五感に全集中する：</strong> 過去の反省や未来の不安、物事の意味を考えるのをやめ、今飲んでいるお茶の味や、肌に触れる風の感覚だけに意識を向けてみてください。</li>`);
+        }
+
+        let html = `<p>「マ度」を100%に引き上げるため、あなたの現在の思考特性に合わせて、以下の要素を日常に取り入れてみてください。</p>`;
+        html += `<ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">`;
+        html += actions.slice(0, 4).join('');
+        html += `</ul>`;
+
+        return html;
+    }
 
     function getPersonalizedAdvice(final, mbtiType) {
         if (final >= 99) return "あなたは既に究極の領域に達しています。世間の常識や他人の声に迷うことなく、今まで通り自分の直感と『心地よさ』だけを信じて突き進んでください。それがあなたにとって常に正解になります。";
@@ -516,6 +556,7 @@
         
         document.getElementById('result-desc').innerHTML = generateDetailedProfile(v, final);
         document.getElementById('result-diff').innerHTML = generateMaGapAnalysis(final, v);
+        document.getElementById('result-daily').innerHTML = generateDailyActions(final, v);
         document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
         
         document.getElementById('adjustment-log').innerText = devLogText;
