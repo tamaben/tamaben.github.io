@@ -226,7 +226,6 @@
 </div>
 
 <script>
-    // 診断の設問データ
     const questionsPool =[
         { q: "Q. 休日に家から一歩も出ない日、どんな風に過ごすことが多い？", type: 'select', options:[{ text: "スマホやPCを触って、ゴロゴロと無駄な時間を過ごす", score: 10, mbti: {P:2, I:1} }, { text: "溜まっていた家事や部屋の掃除を一気に片付ける", score: 0, mbti: {J:2} }, { text: "資格の勉強やスキルアップのための自己研鑽", score: 2, mbti: {T:1, J:1} }, { text: "新しい料理に挑戦したり、手の込んだ趣味に没頭する", score: 5, mbti: {Se:1, Fi:1} }] },
         { q: "Q. 日常生活で一番「イラッ」とするのはどんな時？", type: 'select', options:[{ text: "自分の作業や集中していることを邪魔された時", score: 10, mbti: {I:2, Te:1} }, { text: "約束の時間やルールを守らない人を見た時", score: 0, mbti: {J:2} }, { text: "他人の好きなものや趣味を頭ごなしに否定された時", score: 5, mbti: {Fi:2} }, { text: "非論理的で理不尽な感情をぶつけられた時", score: 2, mbti: {T:2} }] },
@@ -362,11 +361,9 @@
         setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
     }
 
-    // --- 完全アップデートされたマ・アルゴリズム ---
     function calculateAdvancedScore(hist) {
         let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
-        // 理想の「マ」ベクトル：効率や極端な選択を嫌い、直感と心地よさ（UI、布団、風）に全振りする
-        const idealVector = { I:8, E:2, S:8, N:5, F:8, T:2, P:10, J:1, Fi:10, Fe:3, Se:10 };
+        const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
 
         devLogText = "--- Deep Analysis Start ---\n";
         hist.forEach((h, i) => {
@@ -400,23 +397,23 @@
     }
 
     function generateDetailedProfile(v, final) {
-        if (final >= 99) return "<p>【完全同期】あなたは「マ」そのものです。見にくいUIや極端な選択肢を嫌い、自分の心地よさ（布団・風）だけを純粋に愛することができる天才です。あなたの存在自体がこの診断の正解です。</p>";
+        if (final >= 99) return "<p>【完全同期】あなたは「マ」そのものです。見にくいUIや極端な選択肢を嫌い、自分の心地よさを追求し、目的のない時間を純粋に愛することができる天才です。あなたの存在自体がこの診断の正解です。</p>";
 
         const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
         const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
 
         let text = `<p><strong class="text-[var(--accent-dark)] border-b border-[var(--accent-core)]/40 pb-0.5">【基本性格とマの素質】</strong><br>`;
-        if (i_e === "I") text += "内面の空想世界を大切にするあなたは、ふかふかの布団の中で無限の思考を楽しめる才能があります。";
-        else text += "外界の刺激を楽しみますが、時に「マ」のような静かな解放感と涼しい風を求めているようです。";
+        if (i_e === "I") text += "内面の空想世界を大切にするあなたは、布団の中で「謎なこと」を無限に考える才能があります。";
+        else text += "外界の刺激を楽しみますが、時に「マ」のような目的のない自由なスマホ・音楽タイムを求めているようです。";
         
-        if (s_n === "S") text += "「使いやすいデザイン」や「食事の満足感」といった現実的な感覚を重視する、マの核心に近い資質を持っています。";
-        else text += "物事の意味や可能性を考えるあまり、目の前にある純粋な心地よさを見落としてしまうことがあるかもしれません。";
+        if (s_n === "S") text += "「使いやすいUI」や「自分の好きな食事の量」といった現実的な直感を重視する、マの核心に近い資質を持っています。";
+        else text += "物事の意味を考えるあまり、ただ自由にスマホを触るだけの心地よさを見落としてしまうことがあるかもしれません。";
         
-        if (f_t === "F") text += "「なんとなく不快」「なんとなく好き」という直感を大切にするあなたは、UIの違和感にも敏感に気づける人です。";
-        else text += "論理性や効率を重んじる知性派ですが、その理性が4択の間にある「あわい（余白）」を見えなくさせているようです。";
+        if (f_t === "F") text += "「なんとなく不快」「なんとなく好き」を大切にするあなたは、派手な配色のノイズにも敏感に気づける人です。";
+        else text += "論理を重んじる知性派ですが、その理性が4択の間にある「割り切れない中間」を見えなくさせているようです。";
 
-        if (p_j === "J") text += "秩序を好むあなたは、窓を開けっ放しにする自分を少しだけ「直さなきゃ」と思っていませんか？</p>";
-        else text += "柔軟なあなたは、面倒なことを後回しにしている時間さえも、別の空想に充てられるマの才能を持っています。</p>";
+        if (p_j === "J") text += "秩序を好むあなたは、「めんどくさい」と言い訳をして別のことを考える自分を少しだけ「直さなきゃ」と思っていませんか？</p>";
+        else text += "柔軟なあなたは、めんどくさい時に別のやりたいことを空想できる、マの才能を色濃く持っています。</p>";
 
         return text;
     }
@@ -424,36 +421,37 @@
     function generateMaGapAnalysis(final, v) {
         if (final >= 99) return `<p>「マ」とのズレは一切ありません。「めんどくさい」という言い訳さえも自分の一部として、完全に肯定できています。</p>`;
         
-        let text = `<p class="mb-3">「マ」とは、<strong class="text-[var(--accent-core)]">『派手なノイズを捨て、ふかふかの布団で謎の空想に耽り、白黒つけない中間の心地よさを愛する究極の脱力』</strong>です。あなたとのギャップ：</p>`;
+        let text = `<p class="mb-3">「マ」とは、<strong class="text-[var(--accent-core)]">『派手なノイズを捨て、布団で謎の空想に耽り、目的なくスマホを触り、白黒つけない中間の心地よさを愛する究極の脱力』</strong>です。あなたとのギャップ：</p>`;
         text += `<ul class="list-none space-y-3 mt-2 text-[12.5px]">`;
         
-        if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「中間の不在」への戸惑い】</strong><br>「マ」は4択のどれにも当てはまらない中間の空気を愛します。あなたは白黒つけることを急ぎすぎていませんか？</div></li>`;
-        if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「効率」という呪縛】</strong><br>「マ」は効率を求めることを「大変なこと」として手放します。あなたの理性が、その無駄をまだ許せていないようです。</div></li>`;
-        if (v.Fe > v.Fi) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【他人というノイズ】</strong><br>興味のない内容でも付き合ってしまう優しさが、あなたの「マ」の純度を少し下げている可能性があります。</div></li>`;
+        if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「めんどくさい」への罪悪感】</strong><br>「マ」はめんどくさい時に堂々と別のことを考えます。あなたは「やらなきゃ」という責任感が強く、完全な脳内逃避ができていません。</div></li>`;
+        if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「中間」の不在への戸惑い】</strong><br>「マ」は4択のどれにも当てはまらない中間の空気を愛します。あなたは論理的に正解を出そうと白黒つけることを急ぎすぎていませんか？</div></li>`;
+        if (v.Fe > v.Fi) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【他人というノイズ】</strong><br>食事の量やUIの好みなど、自分の直感よりも「世間の普通」や「他人の目」を気にしてしまう瞬間が、マの純度を下げています。</div></li>`;
         
         text += `</ul>`;
         return text;
     }
     
     function generateDailyActions(final, v) {
-        if (final >= 99) return `<p>今のまま、開けた窓を忘れ、布団で謎なことを考え続けてください。それがあなたの「マ」の完成形です。</p>`;
+        if (final >= 99) return `<p>今のまま、目的なくスマホを触り、布団で謎なことを考え続けてください。それがあなたの「マ」の完成形です。</p>`;
         
         let actions = [];
-        actions.push(`<li><strong class="text-[var(--accent-dark)]">「忘れる」を贅沢に楽しむ：</strong> 窓を開けたら、あえてそのまま忘れて過ごしてみましょう。「あ、開いてた」という瞬間の解放感がマを養います。</li>`);
-        actions.push(`<li><strong class="text-[var(--accent-dark)]">布団での「謎空想」を推奨：</strong> 布団に入ったら、役立つことは一切考えず、最も脈絡のない「謎なこと」を限界まで空想してください。</li>`);
+        actions.push(`<li><strong class="text-[var(--accent-dark)]">布団での「謎空想」を推奨：</strong> 布団に入ったら、今日の反省は一切せず、最も脈絡のない「謎なこと」を限界まで空想してください。</li>`);
+        actions.push(`<li><strong class="text-[var(--accent-dark)]">目的のないデジタルタイム：</strong> 効率を忘れ、ただ自由にスマホを触ったり好きな音楽を聴く「無駄な時間」を意図的に味わいましょう。</li>`);
         
-        if (v.J > v.P) actions.push(`<li><strong class="text-[var(--accent-dark)]">4択に「5枚目」を作る：</strong> 決められた枠組みに無理に自分を当てはめず、「どれでもない中間」という第5の選択肢を心の中で選ぶ練習を。</li>`);
-        if (v.T > (v.F + v.Fi + v.Fe)) actions.push(`<li><strong class="text-[var(--accent-dark)]">配色からノイズを抜く：</strong> スマホの壁紙や身の回りのものを、派手さを抑えた「最も目に優しく使いやすいUI」に統一しましょう。</li>`);
+        if (v.J > v.P) actions.push(`<li><strong class="text-[var(--accent-dark)]">「めんどくさい」の肯定：</strong> やらなきゃいけない事があっても、あえて「めんどくさい」と言い訳をし、頭の中で別のやりたい事を考える時間を許してください。</li>`);
+        if (v.T > (v.F + v.Fi + v.Fe)) actions.push(`<li><strong class="text-[var(--accent-dark)]">4択に「5枚目」を作る：</strong> 白黒つけさせられるアンケートのような場面で、無理に答えず「どれでもない中間」を心の中で選ぶ練習を。</li>`);
+        if (v.Fe > v.Fi) actions.push(`<li><strong class="text-[var(--accent-dark)]">食事とUIの自己中化：</strong> 見にくいデザインのアプリは即消しし、食事は「自分が食べたい量だけ」を徹底してみましょう。</li>`);
         
-        return `<ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">` + actions.join('') + `</ul>`;
+        return `<ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">` + actions.slice(0,4).join('') + `</ul>`;
     }
 
     function getPersonalizedAdvice(final, mbtiType) {
-        if (final >= 99) return "あなたは自分自身の『マ』を完全に理解しています。中間のない極端な世界に縛られず、自由な音楽と謎の空想の世界を広げ続けてください。";
+        if (final >= 99) return "あなたは自分自身の『マ』を完全に理解しています。中間のない極端な世界に縛られず、自由なスマホタイムと謎の空想の世界を広げ続けてください。";
         
         const f_t = mbtiType.charAt(2);
-        if (f_t === "T") return "効率良く物事を進めるのは、本当に大変なことです。だからこそ「めんどくさい」と言い訳をしながら空想に逃げる時間は決して無駄ではありません。美しいUIのデザインをただ眺めたり、ふかふかの布団で涼しい風を感じながらスマホを自由に触る。そんな白黒つけない『中間の時間』こそが、あなたの心を最も整えてくれるはずです。";
-        else return "アンケートの4択に悩んでしまうのは、あなたが繊細に『中間』を感じ取っている証拠です。そのめんどくささを大切にしてください。興味のない情報はシャットアウトし、ふかふかの布団の中に潜り込みましょう。そこが、あなたの『マ』が最も育つ場所です。";
+        if (f_t === "T") return "効率良く物事を進めるのは本当に大変なことです。だからこそ「めんどくさい」と言い訳をしながら脳内逃避する時間は決して無駄ではありません。美しいUIのデザインを眺めたり、ただ自由にスマホを触る。そんな白黒つけない『目的のない時間』こそが、あなたの心を最も整えてくれるはずです。";
+        else return "アンケートの4択に悩んでしまうのは、あなたが繊細に『中間』を感じ取っている証拠です。その割り切れない感情を大切にしてください。効率なんて大変なことは忘れ、布団の中に潜り込んで謎なことを空想しましょう。そこが、あなたの『マ』が最も輝く場所です。";
     }
 
     function finalizeResultAndDisplay(skipAnim) {
@@ -550,16 +548,20 @@
         }).then(canvas => { const link = document.createElement('a'); link.download = 'マ診断_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
     }
 
+    function fallbackCopy(text, successMessage) {
+        const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
+        dummy.value = text; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
+        alert(successMessage + "\n※お使いの端末が共有機能に未対応のため、テキストをコピーしました。");
+    }
+
     async function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const textToShare = `私のマ度は【${score}】でした！🍃\n中間のない極端な選択肢を嫌い、美しいUIとふかふかの布団を愛する人のための深層心理テスト。\n#マ診断\n`;
+        const textToShare = `私のマ度は【${score}】でした！📱\n目的なくスマホを触り、布団の中で「謎の空想」を楽しむ究極の脱力心理テスト。\n#マ診断\n`;
         const urlToShare = window.location.href;
         if (navigator.share) {
             try { await navigator.share({ title: 'マ診断結果', text: textToShare, url: urlToShare }); } catch (err) {}
         } else {
-            const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
-            dummy.value = textToShare + urlToShare; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
-            alert("SNS共有用テキストをコピーしました！");
+            fallbackCopy(textToShare + urlToShare, "SNS共有用のテキストをコピーしました！");
         }
     }
 
@@ -568,14 +570,12 @@
         const mbti = document.getElementById('result-mbti').innerText;
         const desc = document.getElementById('result-desc').innerText;
         const advice = document.getElementById('result-advice').innerText;
-        const textToShare = `【マ診断 詳細レポート】\nマ度: ${score}\nタイプ: ${mbti}\n\n分析:\n${desc}\n\nAI的確アドバイス:\n${advice}\n\n保存用URL:\n`;
+        const textToShare = `【マ診断 詳細レポート】\nマ度: ${score}\nタイプ: ${mbti}\n\n分析:\n${desc}\n\n的確アドバイス:\n${advice}\n\n保存用URL:\n`;
         const urlToShare = window.location.href;
         if (navigator.share) {
             try { await navigator.share({ title: 'マ診断 詳細データ', text: textToShare, url: urlToShare }); } catch (err) {}
         } else {
-            const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
-            dummy.value = textToShare + urlToShare; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
-            alert("詳細データを保存用にコピーしました！");
+            fallbackCopy(textToShare + urlToShare, "詳細データを保存用にコピーしました！");
         }
     }
 
