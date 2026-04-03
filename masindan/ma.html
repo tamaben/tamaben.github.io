@@ -186,7 +186,7 @@
                     <div id="result-diff" class="text-[13px] text-gray-700 leading-relaxed font-medium"></div>
                 </div>
 
-                <!-- 【強化】日常アクション -->
+                <!-- 日常アクション -->
                 <div class="anim-ready" id="anim-daily">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>「マ」を極める日常アクション</span>
@@ -197,7 +197,7 @@
                 <!-- AIアドバイス -->
                 <div class="bg-white/90 p-6 rounded-3xl border border-gray-100 shadow-sm anim-ready" id="anim-advice">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <span class="w-2 h-2 bg-[var(--accent-core)] rounded-full shadow-[0_0_8px_var(--accent-core)]"></span>AIからの本格アドバイス
+                        <span class="w-2 h-2 bg-[var(--accent-core)] rounded-full shadow-[0_0_8px_var(--accent-core)]"></span>AIからの的確なアドバイス
                     </h4>
                     <div id="result-advice" class="text-[13px] text-gray-600 leading-relaxed font-medium"></div>
                 </div>
@@ -216,7 +216,17 @@
     </div>
 </div>
 
+<div id="log-modal">
+    <div class="content relative">
+        <h3 class="text-lg font-bold mb-2 text-[var(--accent-core)] font-serif-en">Vector Data Log</h3>
+        <p class="text-[10px] text-gray-500 mb-6 pb-2 border-b border-[var(--accent-core)]/30">内部アルゴリズム処理結果（開発者用）</p>
+        <div id="adjustment-log" class="space-y-4 text-xs font-mono text-gray-700 whitespace-pre-wrap"></div>
+        <button onclick="toggleLogModal()" class="mt-8 w-full py-4 bg-white border border-[var(--accent-core)] text-[var(--accent-dark)] rounded-xl text-sm font-bold tracking-widest uppercase hover:bg-gray-50 transition-colors">閉じる</button>
+    </div>
+</div>
+
 <script>
+    // 診断の設問データ
     const questionsPool =[
         { q: "Q. 休日に家から一歩も出ない日、どんな風に過ごすことが多い？", type: 'select', options:[{ text: "スマホやPCを触って、ゴロゴロと無駄な時間を過ごす", score: 10, mbti: {P:2, I:1} }, { text: "溜まっていた家事や部屋の掃除を一気に片付ける", score: 0, mbti: {J:2} }, { text: "資格の勉強やスキルアップのための自己研鑽", score: 2, mbti: {T:1, J:1} }, { text: "新しい料理に挑戦したり、手の込んだ趣味に没頭する", score: 5, mbti: {Se:1, Fi:1} }] },
         { q: "Q. 日常生活で一番「イラッ」とするのはどんな時？", type: 'select', options:[{ text: "自分の作業や集中していることを邪魔された時", score: 10, mbti: {I:2, Te:1} }, { text: "約束の時間やルールを守らない人を見た時", score: 0, mbti: {J:2} }, { text: "他人の好きなものや趣味を頭ごなしに否定された時", score: 5, mbti: {Fi:2} }, { text: "非論理的で理不尽な感情をぶつけられた時", score: 2, mbti: {T:2} }] },
@@ -233,7 +243,17 @@
         { q: "Q. スマホの通知が溜まっていると気になる。", type: 'scale', options:[{ text: "全く気にならない", score: 10, mbti: {P:2} }, { text: "あまり気にならない", score: 5, mbti: {P:1} }, { text: "まあ気になる", score: 2, mbti: {J:1} }, { text: "とても気になる（すぐ消す）", score: 0, mbti: {J:2} }] },
         { q: "Q. 自分のこだわりや美学は、誰に何と言われようと絶対に曲げたくない。", type: 'scale', options:[{ text: "強くそう思う", score: 8, mbti: {Fi:2, J:1} }, { text: "そう思う", score: 10, mbti: {Fi:1} }, { text: "あまり思わない", score: 2, mbti: {Fe:1, P:1} }, { text: "全く思わない", score: 0, mbti: {Fe:2} }] },
         { q: "Q. 直感で「いいな」と思ったものは、後先考えずに買ってしまうことが多い。", type: 'scale', options:[{ text: "とても当てはまる", score: 5, mbti: {P:2, Se:1} }, { text: "まあ当てはまる", score: 10, mbti: {P:1} }, { text: "あまり当てはまらない", score: 2, mbti: {J:1} }, { text: "全く当てはまらない", score: 0, mbti: {J:2} }] },
-        { q: "Q. 寝る前に明日着る服を決めておくタイプだ。", type: 'scale', options:[{ text: "全く思わない（朝決める）", score: 10, mbti: {P:2} }, { text: "あまり思わない", score: 5, mbti: {P:1} }, { text: "まあそう思う", score: 2, mbti: {J:1} }, { text: "とてもそう思う", score: 0, mbti: {J:2} }] }
+        { q: "Q. 寝る前に明日着る服を決めておくタイプだ。", type: 'scale', options:[{ text: "全く思わない（朝決める）", score: 10, mbti: {P:2} }, { text: "あまり思わない", score: 5, mbti: {P:1} }, { text: "まあそう思う", score: 2, mbti: {J:1} }, { text: "とてもそう思う", score: 0, mbti: {J:2} }] },
+        { q: "Q. 知らない名前のスパイスが効いた料理を食べた時の反応は？", type: 'situation', options:[{ label: "A", text: "自分の口に合うかどうかだけで判断する", score: 10, mbti: {Se:2} }, { label: "B", text: "未知の刺激をダイレクトに受け止める", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "珍しい味であることをすぐに誰かに共有する", score: 2, mbti: {E:2} }, { label: "D", text: "どんなスパイスが使われているか分析する", score: 0, mbti: {T:2, N:1} }] },
+        { q: "Q. 子供の頃の記憶で一番鮮明に残っているのは？", type: 'select', options:[{ text: "記憶が曖昧で、あまりよく覚えていない", score: 10, mbti: {P:1, N:1} }, { text: "誰かに怒られたり褒められた時の「感情」", score: 5, mbti: {F:2} }, { text: "その時の情景の「色」や「空気の匂い」", score: 2, mbti: {Se:2} }, { text: "自分が何かのテストで取った「成績」", score: 0, mbti: {T:1, J:1} }] },
+        { q: "Q. お風呂に入っている時の思考状態として近いものは？", type: 'select', options:[{ text: "鼻歌を歌ったりして気分をリフレッシュする", score: 10, mbti: {S:1, F:1} }, { text: "水の音や温かさに集中し、頭をからっぽにする", score: 5, mbti: {I:1, S:1} }, { text: "今日あった出来事の反省会が始まる", score: 0, mbti: {J:1, T:1} }, { text: "明日のスケジュールをシミュレーションする", score: 2, mbti: {J:2, T:1} }] },
+        { q: "Q. 旅行の計画を立てるときのスタイルは？", type: 'situation', options:[{ label: "A", text: "面倒で直前まで何もしない", score: 10, mbti: {P:2} }, { label: "B", text: "交通と宿だけ決めて、あとは現地で考える", score: 5, mbti: {P:1, S:1} }, { label: "C", text: "行きたい場所だけいくつかピックアップしておく", score: 2, mbti: {J:1} }, { label: "D", text: "分単位でスケジュールをびっしり決める", score: 0, mbti: {J:2} }] },
+        { q: "Q. 会話の最中、相手が間違ったことを言ったら？", type: 'select', options:[{ text: "どうでもいいことならスルーする", score: 10, mbti: {P:1, Fi:1} }, { text: "すぐに「それは違う」と訂正する", score: 0, mbti: {T:2, J:1} }, { text: "傷つけないようにやんわりと指摘する", score: 5, mbti: {F:2} }, { text: "後でこっそり調べて確認する", score: 2, mbti: {I:1, T:1} }] },
+        { q: "Q. 突然、予定が全てキャンセルになったら？", type: 'situation', options:[{ label: "A", text: "少し寂しくなり、SNSを見る", score: 10, mbti: {E:1, F:1} }, { label: "B", text: "ラッキーと思い、家でダラダラする", score: 5, mbti: {I:1, P:2} }, { label: "C", text: "すぐに別の予定を入れようとする", score: 0, mbti: {E:2, J:1} }, { label: "D", text: "前からやりたかった作業を始める", score: 2, mbti: {J:1, I:1} }] },
+        { q: "Q. 次のうち、あなたに最も当てはまるものは？", type: 'select', options:[{ text: "思いついたらすぐ行動する", score: 10, mbti: {P:2, E:1} }, { text: "夜に急にやる気が出る", score: 5, mbti: {P:1, N:1} }, { text: "変わったことが好き", score: 2, mbti: {N:2} }, { text: "計画を立ててから動きたい", score: 0, mbti: {J:2} }] },
+        { q: "Q. 風で草花が大きく揺れているのを見たとき？", type: 'situation', options:[{ label: "A", text: "風の抵抗や自然のダイナミックさを楽しむ", score: 10, mbti: {Se:2} }, { label: "B", text: "特に気にせず歩く速度を維持する", score: 5, mbti: {S:1, T:1} }, { label: "C", text: "嵐が来るのではないかと天気を警戒する", score: 0, mbti: {J:1, N:1} }, { label: "D", text: "何かのスピリチュアルな予兆を感じる", score: 2, mbti: {N:2} }] },
+        { q: "Q. 他人に「これだけは褒められたい（認められたい）」と思うポイントは？", type: 'select', options:[{ text: "自分が時間をかけて作ったものや、仕事の成果", score: 10, mbti: {T:1, J:1} }, { text: "自分の性格の良さや、他人への思いやり", score: 0, mbti: {Fe:2} }, { text: "独特のセンスや、自分にしかできない発想", score: 5, mbti: {N:1, Fi:1} }, { text: "褒められなくても自分が満足していればそれでいい", score: 2, mbti: {I:1, P:1} }] },
+        { q: "Q. 好きな音楽を聴くとき、何に一番惹かれる？", type: 'select', options:[{ text: "リズムやメロディの心地よさ、音の質感", score: 10, mbti: {Se:2} }, { text: "歌詞の意味やメッセージ性", score: 5, mbti: {Fi:1, N:1} }, { text: "アーティストの生き様や背景", score: 2, mbti: {Ni:1} }, { text: "流行っていてみんなが知っていること", score: 0, mbti: {Fe:2} }] }
     ];
 
     let selectedQuestions = []; let currentIdx = 0; let historyArr = []; let devLogText = "";
@@ -283,14 +303,18 @@
     function renderQuestion() {
         const wrapper = document.getElementById('purify-wrapper');
         wrapper.classList.remove('purify-effect'); void wrapper.offsetWidth; wrapper.classList.add('purify-effect');
+
         const q = selectedQuestions[currentIdx];
         document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
         document.getElementById('q-text').innerText = q.q;
         document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+
         const dots = document.querySelectorAll('.progress-dot');
         dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+
         const container = document.getElementById('options-container'); container.innerHTML = '';
         const shuffledOpts =[...q.options].sort(() => Math.random() - 0.5);
+
         shuffledOpts.forEach((opt) => {
             const btn = document.createElement('button'); btn.className = 'option-btn group';
             let btnHtml = '';
@@ -313,7 +337,6 @@
     }
 
     function goBack() { if (currentIdx <= 0) return; currentIdx--; historyArr.pop(); saveToCookie(); renderQuestion(); }
-    function saveToCookie() { setCookie('ma_adv_system_v8', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); }
 
     function resumeDiagnosis() {
         const saved = getCookie('ma_adv_system_v8');
@@ -339,23 +362,31 @@
         setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
     }
 
+    // --- 完全アップデートされたマ・アルゴリズム ---
     function calculateAdvancedScore(hist) {
         let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
-        const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
-        hist.forEach((h) => {
+        // 理想の「マ」ベクトル：効率や極端な選択を嫌い、直感と心地よさ（UI、布団、風）に全振りする
+        const idealVector = { I:8, E:2, S:8, N:5, F:8, T:2, P:10, J:1, Fi:10, Fe:3, Se:10 };
+
+        devLogText = "--- Deep Analysis Start ---\n";
+        hist.forEach((h, i) => {
             rawScore += h.score || 0;
+            devLogText += `[Q${i+1}] Score:+${h.score} | ${h.a}\n`;
             if(h.mbti) for (let key in h.mbti) mbtiVector[key] += h.mbti[key];
         });
+
         let dotProduct = 0, normUser = 0, normIdeal = 0;
         for (let key in idealVector) {
             const uVal = mbtiVector[key] || 0; const iVal = idealVector[key];
             dotProduct += uVal * iVal; normUser += Math.pow(uVal, 2); normIdeal += Math.pow(iVal, 2);
         }
         let similarity = (normUser > 0 && normIdeal > 0) ? dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal)) : 0;
-        const tolerance = 5;
+
+        const tolerance = 4;
         let conflictT_F = Math.max(0, Math.min(mbtiVector.T, (mbtiVector.F + mbtiVector.Fi + mbtiVector.Fe)) - tolerance);
         let conflictJ_P = Math.max(0, Math.min(mbtiVector.J, mbtiVector.P) - tolerance);
         let penalty = (conflictT_F + conflictJ_P) * 1.5;
+
         let finalPercent = rawScore;
         if (rawScore === 100) { finalPercent = 100; } 
         else if (rawScore >= 94) { finalPercent = 99.9; } 
@@ -364,48 +395,65 @@
             finalPercent = Math.max(0, Math.min(99, finalPercent));
         }
         if (finalPercent !== 99.9) finalPercent = Math.round(finalPercent);
+        
         return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
     }
 
     function generateDetailedProfile(v, final) {
-        if (final >= 99) return "<p>【完全同期】あなたは「マ」そのものです。飾らない自分を愛し、心地よさを追求する天才です。あなたの存在自体がこの診断の正解です。</p>";
+        if (final >= 99) return "<p>【完全同期】あなたは「マ」そのものです。見にくいUIや極端な選択肢を嫌い、自分の心地よさ（布団・風）だけを純粋に愛することができる天才です。あなたの存在自体がこの診断の正解です。</p>";
+
         const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
         const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
+
         let text = `<p><strong class="text-[var(--accent-dark)] border-b border-[var(--accent-core)]/40 pb-0.5">【基本性格とマの素質】</strong><br>`;
-        if (i_e === "I") text += "内面の空想世界を大切にするあなたは、布団の中で広がる無限の思考を楽しめる才能があります。";
-        else text += "外界の刺激を楽しみますが、時に「マ」のような静かな解放感を求めているようです。";
-        if (s_n === "S") text += "窓からの風や食事の量といった「現実的な感覚」を重視する、非常にマに近い資質を持っています。";
-        else text += "抽象的なことを考えるのが得意ですが、そのために「今、ここ」の心地よさを忘れてしまうことも。";
-        if (f_t === "F") text += "「なんとなく好き」を大切にするあなたは、デザインの使いやすさを肌で感じ取れる人です。";
-        else text += "論理性や効率を重んじるあまり、4択の間に漂う「あわい（余白）」を見逃していませんか？";
+        if (i_e === "I") text += "内面の空想世界を大切にするあなたは、ふかふかの布団の中で無限の思考を楽しめる才能があります。";
+        else text += "外界の刺激を楽しみますが、時に「マ」のような静かな解放感と涼しい風を求めているようです。";
+        
+        if (s_n === "S") text += "「使いやすいデザイン」や「食事の満足感」といった現実的な感覚を重視する、マの核心に近い資質を持っています。";
+        else text += "物事の意味や可能性を考えるあまり、目の前にある純粋な心地よさを見落としてしまうことがあるかもしれません。";
+        
+        if (f_t === "F") text += "「なんとなく不快」「なんとなく好き」という直感を大切にするあなたは、UIの違和感にも敏感に気づける人です。";
+        else text += "論理性や効率を重んじる知性派ですが、その理性が4択の間にある「あわい（余白）」を見えなくさせているようです。";
+
         if (p_j === "J") text += "秩序を好むあなたは、窓を開けっ放しにする自分を少しだけ「直さなきゃ」と思っていませんか？</p>";
-        else text += "柔軟なあなたは、後回しにしている時間に別の楽しいことを始められる、マの柔軟性を持っています。</p>";
+        else text += "柔軟なあなたは、面倒なことを後回しにしている時間さえも、別の空想に充てられるマの才能を持っています。</p>";
+
         return text;
     }
 
     function generateMaGapAnalysis(final, v) {
-        if (final >= 99) return `<p>「マ」とのズレは一切ありません。言い訳さえも自分の一部として、完全に肯定できています。</p>`;
-        let text = `<p class="mb-3">「マ」とは、<strong class="text-[var(--accent-core)]">『派手なノイズを捨て、ふかふかの布団で謎の空想に耽り、窓を開けたことすら忘れる究極の脱力』</strong>です。あなたとのギャップ：</p>`;
+        if (final >= 99) return `<p>「マ」とのズレは一切ありません。「めんどくさい」という言い訳さえも自分の一部として、完全に肯定できています。</p>`;
+        
+        let text = `<p class="mb-3">「マ」とは、<strong class="text-[var(--accent-core)]">『派手なノイズを捨て、ふかふかの布団で謎の空想に耽り、白黒つけない中間の心地よさを愛する究極の脱力』</strong>です。あなたとのギャップ：</p>`;
         text += `<ul class="list-none space-y-3 mt-2 text-[12.5px]">`;
-        if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「中間の不在」への戸惑い】</strong><br>「マ」は4択のどれにも当てはまらない中間の空気を愛します。あなたは答えを急ぎすぎていませんか？</div></li>`;
-        if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「派手なノイズ」への耐性】</strong><br>見にくい色合いや配色を「不快」と感じるあなたの感性は正しいですが、それを理屈で分析しすぎるとマから遠ざかります。</div></li>`;
+        
+        if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「中間の不在」への戸惑い】</strong><br>「マ」は4択のどれにも当てはまらない中間の空気を愛します。あなたは白黒つけることを急ぎすぎていませんか？</div></li>`;
+        if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【「効率」という呪縛】</strong><br>「マ」は効率を求めることを「大変なこと」として手放します。あなたの理性が、その無駄をまだ許せていないようです。</div></li>`;
+        if (v.Fe > v.Fi) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【他人というノイズ】</strong><br>興味のない内容でも付き合ってしまう優しさが、あなたの「マ」の純度を少し下げている可能性があります。</div></li>`;
+        
         text += `</ul>`;
         return text;
     }
     
     function generateDailyActions(final, v) {
         if (final >= 99) return `<p>今のまま、開けた窓を忘れ、布団で謎なことを考え続けてください。それがあなたの「マ」の完成形です。</p>`;
+        
         let actions = [];
         actions.push(`<li><strong class="text-[var(--accent-dark)]">「忘れる」を贅沢に楽しむ：</strong> 窓を開けたら、あえてそのまま忘れて過ごしてみましょう。「あ、開いてた」という瞬間の解放感がマを養います。</li>`);
         actions.push(`<li><strong class="text-[var(--accent-dark)]">布団での「謎空想」を推奨：</strong> 布団に入ったら、役立つことは一切考えず、最も脈絡のない「謎なこと」を限界まで空想してください。</li>`);
-        if (v.J > v.P) actions.push(`<li><strong class="text-[var(--accent-dark)]">4択に「5枚目」を作る：</strong> 決められた枠組みに無理に自分を当てはめず、「どれでもない」という第5の選択肢を心の中で選ぶ練習を。</li>`);
-        actions.push(`<li><strong class="text-[var(--accent-dark)]">配色からノイズを抜く：</strong> スマホの壁紙や身の回りのものを、最も「目に優しく使いやすい」ものに統一し、感覚の負担を減らしましょう。</li>`);
+        
+        if (v.J > v.P) actions.push(`<li><strong class="text-[var(--accent-dark)]">4択に「5枚目」を作る：</strong> 決められた枠組みに無理に自分を当てはめず、「どれでもない中間」という第5の選択肢を心の中で選ぶ練習を。</li>`);
+        if (v.T > (v.F + v.Fi + v.Fe)) actions.push(`<li><strong class="text-[var(--accent-dark)]">配色からノイズを抜く：</strong> スマホの壁紙や身の回りのものを、派手さを抑えた「最も目に優しく使いやすいUI」に統一しましょう。</li>`);
+        
         return `<ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">` + actions.join('') + `</ul>`;
     }
 
     function getPersonalizedAdvice(final, mbtiType) {
-        if (final >= 99) return "あなたは自分自身の『マ』を完全に理解しています。中間のない世界に縛られず、自由な音楽と空想の世界を広げ続けてください。";
-        return "アンケートの4択に悩む時間は、あなたが繊細に『中間』を感じ取っている証拠です。そのめんどくささを大切に。効率なんて大変なことは、ふかふかの布団の中に置いておきましょう。";
+        if (final >= 99) return "あなたは自分自身の『マ』を完全に理解しています。中間のない極端な世界に縛られず、自由な音楽と謎の空想の世界を広げ続けてください。";
+        
+        const f_t = mbtiType.charAt(2);
+        if (f_t === "T") return "効率良く物事を進めるのは、本当に大変なことです。だからこそ「めんどくさい」と言い訳をしながら空想に逃げる時間は決して無駄ではありません。美しいUIのデザインをただ眺めたり、ふかふかの布団で涼しい風を感じながらスマホを自由に触る。そんな白黒つけない『中間の時間』こそが、あなたの心を最も整えてくれるはずです。";
+        else return "アンケートの4択に悩んでしまうのは、あなたが繊細に『中間』を感じ取っている証拠です。そのめんどくささを大切にしてください。興味のない情報はシャットアウトし、ふかふかの布団の中に潜り込みましょう。そこが、あなたの『マ』が最も育つ場所です。";
     }
 
     function finalizeResultAndDisplay(skipAnim) {
@@ -418,6 +466,7 @@
 
     function processDisplay(skipAnim, loadedData = null) {
         let final = 0; let v = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 }; let sim = null;
+
         if (loadedData && (loadedData.s !== undefined || loadedData.tot !== undefined) && !loadedData.v) {
             final = loadedData.s !== undefined ? loadedData.s : loadedData.tot;
             if (loadedData.m) v = Object.assign(v, loadedData.m);
@@ -427,22 +476,29 @@
             const calc = calculateAdvancedScore(historyArr);
             final = calc.final; v = calc.vector; sim = calc.sim;
         }
+
         if (final >= 99) document.getElementById('cert-badge').classList.remove('hidden');
+
         const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
         const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
         const mbtiType = (final >= 99) ? "ISFP-A" : `${i_e}${s_n}${f_t}${p_j}`;
+        
         document.getElementById('result-mbti').innerText = mbtiType;
         document.getElementById('sync-rate').innerText = sim !== null ? `Sync: ${(sim * 100).toFixed(1)}%` : `Sync: Legacy`;
+        
         document.getElementById('result-desc').innerHTML = generateDetailedProfile(v, final);
         document.getElementById('result-diff').innerHTML = generateMaGapAnalysis(final, v);
         document.getElementById('result-daily').innerHTML = generateDailyActions(final, v);
         document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
+        
         let inner = Math.min(10, ((v.I + v.Fi) * 1.5) || 3); let real = Math.min(10, ((v.S + v.Se) * 1.5) || 3);
         let empathy = Math.min(10, ((v.F + v.Fe + v.Fi) * 1.2) || 4); let flex = Math.min(10, (v.P * 1.5) || 3);
         let stable = Math.min(10, (final / 10) + 1);
         let avgData = final >= 99 ? [10, 10, 10, 10, 10] : [inner, real, empathy, flex, stable];
+
         const scoreEl = document.getElementById('result-score');
         const displayStr = final === 99.9 ? "99.9%" : `${final}%`;
+
         if (skipAnim) {
             document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
             scoreEl.innerText = displayStr; renderCharts(avgData);
@@ -496,7 +552,7 @@
 
     async function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const textToShare = `私のマ度は【${score}】でした！🌌\n開けた窓を忘れ、布団で謎の空想を楽しむ究極の自分。診断はこちら🌿\n#マ診断\n`;
+        const textToShare = `私のマ度は【${score}】でした！🍃\n中間のない極端な選択肢を嫌い、美しいUIとふかふかの布団を愛する人のための深層心理テスト。\n#マ診断\n`;
         const urlToShare = window.location.href;
         if (navigator.share) {
             try { await navigator.share({ title: 'マ診断結果', text: textToShare, url: urlToShare }); } catch (err) {}
@@ -512,7 +568,7 @@
         const mbti = document.getElementById('result-mbti').innerText;
         const desc = document.getElementById('result-desc').innerText;
         const advice = document.getElementById('result-advice').innerText;
-        const textToShare = `【マ診断 詳細レポート】\nマ度: ${score}\nタイプ: ${mbti}\n\n分析:\n${desc}\n\nAIアドバイス:\n${advice}\n\n保存用URL:\n`;
+        const textToShare = `【マ診断 詳細レポート】\nマ度: ${score}\nタイプ: ${mbti}\n\n分析:\n${desc}\n\nAI的確アドバイス:\n${advice}\n\n保存用URL:\n`;
         const urlToShare = window.location.href;
         if (navigator.share) {
             try { await navigator.share({ title: 'マ診断 詳細データ', text: textToShare, url: urlToShare }); } catch (err) {}
