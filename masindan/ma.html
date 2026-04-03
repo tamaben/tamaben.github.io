@@ -187,6 +187,22 @@
                     <div id="result-diff" class="text-[13px] text-gray-700 leading-relaxed font-medium"></div>
                 </div>
 
+                <!-- 100%マになるための日常アクション -->
+                <div class="anim-ready" id="anim-daily">
+                    <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
+                        <span>日常的にできる「マ」要素</span>
+                    </h4>
+                    <div class="text-[12.5px] text-gray-700 leading-relaxed font-medium space-y-3">
+                        <p>「マ度」を100%に引き上げるためには、社会的な建前や効率を捨て、以下の要素を日常に取り入れてみてください。</p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-600">
+                            <li><strong class="text-[var(--accent-dark)]">予定を立てない休日を作る：</strong> 直前まで何も決めず、その日の気分だけで行動する。ダラダラする時間を肯定する。</li>
+                            <li><strong class="text-[var(--accent-dark)]">「なんとなく」で決断する：</strong> 損得や効率、レビューを調べずに「直感的に惹かれたもの」を即座に選ぶ。</li>
+                            <li><strong class="text-[var(--accent-dark)]">他人の期待を裏切る勇気：</strong> 場の空気を読んで無理に合わせず、自分の心地よさを最優先にする。</li>
+                            <li><strong class="text-[var(--accent-dark)]">五感に全集中する：</strong> 過去への反省や未来への不安を捨て、今食べているものの美味しさや、音の心地よさだけを全力で味わう。</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- ワンポイントアドバイス -->
                 <div class="bg-white/90 p-6 rounded-3xl border border-gray-100 shadow-sm anim-ready" id="anim-advice">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -196,9 +212,12 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-4 anim-ready" id="anim-buttons">
+        <div class="flex flex-col gap-3 anim-ready" id="anim-buttons">
             <button onclick="downloadImage()" class="w-full py-4 btn-main text-sm uppercase tracking-widest">結果画像を保存</button>
-            <button onclick="shareLink()" class="w-full py-4 btn-outline text-xs tracking-widest uppercase bg-white/50">結果リンクをコピー</button>
+            <div class="flex gap-2">
+                <button onclick="shareForSNS()" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white/50">SNS用にコピー</button>
+                <button onclick="shareForSelf()" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white/50">自分用にコピー</button>
+            </div>
         </div>
         <div class="anim-ready mt-12 mb-10 text-center" id="anim-reset">
             <button onclick="resetAndRestart()" class="text-[10px] text-[var(--text-muted)] tracking-[0.4em] uppercase hover:text-[var(--accent-dark)] transition-all">最初からやり直す</button>
@@ -395,7 +414,6 @@
         return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
     }
 
-    // MBTI的な詳細な基本性格と強みを生成する関数
     function generateDetailedProfile(v, final) {
         if (final >= 99) return "<p>あなたは、今この瞬間の心地よさを五感で楽しむ力や、何にも縛られないマイペースさ、そして自分の実績や他者の気持ちも大切にする多面的な要素を完璧なバランスで併せ持っています。その矛盾のないしなやかで合理的な在り方こそが、真の『マ』の正体そのものです。</p>";
 
@@ -428,24 +446,19 @@
         return text;
     }
 
-    // 「マ」とのギャップを分析する関数
     function generateMaGapAnalysis(final, v) {
         if (final >= 99) return `<p>あなたは「マ」そのものです。思考回路に一切のズレがなく、完全に同期しています。これ以上の分析は不要です。</p>`;
 
         let text = `<p class="mb-3">「マ」の絶対的領域（100%の理想形）は、<strong class="text-[var(--accent-core)]">『今この瞬間の直感と心地よさに全振りし、計画や世間の枠組みに一切縛られない究極の自由』</strong>です。<br>この絶対領域とあなたを比較した際の決定的なギャップは以下の通りです。</p>`;
         text += `<ul class="list-none space-y-3 mt-2 text-[12.5px]">`;
 
-        // PとJのギャップ
         if (v.J > v.P) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【秩序の壁】</strong><br>「マ」が面倒なことを限界まで後回しにして開き直るのに対し、あなたは「やるべきことは片付けて安心したい」「計画通りに進めたい」という責任感や秩序が働き、真のルーズさに振り切れません。</div></li>`;
         else text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【時間の波乗り】</strong><br>計画に縛られない自由な行動力は「マ」と非常に近い性質を持っています。その場のノリや直感を優先できる素晴らしい素質があります。</div></li>`;
 
-        // FとTのギャップ
         if (v.T > (v.F + v.Fi + v.Fe)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【論理のストッパー】</strong><br>「マ」が「なんか好き」という直感だけで突き進むのに対し、あなたは「それは効率的か？」「データに基づくか？」という論理的思考が働き、直感だけで生きることを脳が拒否しています。</div></li>`;
 
-        // Fe vs Fi (他人軸か自分軸か)
         if (v.Fe > v.Fi) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【調和への囚われ】</strong><br>「マ」が他人にどう思われようと自分の心地よさを優先するのに対し、あなたは周囲の空気や他人の気持ちを気遣いすぎてしまうため、完全な自分軸に至れていません。</div></li>`;
 
-        // NとSのギャップ
         if (v.N > (v.S + v.Se)) text += `<li class="flex gap-2"><span class="text-[var(--accent-core)] mt-0.5">■</span><div><strong>【思考の浮遊】</strong><br>「マ」が目の前の食事や風景の「現実の心地よさ」をダイレクトに味わうのに対し、あなたは「意味」や「別の可能性」など、目に見えない世界へ思考が飛んでしまうため、現実に深く根を下ろしきれていません。</div></li>`;
 
         text += `</ul>`;
@@ -455,7 +468,6 @@
         return text;
     }
 
-    // パーソナライズされたAIアドバイス
     function getPersonalizedAdvice(final, mbtiType) {
         if (final >= 99) return "あなたは既に究極の領域に達しています。世間の常識や他人の声に迷うことなく、今まで通り自分の直感と『心地よさ』だけを信じて突き進んでください。それがあなたにとって常に正解になります。";
 
@@ -502,7 +514,6 @@
         document.getElementById('result-mbti').innerText = mbtiType;
         document.getElementById('sync-rate').innerText = sim !== null ? `Sync: ${(sim * 100).toFixed(1)}%` : `Sync: Legacy`;
         
-        // --- テキスト生成部 ---
         document.getElementById('result-desc').innerHTML = generateDetailedProfile(v, final);
         document.getElementById('result-diff').innerHTML = generateMaGapAnalysis(final, v);
         document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
@@ -523,7 +534,7 @@
         } else {
             sessionStorage.setItem('ma_anim_done', '1');
             animateValue(scoreEl, 0, final, 4000, () => {
-                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-diff', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
+                const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-diff', 'anim-daily', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
                 animBlocks.forEach((id, index) => {
                     setTimeout(() => {
                         const el = document.getElementById(id);
@@ -572,10 +583,31 @@
         }).then(canvas => { const link = document.createElement('a'); link.download = 'マ診断_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
     }
 
-    function shareLink() {
+    function shareForSNS() {
+        const score = document.getElementById('result-score').innerText;
+        const mbti = document.getElementById('result-mbti').innerText;
         const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
-        dummy.value = `私のマ度は【${document.getElementById('result-score').innerText}】でした！\n#マ診断\n${window.location.href}`;
-        dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy); alert("結果のリンクをコピーしました！");
+        
+        dummy.value = `私のマ度は【${score}】でした！🌿\n診断タイプ: ${mbti}\n\n究極の「マ」を目指す深層心理テスト\n#マ診断\n${window.location.href}`;
+        
+        dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy); 
+        alert("SNS共有用のテキストをコピーしました！X(Twitter)やInstagramなどに貼り付けて共有できます。");
+    }
+
+    function shareForSelf() {
+        const score = document.getElementById('result-score').innerText;
+        const mbti = document.getElementById('result-mbti').innerText;
+        const sync = document.getElementById('sync-rate').innerText;
+        const desc = document.getElementById('result-desc').innerText.replace(/\n\n+/g, '\n');
+        const diff = document.getElementById('result-diff').innerText.replace(/\n\n+/g, '\n');
+        const advice = document.getElementById('result-advice').innerText;
+        
+        const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
+        
+        dummy.value = `【マ診断 詳細レポート】\nマ度: ${score}\nタイプ: ${mbti}\n${sync}\n\n▼基本性格\n${desc}\n\n▼「マ」とのギャップ\n${diff}\n\n▼AIからの本格アドバイス\n${advice}\n\n▼結果保存用URL\n${window.location.href}`;
+        
+        dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy); 
+        alert("自分用の詳細データをコピーしました！メモ帳などに貼り付けて保存してください。");
     }
 
     function resetAndRestart() { eraseCookie('ma_adv_system_v8'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
