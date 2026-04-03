@@ -230,6 +230,7 @@
                 </div>
             </div>
 
+            <!-- ▼ タマベンのアプリ一覧 セクション ▼ -->
             <section class="mt-12 md:mt-20 pt-12 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-4">
                 <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
                     <i data-lucide="layout-grid" class="w-5 h-5 text-[var(--accent-main)]"></i>
@@ -250,6 +251,7 @@
                 </div>
             </section>
             
+            <!-- ▼ 公式メディア セクション ▼ -->
             <section class="mt-8 pt-8 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-8">
                 <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
                     <i data-lucide="radio" class="w-5 h-5 text-[var(--accent-main)]"></i>
@@ -257,17 +259,24 @@
                 </div>
                 
                 <div class="flex flex-wrap justify-center gap-4 px-4">
-                    <!-- YouTube アイコンのみ -->
+                    <!-- YouTube (直接SVGで描画) -->
                     <a href="https://youtube.com/@tamaben-tama?si=VB8MXIIjU5d5XfxZ" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="group flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-red-400 transition-all transform hover:-translate-y-1">
-                        <i data-lucide="youtube" class="w-7 h-7 text-[var(--text-light)] group-hover:text-red-500 transition-colors"></i>
+                        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-7 h-7 text-[var(--text-light)] group-hover:text-red-500 transition-colors">
+                            <path d="M21.582 6.186a2.665 2.665 0 0 0-1.87-1.884C18.062 3.86 12 3.86 12 3.86s-6.062 0-7.712.442a2.665 2.665 0 0 0-1.87 1.884C2 7.846 2 12 2 12s0 4.154.448 5.814a2.665 2.665 0 0 0 1.87 1.884c1.65.442 7.712.442 7.712.442s6.062 0 7.712-.442a2.665 2.665 0 0 0 1.87-1.884C22 16.154 22 12 22 12s0-4.154-.418-5.814zM9.99 15.474v-6.948l6.19 3.474-6.19 3.474z"/>
+                        </svg>
                     </a>
                     
-                    <!-- Instagram アイコンのみ -->
+                    <!-- Instagram (直接SVGで描画) -->
                     <a href="https://www.instagram.com/masapiko_0622?igsh=MTl4ejFiZGl0MDllbg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="group flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-pink-500 transition-all transform hover:-translate-y-1">
-                        <i data-lucide="instagram" class="w-7 h-7 text-[var(--text-light)] group-hover:text-pink-500 transition-colors"></i>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7 text-[var(--text-light)] group-hover:text-pink-500 transition-colors">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
                     </a>
                 </div>
             </section>
+            <!-- ▲ 公式メディア セクション ▲ -->
             </div>
 
         <div id="view-detail" class="hidden py-8 md:py-12">
