@@ -70,15 +70,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* フワフワ浮かぶアニメーション（ワクワク感） */
-        @keyframes float-gentle {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
-        }
-        .animate-float {
-            animation: float-gentle 4s ease-in-out infinite;
-        }
-
         .card-appear {
             opacity: 0;
             transform: scale(0.95) translateY(20px);
@@ -89,7 +80,7 @@
             transform: scale(1) translateY(0);
         }
 
-        /* カードコンテナ（背景なし） */
+        /* カードコンテナ */
         .premium-card {
             background: transparent;
             border: none;
@@ -98,10 +89,9 @@
             flex-direction: column;
             height: 100%;
             overflow: visible;
-            perspective: 1000px; /* 3D的な動きの準備 */
         }
 
-        /* プレビューラッパー */
+        /* プレビューラッパー（パディングをなくし、画像そのままの比率に） */
         .pdf-thumbnail-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1.414;
@@ -110,25 +100,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
             overflow: visible;
         }
 
-        /* PDFキャンバス（角丸なし・白背景固定・おしゃれな影・ワクワクする動き） */
+        /* PDFキャンバス（そのままの画像として表示） */
         .pdf-canvas {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background-color: #ffffff; /* 白背景を強制 */
-            border-radius: 0; /* 角丸をなくし、PDFそのままの形に */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); /* リアルな紙の影 */
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: center bottom;
+            background-color: #ffffff;
+            border-radius: 0; /* 角丸なし */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 自然な軽い影 */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
         }
         
         .premium-card:hover .pdf-canvas { 
-            transform: scale(1.06) rotate(3deg) translateY(-8px); /* ホバーで手前に飛び出し、少し傾く */
-            box-shadow: 0 20px 30px rgba(76, 175, 80, 0.15), 0 8px 15px rgba(0,0,0,0.08); /* グリーンのワクワクする影 */
+            transform: translateY(-4px) scale(1.02); /* ホバー時はシンプルに少し浮き上がるだけ */
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
         /* テキストエリアのアニメーション */
@@ -148,7 +136,7 @@
         .tab-pill.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
 
         .loading-pulse { animation: pulse 2s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
         #settings-modal.active { opacity: 1; pointer-events: auto; }
@@ -184,8 +172,9 @@
 
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
-            <button onclick="goHome()" class="active:scale-95 transition-all outline-none text-xl md:text-2xl font-black text-[var(--accent-dark)] tracking-widest hover:text-[var(--accent-main)]">
-                タマベン
+            <!-- テキストからロゴ画像（logo.svg）に戻しました -->
+            <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
+                <img src="logo.svg" alt="タマベンロゴ" class="h-6 sm:h-8 md:h-10 w-auto">
             </button>
             <div class="flex items-center gap-3 md:gap-4">
                 <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2 fade-in-up">
@@ -205,7 +194,7 @@
             <section class="py-8 sm:py-16 md:py-20 text-center fade-in-up" style="animation-delay: 0.1s;">
                 <h1 class="fluid-title font-black mb-10 md:mb-12 tracking-tight text-[var(--text-dark)] leading-[1.15]">
                     学びを、もっと<br/>
-                    <span class="inline-block px-5 py-2 bg-[var(--bg-card)] text-[var(--accent-main)] rounded-full shadow-md rotate-[-3deg] border border-[var(--border-color)] my-2 hover:rotate-0 hover:scale-105 transition-all cursor-default">自由に。</span>
+                    <span class="inline-block px-5 py-2 bg-white text-[var(--accent-main)] rounded-full shadow-sm rotate-[-3deg] border-2 border-[var(--accent-main)] my-2 hover:rotate-0 hover:scale-105 transition-all cursor-default">自由に。</span>
                 </h1>
 
                 <div class="w-full max-w-3xl mx-auto px-2 sm:px-0 flex flex-col sm:flex-row gap-3">
@@ -295,6 +284,7 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
+                // 高解像度でレンダリング
                 const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
@@ -356,9 +346,9 @@
                     </div>
                     
                     <div class="py-4 px-1 flex-grow flex flex-col bg-transparent relative z-10 card-text-area">
-                        <div class="flex items-center gap-2 mb-3 flex-wrap">
-                            <span class="animate-float px-2 py-1 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg shadow-sm border border-white">${item.subject}</span>
-                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-sub)]/50 px-2 py-1 rounded-md">${item.grade}</span>
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="px-2 py-1 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg border border-white">${item.subject}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-muted)]">${item.grade}</span>
                             ${!hasAnyMaterial ? `<span class="badge-disabled px-2 py-1 text-[9px] sm:text-[10px] font-black rounded-lg">準備中</span>` : ''}
                         </div>
                         <h3 class="text-sm sm:text-base font-black text-[var(--text-main)] group-hover:text-[var(--accent-dark)] transition-colors leading-snug flex-grow drop-shadow-sm">${item.title}</h3>
@@ -371,7 +361,6 @@
                 if (item.pdfBasic && item.pdfBasic !== "#") { 
                     renderPDFThumbnail(item.pdfBasic, canvasId); 
                 } else { 
-                    // 教材がない場合も角丸をなくす
                     document.getElementById(canvasId).parentElement.innerHTML = `
                         <div class="w-full h-full bg-white shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--text-light)] border-2 border-dashed border-[var(--border-color)]">
                             <i data-lucide="hammer" class="w-8 h-8 opacity-50 mb-1"></i>
@@ -392,18 +381,18 @@
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
-            // 詳細画面のPDFプレビューも角丸を削除（rounded-xl を削除）
+            // 詳細画面のPDFプレビューもシンプルな画像として表示
             document.getElementById('detail-content').innerHTML = `
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
                     <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
-                         <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02] group-hover:-rotate-1">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
+                         <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02]">
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
                          </div>
                     </div>
                     
                     <div class="w-full md:w-1/2 text-center md:text-left flex flex-col justify-center pt-4 md:pt-10">
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
-                            <span class="animate-float px-5 py-2 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-xs font-black rounded-xl shadow-sm border border-white">${item.grade} / ${item.subject}</span>
+                            <span class="px-5 py-2 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-xs font-black rounded-xl shadow-sm border border-white">${item.grade} / ${item.subject}</span>
                             ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
                         </div>
                         <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-main)] mb-8 md:mb-12 leading-tight tracking-tight">${item.title}</h2>
