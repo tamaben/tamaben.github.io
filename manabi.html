@@ -37,7 +37,7 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* 背景Blob（タマベン本体と同じ設定） */
+        /* 背景Blob */
         .blob {
             position: fixed;
             border-radius: 50%;
@@ -63,7 +63,7 @@
             padding-top: env(safe-area-inset-top);
         }
 
-        /* プレミアムカード（タマベン本体と同じ設定） */
+        /* プレミアムカード */
         .premium-card {
             background: var(--bg-card);
             border-radius: 1.5rem;
@@ -98,6 +98,7 @@
             box-shadow: 0 20px 50px -10px rgba(0,0,0,0.08);
             border: 1px solid var(--border-color);
             transition: all 0.5s ease;
+            height: fit-content; /* 中身の画像サイズに合わせる */
         }
         .screen-frame:hover {
             transform: scale(1.03) translateY(-10px);
@@ -121,14 +122,14 @@
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 背景装飾（タマベン本体と統一） -->
+    <!-- 背景装飾 -->
     <div class="blob" style="background: var(--blob-1); top: -10%; left: -10%;"></div>
     <div class="blob" style="background: var(--blob-2); bottom: -10%; right: -10%; animation-delay: -5s;"></div>
 
     <!-- ヘッダー -->
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
-            <!-- 戻るボタン（タマベン本体の詳細画面と統一） -->
+            <!-- 戻るボタン -->
             <a href="index.html" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] transition-colors group outline-none bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm border border-white/60 shadow-sm">
                 <i data-lucide="arrow-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform"></i>
                 <span class="text-sm md:text-base hidden sm:inline">教材一覧に戻る</span>
@@ -145,12 +146,11 @@
         <!-- ヒーローセクション -->
         <section class="py-16 md:py-32 text-center reveal">
             <div class="relative inline-block mb-12">
-                <!-- 背景のアクセント（タマベングリーン系に変更） -->
+                <!-- 背景のアクセント -->
                 <div class="absolute inset-0 bg-[var(--bg-sub)] rounded-[4rem] rotate-12 scale-110 opacity-70 border border-[var(--border-color)]"></div>
                 
                 <!-- アプリアイコン -->
                 <div class="relative w-36 h-36 md:w-48 md:h-48 bg-[var(--bg-card)] rounded-[3rem] shadow-xl flex items-center justify-center p-2 float-icon border-2 border-white/80 overflow-hidden">
-                    <!-- manabi.png があれば表示、なければダミーのアイコン -->
                     <img src="manabi.png" alt="Manabi Baton" class="w-full h-full object-cover rounded-[2.5rem]" onerror="this.outerHTML='<div class=\'w-full h-full bg-[var(--bg-sub)] rounded-[2.5rem] flex items-center justify-center text-[var(--accent-main)]\'><i data-lucide=\'refresh-cw\' class=\'w-16 h-16 md:w-20 md:h-20\'></i></div>'">
                 </div>
             </div>
@@ -166,7 +166,7 @@
             </p>
 
             <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                <!-- プライマリボタン（タマベン本体と統一） -->
+                <!-- プライマリボタン -->
                 <a href="https://manabi-tamaben.vercel.app" target="_blank" class="group relative px-10 py-5 bg-[var(--text-main)] text-white rounded-3xl font-black text-lg shadow-[0_10px_20px_rgba(46,61,48,0.2)] hover:bg-[var(--text-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(46,61,48,0.3)] transition-all active:scale-95 flex items-center gap-3">
                     <i data-lucide="external-link" class="w-6 h-6"></i>
                     <span>アプリを開く (無料)</span>
@@ -212,23 +212,24 @@
                 <h2 class="text-2xl md:text-4xl font-black text-[var(--text-main)] tracking-tight">Beautiful Interface</h2>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-10 md:gap-16">
+            <div class="flex flex-wrap justify-center items-start gap-10 md:gap-16">
                 <!-- Screen 1 -->
-                <div class="w-64 md:w-72 screen-frame hover:-rotate-2">
-                    <div class="rounded-[2rem] overflow-hidden aspect-[9/18] bg-[var(--bg-sub)] border border-[var(--border-color)]">
-                        <img src="manabi/screen1.png" alt="Timer" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Timer'">
+                <!-- w-full h-auto で元画像の比率をそのまま維持します -->
+                <div class="w-64 md:w-72 screen-frame hover:-rotate-2 flex flex-col">
+                    <div class="rounded-[2rem] overflow-hidden bg-[var(--bg-sub)] border border-[var(--border-color)] flex">
+                        <img src="manabi/screen1.png" alt="Timer" class="w-full h-auto block" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Timer'">
                     </div>
                 </div>
                 <!-- Screen 2 -->
-                <div class="w-64 md:w-72 screen-frame hover:rotate-2 md:mt-24">
-                    <div class="rounded-[2rem] overflow-hidden aspect-[9/18] bg-[var(--bg-sub)] border border-[var(--border-color)]">
-                        <img src="manabi/screen2.png" alt="Reward" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Reward'">
+                <div class="w-64 md:w-72 screen-frame hover:rotate-2 md:mt-24 flex flex-col">
+                    <div class="rounded-[2rem] overflow-hidden bg-[var(--bg-sub)] border border-[var(--border-color)] flex">
+                        <img src="manabi/screen2.png" alt="Reward" class="w-full h-auto block" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Reward'">
                     </div>
                 </div>
                 <!-- Screen 3 -->
-                <div class="w-64 md:w-72 screen-frame hover:-rotate-1">
-                    <div class="rounded-[2rem] overflow-hidden aspect-[9/18] bg-[var(--bg-sub)] border border-[var(--border-color)]">
-                        <img src="manabi/screen3.png" alt="Report" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Report'">
+                <div class="w-64 md:w-72 screen-frame hover:-rotate-1 flex flex-col">
+                    <div class="rounded-[2rem] overflow-hidden bg-[var(--bg-sub)] border border-[var(--border-color)] flex">
+                        <img src="manabi/screen3.png" alt="Report" class="w-full h-auto block" onerror="this.src='https://placehold.co/300x600/e6f0e7/84a589?text=Report'">
                     </div>
                 </div>
             </div>
