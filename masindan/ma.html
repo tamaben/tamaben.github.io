@@ -21,6 +21,7 @@
             --text-muted: #475569;
         }
 
+        /* スクロール時のバグ（真っ白になる現象）を修正 */
         body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: var(--bg-base);
@@ -28,10 +29,11 @@
             min-height: 100vh;
             margin: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            padding: 2rem 0; /* 上下の安全な余白 */
         }
 
         .bg-blobs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at 50% 50%, #f7fbf8 0%, #eef5f1 100%); }
@@ -47,7 +49,14 @@
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
 
-        .app-wrapper { width: 100%; max-width: 540px; padding: 1.5rem; z-index: 10; }
+        /* コンテンツが短い時は中央に、長い時は自然に配置される魔法の余白(margin: auto 0) */
+        .app-wrapper { 
+            width: 100%; 
+            max-width: 540px; 
+            padding: 1.5rem; 
+            z-index: 10; 
+            margin: auto 0; 
+        }
 
         .glass-panel {
             background: var(--glass-bg); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
@@ -56,7 +65,6 @@
             overflow: hidden; position: relative;
         }
 
-        /* 完全に装飾を無くしたシンプルなボタン */
         .option-btn {
             width: 100%; text-align: left; padding: 1.25rem 1.5rem; background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 1.25rem;
@@ -90,11 +98,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .anim-ready { opacity: 0; transform: translateY(30px); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
         .anim-show { opacity: 1; transform: translateY(0); }
-        
-        /* iOSのタップバグを防ぐため、ぼかし(filter)アニメーションを排除 */
-        .purify-effect { animation: purify 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes purify { 0% { opacity: 0; transform: scale(0.98) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        
+        .purify-effect { animation: purify 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes purify { 0% { filter: blur(10px) brightness(1.2); opacity: 0; transform: scale(0.98) translateY(10px); } 100% { filter: blur(0) brightness(1); opacity: 1; transform: scale(1) translateY(0); } }
         .reveal-light { animation: revealLight 2.5s ease-in-out forwards; }
         @keyframes revealLight { 0% { background-color: #050a07; opacity: 1; } 50% { background-color: var(--accent-core); opacity: 1; filter: blur(25px); } 100% { background-color: transparent; opacity: 0; pointer-events: none; } }
         .pulse-btn { animation: pulseSlow 3s infinite; }
@@ -272,26 +277,16 @@
         try { return JSON.parse(decodedStr); } catch(e) { return null; }
     }
 
-    // Cookieや保存処理を全て例外(エラー)無視の安全設計に。これによりブラウザ制限でも途中で止まらない。
     function setCookie(name, val, days) {
-        try {
-            const d = new Date(); d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${encodeURIComponent(val)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
-        } catch(e) {}
+        const d = new Date(); d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${encodeURIComponent(val)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
     }
     function getCookie(name) {
-        try {
-            const nameEQ = name + "="; const ca = document.cookie.split(';');
-            for(let i=0; i<ca.length; i++) { let c = ca[i].trim(); if (c.indexOf(nameEQ)===0) return decodeURIComponent(c.substring(nameEQ.length)); }
-        } catch(e) {}
+        const nameEQ = name + "="; const ca = document.cookie.split(';');
+        for(let i=0; i<ca.length; i++) { let c = ca[i].trim(); if (c.indexOf(nameEQ)===0) return decodeURIComponent(c.substring(nameEQ.length)); }
         return null;
     }
-    function eraseCookie(name) { 
-        try { document.cookie = name +'=; Max-Age=-99999999; path=/'; } catch(e) {} 
-    }
-    function saveToCookie() { 
-        try { setCookie('ma_adv_system_v8', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); } catch(e) {} 
-    }
+    function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
     function shuffleArray(array) {
         const arr =[...array];
@@ -325,24 +320,20 @@
         const container = document.getElementById('options-container'); container.innerHTML = '';
         const shuffledOpts =[...q.options].sort(() => Math.random() - 0.5);
 
-        // 全て「純粋なテキストのみ」のボタンで統一。誤タップを防ぐため pointer-events: none を内部に適用
+        // 完全プレーンなボタンに修正（チェックボックス等の内部装飾を全削除し、純粋なテキストのみに統一）
         shuffledOpts.forEach((opt) => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'option-btn font-medium';
-            btn.innerHTML = `<span style="pointer-events: none;">${opt.text}</span>`;
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleAnswer(q, opt);
-            });
+            btn.className = 'option-btn font-medium text-center';
+            btn.innerText = opt.text; 
+            btn.onclick = () => handleAnswer(q, opt);
             container.appendChild(btn);
         });
     }
 
     function handleAnswer(q, opt) {
         historyArr.push({ q: q.q, a: opt.text, score: opt.score, mbti: opt.mbti });
-        currentIdx++; 
-        saveToCookie();
+        currentIdx++; saveToCookie();
         if (currentIdx < 10) renderQuestion(); else showResult();
     }
 
@@ -361,10 +352,7 @@
 
     function showResult() {
         document.getElementById('quiz-screen').classList.add('hidden');
-        let animDone = false;
-        try { animDone = sessionStorage.getItem('ma_anim_done'); } catch(e) {}
-        
-        if (animDone) { document.getElementById('result-screen').classList.remove('hidden'); finalizeResultAndDisplay(true); } 
+        if (sessionStorage.getItem('ma_anim_done')) { document.getElementById('result-screen').classList.remove('hidden'); finalizeResultAndDisplay(true); } 
         else { const revealScreen = document.getElementById('reveal-screen'); revealScreen.classList.remove('hidden'); setTimeout(() => { revealScreen.style.opacity = '1'; }, 50); }
     }
 
@@ -398,14 +386,20 @@
         let conflictJ_P = Math.max(0, Math.min(mbtiVector.J, mbtiVector.P) - tolerance);
         let penalty = (conflictT_F + conflictJ_P) * 1.5;
 
+        devLogText += `\nRaw Score: ${rawScore}/100\n`;
+        devLogText += `Cosine Similarity: ${(similarity * 100).toFixed(1)}%\n`;
+        devLogText += `Cognitive Dissonance (Penalty): -${penalty} (Tolerance:${tolerance})\n`;
+
         let finalPercent = rawScore;
-        if (rawScore === 100) { finalPercent = 100; } 
-        else if (rawScore >= 94) { finalPercent = 99.9; } 
+        if (rawScore === 100) { finalPercent = 100; devLogText += `\n>> Perfect Route Locked.\n`; } 
+        else if (rawScore >= 94) { finalPercent = 99.9; devLogText += `\n>> Near Perfect Output: 99.9%.\n`; } 
         else {
             finalPercent = (rawScore * 0.8) + (similarity * 20) - (penalty * 0.5);
             finalPercent = Math.max(0, Math.min(99, finalPercent));
         }
         if (finalPercent !== 99.9) finalPercent = Math.round(finalPercent);
+        
+        devLogText += `Final Output Score: ${finalPercent}%\n`;
         
         return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
     }
@@ -503,6 +497,8 @@
         document.getElementById('result-daily').innerHTML = generateDailyActions(final, v);
         document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
         
+        document.getElementById('adjustment-log').innerText = devLogText;
+        
         let inner = Math.min(10, ((v.I + v.Fi) * 1.5) || 3); let real = Math.min(10, ((v.S + v.Se) * 1.5) || 3);
         let empathy = Math.min(10, ((v.F + v.Fe + v.Fi) * 1.2) || 4); let flex = Math.min(10, (v.P * 1.5) || 3);
         let stable = Math.min(10, (final / 10) + 1);
@@ -515,7 +511,7 @@
             document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
             scoreEl.innerText = displayStr; renderCharts(avgData);
         } else {
-            try { sessionStorage.setItem('ma_anim_done', '1'); } catch(e) {}
+            sessionStorage.setItem('ma_anim_done', '1');
             animateValue(scoreEl, 0, final, 4000, () => {
                 const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-diff', 'anim-daily', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
                 animBlocks.forEach((id, index) => {
@@ -593,7 +589,7 @@
         }
     }
 
-    function resetAndRestart() { eraseCookie('ma_adv_system_v8'); try{ sessionStorage.removeItem('ma_anim_done'); }catch(e){} location.href = window.location.pathname; }
+    function resetAndRestart() { eraseCookie('ma_adv_system_v8'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
 
     window.onload = () => {
         const params = new URLSearchParams(window.location.search);
