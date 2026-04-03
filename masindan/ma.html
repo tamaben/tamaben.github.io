@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断</title>
+    <title>マ診断 - Deep Profiling System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,12 +11,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Quicksand:wght@400;500;600;700&display=swap');
 
         :root {
-            --bg-base: #f2f7f4;
-            --accent-dark: #0a2115;
-            --accent-light: #0ea5e9;
+            --bg-base: #f0f7f3;
+            --accent-dark: #0a2416;
+            --accent-light: #4ade80;
             --accent-core: #10b981;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.8);
             --text-main: #111827;
             --text-muted: #475569;
         }
@@ -34,71 +34,93 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .bg-blobs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at 50% 50%, #f7fbf8 0%, #eef5f1 100%); }
-        .bg-blob1, .bg-blob2, .bg-blob3 { position: absolute; border-radius: 50%; opacity: 0.15; transition: all 2s ease; filter: blur(100px); }
-        .bg-blob1 { top: -20%; left: -10%; width: 70vw; height: 70vw; background: var(--accent-core); animation: drift1 25s infinite alternate ease-in-out; }
-        .bg-blob2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: var(--accent-light); animation: drift2 30s infinite alternate-reverse ease-in-out; }
-        .bg-blob3 { top: 40%; left: 20%; width: 50vw; height: 50vw; background: var(--accent-dark); opacity: 0.08; animation: drift3 20s infinite alternate ease-in-out; }
+        /* 背景の動的アニメーション */
+        .bg-blobs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at 50% 50%, #f4fbf7 0%, #e8f5ec 100%); }
+        .bg-blob1, .bg-blob2, .bg-blob3 { position: absolute; border-radius: 50%; opacity: 0.2; transition: all 2s ease; filter: blur(90px); mix-blend-mode: multiply; }
+        .bg-blob1 { top: -10%; left: -10%; width: 70vw; height: 70vw; background: var(--accent-core); animation: drift1 20s infinite alternate ease-in-out; }
+        .bg-blob2 { bottom: -20%; right: -10%; width: 65vw; height: 65vw; background: #34d399; animation: drift2 25s infinite alternate-reverse ease-in-out; }
+        .bg-blob3 { top: 30%; left: 30%; width: 50vw; height: 50vw; background: var(--accent-light); opacity: 0.15; animation: drift3 18s infinite alternate ease-in-out; }
         
-        @keyframes drift1 { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 100% { transform: translate(10%, 15%) scale(1.1) rotate(10deg); } }
-        @keyframes drift2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-10%, -15%) scale(1.2); } }
-        @keyframes drift3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15%, -10%) scale(0.9); } }
+        @keyframes drift1 { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 100% { transform: translate(8%, 12%) scale(1.1) rotate(15deg); } }
+        @keyframes drift2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-10%, -10%) scale(1.15); } }
+        @keyframes drift3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15%, -15%) scale(0.9); } }
 
         .font-serif-en { font-family: 'Cormorant Garamond', serif; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
 
         .app-wrapper { width: 100%; max-width: 540px; padding: 1.5rem; z-index: 10; }
 
+        /* リッチなグラスモーフィズムパネル */
         .glass-panel {
-            background: var(--glass-bg); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border); border-radius: 2.5rem;
-            box-shadow: 0 30px 60px -15px rgba(10, 33, 21, 0.1), inset 0 0 20px rgba(255,255,255,0.6);
+            box-shadow: 0 25px 50px -12px rgba(10, 36, 22, 0.15), inset 0 0 20px rgba(255,255,255,0.8);
             overflow: hidden; position: relative;
         }
 
-        /* 完全に装飾を無くしたシンプルなボタン */
+        /* 選択肢ボタンのアニメーションとデザイン（ノイズを削ぎ落とした洗練UI） */
         .option-btn {
-            width: 100%; text-align: left; padding: 1.25rem 1.5rem; background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 1.25rem;
+            width: 100%; padding: 1.4rem 1.5rem; background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 1.25rem;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); font-size: 0.95rem; line-height: 1.6;
-            color: var(--text-main); position: relative; overflow: hidden; margin-bottom: 0.75rem;
-            cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: block;
+            color: var(--text-main); margin-bottom: 0.85rem;
+            cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            position: relative; overflow: hidden;
         }
-        .option-btn:hover, .option-btn:active { background: #ffffff; border-color: var(--accent-core); transform: translateY(-3px) scale(1.01); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.12); color: var(--accent-dark); }
+        .option-btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+            background: rgba(16, 185, 129, 0.1); border-radius: 50%;
+            transform: translate(-50%, -50%); transition: width 0.4s ease, height 0.4s ease;
+        }
+        .option-btn:hover::before, .option-btn:active::before { width: 300px; height: 300px; }
+        .option-btn:hover, .option-btn:active { 
+            background: #ffffff; border-color: var(--accent-core); 
+            transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15); color: var(--accent-dark); 
+        }
+
+        /* 選択肢の連続フェードイン（スタッガーアニメーション） */
+        .stagger-enter { opacity: 0; transform: translateY(15px); animation: staggerFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes staggerFade { to { opacity: 1; transform: translateY(0); } }
+
+        /* 質問文のスライドアニメーション */
+        .slide-in-right { animation: slideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-out-left { animation: slideOut 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-30px); } }
 
         .score-display {
             font-size: 7.5rem; line-height: 1; font-weight: 700; letter-spacing: -0.04em;
-            background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent-core) 60%, var(--accent-light) 100%);
+            background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent-core) 50%, var(--accent-light) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 20px 40px rgba(16, 185, 129, 0.25); margin: 1.5rem 0; position: relative;
+            text-shadow: 0 15px 35px rgba(16, 185, 129, 0.3); margin: 1.5rem 0;
         }
 
-        .btn-main { background: linear-gradient(135deg, var(--accent-dark), var(--accent-core)); color: #fff; border-radius: 1.25rem; font-weight: 700; letter-spacing: 0.15em; transition: all 0.4s ease; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25); border: none; position: relative; overflow: hidden; cursor: pointer; touch-action: manipulation; }
-        .btn-main::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); transition: all 0.7s ease; }
+        /* 進行度プログレスバー */
+        .progress-container { width: 100%; height: 6px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; overflow: hidden; margin: 0 15px; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent-core), var(--accent-light)); transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 10px; }
+
+        .btn-main { background: linear-gradient(135deg, var(--accent-dark), var(--accent-core)); color: #fff; border-radius: 1.25rem; font-weight: 700; letter-spacing: 0.15em; transition: all 0.4s ease; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); border: none; position: relative; overflow: hidden; cursor: pointer; touch-action: manipulation; z-index: 1;}
+        .btn-main::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); transition: all 0.7s ease; z-index: -1; }
         .btn-main:hover::after { left: 150%; }
-        .btn-main:hover, .btn-main:active { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.35); }
+        .btn-main:hover, .btn-main:active { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4); }
 
-        .btn-outline { background: transparent; color: var(--accent-dark); border: 2px solid var(--accent-core); border-radius: 1.25rem; font-weight: 700; letter-spacing: 0.15em; transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; }
-        .btn-outline:hover, .btn-outline:active { background: rgba(16, 185, 129, 0.05); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.1); }
-
-        .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(18, 51, 33, 0.15); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-        .progress-dot.active { background: var(--accent-core); transform: scale(1.8); box-shadow: 0 0 12px var(--accent-core); }
+        .btn-outline { background: rgba(255,255,255,0.8); color: var(--accent-dark); border: 2px solid var(--accent-core); border-radius: 1.25rem; font-weight: 700; letter-spacing: 0.15em; transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; }
+        .btn-outline:hover, .btn-outline:active { background: rgba(16, 185, 129, 0.1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15); }
 
         .capture-flat-mode { background: #ffffff !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; border: 1px solid rgba(16, 185, 129, 0.1) !important; width: 540px !important; max-width: none !important; padding: 40px !important; border-radius: 0 !important; }
 
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .anim-ready { opacity: 0; transform: translateY(30px); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .anim-ready { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .anim-show { opacity: 1; transform: translateY(0); }
-        
-        /* iOSのタップバグを防ぐため、ぼかし(filter)アニメーションを排除 */
-        .purify-effect { animation: purify 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes purify { 0% { opacity: 0; transform: scale(0.98) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        
-        .reveal-light { animation: revealLight 2.5s ease-in-out forwards; }
-        @keyframes revealLight { 0% { background-color: #050a07; opacity: 1; } 50% { background-color: var(--accent-core); opacity: 1; filter: blur(25px); } 100% { background-color: transparent; opacity: 0; pointer-events: none; } }
-        .pulse-btn { animation: pulseSlow 3s infinite; }
-        @keyframes pulseSlow { 0%, 100% { opacity: 0.5; text-shadow: 0 0 10px rgba(255,255,255,0.2); } 50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.8); } }
+
+        /* ローディング画面アニメーション */
+        .spinner-core { width: 60px; height: 60px; border: 4px solid rgba(16, 185, 129, 0.2); border-top-color: var(--accent-core); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .pulse-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         #log-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #log-modal.show { opacity: 1; pointer-events: auto; }
@@ -113,14 +135,8 @@
 
 <div class="bg-blobs"><div class="bg-blob1"></div><div class="bg-blob2"></div><div class="bg-blob3"></div></div>
 
-<div id="reveal-screen" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050a07] transition-opacity duration-1000 opacity-0">
-    <button id="reveal-btn" onclick="revealResult()" type="button" class="text-white hover:text-[var(--accent-core)] text-sm tracking-[0.8em] font-serif-en pulse-btn transition-colors duration-500 py-6 px-12 border border-transparent hover:border-white/20 rounded-full outline-none cursor-pointer">
-        結果を見る
-    </button>
-    <div id="reveal-overlay" class="absolute inset-0 pointer-events-none opacity-0"></div>
-</div>
-
 <div class="app-wrapper">
+    <!-- スタート画面 -->
     <div id="start-screen" class="glass-panel p-10 md:p-14 text-center fade-in">
         <p class="text-[var(--accent-core)] font-serif-en tracking-[0.4em] text-[10px] mb-4 uppercase font-bold">Deep Profiling System</p>
         <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-widest text-[var(--accent-dark)] font-serif-en">マ診断</h1>
@@ -131,29 +147,38 @@
         <div id="resume-container" class="hidden mb-10 p-6 bg-white/60 border border-[var(--accent-core)]/20 rounded-2xl">
             <p class="text-xs text-[var(--accent-dark)] mb-4 tracking-widest uppercase font-bold">中断されたデータがあります</p>
             <button onclick="resumeDiagnosis()" type="button" class="w-full py-4 btn-main text-sm mb-3">診断を再開する</button>
-            <button onclick="startDiagnosis(true)" type="button" class="text-[11px] text-gray-500 underline hover:text-gray-700">記憶を消去して初めから</button>
+            <button onclick="startDiagnosis(true)" type="button" class="text-[11px] text-gray-500 underline hover:text-[var(--accent-core)] transition-colors cursor-pointer">記憶を消去して初めから</button>
         </div>
         <button onclick="startDiagnosis()" type="button" class="w-full py-5 btn-main text-sm uppercase tracking-[0.3em]">マ診断を開始する</button>
     </div>
 
-    <div id="quiz-screen" class="hidden glass-panel p-8 md:p-12 fade-in">
+    <!-- クイズ画面 -->
+    <div id="quiz-screen" class="hidden glass-panel p-8 md:p-12">
         <div class="flex justify-between items-center mb-8">
-            <button onclick="goBack()" id="back-btn" type="button" class="text-[10px] tracking-widest font-bold text-[var(--text-muted)] hover:text-[var(--accent-dark)] transition-all flex items-center gap-2 invisible uppercase cursor-pointer">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 18l-6-6 6-6"/></svg> 戻る
+            <button onclick="goBack()" id="back-btn" type="button" class="text-[10px] tracking-widest font-bold text-[var(--text-muted)] hover:text-[var(--accent-core)] transition-all flex items-center gap-1 invisible uppercase cursor-pointer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> 戻る
             </button>
-            <div class="flex gap-2" id="progress-dots"></div>
-            <span id="q-counter" class="text-xs font-quicksand font-bold text-[var(--text-muted)] tracking-widest">01 / 10</span>
+            <div class="progress-container"><div id="progress-bar" class="progress-bar" style="width: 0%;"></div></div>
+            <span id="q-counter" class="text-xs font-quicksand font-bold text-[var(--accent-core)] tracking-widest flex-shrink-0 w-12 text-right">01/10</span>
         </div>
-        <div id="purify-wrapper">
-            <div class="min-h-[7rem] mb-8 flex flex-col items-center text-center justify-center">
+        <div id="q-content-wrapper">
+            <div class="min-h-[6rem] mb-8 flex flex-col items-center text-center justify-center">
                 <span id="q-cat" class="text-[9px] uppercase tracking-[0.5em] text-[var(--accent-core)] mb-4 font-serif-en font-bold">Scanning...</span>
-                <h2 id="q-text" class="text-[1.15rem] md:text-xl font-bold text-[var(--text-main)] leading-relaxed px-2 text-left w-full"></h2>
+                <h2 id="q-text" class="text-[1.15rem] md:text-xl font-bold text-[var(--text-main)] leading-relaxed px-2 text-center w-full"></h2>
             </div>
             <div id="options-container" class="space-y-0"></div>
         </div>
     </div>
 
-    <div id="result-screen" class="hidden fade-in">
+    <!-- 解析中（ローディング）画面 -->
+    <div id="calculating-screen" class="hidden glass-panel p-16 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <div class="spinner-core mb-8"></div>
+        <h3 class="text-lg font-bold text-[var(--accent-dark)] tracking-[0.2em] font-serif-en uppercase pulse-text mb-2">Analyzing Vector</h3>
+        <p class="text-xs text-[var(--text-muted)] font-medium">深層心理とマの同期率を計算中...</p>
+    </div>
+
+    <!-- 結果画面 -->
+    <div id="result-screen" class="hidden">
         <div id="capture-area" class="glass-panel text-center mb-8 pb-10 relative">
             <div class="anim-ready" id="anim-header">
                 <div class="font-serif-en text-[var(--text-muted)] tracking-[0.5em] text-[10px] mb-8 uppercase pt-10 font-bold opacity-80">Deep Analysis Report</div>
@@ -162,7 +187,7 @@
             </div>
             <div class="anim-ready" id="anim-badge">
                 <div id="cert-badge" class="hidden mb-10">
-                    <div class="py-2.5 px-8 bg-[#ecfdf5] border border-[#a7f3d0] text-[#047857] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em] shadow-sm">
+                    <div class="py-2.5 px-8 bg-[#ecfdf5] border border-[#34d399] text-[#065f46] rounded-full inline-flex items-center gap-2 text-xs font-bold tracking-[0.3em] shadow-sm">
                         🌟 絶対的マ 認定
                     </div>
                 </div>
@@ -174,6 +199,7 @@
                 <div style="position: relative; width: 100%; max-width: 280px; height: 280px;"><canvas id="radarChart"></canvas></div>
             </div>
             <div class="text-left px-8 space-y-10 pb-6">
+                <!-- 深層プロファイリング -->
                 <div class="anim-ready" id="anim-text">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>深層プロファイリング</span>
@@ -182,6 +208,7 @@
                     <div id="result-desc" class="text-[13px] text-gray-700 leading-relaxed font-medium desc-text"></div>
                 </div>
                 
+                <!-- ギャップ分析 -->
                 <div class="anim-ready" id="anim-diff">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>「マ」とのギャップ分析</span>
@@ -189,6 +216,7 @@
                     <div id="result-diff" class="text-[13px] text-gray-700 leading-relaxed font-medium"></div>
                 </div>
 
+                <!-- 日常アクション -->
                 <div class="anim-ready" id="anim-daily">
                     <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.3em] border-b border-[var(--accent-core)]/20 pb-2 flex items-center justify-between">
                         <span>「マ」を極める日常アクション</span>
@@ -196,23 +224,24 @@
                     <div id="result-daily" class="text-[12.5px] text-gray-700 leading-relaxed font-medium space-y-3"></div>
                 </div>
 
-                <div class="bg-white/90 p-6 rounded-3xl border border-gray-100 shadow-sm anim-ready" id="anim-advice">
-                    <h4 class="text-[10px] text-[var(--accent-dark)] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <span class="w-2 h-2 bg-[var(--accent-core)] rounded-full shadow-[0_0_8px_var(--accent-core)]"></span>AIからの的確なアドバイス
+                <!-- 【改修】マの体現者（絶対者）からの直接の言葉 -->
+                <div class="bg-[#f0fbf5] p-6 rounded-3xl border border-[#a7f3d0] shadow-sm anim-ready" id="anim-advice">
+                    <h4 class="text-[10px] text-[#065f46] font-bold mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <span class="w-2 h-2 bg-[#34d399] rounded-full shadow-[0_0_8px_#34d399]"></span>「マ」の絶対者からの言葉
                     </h4>
-                    <div id="result-advice" class="text-[13px] text-gray-600 leading-relaxed font-medium"></div>
+                    <div id="result-advice" class="text-[13px] text-gray-700 leading-relaxed font-medium font-serif-jp"></div>
                 </div>
             </div>
         </div>
         <div class="flex flex-col gap-3 anim-ready" id="anim-buttons">
             <button onclick="downloadImage()" type="button" class="w-full py-4 btn-main text-sm uppercase tracking-widest">結果画像を保存</button>
             <div class="flex gap-2">
-                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white/50">SNSでシェア</button>
-                <button onclick="shareForSelf()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white/50">詳細を保存</button>
+                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest">SNSでシェア</button>
+                <button onclick="shareForSelf()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest">詳細を保存</button>
             </div>
         </div>
         <div class="anim-ready mt-12 mb-10 text-center" id="anim-reset">
-            <button onclick="resetAndRestart()" type="button" class="text-[10px] text-[var(--text-muted)] tracking-[0.4em] uppercase hover:text-[var(--accent-dark)] transition-all cursor-pointer">最初からやり直す</button>
+            <button onclick="resetAndRestart()" type="button" class="text-[10px] text-[var(--text-muted)] tracking-[0.4em] uppercase hover:text-[var(--accent-dark)] transition-all cursor-pointer border-b border-transparent hover:border-[var(--text-muted)] pb-1">最初からやり直す</button>
         </div>
     </div>
 </div>
@@ -261,37 +290,20 @@
     function decodeUrlData(d) {
         let decodedStr;
         const b64 = d.split('&')[0].replace(/ /g, '+');
-        try { decodedStr = decodeURIComponent(escape(atob(b64))); } 
-        catch (e1) {
-            try { decodedStr = atob(b64); } 
-            catch (e2) {
-                try { decodedStr = decodeURIComponent(atob(b64)); } 
-                catch (e3) { return null; }
-            }
-        }
+        try { decodedStr = decodeURIComponent(escape(atob(b64))); } catch (e1) { try { decodedStr = atob(b64); } catch (e2) { try { decodedStr = decodeURIComponent(atob(b64)); } catch (e3) { return null; } } }
         try { return JSON.parse(decodedStr); } catch(e) { return null; }
     }
 
-    // Cookieや保存処理を全て例外(エラー)無視の安全設計に。これによりブラウザ制限でも途中で止まらない。
     function setCookie(name, val, days) {
-        try {
-            const d = new Date(); d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${encodeURIComponent(val)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
-        } catch(e) {}
+        const d = new Date(); d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${encodeURIComponent(val)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
     }
     function getCookie(name) {
-        try {
-            const nameEQ = name + "="; const ca = document.cookie.split(';');
-            for(let i=0; i<ca.length; i++) { let c = ca[i].trim(); if (c.indexOf(nameEQ)===0) return decodeURIComponent(c.substring(nameEQ.length)); }
-        } catch(e) {}
+        const nameEQ = name + "="; const ca = document.cookie.split(';');
+        for(let i=0; i<ca.length; i++) { let c = ca[i].trim(); if (c.indexOf(nameEQ)===0) return decodeURIComponent(c.substring(nameEQ.length)); }
         return null;
     }
-    function eraseCookie(name) { 
-        try { document.cookie = name +'=; Max-Age=-99999999; path=/'; } catch(e) {} 
-    }
-    function saveToCookie() { 
-        try { setCookie('ma_adv_system_v8', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); } catch(e) {} 
-    }
+    function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
     function shuffleArray(array) {
         const arr =[...array];
@@ -305,67 +317,94 @@
         currentIdx = 0; historyArr = []; devLogText = "";
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        const dotCont = document.getElementById('progress-dots'); dotCont.innerHTML = '';
-        for(let i=0; i<10; i++) dotCont.appendChild(Object.assign(document.createElement('div'),{className:'progress-dot'}));
+        document.getElementById('quiz-screen').classList.add('slide-in-right');
+        updateProgressBar();
         renderQuestion();
     }
 
+    function updateProgressBar() {
+        const progress = (currentIdx / 10) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+        document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')}/10`;
+    }
+
     function renderQuestion() {
-        const wrapper = document.getElementById('purify-wrapper');
-        wrapper.classList.remove('purify-effect'); void wrapper.offsetWidth; wrapper.classList.add('purify-effect');
+        const wrapper = document.getElementById('q-content-wrapper');
+        wrapper.classList.remove('slide-in-right'); void wrapper.offsetWidth; wrapper.classList.add('slide-in-right');
 
         const q = selectedQuestions[currentIdx];
-        document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
         document.getElementById('q-text').innerText = q.q;
         document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
 
-        const dots = document.querySelectorAll('.progress-dot');
-        dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
-
-        const container = document.getElementById('options-container'); container.innerHTML = '';
+        const container = document.getElementById('options-container'); 
+        container.innerHTML = '';
+        
         const shuffledOpts =[...q.options].sort(() => Math.random() - 0.5);
 
-        // 全て「純粋なテキストのみ」のボタンで統一。誤タップを防ぐため pointer-events: none を内部に適用
-        shuffledOpts.forEach((opt) => {
+        // ボタンの生成とスタッガーアニメーション（順にフワッと表示）
+        shuffledOpts.forEach((opt, index) => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'option-btn font-medium';
-            btn.innerHTML = `<span style="pointer-events: none;">${opt.text}</span>`;
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleAnswer(q, opt);
-            });
+            btn.className = 'option-btn font-bold stagger-enter';
+            btn.style.animationDelay = `${index * 0.12}s`; // 表示をずらす
+            btn.innerText = opt.text; 
+            btn.onclick = () => processAnswerWithAnim(q, opt);
             container.appendChild(btn);
         });
     }
 
-    function handleAnswer(q, opt) {
-        historyArr.push({ q: q.q, a: opt.text, score: opt.score, mbti: opt.mbti });
-        currentIdx++; 
-        saveToCookie();
-        if (currentIdx < 10) renderQuestion(); else showResult();
+    // 選択時のスライドアウトアニメーションを挟んでから次の問題へ
+    function processAnswerWithAnim(q, opt) {
+        const wrapper = document.getElementById('q-content-wrapper');
+        wrapper.classList.remove('slide-in-right');
+        wrapper.classList.add('slide-out-left');
+        
+        setTimeout(() => {
+            handleAnswer(q, opt);
+            wrapper.classList.remove('slide-out-left');
+        }, 350); // アニメーション時間待機
     }
 
-    function goBack() { if (currentIdx <= 0) return; currentIdx--; historyArr.pop(); saveToCookie(); renderQuestion(); }
+    function handleAnswer(q, opt) {
+        historyArr.push({ q: q.q, a: opt.text, score: opt.score, mbti: opt.mbti });
+        currentIdx++; saveToCookie();
+        updateProgressBar();
+        if (currentIdx < 10) {
+            renderQuestion();
+        } else {
+            showCalculatingScreen();
+        }
+    }
+
+    function goBack() { 
+        if (currentIdx <= 0) return; 
+        currentIdx--; historyArr.pop(); saveToCookie(); updateProgressBar(); renderQuestion(); 
+    }
 
     function resumeDiagnosis() {
         const saved = getCookie('ma_adv_system_v8');
         if (saved) {
             const d = JSON.parse(saved); currentIdx = d.idx; historyArr = d.hist; selectedQuestions = d.qArray;
-            document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden');
-            const dotCont = document.getElementById('progress-dots'); dotCont.innerHTML = '';
-            for(let i=0; i<10; i++) dotCont.appendChild(Object.assign(document.createElement('div'),{className:'progress-dot'}));
+            document.getElementById('start-screen').classList.add('hidden'); 
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            updateProgressBar();
             renderQuestion();
         }
     }
 
-    function showResult() {
+    // 新規追加：解析中（ローディング）アニメーション画面
+    function showCalculatingScreen() {
         document.getElementById('quiz-screen').classList.add('hidden');
-        let animDone = false;
-        try { animDone = sessionStorage.getItem('ma_anim_done'); } catch(e) {}
+        const calcScreen = document.getElementById('calculating-screen');
+        calcScreen.classList.remove('hidden');
+        calcScreen.classList.add('fade-in');
         
-        if (animDone) { document.getElementById('result-screen').classList.remove('hidden'); finalizeResultAndDisplay(true); } 
-        else { const revealScreen = document.getElementById('reveal-screen'); revealScreen.classList.remove('hidden'); setTimeout(() => { revealScreen.style.opacity = '1'; }, 50); }
+        // 2.5秒後に結果画面へ
+        setTimeout(() => {
+            calcScreen.classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            finalizeResultAndDisplay(false);
+        }, 2500);
     }
 
     function revealResult() {
@@ -375,6 +414,7 @@
         setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
     }
 
+    // --- リアルな「マ」のアルゴリズム ---
     function calculateAdvancedScore(hist) {
         let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
         const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
@@ -398,14 +438,20 @@
         let conflictJ_P = Math.max(0, Math.min(mbtiVector.J, mbtiVector.P) - tolerance);
         let penalty = (conflictT_F + conflictJ_P) * 1.5;
 
+        devLogText += `\nRaw Score: ${rawScore}/100\n`;
+        devLogText += `Cosine Similarity: ${(similarity * 100).toFixed(1)}%\n`;
+        devLogText += `Cognitive Dissonance (Penalty): -${penalty} (Tolerance:${tolerance})\n`;
+
         let finalPercent = rawScore;
-        if (rawScore === 100) { finalPercent = 100; } 
-        else if (rawScore >= 94) { finalPercent = 99.9; } 
+        if (rawScore === 100) { finalPercent = 100; devLogText += `\n>> Perfect Route Locked.\n`; } 
+        else if (rawScore >= 94) { finalPercent = 99.9; devLogText += `\n>> Near Perfect Output: 99.9%.\n`; } 
         else {
             finalPercent = (rawScore * 0.8) + (similarity * 20) - (penalty * 0.5);
             finalPercent = Math.max(0, Math.min(99, finalPercent));
         }
         if (finalPercent !== 99.9) finalPercent = Math.round(finalPercent);
+        
+        devLogText += `Final Output Score: ${finalPercent}%\n`;
         
         return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
     }
@@ -460,12 +506,13 @@
         return `<ul class="list-disc pl-5 space-y-2 text-gray-600 mt-3">` + actions.slice(0,4).join('') + `</ul>`;
     }
 
+    // 本人（マの絶対者）からの言葉
     function getPersonalizedAdvice(final, mbtiType) {
-        if (final >= 99) return "あなたは自分自身の『マ』を完全に理解しています。中間のない極端な世界に縛られず、自由なスマホタイムと謎の空想の世界を広げ続けてください。";
+        if (final >= 99) return "あなた＝私です。ふかふかの布団、涼しい風、そして目的のないデジタルの波。この究極の心地よさを疑うことなく、これからもそのまま生きていきましょう。この世界は私たちが心地よく過ごすためにあります。";
         
         const f_t = mbtiType.charAt(2);
-        if (f_t === "T") return "効率良く物事を進めるのは本当に大変なことです。だからこそ「めんどくさい」と言い訳をしながら脳内逃避する時間は決して無駄ではありません。美しいUIのデザインを眺めたり、ただ自由にスマホを触る。そんな白黒つけない『目的のない時間』こそが、あなたの心を最も整えてくれるはずです。";
-        else return "アンケートの4択に悩んでしまうのは、あなたが繊細に『中間』を感じ取っている証拠です。その割り切れない感情を大切にしてください。効率なんて大変なことは忘れ、布団の中に潜り込んで謎なことを空想しましょう。そこが、あなたの『マ』が最も輝く場所です。";
+        if (f_t === "T") return "効率や理屈で世界を縛ろうとするから、息苦しくなるのです。もっと『ただのUIの使いやすさ』や『無駄な時間』を愛してください。めんどくさい時は全力で言い訳をして、別の空想に逃げ込むのが正解です。";
+        else return "4択アンケートに無理やり答えを出そうとするように、白黒つけようとしすぎていますね。もっと『なんとなく』『どっちでもない』という余白を愛してください。窓を開けっぱなしで忘れるくらいのルーズさが、心を救いますよ。";
     }
 
     function finalizeResultAndDisplay(skipAnim) {
@@ -503,6 +550,8 @@
         document.getElementById('result-daily').innerHTML = generateDailyActions(final, v);
         document.getElementById('result-advice').innerText = getPersonalizedAdvice(final, mbtiType);
         
+        document.getElementById('adjustment-log').innerText = devLogText;
+        
         let inner = Math.min(10, ((v.I + v.Fi) * 1.5) || 3); let real = Math.min(10, ((v.S + v.Se) * 1.5) || 3);
         let empathy = Math.min(10, ((v.F + v.Fe + v.Fi) * 1.2) || 4); let flex = Math.min(10, (v.P * 1.5) || 3);
         let stable = Math.min(10, (final / 10) + 1);
@@ -515,7 +564,7 @@
             document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
             scoreEl.innerText = displayStr; renderCharts(avgData);
         } else {
-            try { sessionStorage.setItem('ma_anim_done', '1'); } catch(e) {}
+            sessionStorage.setItem('ma_anim_done', '1');
             animateValue(scoreEl, 0, final, 4000, () => {
                 const animBlocks = ['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-diff', 'anim-daily', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
                 animBlocks.forEach((id, index) => {
@@ -558,7 +607,7 @@
     function toggleLogModal() { document.getElementById('log-modal').classList.toggle('show'); }
 
     function downloadImage() {
-        html2canvas(document.getElementById('capture-area'), { backgroundColor: "#f2f7f4", scale: 2, logging: false, onclone: (cloned) => { const el = cloned.getElementById('capture-area'); el.classList.add('capture-flat-mode'); el.querySelectorAll('.anim-ready').forEach(node => { node.style.opacity = '1'; node.style.transform = 'none'; }); }
+        html2canvas(document.getElementById('capture-area'), { backgroundColor: "#f0f7f3", scale: 2, logging: false, onclone: (cloned) => { const el = cloned.getElementById('capture-area'); el.classList.add('capture-flat-mode'); el.querySelectorAll('.anim-ready').forEach(node => { node.style.opacity = '1'; node.style.transform = 'none'; }); }
         }).then(canvas => { const link = document.createElement('a'); link.download = 'マ診断_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
     }
 
@@ -593,7 +642,7 @@
         }
     }
 
-    function resetAndRestart() { eraseCookie('ma_adv_system_v8'); try{ sessionStorage.removeItem('ma_anim_done'); }catch(e){} location.href = window.location.pathname; }
+    function resetAndRestart() { eraseCookie('ma_adv_system_v8'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
 
     window.onload = () => {
         const params = new URLSearchParams(window.location.search);
