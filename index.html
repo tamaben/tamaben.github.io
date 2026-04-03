@@ -91,7 +91,7 @@
             overflow: visible;
         }
 
-        /* プレビューラッパー（パディングをなくし、画像そのままの比率に） */
+        /* プレビューラッパー */
         .pdf-thumbnail-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1.414;
@@ -109,13 +109,13 @@
             height: 100%;
             object-fit: cover;
             background-color: #ffffff;
-            border-radius: 0; /* 角丸なし */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 自然な軽い影 */
+            border-radius: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
         }
         
         .premium-card:hover .pdf-canvas { 
-            transform: translateY(-4px) scale(1.02); /* ホバー時はシンプルに少し浮き上がるだけ */
+            transform: translateY(-4px) scale(1.02);
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
@@ -172,7 +172,6 @@
 
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 sm:px-6 h-14 sm:h-20 md:h-24 flex items-center justify-between max-w-7xl">
-            <!-- テキストからロゴ画像（logo.svg）に戻しました -->
             <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
                 <img src="logo.svg" alt="タマベンロゴ" class="h-6 sm:h-8 md:h-10 w-auto">
             </button>
@@ -224,12 +223,36 @@
                 </div>
             </div>
 
-            <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-20 min-h-[40vh]">
+            <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-10 min-h-[40vh]">
                 <div class="col-span-full py-20 text-center loading-pulse">
                     <i data-lucide="sparkles" class="w-8 h-8 text-[var(--accent-main)] mx-auto mb-3"></i>
                     <p class="text-[var(--text-light)] font-black tracking-widest uppercase text-xs md:text-sm">教材を探しています...</p>
                 </div>
             </div>
+
+            <!-- ▼ タマベンのアプリ一覧 セクション ▼ -->
+            <section class="mt-12 md:mt-20 pt-12 border-t-2 border-dashed border-[var(--border-color)] fade-in-up pb-8">
+                <div class="flex items-center justify-center gap-2 mb-6 md:mb-8">
+                    <i data-lucide="layout-grid" class="w-5 h-5 text-[var(--accent-main)]"></i>
+                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)] tracking-tight">タマベンのアプリ一覧</h2>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4 px-4">
+                    <!-- Manabi Baton へのリンク -->
+                    <a href="manabi.html" class="group w-full max-w-sm flex items-center gap-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-lg hover:border-[var(--accent-main)] transition-all transform hover:-translate-y-1">
+                        <div class="w-14 h-14 bg-[var(--bg-sub)] rounded-xl flex items-center justify-center text-[var(--accent-dark)] group-hover:bg-[var(--accent-main)] group-hover:text-white transition-colors">
+                            <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-black text-[var(--text-main)] text-base">Manabi Baton</h3>
+                            <p class="text-[10px] md:text-xs font-bold text-[var(--text-muted)] mt-0.5">学びのバトンを繋ごう</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-[var(--text-light)] group-hover:text-[var(--accent-main)] transition-colors group-hover:translate-x-1 transform"></i>
+                    </a>
+                </div>
+            </section>
+            <!-- ▲ タマベンのアプリ一覧 セクション ▲ -->
+
         </div>
 
         <div id="view-detail" class="hidden py-8 md:py-12">
@@ -284,7 +307,6 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
-                // 高解像度でレンダリング
                 const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
@@ -381,7 +403,6 @@
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
-            // 詳細画面のPDFプレビューもシンプルな画像として表示
             document.getElementById('detail-content').innerHTML = `
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
                     <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
