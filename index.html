@@ -240,8 +240,9 @@
                 <div class="flex flex-wrap justify-center gap-4 px-4">
                     <!-- Manabi Baton へのリンク -->
                     <a href="manabi.html" class="group w-full max-w-sm flex items-center gap-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--border-color)] hover:shadow-lg hover:border-[var(--accent-main)] transition-all transform hover:-translate-y-1">
-                        <div class="w-14 h-14 bg-[var(--bg-sub)] rounded-xl flex items-center justify-center text-[var(--accent-dark)] group-hover:bg-[var(--accent-main)] group-hover:text-white transition-colors">
-                            <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                        <!-- アプリアイコンを manabi.png に変更 -->
+                        <div class="w-14 h-14 rounded-xl overflow-hidden shadow-sm border border-white/80 shrink-0">
+                            <img src="manabi.png" alt="Manabi Baton Icon" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'w-full h-full bg-[var(--bg-sub)] flex items-center justify-center text-[var(--accent-dark)]\'><i data-lucide=\'refresh-cw\' class=\'w-6 h-6\'></i></div>'">
                         </div>
                         <div class="flex-grow">
                             <h3 class="font-black text-[var(--text-main)] text-base">Manabi Baton</h3>
@@ -307,6 +308,7 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
+                // 高解像度でレンダリング
                 const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
