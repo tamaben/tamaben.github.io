@@ -68,7 +68,6 @@
 
         .search-field { background: var(--bg-card); border: 1.5px solid var(--border-color); transition: all 0.4s ease; }
         .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: scale(1.01); }
-
         .form-input { background: var(--bg-card); border: 1.5px solid var(--border-color); transition: all 0.3s ease; }
         .form-input:focus { border-color: var(--accent-main); box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1); outline: none; }
 
@@ -81,23 +80,57 @@
         .premium-card { background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--border-color); transition: all 0.3s ease; }
         .premium-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); border-color: var(--accent-main); }
 
-        /* エディタ用スタイル */
-        .print-editor {
+        /* ▼ A4プリント用紙のスタイル（ビジュアルエディタ） ▼ */
+        .worksheet-wrapper {
+            background-color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .a4-paper {
+            background-color: #ffffff;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             font-family: 'Hiragino Mincho ProN', 'MS PMincho', serif;
-            line-height: 2;
-            font-size: 14px;
+            color: #111;
+            position: relative;
+            outline: none; /* contenteditableのフォーカス枠を消す */
         }
 
-        /* 印刷用スタイル（ブラウザの印刷・PDF保存時に適用） */
+        .a4-paper:focus {
+            box-shadow: 0 0 0 3px var(--accent-main), 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* プリント内のデザイン要素 */
+        .print-header { border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .print-title { font-size: 24px; font-weight: bold; }
+        .print-info { font-size: 14px; display: flex; gap: 20px; }
+        .print-name-box { border-bottom: 1px dotted #111; width: 200px; display: inline-block; }
+        
+        .print-section { margin-bottom: 30px; }
+        .print-q-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .print-q-item { margin-bottom: 15px; padding-left: 20px; font-size: 15px; line-height: 1.8; }
+        .print-line { border-bottom: 1px solid #111; display: inline-block; min-width: 150px; }
+        
+        .print-box { border: 2px rounded #111; padding: 15px; border-radius: 8px; margin-bottom: 20px; background-color: #fafafa; }
+        .print-graph-area { width: 100%; height: 150px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #999; margin: 10px 0; background-color: #fff; }
+
+        /* 印刷用スタイル */
         @media print {
             body * { visibility: hidden; }
-            #print-render-area, #print-render-area * { visibility: visible; }
-            #print-render-area {
-                position: absolute; left: 0; top: 0; width: 100%;
-                font-family: 'Hiragino Mincho ProN', 'MS PMincho', serif;
-                line-height: 2; font-size: 12pt; padding: 20mm;
-                white-space: pre-wrap; word-wrap: break-word;
+            .hide-on-print { display: none !important; }
+            #a4-canvas, #a4-canvas * { visibility: visible; }
+            #a4-canvas {
+                position: absolute; left: 0; top: 0;
+                width: 210mm; min-height: 297mm;
+                padding: 10mm; margin: 0; box-shadow: none;
             }
+            @page { margin: 0; size: A4 portrait; }
         }
     </style>
 </head>
@@ -109,15 +142,13 @@
     <header class="sticky top-0 z-[100] glass-nav hide-on-print">
         <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between max-w-7xl">
             <button onclick="goHome()" class="font-black text-[var(--text-main)] text-xl md:text-2xl outline-none flex items-center gap-2">
-                <i data-lucide="leaf" class="text-[var(--accent-main)]"></i>タマベン
+                <img src="logo.svg" alt="タマベンロゴ" class="h-8 w-auto hidden sm:block" onerror="this.style.display='none'">
+                <span>タマベン</span>
             </button>
             <div class="flex items-center gap-2 md:gap-4">
-                <button onclick="openDiagnosis()" class="hidden sm:flex h-10 px-4 items-center justify-center gap-2 rounded-xl bg-orange-100 text-orange-600 font-black text-sm hover:bg-orange-200 transition-all outline-none">
-                    <i data-lucide="compass" class="w-4 h-4"></i>勉強タイプ診断
-                </button>
-                <button onclick="openCreateView()" class="h-10 px-3 md:h-12 md:px-5 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-main)] text-white shadow-sm hover:bg-[var(--accent-dark)] hover:-translate-y-1 transition-all outline-none">
+                <button onclick="openCreateView()" class="h-10 px-4 md:h-12 md:px-5 flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-main)] text-white shadow-sm hover:bg-[var(--accent-dark)] hover:-translate-y-1 transition-all outline-none">
                     <i data-lucide="pen-tool" class="w-4 h-4 md:w-5 md:h-5"></i>
-                    <span class="text-xs md:text-sm font-black hidden sm:inline">AIプリント作成</span>
+                    <span class="text-xs md:text-sm font-black">プリントを作る</span>
                 </button>
             </div>
         </div>
@@ -127,71 +158,35 @@
         
         <!-- ▼ 一覧画面（ホーム） ▼ -->
         <div id="view-home">
-            <div class="text-center mb-10 fade-in-up">
-                <h1 class="text-3xl md:text-5xl font-black mb-6 text-[var(--text-dark)] leading-tight">
-                    学びを、もっと<span class="text-[var(--accent-main)]">自由に。</span>
+            <section class="py-8 text-center fade-in-up">
+                <h1 class="text-3xl md:text-5xl font-black mb-8 text-[var(--text-dark)] leading-tight">
+                    学びを、もっと<br class="sm:hidden"/><span class="inline-block px-4 py-1 bg-white text-[var(--accent-main)] rounded-full shadow-sm rotate-[-2deg] border-2 border-[var(--accent-main)] my-2">自由に。</span>
                 </h1>
-                <!-- 診断バナー（モバイル向け表示も兼ねる） -->
-                <button onclick="openDiagnosis()" class="mx-auto flex items-center gap-3 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group">
-                    <div class="bg-orange-500 text-white p-2 rounded-xl group-hover:scale-110 transition-transform"><i data-lucide="brain-circuit" class="w-6 h-6"></i></div>
-                    <div class="text-left">
-                        <p class="text-xs text-orange-600 font-bold">あなたにぴったりの学び方を見つけよう</p>
-                        <p class="text-sm md:text-base font-black text-orange-900">30秒でわかる！勉強タイプ診断</p>
+
+                <div class="w-full max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+                    <div class="search-field flex-grow flex items-center rounded-full px-6 py-3 bg-white/90">
+                        <i data-lucide="search" class="w-5 h-5 text-[var(--text-light)] mr-3"></i>
+                        <input type="text" placeholder="教材を探す..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] text-sm">
                     </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-orange-400 ml-2"></i>
-                </button>
-            </div>
-
-            <!-- レコメンド表示エリア（診断後に表示） -->
-            <div id="recommend-area" class="hidden mb-12 fade-in-up bg-white/80 backdrop-blur-md p-6 rounded-3xl border-2 border-[var(--accent-main)] shadow-lg">
-                <div class="flex items-center gap-3 mb-4">
-                    <i data-lucide="award" class="w-8 h-8 text-[var(--accent-main)]"></i>
-                    <h2 class="text-xl font-black text-[var(--text-main)]" id="diag-result-title">あなたのタイプ</h2>
                 </div>
-                <p class="text-sm font-bold text-[var(--text-muted)] mb-6" id="diag-result-desc">診断結果の解説がここに入ります。</p>
-                <h3 class="text-sm font-black text-[var(--text-main)] mb-3">💡 あなたにおすすめの教材</h3>
-                <div id="recommend-materials" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- レコメンド教材がJSで挿入されます -->
-                </div>
-            </div>
+            </section>
 
-            <div class="flex w-full max-w-sm mx-auto bg-[var(--bg-sub)] p-1.5 rounded-full mb-8 shadow-inner">
-                <button onclick="switchTab('all')" id="tab-all" class="tab-pill active flex-1 py-2 rounded-full text-sm font-black">すべて</button>
+            <div class="flex w-full max-w-sm mx-auto bg-[var(--bg-sub)] p-1.5 rounded-full mb-8 shadow-inner fade-in-up" style="animation-delay: 0.1s;">
+                <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active flex-1 py-2 rounded-full text-sm font-black">小学生</button>
                 <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill flex-1 py-2 rounded-full text-sm font-black">中学生</button>
             </div>
 
-            <div id="learning-materials-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div id="learning-materials-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 fade-in-up" style="animation-delay: 0.2s;">
                 <!-- 教材一覧 -->
             </div>
         </div>
 
-        <!-- ▼ 勉強タイプ診断画面 ▼ -->
-        <div id="view-diagnosis" class="hidden max-w-2xl mx-auto fade-in-up bg-white rounded-[2rem] shadow-sm border border-[var(--border-color)] overflow-hidden">
-            <div class="bg-orange-50 p-6 md:p-8 text-center border-b border-orange-100 relative">
-                <button onclick="goHome()" class="absolute left-6 top-6 text-orange-400 hover:text-orange-600"><i data-lucide="x" class="w-6 h-6"></i></button>
-                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-orange-500">
-                    <i data-lucide="microscope" class="w-8 h-8"></i>
-                </div>
-                <h2 class="text-2xl font-black text-orange-900">勉強タイプ診断</h2>
-                <p class="text-sm font-bold text-orange-700 mt-2" id="quiz-progress">質問 1 / 3</p>
-            </div>
-            
-            <div class="p-6 md:p-10" id="quiz-container">
-                <h3 class="text-lg md:text-xl font-black text-[var(--text-main)] mb-8 text-center" id="quiz-question">テスト勉強はいつから始める？</h3>
-                <div class="space-y-4" id="quiz-options">
-                    <button onclick="answerQuiz('A')" class="w-full p-4 rounded-xl border-2 border-[var(--border-color)] hover:border-orange-400 hover:bg-orange-50 text-left font-bold text-[var(--text-main)] transition-all">A. 2週間前からコツコツ</button>
-                    <button onclick="answerQuiz('B')" class="w-full p-4 rounded-xl border-2 border-[var(--border-color)] hover:border-orange-400 hover:bg-orange-50 text-left font-bold text-[var(--text-main)] transition-all">B. 3日前から一気に集中</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ▼ AIプリント作成（エディタ版） ▼ -->
-        <div id="view-create" class="hidden max-w-3xl mx-auto fade-in-up">
+        <!-- ▼ AIプリント作成（ビジュアルエディタ版） ▼ -->
+        <div id="view-create" class="hidden max-w-4xl mx-auto fade-in-up">
             <div class="flex items-center justify-between mb-6">
                 <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] transition-colors group px-4 py-2 bg-white/50 rounded-full">
                     <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i> 戻る
                 </button>
-                <span class="text-xs font-black text-[var(--accent-main)] bg-green-100 px-3 py-1 rounded-full">Beta</span>
             </div>
             
             <div class="bg-white/90 backdrop-blur-md rounded-[2rem] p-6 md:p-8 shadow-sm border border-[var(--border-color)]">
@@ -199,8 +194,11 @@
                 <!-- STEP 1: 入力フォーム -->
                 <div id="create-step-1">
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 rounded-xl bg-[var(--accent-main)] text-white flex items-center justify-center"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
-                        <h2 class="text-xl font-black text-[var(--text-main)]">AIでプリントを自動生成</h2>
+                        <div class="w-10 h-10 rounded-xl bg-[var(--bg-sub)] text-[var(--accent-main)] flex items-center justify-center"><i data-lucide="layout-template" class="w-5 h-5"></i></div>
+                        <div>
+                            <h2 class="text-xl font-black text-[var(--text-main)]">デザインプリント生成</h2>
+                            <p class="text-xs font-bold text-[var(--text-muted)]">文字だけでなく、図解や解答欄のレイアウトも自動で作ります。</p>
+                        </div>
                     </div>
                     <div class="space-y-5">
                         <div class="grid grid-cols-2 gap-4">
@@ -215,18 +213,18 @@
                             <div>
                                 <label class="block text-sm font-black text-[var(--text-dark)] mb-2">教科</label>
                                 <select id="create-subject" class="form-input w-full px-4 py-3 rounded-xl font-bold text-sm">
-                                    <option value="英語" selected>英語</option>
-                                    <option value="数学">数学</option>
-                                    <option value="国語">国語</option>
+                                    <option value="英語">英語</option>
+                                    <option value="数学" selected>数学</option>
+                                    <option value="理科">理科</option>
                                 </select>
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-black text-[var(--text-dark)] mb-2">学習内容・テーマ</label>
-                            <textarea id="create-topic" rows="2" placeholder="例：現在完了形（経験・継続・完了）の基本問題" class="form-input w-full px-4 py-3 rounded-xl font-bold text-sm resize-none"></textarea>
+                            <textarea id="create-topic" rows="2" placeholder="例：二次関数のグラフの基本と、変化の割合を求める問題" class="form-input w-full px-4 py-3 rounded-xl font-bold text-sm resize-none"></textarea>
                         </div>
                         <button onclick="startAIGeneration()" class="w-full py-4 rounded-xl bg-[var(--text-main)] text-white font-black text-sm hover:bg-[var(--text-dark)] hover:-translate-y-1 transition-all shadow-md">
-                            問題を生成する
+                            レイアウトを生成する
                         </button>
                     </div>
                 </div>
@@ -234,242 +232,225 @@
                 <!-- STEP 2: 生成中 -->
                 <div id="create-step-loading" class="hidden py-12 text-center">
                     <i data-lucide="loader-2" class="w-10 h-10 text-[var(--accent-main)] animate-spin mx-auto mb-4"></i>
-                    <h3 class="text-lg font-black text-[var(--text-main)] mb-2">AIが問題を考案中...</h3>
+                    <h3 class="text-lg font-black text-[var(--text-main)] mb-2">骨組みとデザインを作成中...</h3>
                     <div class="progress-bar-container max-w-xs mx-auto mt-4"><div id="progress-bar" class="progress-bar"></div></div>
                 </div>
 
-                <!-- STEP 3: エディタ（実用版） -->
+                <!-- STEP 3: ビジュアルエディタ -->
                 <div id="create-step-editor" class="hidden">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                         <div>
                             <h3 class="text-lg font-black text-[var(--text-main)] flex items-center gap-2">
-                                <i data-lucide="edit-3" class="w-5 h-5 text-[var(--accent-main)]"></i>プリントエディタ
+                                <i data-lucide="mouse-pointer-click" class="w-5 h-5 text-[var(--accent-main)]"></i>直接クリックして編集できます
                             </h3>
-                            <p class="text-xs font-bold text-[var(--text-muted)] mt-1">自由に文章を追加・修正できます。</p>
                         </div>
-                        <button onclick="printDocument()" class="w-full md:w-auto px-6 py-3 bg-[var(--accent-main)] text-white font-black text-sm rounded-xl hover:bg-[var(--accent-dark)] shadow-sm flex items-center justify-center gap-2 transition-all">
+                        <button onclick="window.print()" class="w-full md:w-auto px-6 py-3 bg-[var(--accent-main)] text-white font-black text-sm rounded-xl hover:bg-[var(--accent-dark)] shadow-sm flex items-center justify-center gap-2 transition-all">
                             <i data-lucide="printer" class="w-4 h-4"></i> 印刷 / PDF保存
                         </button>
                     </div>
                     
-                    <!-- 編集エリア（textarea） -->
-                    <textarea id="print-content-editor" class="w-full h-96 p-6 border-2 border-[var(--border-color)] rounded-xl bg-[#fcfcfc] print-editor focus:border-[var(--accent-main)] outline-none resize-y" spellcheck="false"></textarea>
-                    
-                    <p class="text-[10px] text-[var(--text-muted)] text-center mt-3">※印刷プレビュー時に不要なヘッダーなどは自動で消えます。</p>
+                    <!-- プレビュー＆編集エリア -->
+                    <div class="worksheet-wrapper">
+                        <!-- この a4-canvas が実際の印刷対象。contenteditable="true" で直接編集可能 -->
+                        <div id="a4-canvas" class="a4-paper" contenteditable="true">
+                            <!-- JSでレイアウトが挿入されます -->
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
-
     </main>
-
-    <!-- 印刷用にレンダリングされる隠し領域 -->
-    <div id="print-render-area" style="display: none;"></div>
 
     <script>
         lucide.createIcons();
 
-        /* ==========================================
-           データと共通関数
-        ========================================== */
         const MATERIALS = [
-            { id: 1, type: 'junior', subject: '英語', title: '中3 英語 Unit2 現在完了形', tags: ['文法', '基本'] },
-            { id: 2, type: 'junior', subject: '英語', title: '中3 英語 不規則動詞マスター表', tags: ['暗記', 'コツコツ'] },
-            { id: 3, type: 'junior', subject: '数学', title: '中3 数学 展開と因数分解 100本ノック', tags: ['計算', '短期集中'] },
-            { id: 4, type: 'junior', subject: '国語', title: '中3 国語 漢字の成り立ち（視覚プリント）', tags: ['漢字', '視覚派'] }
+            { type: 'elementary', subject: '算数', title: '小3 割り算のひっ算' },
+            { type: 'elementary', subject: '国語', title: '小4 漢字まとめプリント' },
+            { type: 'junior', subject: '英語', title: '中3 Unit2 現在完了形' },
+            { type: 'junior', subject: '数学', title: '中2 一次関数のグラフ' },
         ];
 
-        function goHome() {
-            document.getElementById('view-diagnosis').classList.add('hidden');
-            document.getElementById('view-create').classList.add('hidden');
-            document.getElementById('view-home').classList.remove('hidden');
-            renderMaterials('all');
-        }
-
-        /* ==========================================
-           教材一覧表示
-        ========================================== */
         function switchTab(tab) {
-            document.getElementById('tab-all').classList.toggle('active', tab === 'all');
+            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
             document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
-            renderMaterials(tab);
-        }
-
-        function renderMaterials(filterTab) {
+            
             const container = document.getElementById('learning-materials-container');
             container.innerHTML = '';
-            
-            const filtered = filterTab === 'all' ? MATERIALS : MATERIALS.filter(m => m.type === filterTab);
-            
-            filtered.forEach(item => {
+            MATERIALS.filter(m => m.type === tab).forEach(item => {
                 container.innerHTML += `
-                    <div class="premium-card p-5 flex flex-col justify-between h-full cursor-pointer">
+                    <div class="premium-card p-5 cursor-pointer flex flex-col justify-between">
                         <div>
                             <span class="px-2 py-1 bg-[var(--bg-sub)] text-[var(--accent-dark)] text-[10px] font-black rounded-lg">${item.subject}</span>
                             <h3 class="text-base font-black text-[var(--text-main)] mt-3 leading-snug">${item.title}</h3>
                         </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <div class="flex gap-1">
-                                ${item.tags.map(t => `<span class="text-[10px] text-[var(--text-muted)] font-bold border border-[var(--border-color)] px-2 rounded-md">#${t}</span>`).join('')}
-                            </div>
-                            <i data-lucide="arrow-right" class="w-4 h-4 text-[var(--text-light)]"></i>
-                        </div>
+                        <div class="mt-4 text-right"><i data-lucide="arrow-right" class="w-4 h-4 text-[var(--text-light)] inline"></i></div>
                     </div>
                 `;
             });
             lucide.createIcons();
         }
 
-        /* ==========================================
-           勉強タイプ診断ロジック
-        ========================================== */
-        const quizData = [
-            { q: "テスト勉強はいつから始める？", a: "A. 2週間前から計画的に", b: "B. 3日前から一気に集中" },
-            { q: "英単語を覚える時、よくやるのは？", a: "A. 何度もノートに書く", b: "B. 見たり、声に出して読む" },
-            { q: "問題集を解くなら？", a: "A. 基礎から順番に解きたい", b: "B. いきなり実践や過去問を解きたい" }
-        ];
-        
-        let currentQ = 0;
-        let answers = { A: 0, B: 0 };
-
-        function openDiagnosis() {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-diagnosis').classList.remove('hidden');
-            currentQ = 0; answers = { A: 0, B: 0 };
-            showQuiz();
+        function goHome() {
+            document.getElementById('view-create').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            switchTab('junior');
         }
 
-        function showQuiz() {
-            if (currentQ >= quizData.length) { showDiagnosisResult(); return; }
-            document.getElementById('quiz-progress').textContent = `質問 ${currentQ + 1} / 3`;
-            document.getElementById('quiz-question').textContent = quizData[currentQ].q;
-            document.getElementById('quiz-options').innerHTML = `
-                <button onclick="answerQuiz('A')" class="w-full p-4 rounded-xl border-2 border-[var(--border-color)] hover:border-orange-400 hover:bg-orange-50 text-left font-bold text-[var(--text-main)] transition-all">${quizData[currentQ].a}</button>
-                <button onclick="answerQuiz('B')" class="w-full p-4 rounded-xl border-2 border-[var(--border-color)] hover:border-orange-400 hover:bg-orange-50 text-left font-bold text-[var(--text-main)] transition-all">${quizData[currentQ].b}</button>
-            `;
-        }
-
-        function answerQuiz(choice) {
-            answers[choice]++;
-            currentQ++;
-            showQuiz();
-        }
-
-        function showDiagnosisResult() {
-            goHome(); // ホームに戻して結果エリアを表示
-            document.getElementById('recommend-area').classList.remove('hidden');
-            
-            let typeTitle, typeDesc, recItemIds;
-            
-            // 簡単な判定ロジック
-            if (answers.A === 3) {
-                typeTitle = "🐢 コツコツ堅実タイプ";
-                typeDesc = "毎日少しずつ基礎を固めるのが得意。暗記系のまとめプリントが相性抜群です！";
-                recItemIds = [2, 1];
-            } else if (answers.B >= 2) {
-                typeTitle = "🔥 短期集中・実践タイプ";
-                typeDesc = "本番に強い直感派。ダラダラやらず、実践的な問題集で一気に解くのがおすすめです。";
-                recItemIds = [3, 1];
-            } else {
-                typeTitle = "👀 視覚・バランスタイプ";
-                typeDesc = "見て覚えるのが得意。図解やイラストが多いプリントを使うと理解が早まります。";
-                recItemIds = [4, 1];
-            }
-
-            document.getElementById('diag-result-title').textContent = typeTitle;
-            document.getElementById('diag-result-desc').textContent = typeDesc;
-
-            const recHtml = recItemIds.map(id => {
-                const item = MATERIALS.find(m => m.id === id);
-                return `
-                    <div class="bg-white p-4 rounded-xl border border-[var(--border-color)] flex items-center justify-between cursor-pointer hover:border-[var(--accent-main)]">
-                        <div>
-                            <span class="text-[9px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-black">おすすめ</span>
-                            <h4 class="font-black text-sm mt-1 text-[var(--text-main)]">${item.title}</h4>
-                        </div>
-                        <i data-lucide="download" class="w-4 h-4 text-[var(--accent-main)]"></i>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('recommend-materials').innerHTML = recHtml;
-            lucide.createIcons();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        /* ==========================================
-           AIプリントエディタ機能
-        ========================================== */
         function openCreateView() {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-create').classList.remove('hidden');
             
-            // 状態リセット
             document.getElementById('create-step-1').classList.remove('hidden');
             document.getElementById('create-step-loading').classList.add('hidden');
             document.getElementById('create-step-editor').classList.add('hidden');
-            document.getElementById('create-topic').value = '';
         }
 
         function startAIGeneration() {
-            const topic = document.getElementById('create-topic').value;
+            const topic = document.getElementById('create-topic').value || "基本問題";
             const subject = document.getElementById('create-subject').value;
             const grade = document.getElementById('create-grade').value;
             
-            if(!topic) { alert('学習内容を入力してください'); return; }
-
             document.getElementById('create-step-1').classList.add('hidden');
             document.getElementById('create-step-loading').classList.remove('hidden');
             
             const bar = document.getElementById('progress-bar');
-            setTimeout(() => { bar.style.width = '40%'; }, 500);
-            setTimeout(() => { bar.style.width = '80%'; }, 1500);
+            setTimeout(() => { bar.style.width = '50%'; }, 800);
             
-            // 数秒後にエディタ画面へ移行し、ダミーの生成テキストを挿入
             setTimeout(() => {
                 document.getElementById('create-step-loading').classList.add('hidden');
                 document.getElementById('create-step-editor').classList.remove('hidden');
                 
-                const generatedText = generateMockContent(grade, subject, topic);
-                document.getElementById('print-content-editor').value = generatedText;
-            }, 2500);
+                // 教科に応じたHTMLテンプレートを生成して挿入
+                document.getElementById('a4-canvas').innerHTML = generateVisualLayout(grade, subject, topic);
+            }, 2000);
         }
 
-        // 入力内容に応じたモック文面を生成する関数
-        function generateMockContent(grade, subject, topic) {
-            const dateStr = new Date().toLocaleDateString('ja-JP');
-            let content = `=================================\n${grade} ${subject} 基本確認プリント\nテーマ: ${topic}\n日付: ${dateStr}   名前: _______________\n=================================\n\n`;
+        // ▼ ビジュアルレイアウトの生成（おしゃれな骨組み） ▼
+        function generateVisualLayout(grade, subject, topic) {
+            const date = new Date();
+            const dateStr = `${date.getFullYear()}年 ${date.getMonth()+1}月 ${date.getDate()}日`;
 
-            if (subject === '英語') {
-                content += `【1】次の日本語を英語に直しなさい。\n(1) 私はずっと日本に住んでいます。\n    (                                          )\n(2) あなたは今までに富士山に登ったことがありますか。\n    (                                          )\n\n【2】( )内の動詞を適切な形にしなさい。\n(1) I have just ( finish ) my homework.\n(2) She has ( be ) busy since last week.\n\n【3】自由英作文\n今のあなたの状況について、現在完了形を使って1文書きなさい。\n    (                                          )\n\n`;
-            } else if (subject === '数学') {
-                content += `【1】次の式を展開しなさい。\n(1) (x + 3)(x + 5) =\n\n(2) (x - 4)^2 =\n\n(3) (a + b)(a - b) =\n\n【2】次の式を因数分解しなさい。\n(1) x^2 + 8x + 15 =\n\n(2) x^2 - 10x + 25 =\n\n(3) y^2 - 36 =\n\n`;
+            let html = `
+                <div class="print-header">
+                    <div class="print-title">${grade} ${subject} 基本確認プリント</div>
+                    <div class="print-info">
+                        <div>日付: <span class="print-name-box" style="width:100px; text-align:center;">${dateStr}</span></div>
+                        <div>氏名: <span class="print-name-box"></span></div>
+                    </div>
+                </div>
+                
+                <div style="font-size: 14px; margin-bottom: 20px; color: #555;">
+                    ■ テーマ：${topic}
+                </div>
+            `;
+
+            if (subject === '数学' || subject === '算数') {
+                html += `
+                    <div class="print-box" style="border: 2px solid #333;">
+                        <strong style="font-size: 16px;">💡 公式・ポイントの確認</strong>
+                        <p style="margin-top: 10px;">関数 $y = ax^2$ において、変化の割合は一定ではない。<br>xの値が $p$ から $q$ まで増加するときの変化の割合は <strong>$a(p+q)$</strong> で求められる。</p>
+                    </div>
+
+                    <div class="print-section">
+                        <div class="print-q-title">【1】次の関数のグラフを右の図にかきなさい。</div>
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;">
+                                <div class="print-q-item">(1) $y = 2x^2$</div>
+                                <div class="print-q-item">(2) $y = -\\frac{1}{2}x^2$</div>
+                                <br><br>
+                                <div class="print-q-title">【2】$y=2x^2$ について答えなさい。</div>
+                                <div class="print-q-item">(1) $x$が1から3まで増加するときの変化の割合。<br>答： <span class="print-line"></span></div>
+                            </div>
+                            
+                            <!-- グラフ配置エリア（ダミーSVG） -->
+                            <div style="width: 200px; height: 200px; border: 1px solid #333; position: relative;">
+                                <!-- 方眼紙風の背景 -->
+                                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#ddd" stroke-width="1"/>
+                                        </pattern>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grid)" />
+                                    <!-- XY軸 -->
+                                    <line x1="0" y1="100" x2="200" y2="100" stroke="#111" stroke-width="2"/>
+                                    <line x1="100" y1="0" x2="100" y2="200" stroke="#111" stroke-width="2"/>
+                                    <text x="185" y="95" font-size="12" font-family="serif">x</text>
+                                    <text x="105" y="15" font-size="12" font-family="serif">y</text>
+                                    <text x="85" y="115" font-size="12" font-family="serif">O</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (subject === '英語') {
+                html += `
+                    <div class="print-box" style="border: 2px dashed #666;">
+                        <strong style="font-size: 16px;">💡 今日の文法：現在完了形（経験）</strong>
+                        <p style="margin-top: 10px; font-size: 15px;">
+                            形： <strong>have [has] + 過去分詞</strong><br>
+                            意味：「今までに〜したことがある」<br>
+                            ※一緒に使う単語： ever(今までに), never(一度も〜ない), before(以前に), twice(2回) など
+                        </p>
+                    </div>
+
+                    <div class="print-section">
+                        <div class="print-q-title">【1】次の日本文に合うように、（　）内の単語を並べ替えなさい。</div>
+                        <div class="print-q-item">
+                            (1) 私は一度もオーストラリアに行ったことがありません。<br>
+                            ( never / been / have / Australia / I / to / . )<br>
+                            <span style="display:inline-block; width:100%; border-bottom:1px solid #111; margin-top: 15px;"></span>
+                        </div>
+                        <div class="print-q-item">
+                            (2) あなたは今までにこの本を読んだことがありますか。<br>
+                            ( read / ever / you / book / this / have / ? )<br>
+                            <span style="display:inline-block; width:100%; border-bottom:1px solid #111; margin-top: 15px;"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="print-section">
+                        <div class="print-q-title">【2】対話文を読んで、下線部を日本語に訳しなさい。</div>
+                        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; font-family: sans-serif;">
+                            <p><strong>A:</strong> Have you ever eaten natto?</p>
+                            <p><strong>B:</strong> No, I haven't. Is it good?</p>
+                            <p><strong>A:</strong> Yes! <span style="text-decoration: underline;">I have eaten it many times.</span> It's very healthy.</p>
+                        </div>
+                        <div class="print-q-item" style="margin-top: 15px;">
+                            訳：<span style="display:inline-block; width:80%; border-bottom:1px solid #111;"></span>
+                        </div>
+                    </div>
+                `;
             } else {
-                content += `【1】以下の問いに答えなさい。\n(1) ${topic}について、重要なキーワードを3つ書きなさい。\n    [          ]  [          ]  [          ]\n\n(2) そのキーワードを使って、内容を簡潔に説明しなさい。\n\n\n\n`;
+                html += `
+                    <div class="print-section">
+                        <div class="print-q-title">【1】${topic}について、以下の問いに答えなさい。</div>
+                        <div class="print-q-item">
+                            (1) 最も重要なキーワードを3つ答えなさい。<br>
+                            <div style="display:flex; gap: 20px; margin-top:10px;">
+                                ① <span class="print-line" style="width:100px;"></span>
+                                ② <span class="print-line" style="width:100px;"></span>
+                                ③ <span class="print-line" style="width:100px;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="print-section">
+                        <div class="print-q-title">【2】図や表を書いて、内容をわかりやすくまとめなさい。</div>
+                        <div class="print-graph-area" style="height: 250px;">
+                            （ここに自由に図解を描き込んでください）
+                        </div>
+                    </div>
+                `;
             }
-            content += `\n\n\n---\nPowered by タマベン AI (編集して使えます)`;
-            return content;
-        }
 
-        // 印刷（PDF保存）の実行
-        function printDocument() {
-            const editorContent = document.getElementById('print-content-editor').value;
-            const renderArea = document.getElementById('print-render-area');
-            
-            // 改行を維持したまま、印刷用領域にテキストをセット
-            renderArea.textContent = editorContent;
-            renderArea.style.display = 'block';
-            
-            // ブラウザの印刷ダイアログを呼び出し
-            window.print();
-            
-            // 印刷ダイアログが閉じた後に表示を戻す
-            renderArea.style.display = 'none';
+            html += `<div style="text-align: right; margin-top: 50px; font-size: 11px; color: #999;">Powered by タマベン AI Layout</div>`;
+            return html;
         }
 
         // 初期化
         document.addEventListener('DOMContentLoaded', () => {
-            renderMaterials('all');
+            switchTab('junior');
         });
     </script>
 </body>
