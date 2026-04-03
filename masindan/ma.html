@@ -98,6 +98,7 @@
         #log-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #log-modal.show { opacity: 1; pointer-events: auto; }
         #log-modal .content { background: #ffffff; color: var(--text-main); width: 100%; max-width: 500px; max-height: 85vh; border-radius: 1.5rem; padding: 30px; overflow-y: auto; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -116,7 +117,8 @@
             <p class="text-[var(--accent-core)] font-serif-en tracking-[0.4em] text-[10px] mb-4 uppercase font-bold">Deep Profiling System</p>
             <h1 class="text-5xl md:text-6xl font-bold mb-10 tracking-widest text-[var(--accent-dark)] font-serif-en">マ診断</h1>
             <p class="text-[var(--text-muted)] text-[14px] leading-relaxed mb-12 text-left font-medium">
-                この診断は、あなたの無意識の行動や直感から、あなたの深層心理を分析し、あなたの中に「マ要素（マ度）」が何%あるかを測定します。
+                この診断は、あなたの無意識の行動や直感から、あなたの深層心理を100%の精度で見抜き、あなたの中に「マ要素（マ度）」が何%あるかを正確に分析します。<br><br>
+                多角的な質問から抽出される10問に、直感でお答えください。
             </p>
             <div id="resume-container" class="hidden mb-10 p-6 bg-white/60 border border-[var(--accent-core)]/20 rounded-2xl">
                 <p class="text-xs text-[var(--accent-dark)] mb-4 tracking-widest uppercase font-bold">中断されたデータがあります</p>
@@ -193,37 +195,60 @@
     <div id="log-modal">
         <div class="content relative">
             <h3 class="text-lg font-bold mb-2 text-[var(--accent-core)] font-serif-en">Vector Data Log</h3>
+            <p class="text-[10px] text-gray-500 mb-6 pb-2 border-b border-[var(--accent-core)]/30">内部アルゴリズム処理結果（開発者用）</p>
             <div id="adjustment-log" class="space-y-4 text-xs font-mono text-gray-700 whitespace-pre-wrap"></div>
             <button onclick="toggleLogModal()" class="mt-8 w-full py-4 bg-white border border-[var(--accent-core)] text-[var(--accent-dark)] rounded-xl text-sm font-bold tracking-widest uppercase hover:bg-gray-50 transition-colors">閉じる</button>
         </div>
     </div>
 
     <script>
-        // --- 質問データ ---
+        // --- 100%マ要素（まさひろさんの思考）データベース ---
         const questionsPool =[
             { q: "Q. 休日に家から一歩も出ない日、どんな風に過ごすことが多い？", type: 'select', options:[{ text: "スマホやPCを触って、ゴロゴロと無駄な時間を過ごす", score: 10, mbti: {P:2, I:1} }, { text: "溜まっていた家事や部屋の掃除を一気に片付ける", score: 0, mbti: {J:2} }, { text: "資格の勉強やスキルアップのための自己研鑽", score: 2, mbti: {T:1, J:1} }, { text: "新しい料理に挑戦したり、手の込んだ趣味に没頭する", score: 5, mbti: {Se:1, Fi:1} }] },
             { q: "Q. 日常生活で一番「イラッ」とするのはどんな時？", type: 'select', options:[{ text: "自分の作業や集中していることを邪魔された時", score: 10, mbti: {I:2, Te:1} }, { text: "約束の時間やルールを守らない人を見た時", score: 0, mbti: {J:2} }, { text: "他人の好きなものや趣味を頭ごなしに否定された時", score: 5, mbti: {Fi:2} }, { text: "非論理的で理不尽な感情をぶつけられた時", score: 2, mbti: {T:2} }] },
             { q: "Q. 欲しいものを見つけた時のあなたの行動パターンは？", type: 'select', options:[{ text: "何も考えずに、直感でパッと買ってしまうことがある", score: 10, mbti: {Se:2, P:1} }, { text: "本当に必要か何日も熟考してから買う", score: 0, mbti: {J:2, Te:1} }, { text: "口コミやレビューを隅々まで比較して決める", score: 2, mbti: {T:1, J:1} }, { text: "誰かにおすすめされたり、流行っているものを買う", score: 5, mbti: {Fe:1} }] },
             { q: "Q. 日々の「食事」に関して、どのようなこだわりがありますか？", type: 'select', options:[{ text: "絶対の決まりはなく、その時の気分で自由に決める", score: 10, mbti: {P:2, Se:1} }, { text: "栄養バランスや健康を第一に考えて選ぶ", score: 0, mbti: {J:1, Si:1} }, { text: "行きつけの店や、いつもと同じメニューを頼むことが多い", score: 2, mbti: {Si:2} }, { text: "話題のグルメやSNSで見た新しいお店を開拓する", score: 5, mbti: {Ne:1, Fe:1} }] },
+            
             { q: "Q. 自分にとって一番「無駄だな」と感じる時間は？", type: 'select', options:[{ text: "終わりの見えない形だけの会議や説教", score: 0, mbti: {Te:2} }, { text: "気を使わなければいけない表面的な飲み会", score: 2, mbti: {Fi:2, I:1} }, { text: "休日に一歩も外に出ずダラダラしてしまった時間", score: 10, mbti: {Se:1, J:1} }, { text: "自分が心地よければ、どんな時間も無駄とは思わない", score: 5, mbti: {P:2, Fi:1} }] },
             { q: "Q. 部屋に飾るならどんなアートがいい？", type: 'select', options:[{ text: "有名な画家の価値ある作品", score: 0, mbti: {Te:1, J:1} }, { text: "何も飾らないのが一番すっきりして好き", score: 10, mbti: {I:1, S:1, P:1} }, { text: "自分が直感で「好き」と感じた無名の作品", score: 5, mbti: {Fi:2} }, { text: "部屋のインテリアに馴染むお洒落なもの", score: 2, mbti: {Se:1, Fe:1} }] },
             { q: "Q. プレッシャーがかかる大きな本番の前、あなたはどうなりますか？", type: 'situation', options:[{ label: "A", text: "現実逃避をして、全く関係のないことをし始める", score: 10, mbti: {P:2, Fi:1} }, { label: "B", text: "「なんとかなる」と開き直って、逆にリラックスできる", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "極度の緊張で食欲がなくなり、落ち着きがなくなる", score: 0, mbti: {F:1} }, { label: "D", text: "準備を完璧にするため、ギリギリまで確認作業に没頭する", score: 0, mbti: {J:2, I:1} }] },
             { q: "Q. 大切な決断を迫られたとき、最終的に背中を押すものは？", type: 'select', options:[{ text: "自分の中の「何となくこっちが良い」という直感", score: 8, mbti: {N:1, Fi:1} }, { text: "信頼できる人のアドバイス", score: 10, mbti: {Fe:1, S:1, Fi:1} }, { text: "失敗しても何とかなるという開き直り", score: 5, mbti: {P:2} }, { text: "客観的なデータや実績", score: 0, mbti: {T:2} }] },
             { q: "Q. 森で鳥の声を聞いたときの意識は？", type: 'situation', options:[{ label: "A", text: "響きそのものを全身で聴く", score: 10, mbti: {Se:2} }, { label: "B", text: "美しいと感じて深く感動する", score: 5, mbti: {F:1} }, { label: "C", text: "その鳥の種類や生態を特定したくなる", score: 0, mbti: {T:1, S:1} }, { label: "D", text: "録音して誰かに教えたくなる", score: 2, mbti: {E:1} }] },
-            { q: "Q. 誰かにプレゼントをもらった時の内面は？", type: 'select', options:[{ text: "相手が選んでくれた気持ちそのものが嬉しい", score: 10, mbti: {Fe:2} }, { text: "自分の好みを分かってくれているかに感動する", score: 8, mbti: {Fi:2} }, { text: "お返しの金額やタイミングをすぐに計算する", score: 0, mbti: {T:1, J:1} }, { text: "大袈裟に喜んで、その場の空気を盛り上げる", score: 2, mbti: {E:2} }] }
+            { q: "Q. 誰かにプレゼントをもらった時の内面は？", type: 'select', options:[{ text: "相手が選んでくれた気持ちそのものが嬉しい", score: 10, mbti: {Fe:2} }, { text: "自分の好みを分かってくれているかに感動する", score: 8, mbti: {Fi:2} }, { text: "お返しの金額やタイミングをすぐに計算する", score: 0, mbti: {T:1, J:1} }, { text: "大袈裟に喜んで、その場の空気を盛り上げる", score: 2, mbti: {E:2} }] },
+            { q: "Q. 「成功」と聞いて真っ先に思い浮かぶのは？", type: 'select', options:[{ text: "誰からも認められる実績", score: 10, mbti: {E:1, J:1} }, { text: "自分が満足できる心境", score: 5, mbti: {I:1, Fi:1} }, { text: "大切な人との安定した生活", score: 2, mbti: {F:1, S:1} }, { text: "自由な時間と余裕", score: 8, mbti: {P:2} }] },
+            { q: "Q. 待ち合わせ場所にはどのくらい前に着く？", type: 'select', options:[{ text: "大体時間ピッタリか、少し遅れる", score: 10, mbti: {P:2} }, { text: "15分以上前には必ず着いている", score: 0, mbti: {J:2} }, { text: "5分前には着くようにしている", score: 5, mbti: {J:1} }, { text: "相手が着いたと連絡が来てから家を出る", score: 2, mbti: {P:2, I:1} }] },
+            { q: "Q. スマホの通知が溜まっていると気になる。", type: 'scale', options:[{ text: "全く気にならない", score: 10, mbti: {P:2} }, { text: "あまり気にならない", score: 5, mbti: {P:1} }, { text: "まあ気になる", score: 2, mbti: {J:1} }, { text: "とても気になる（すぐ消す）", score: 0, mbti: {J:2} }] },
+            { q: "Q. 自分のこだわりや美学は、誰に何と言われようと絶対に曲げたくない。", type: 'scale', options:[{ text: "強くそう思う", score: 8, mbti: {Fi:2, J:1} }, { text: "そう思う", score: 10, mbti: {Fi:1} }, { text: "あまり思わない", score: 2, mbti: {Fe:1, P:1} }, { text: "全く思わない", score: 0, mbti: {Fe:2} }] },
+            { q: "Q. 直感で「いいな」と思ったものは、後先考えずに買ってしまうことが多い。", type: 'scale', options:[{ text: "とても当てはまる", score: 5, mbti: {P:2, Se:1} }, { text: "まあ当てはまる", score: 10, mbti: {P:1} }, { text: "あまり当てはまらない", score: 2, mbti: {J:1} }, { text: "全く当てはまらない", score: 0, mbti: {J:2} }] },
+            { q: "Q. 寝る前に明日着る服を決めておくタイプだ。", type: 'scale', options:[{ text: "全く思わない（朝決める）", score: 10, mbti: {P:2} }, { text: "あまり思わない", score: 5, mbti: {P:1} }, { text: "まあそう思う", score: 2, mbti: {J:1} }, { text: "とてもそう思う", score: 0, mbti: {J:2} }] },
+            { q: "Q. 知らない名前のスパイスが効いた料理を食べた時の反応は？", type: 'situation', options:[{ label: "A", text: "自分の口に合うかどうかだけで判断する", score: 10, mbti: {Se:2} }, { label: "B", text: "未知の刺激をダイレクトに受け止める", score: 5, mbti: {P:1, Se:1} }, { label: "C", text: "珍しい味であることをすぐに誰かに共有する", score: 2, mbti: {E:2} }, { label: "D", text: "どんなスパイスが使われているか分析する", score: 0, mbti: {T:2, N:1} }] },
+            { q: "Q. 子供の頃の記憶で一番鮮明に残っているのは？", type: 'select', options:[{ text: "記憶が曖昧で、あまりよく覚えていない", score: 10, mbti: {P:1, N:1} }, { text: "誰かに怒られたり褒められた時の「感情」", score: 5, mbti: {F:2} }, { text: "その時の情景の「色」や「空気の匂い」", score: 2, mbti: {Se:2} }, { text: "自分が何かのテストで取った「成績」", score: 0, mbti: {T:1, J:1} }] },
+            { q: "Q. お風呂に入っている時の思考状態として近いものは？", type: 'select', options:[{ text: "鼻歌を歌ったりして気分をリフレッシュする", score: 10, mbti: {S:1, F:1} }, { text: "水の音や温かさに集中し、頭をからっぽにする", score: 5, mbti: {I:1, S:1} }, { text: "今日あった出来事の反省会が始まる", score: 0, mbti: {J:1, T:1} }, { text: "明日のスケジュールをシミュレーションする", score: 2, mbti: {J:2, T:1} }] },
+            { q: "Q. 旅行の計画を立てるときのスタイルは？", type: 'situation', options:[{ label: "A", text: "面倒で直前まで何もしない", score: 10, mbti: {P:2} }, { label: "B", text: "交通と宿だけ決めて、あとは現地で考える", score: 5, mbti: {P:1, S:1} }, { label: "C", text: "行きたい場所だけいくつかピックアップしておく", score: 2, mbti: {J:1} }, { label: "D", text: "分単位でスケジュールをびっしり決める", score: 0, mbti: {J:2} }] },
+            { q: "Q. 会話の最中、相手が間違ったことを言ったら？", type: 'select', options:[{ text: "どうでもいいことならスルーする", score: 10, mbti: {P:1, Fi:1} }, { text: "すぐに「それは違う」と訂正する", score: 0, mbti: {T:2, J:1} }, { text: "傷つけないようにやんわりと指摘する", score: 5, mbti: {F:2} }, { text: "後でこっそり調べて確認する", score: 2, mbti: {I:1, T:1} }] },
+            { q: "Q. 突然、予定が全てキャンセルになったら？", type: 'situation', options:[{ label: "A", text: "少し寂しくなり、SNSを見る", score: 10, mbti: {E:1, F:1} }, { label: "B", text: "ラッキーと思い、家でダラダラする", score: 5, mbti: {I:1, P:2} }, { label: "C", text: "すぐに別の予定を入れようとする", score: 0, mbti: {E:2, J:1} }, { label: "D", text: "前からやりたかった作業を始める", score: 2, mbti: {J:1, I:1} }] },
+            { q: "Q. 次のうち、あなたに最も当てはまるものは？", type: 'select', options:[{ text: "思いついたらすぐ行動する", score: 10, mbti: {P:2, E:1} }, { text: "夜に急にやる気が出る", score: 5, mbti: {P:1, N:1} }, { text: "変わったことが好き", score: 2, mbti: {N:2} }, { text: "計画を立ててから動きたい", score: 0, mbti: {J:2} }] },
+            { q: "Q. 風で草花が大きく揺れているのを見たとき？", type: 'situation', options:[{ label: "A", text: "風の抵抗や自然のダイナミックさを楽しむ", score: 10, mbti: {Se:2} }, { label: "B", text: "特に気にせず歩く速度を維持する", score: 5, mbti: {S:1, T:1} }, { label: "C", text: "嵐が来るのではないかと天気を警戒する", score: 0, mbti: {J:1, N:1} }, { label: "D", text: "何かのスピリチュアルな予兆を感じる", score: 2, mbti: {N:2} }] },
+            { q: "Q. 他人に「これだけは褒められたい（認められたい）」と思うポイントは？", type: 'select', options:[{ text: "自分が時間をかけて作ったものや、仕事の成果", score: 10, mbti: {T:1, J:1} }, { text: "自分の性格の良さや、他人への思いやり", score: 0, mbti: {Fe:2} }, { text: "独特のセンスや、自分にしかできない発想", score: 5, mbti: {N:1, Fi:1} }, { text: "褒められなくても自分が満足していればそれでいい", score: 2, mbti: {I:1, P:1} }] },
+            { q: "Q. 好きな音楽を聴くとき、何に一番惹かれる？", type: 'select', options:[{ text: "リズムやメロディの心地よさ、音の質感", score: 10, mbti: {Se:2} }, { text: "歌詞の意味やメッセージ性", score: 5, mbti: {Fi:1, N:1} }, { text: "アーティストの生き様や背景", score: 2, mbti: {Ni:1} }, { text: "流行っていてみんなが知っていること", score: 0, mbti: {Fe:2} }] }
         ];
 
         let selectedQuestions =[]; let currentIdx = 0; let historyArr =[]; let devLogText = "";
 
-        // --- URLデコード ---
+        // 後方互換性（過去のシェアURLも読み込めるようにするデコーダー）
         function decodeUrlData(d) {
-            try { 
-                let decodedStr = decodeURIComponent(escape(atob(d)));
-                return JSON.parse(decodedStr);
-            } catch (e) { return null; }
+            let decodedStr;
+            try { decodedStr = decodeURIComponent(escape(atob(d.split('&')[0]))); } 
+            catch (e1) {
+                try { decodedStr = atob(d.split('&')[0]); } 
+                catch (e2) {
+                    try { decodedStr = decodeURIComponent(atob(d.split('&')[0])); } 
+                    catch (e3) { return null; }
+                }
+            }
+            try { return JSON.parse(decodedStr); } catch(e) { return null; }
         }
 
-        // --- Cookie管理 ---
         function setCookie(name, val, days) {
             const d = new Date(); d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
             document.cookie = `${name}=${encodeURIComponent(val)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
@@ -235,7 +260,6 @@
         }
         function eraseCookie(name) { document.cookie = name +'=; Max-Age=-99999999; path=/'; }
 
-        // --- 診断ロジック ---
         function shuffleArray(array) {
             const arr =[...array];
             for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
@@ -245,147 +269,288 @@
         function startDiagnosis(reset = false) {
             if (reset) eraseCookie('ma_adv_system_v8');
             selectedQuestions = shuffleArray(questionsPool).slice(0, 10);
-            currentIdx = 0; historyArr =[];
+            currentIdx = 0; historyArr =[]; devLogText = "";
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            const dotCont = document.getElementById('progress-dots'); dotCont.innerHTML = '';
+            for(let i=0; i<10; i++) dotCont.appendChild(Object.assign(document.createElement('div'),{className:'progress-dot'}));
             renderQuestion();
         }
 
         function renderQuestion() {
+            const wrapper = document.getElementById('purify-wrapper');
+            wrapper.classList.remove('purify-effect'); void wrapper.offsetWidth; wrapper.classList.add('purify-effect');
+
             const q = selectedQuestions[currentIdx];
             document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
             document.getElementById('q-text').innerText = q.q;
             document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
 
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+
             const container = document.getElementById('options-container'); container.innerHTML = '';
-            q.options.forEach((opt) => {
-                const btn = document.createElement('button'); btn.className = 'option-btn';
-                btn.innerText = opt.text;
-                btn.onclick = () => {
-                    historyArr.push({ q: q.q, a: opt.text, score: opt.score, mbti: opt.mbti });
-                    currentIdx++;
-                    if (currentIdx < 10) renderQuestion(); else showResult();
-                };
-                container.appendChild(btn);
+            const shuffledOpts =[...q.options].sort(() => Math.random() - 0.5);
+
+            shuffledOpts.forEach((opt) => {
+                const btn = document.createElement('button'); btn.className = 'option-btn group';
+                let btnHtml = '';
+                if (q.type === 'scale') {
+                    btn.classList.add('flex', 'justify-center');
+                    btnHtml = `<div class="text-center w-full font-quicksand font-bold tracking-wide">${opt.text}</div>`;
+                } else if (q.type === 'situation') {
+                    btnHtml = `<div class="flex items-center"><span class="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--accent-core)] text-white font-bold mr-4 shadow-md font-quicksand">${opt.label}</span><span class="font-medium">${opt.text}</span></div>`;
+                } else {
+                    btnHtml = `<div class="flex items-center"><div class="flex-shrink-0 w-5 h-5 rounded-md border-2 border-[var(--accent-core)] mr-4 flex items-center justify-center"><div class="w-2.5 h-2.5 bg-transparent rounded-sm transition-colors duration-200 group-hover:bg-[var(--accent-core)]"></div></div><span class="font-medium">${opt.text}</span></div>`;
+                }
+                btn.innerHTML = btnHtml; btn.onclick = () => handleAnswer(q, opt); container.appendChild(btn);
             });
+        }
+
+        function handleAnswer(q, opt) {
+            historyArr.push({ q: q.q, a: opt.text, score: opt.score, mbti: opt.mbti });
+            currentIdx++; saveToCookie();
+            if (currentIdx < 10) renderQuestion(); else showResult();
+        }
+
+        function goBack() { if (currentIdx <= 0) return; currentIdx--; historyArr.pop(); saveToCookie(); renderQuestion(); }
+
+        function saveToCookie() { setCookie('ma_adv_system_v8', JSON.stringify({ idx: currentIdx, hist: historyArr, qArray: selectedQuestions }), 7); }
+
+        function resumeDiagnosis() {
+            const saved = getCookie('ma_adv_system_v8');
+            if (saved) {
+                const d = JSON.parse(saved); currentIdx = d.idx; historyArr = d.hist; selectedQuestions = d.qArray;
+                document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden');
+                const dotCont = document.getElementById('progress-dots'); dotCont.innerHTML = '';
+                for(let i=0; i<10; i++) dotCont.appendChild(Object.assign(document.createElement('div'),{className:'progress-dot'}));
+                renderQuestion();
+            }
         }
 
         function showResult() {
             document.getElementById('quiz-screen').classList.add('hidden');
-            const revealScreen = document.getElementById('reveal-screen');
-            revealScreen.classList.remove('hidden');
-            setTimeout(() => { revealScreen.style.opacity = '1'; }, 50);
+            if (sessionStorage.getItem('ma_anim_done')) { document.getElementById('result-screen').classList.remove('hidden'); finalizeResultAndDisplay(true); } 
+            else { const revealScreen = document.getElementById('reveal-screen'); revealScreen.classList.remove('hidden'); setTimeout(() => { revealScreen.style.opacity = '1'; }, 50); }
         }
 
         function revealResult() {
-            document.getElementById('reveal-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            finalizeResultAndDisplay(false);
+            const revealBtn = document.getElementById('reveal-btn'); const revealOverlay = document.getElementById('reveal-overlay'); const revealScreen = document.getElementById('reveal-screen');
+            revealBtn.style.opacity = '0'; revealBtn.style.pointerEvents = 'none'; revealOverlay.classList.add('reveal-light');
+            setTimeout(() => { document.getElementById('result-screen').classList.remove('hidden'); finalizeResultAndDisplay(false); }, 1200);
+            setTimeout(() => { revealScreen.classList.add('hidden'); revealScreen.style.opacity = '0'; revealOverlay.classList.remove('reveal-light'); }, 3000);
+        }
+
+        // --- 純粋な「マ度」をベースにした完全調整アルゴリズム ---
+        function calculateAdvancedScore(hist) {
+            let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
+            const idealVector = { I:8, E:2, S:8, N:3, F:8, T:4, P:10, J:1, Fi:10, Fe:4, Se:10 };
+
+            devLogText = "--- Deep Analysis Start ---\n";
+            hist.forEach((h, i) => {
+                rawScore += h.score || 0;
+                devLogText += `[Q${i+1}] Score:+${h.score} | ${h.a}\n`;
+                if(h.mbti) for (let key in h.mbti) mbtiVector[key] += h.mbti[key];
+            });
+
+            let dotProduct = 0, normUser = 0, normIdeal = 0;
+            for (let key in idealVector) {
+                const uVal = mbtiVector[key] || 0; const iVal = idealVector[key];
+                dotProduct += uVal * iVal; normUser += Math.pow(uVal, 2); normIdeal += Math.pow(iVal, 2);
+            }
+            let similarity = (normUser > 0 && normIdeal > 0) ? dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal)) : 0;
+
+            const tolerance = 5;
+            let conflictT_F = Math.max(0, Math.min(mbtiVector.T, (mbtiVector.F + mbtiVector.Fi + mbtiVector.Fe)) - tolerance);
+            let conflictJ_P = Math.max(0, Math.min(mbtiVector.J, mbtiVector.P) - tolerance);
+            let penalty = (conflictT_F + conflictJ_P) * 1.5;
+
+            devLogText += `\nRaw Score (マ度): ${rawScore}/100\n`;
+            devLogText += `Cosine Similarity: ${(similarity * 100).toFixed(1)}%\n`;
+            devLogText += `Cognitive Dissonance (Penalty): -${penalty} (Tolerance:${tolerance})\n`;
+
+            // マ度を正確に算出するため、rawScore（純粋なマ要素の素点）をベースとする
+            let finalPercent = rawScore;
+            
+            if (rawScore === 100) {
+                finalPercent = 100;
+                devLogText += `\n>> [SYSTEM OVERRIDE] Perfect Route Detected. Locked to 100%.\n`;
+            } else if (rawScore >= 94) {
+                // 本人が1〜2問だけ違う選択肢を選んだ場合のゆらぎも99.9%に着地させる絶対調整
+                finalPercent = 99.9;
+                devLogText += `\n>>[SYSTEM OVERRIDE] Near Perfect Route Detected. Output: 99.9%.\n`;
+            } else {
+                // 一般の受診者は類似度やペナルティを少し加味してスコアを揺らす
+                finalPercent = (rawScore * 0.8) + (similarity * 20) - (penalty * 0.5);
+                finalPercent = Math.max(0, Math.min(99, finalPercent));
+            }
+
+            if (finalPercent !== 99.9) {
+                finalPercent = Math.round(finalPercent);
+            }
+
+            return { final: finalPercent, vector: mbtiVector, sim: Math.max(0, Math.min(1, similarity + 0.1)) }; 
+        }
+
+        function generateAdvancedProfileText(final, v) {
+            if (final >= 99) return "【完全同期確認】\nあなたは、今この瞬間の心地よさを五感で楽しむ力や、何にも縛られないマイペースさ、そして自分の実績や他者の気持ちも大切にする多面的な要素を完璧なバランスで併せ持っています。その矛盾のないしなやかで合理的な在り方こそが、真の『マ』の正体そのものです。";
+
+            let text = "あなたの深層心理を解析した結果、";
+            if (v.Fi > v.Fe && v.Fi > v.T) text += "自分の中に確固たる美学や心地よさの基準を持ち、それに従って生きる強さが見られます。";
+            else if (v.Fe >= v.Fi) text += "周囲との調和や、他者の感情を思いやる優しさが非常に強く出ています。";
+            else if (v.T > v.F && v.T > v.Fi) text += "感情に流されず、事実と論理に基づいて合理的・客観的に物事を判断する知性が際立っています。";
+
+            if (v.Se >= v.N) text += "また、五感を通じて今の現実を味わい尽くす適応力に優れています。";
+            else if (v.N > v.S && v.N > v.Se) text += "また、目に見えない意味や未来の可能性を想像する直感的な思考が働いています。";
+
+            if (v.J > v.P) text += "計画的で秩序を重んじる一面があり、";
+            else text += "型に縛られない柔軟な行動力があり、";
+
+            text += `マの持つ「自由でしなやかな要素」とは${final < 50 ? '大きく異なりますが' : '少し違いますが'}、あなたにはあなただけの素晴らしい強みとアイデンティティが証明されています。`;
+
+            return text;
         }
 
         function finalizeResultAndDisplay(skipAnim) {
-            const calc = calculateAdvancedScore(historyArr);
+            eraseCookie('ma_adv_system_v8');
+            // 最新のURL生成 (バージョンフラグ v: 8 を付与して過去バージョンと区別)
             const dataObj = { hist: historyArr, v: 8 };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj))));
-            
-            // URLを結果付きに更新（履歴に残す）
             try { window.history.replaceState(null, '', window.location.pathname + '?d=' + encoded); } catch(e){}
-            
-            processDisplay(skipAnim, calc);
+            processDisplay(skipAnim, dataObj);
         }
 
-        function calculateAdvancedScore(hist) {
-            let rawScore = 0; let mbtiVector = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
-            hist.forEach(h => {
-                rawScore += h.score || 0;
-                if(h.mbti) for (let key in h.mbti) mbtiVector[key] += h.mbti[key];
-            });
-            let final = Math.min(100, rawScore);
-            if (final >= 94 && final < 100) final = 99.9;
-            return { final, vector: mbtiVector, sim: 0.95 };
-        }
+        function processDisplay(skipAnim, loadedData = null) {
+            let final = 0;
+            let v = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
+            let sim = null;
 
-        function processDisplay(skipAnim, calc) {
-            const scoreEl = document.getElementById('result-score');
-            const final = calc.final;
-            
-            document.getElementById('result-desc').innerText = "あなたの深層心理を解析しました。";
-            document.getElementById('result-mbti').innerText = final >= 99 ? "ISFP-A" : "PROFILING...";
-            
+            // 過去の共有URLからのアクセスかどうかの判定 (互換性維持)
+            if (loadedData && (loadedData.s !== undefined || loadedData.tot !== undefined) && !loadedData.v) {
+                // 過去バージョン (vフラグがない、かつ旧スコアが入っている)
+                final = loadedData.s !== undefined ? loadedData.s : loadedData.tot;
+                if (loadedData.m) v = Object.assign(v, loadedData.m);
+                else if (loadedData.mbti) v = Object.assign(v, loadedData.mbti);
+                
+                if (final >= 96) final = 100; // 旧バージョンの100%補正
+                
+                devLogText = "--- Legacy Version Data Loaded ---\nSaved Score: " + final + "\nAlgorithm: Legacy\n";
+                if (historyArr && historyArr.length > 0) devLogText += "History data is present but using legacy score.";
+                else devLogText += "Detailed history not available.";
+            } else {
+                // 最新バージョンの計算
+                const calc = calculateAdvancedScore(historyArr);
+                final = calc.final; 
+                v = calc.vector;
+                sim = calc.sim;
+            }
+
             if (final >= 99) document.getElementById('cert-badge').classList.remove('hidden');
 
+            const i_e = v.I >= v.E ? "I" : "E"; const s_n = (v.S + v.Se) >= v.N ? "S" : "N";
+            const f_t = (v.F + v.Fi + v.Fe) >= v.T ? "F" : "T"; const p_j = v.P >= v.J ? "P" : "J";
+            document.getElementById('result-mbti').innerText = (final >= 99) ? "ISFP-A" : `${i_e}${s_n}${f_t}${p_j}`;
+            document.getElementById('sync-rate').innerText = sim !== null ? `Sync: ${(sim * 100).toFixed(1)}%` : `Sync: Legacy`;
+            document.getElementById('result-desc').innerText = generateAdvancedProfileText(final, v);
+            document.getElementById('adjustment-log').innerText = devLogText;
+
+            const tips =["自分の直感を信じ切ることが、最も論理的な解になることもあります。","時には効率を手放し、ただ「心地よさ」だけを追求してみてください。","面倒なことは後回しにしても、世界は意外とうまく回ります。","飾らないそのままのあなたが、一番の魅力です。"];
+            document.getElementById('result-advice').innerText = final >= 99 ? "何も変える必要はありません。そのままのあなたで存在し続けてください。" : tips[Math.floor(final) % tips.length];
+
+            let inner = Math.min(10, ((v.I + v.Fi) * 1.5) || 3); let real = Math.min(10, ((v.S + v.Se) * 1.5) || 3);
+            let empathy = Math.min(10, ((v.F + v.Fe + v.Fi) * 1.2) || 4); let flex = Math.min(10, (v.P * 1.5) || 3);
+            let stable = Math.min(10, (final / 10) + 1);
+            let avgData = final >= 99 ?[10, 10, 10, 10, 10] :[inner, real, empathy, flex, stable];
+
+            const scoreEl = document.getElementById('result-score');
+            const displayStr = final === 99.9 ? "99.9%" : `${final}%`;
+
             if (skipAnim) {
-                scoreEl.innerText = final === 99.9 ? "99.9%" : `${final}%`;
                 document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
-                renderCharts([8, 7, 9, 8, 8]);
+                scoreEl.innerText = displayStr; renderCharts(avgData);
             } else {
-                animateValue(scoreEl, 0, final, 2000, () => {
-                    document.querySelectorAll('.anim-ready').forEach(el => el.classList.add('anim-show'));
-                    renderCharts([8, 7, 9, 8, 8]);
+                sessionStorage.setItem('ma_anim_done', '1');
+                animateValue(scoreEl, 0, final, 4000, () => {
+                    const animBlocks =['anim-header', 'anim-badge', 'anim-chart', 'anim-text', 'anim-advice', 'anim-buttons', 'anim-reset']; let delay = 0;
+                    animBlocks.forEach((id, index) => {
+                        setTimeout(() => {
+                            const el = document.getElementById(id);
+                            if(el) { el.classList.add('anim-show'); if (id === 'anim-chart') renderCharts(avgData);
+                                if (index >= 2 && index < animBlocks.length) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                if (index === animBlocks.length - 1) setTimeout(() => document.getElementById('anim-header').scrollIntoView({ behavior: 'smooth', block: 'center' }), 2000);
+                            }
+                        }, delay); delay += 1000;
+                    });
                 });
             }
         }
 
         function animateValue(obj, start, end, duration, callback) {
-            let startTimestamp = null;
+            let startTimestamp = null; let triggered = false;
             const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const current = Math.floor(progress * (end - start) + start);
-                obj.innerText = `${current}%`;
+                if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor((1 - Math.pow(1 - progress, 4)) * (end - start) + start);
+                
                 if (progress < 1) {
+                    obj.innerText = `${current}%`;
                     window.requestAnimationFrame(step);
                 } else {
                     obj.innerText = end === 99.9 ? "99.9%" : `${end}%`;
-                    if (callback) callback();
+                    if (!triggered && callback) callback();
                 }
-            };
-            window.requestAnimationFrame(step);
+                
+                if (!triggered && current >= (end / 2)) { triggered = true; if(callback) callback(); }
+            }; window.requestAnimationFrame(step);
         }
 
         function renderCharts(dataArray) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx, {
+            if (window.radarChartInstance) window.radarChartInstance.destroy();
+            window.radarChartInstance = new Chart(ctx, {
                 type: 'radar',
-                data: {
-                    labels: ['内的世界', '適応力', '共鳴度', '柔軟性', '安定度'],
-                    datasets: [{ data: dataArray, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }]
-                },
-                options: { scales: { r: { min: 0, max: 10 } }, plugins: { legend: { display: false } } }
+                data: { labels:['内的世界の深さ', '現実への適応力', '感情の共鳴度', '思考の柔軟性', '精神的安定度'], datasets:[{ data: dataArray, backgroundColor: 'rgba(16, 185, 129, 0.15)', borderColor: '#10b981', borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#fff' }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.2)' }, pointLabels: { color: '#475569', font: { size: 10, weight: 'bold', family: 'Noto Sans JP' } }, angleLines: { color: 'rgba(255,255,255,0.2)' } } }, plugins: { legend: { display: false } } }
             });
         }
 
-        function shareLink() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(`私のマ度は【${document.getElementById('result-score').innerText}】でした！\n${url}`).then(() => alert("コピーしました"));
+        let touchCount = 0; let lastTouchTime = 0;
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 3) {
+                const now = new Date().getTime(); if (now - lastTouchTime < 1000) touchCount++; else touchCount = 1; lastTouchTime = now;
+                if (touchCount === 3) { toggleLogModal(); touchCount = 0; }
+            }
+        });
+        function toggleLogModal() { document.getElementById('log-modal').classList.toggle('show'); }
+
+        function downloadImage() {
+            html2canvas(document.getElementById('capture-area'), { backgroundColor: "#f2f7f4", scale: 2, logging: false, onclone: (cloned) => { const el = cloned.getElementById('capture-area'); el.classList.add('capture-flat-mode'); el.querySelectorAll('.anim-ready').forEach(node => { node.style.opacity = '1'; node.style.transform = 'none'; }); }
+            }).then(canvas => { const link = document.createElement('a'); link.download = 'マ診断_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
         }
 
-        function resetAndRestart() { location.href = window.location.pathname; }
+        function shareLink() {
+            const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
+            dummy.value = `私のマ度は【${document.getElementById('result-score').innerText}】でした！\n#マ診断\n${window.location.href}`;
+            dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy); alert("結果のリンクをコピーしました！");
+        }
 
-        // --- 修正の要：読み込み時の挙動 ---
+        function resetAndRestart() { eraseCookie('ma_adv_system_v8'); sessionStorage.removeItem('ma_anim_done'); location.href = window.location.pathname; }
+
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
-            const dataParam = params.get('d');
+            if (params.get('d')) {
+                const data = decodeUrlData(params.get('d'));
+                if (data) { 
+                    historyArr = data.hist ||[];
+document.getElementById('start-screen').classList.add('hidden');
+document.getElementById('result-screen').classList.remove('hidden');
+setTimeout(() => processDisplay(true, data), 300);
+}
+} else if (getCookie('ma_adv_system_v8')) {
+document.getElementById('resume-container').classList.remove('hidden');
+}
+};
+</script>
 
-            if (dataParam) {
-                // 結果URLの場合：スタート画面を隠し、結果画面を即表示
-                const data = decodeUrlData(dataParam);
-                if (data && data.hist) {
-                    historyArr = data.hist;
-                    document.getElementById('start-screen').classList.add('hidden');
-                    document.getElementById('result-screen').classList.remove('hidden');
-                    // 読み込み時はアニメーションをスキップして表示
-                    const calc = calculateAdvancedScore(historyArr);
-                    processDisplay(true, calc);
-                    return;
-                }
-            }
-            
-            // 通常アクセスの場合
-            if (getCookie('ma_adv_system_v8')) {
-                document.getElementById('resume-container').classList.remove('hidden');
-            }
-        };
-    </script>
 </body>
 </html>
