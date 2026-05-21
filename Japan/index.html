@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>県庁所在地学習</title>
   
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS (UIのレイアウト用) -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- 都道府県のアイコンマッピング用のCSS -->
+  <!-- 元のサイトのグローバルCSS (アイコンフォントの配置や初期設定用) -->
   <link rel="stylesheet" href="https://www.granfairs.com/_codetest/iconfont-for-map/assets/css/global.css">
 
   <style>
-    /* ローカルの map.ttf を読み込む */
+    /* ローカルの map.ttf を読み込む設定 */
     @font-face {
       font-family: 'map';
       src: url('./map.ttf') format('truetype');
@@ -26,22 +26,25 @@
       font-family: 'map' !important;
     }
 
-    .pref-base { 
-      transition: all 0.5s ease; 
-      opacity: 0.2; 
-      filter: grayscale(1); 
+    /* デフォルトの都道府県のスタイル（薄いグレー） */
+    .p-eveMap li {
+      transition: all 0.5s ease;
+      opacity: 0.2;
+      filter: grayscale(1);
     }
     
-    .pref-active { 
+    /* アクティブになった都道府県のスタイル（ハイライト） */
+    .p-eveMap li.is-open { 
       opacity: 1 !important; 
       filter: grayscale(0) drop-shadow(0 0 5px #f43f5e); 
       color: #f43f5e !important; 
       z-index: 10; 
       position: relative; 
     }
-    
-    .bg-gray { 
-      background-color: #f8fafc; 
+
+    /* 背景の線などは常に表示したい場合 */
+    .p-eveMap li.p-eveMapLine {
+      opacity: 0.5;
     }
 
     /* ヒント表示時のアニメーション */
@@ -72,19 +75,67 @@
   </header>
 
   <div class="flex flex-col md:flex-row flex-grow gap-8">
+    
     <!-- マップ表示エリア -->
-    <div class="w-full md:w-2/3 bg-gray rounded-3xl p-10 flex items-center justify-center shadow-inner overflow-hidden min-h-[400px]">
+    <div class="w-full md:w-2/3 bg-slate-50 rounded-3xl p-10 flex items-center justify-center shadow-inner overflow-hidden min-h-[400px]">
+      <!-- 提示いただいたHTML構造をそのまま使用 -->
       <div class="p-eveMap text-[120px] transition-transform duration-1000" style="transform: scale(2.5)">
-         <ul class="relative" id="map-container">
-           <li class="p-eveMapLine pref-base"></li>
-           <!-- ここにJSで各都道府県が追加されます -->
-         </ul>
+        <ul id="map-container">
+          <li class="p-eveMapLine"></li>
+          <li class="p-eveMapPref--hokkaido"></li>
+          <li class="p-eveMapPref--aomori"></li>
+          <li class="p-eveMapPref--iwate"></li>
+          <li class="p-eveMapPref--akita"></li>
+          <li class="p-eveMapPref--yamagata"></li>
+          <li class="p-eveMapPref--miyagi"></li>
+          <li class="p-eveMapPref--fukushima"></li>
+          <li class="p-eveMapPref--ibaraki"></li>
+          <li class="p-eveMapPref--tochigi"></li>
+          <li class="p-eveMapPref--gumma"></li>
+          <li class="p-eveMapPref--saitama"></li>
+          <li class="p-eveMapPref--chiba"></li>
+          <li class="p-eveMapPref--tokyo"></li>
+          <li class="p-eveMapPref--kanagawa"></li>
+          <li class="p-eveMapPref--yamanashi"></li>
+          <li class="p-eveMapPref--nagano"></li>
+          <li class="p-eveMapPref--niigata"></li>
+          <li class="p-eveMapPref--toyama"></li>
+          <li class="p-eveMapPref--ishikawa"></li>
+          <li class="p-eveMapPref--fukui"></li>
+          <li class="p-eveMapPref--shizuoka"></li>
+          <li class="p-eveMapPref--aichi"></li>
+          <li class="p-eveMapPref--gifu"></li>
+          <li class="p-eveMapPref--mie"></li>
+          <li class="p-eveMapPref--shiga"></li>
+          <li class="p-eveMapPref--kyoto"></li>
+          <li class="p-eveMapPref--osaka"></li>
+          <li class="p-eveMapPref--hyogo"></li>
+          <li class="p-eveMapPref--nara"></li>
+          <li class="p-eveMapPref--wakayama"></li>
+          <li class="p-eveMapPref--tottori"></li>
+          <li class="p-eveMapPref--shimane"></li>
+          <li class="p-eveMapPref--okayama"></li>
+          <li class="p-eveMapPref--hiroshima"></li>
+          <li class="p-eveMapPref--yamaguchi"></li>
+          <li class="p-eveMapPref--kagawa"></li>
+          <li class="p-eveMapPref--ehime"></li>
+          <li class="p-eveMapPref--tokushima"></li>
+          <li class="p-eveMapPref--kochi"></li>
+          <li class="p-eveMapPref--fukuoka"></li>
+          <li class="p-eveMapPref--saga"></li>
+          <li class="p-eveMapPref--nagasaki"></li>
+          <li class="p-eveMapPref--kumamoto"></li>
+          <li class="p-eveMapPref--oita"></li>
+          <li class="p-eveMapPref--miyazaki"></li>
+          <li class="p-eveMapPref--kagoshima"></li>
+          <li class="p-eveMapPref--okinawa"></li>
+        </ul>
       </div>
     </div>
 
     <!-- UI/コントロールエリア -->
     <div class="w-full md:w-1/3 flex flex-col gap-6">
-      <div class="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-sm relative h-full flex flex-col justify-center">
+      <div class="bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm relative h-full flex flex-col justify-center">
         
         <!-- タイマー -->
         <div id="timer-display" class="absolute top-8 right-8 text-5xl font-black transition-colors hidden text-slate-200">20</div>
@@ -195,7 +246,6 @@
     let timerInterval = null;
 
     // Elements
-    const mapContainer = document.getElementById('map-container');
     const screenReady = document.getElementById('screen-ready');
     const screenQuiz = document.getElementById('screen-quiz');
     const screenResult = document.getElementById('screen-result');
@@ -208,17 +258,10 @@
     const optionsContainer = document.getElementById('options-container');
     const scoreDisplay = document.getElementById('score-display');
     const modeButtons = document.querySelectorAll('.mode-btn');
+    const allPrefElements = document.querySelectorAll('.p-eveMap li');
 
     // 初期化処理
     function init() {
-      // 地図の各都道府県のリスト要素を生成
-      PREFECTURES.forEach(p => {
-        const li = document.createElement('li');
-        li.className = `p-eveMapPref--${p.id} pref-base`;
-        li.id = `pref-${p.id}`;
-        mapContainer.appendChild(li);
-      });
-
       // イベントリスナー登録
       document.getElementById('btn-start').addEventListener('click', startGame);
       document.getElementById('btn-restart').addEventListener('click', startGame);
@@ -283,9 +326,10 @@
 
       // UIのテキスト更新
       questionCountEl.textContent = questionCount;
-      if (quizMode === 'shape') {
+      if (quizMode === 'shape' || quizMode === 'place') {
         questionTextEl.textContent = 'この県の県庁所在地は？';
-      } else {
+      } 
+      if (quizMode === 'name') {
         questionTextEl.textContent = `${currentPref.name}の県庁所在地は？`;
       }
 
@@ -300,10 +344,11 @@
       });
 
       // マップのハイライト処理
-      document.querySelectorAll('.pref-active').forEach(el => el.classList.remove('pref-active'));
+      allPrefElements.forEach(el => el.classList.remove('is-open')); // html側の作りに合わせてis-openクラスを付け外しします
+
       if (quizMode === 'shape' || quizMode === 'place') {
-        const targetEl = document.getElementById(`pref-${currentPref.id}`);
-        if (targetEl) targetEl.classList.add('pref-active');
+        const targetEl = document.querySelector(`.p-eveMapPref--${currentPref.id}`);
+        if (targetEl) targetEl.classList.add('is-open');
       }
 
       // ヒントとタイマーのリセット
@@ -367,6 +412,9 @@
       screenResult.classList.remove('hidden');
       
       scoreDisplay.textContent = score;
+      
+      // マップのハイライトをすべて消す
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
       updateModeButtons();
     }
 
