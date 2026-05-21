@@ -34,17 +34,17 @@
 
     /* クイズ中の非アクティブな都道府県（薄いグレー） */
     .is-quiz .p-eveMap li:not(.is-open):not(.p-eveMapLine) {
-      opacity: 0.2;
+      opacity: 0.25;
       filter: grayscale(1);
     }
     
-    /* アクティブ（出題中）になった都道府県のスタイル（ハイライト） */
+    /* アクティブ（出題中）になった都道府県のスタイル（元の色を活かしてハイライト） */
     .p-eveMap li.is-open { 
       opacity: 1 !important; 
-      filter: grayscale(0) drop-shadow(0 0 5px #f43f5e); 
-      color: #f43f5e !important; /* 目立つ赤色を付与 */
+      filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 0, 0, 0.4)); 
       z-index: 10; 
       position: relative; 
+      transform: scale(1.02); /* 少しだけ浮かせる効果 */
     }
 
     /* ヒント表示時のアニメーション */
@@ -258,6 +258,7 @@
     const optionsContainer = document.getElementById('options-container');
     const scoreDisplay = document.getElementById('score-display');
     const modeButtons = document.querySelectorAll('.mode-btn');
+    const allPrefElements = document.querySelectorAll('.p-eveMap li');
 
     // 初期化処理
     function init() {
@@ -346,7 +347,7 @@
       });
 
       // マップのハイライト処理
-      document.querySelectorAll('.p-eveMap li').forEach(el => el.classList.remove('is-open'));
+      allPrefElements.forEach(el => el.classList.remove('is-open')); 
 
       if (quizMode === 'shape' || quizMode === 'place') {
         const targetEl = document.querySelector(`.p-eveMapPref--${currentPref.id}`);
@@ -417,7 +418,7 @@
       
       // is-quizクラスを外してフルカラーに戻し、ハイライトも消す
       mapContainer.classList.remove('is-quiz');
-      document.querySelectorAll('.p-eveMap li').forEach(el => el.classList.remove('is-open'));
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
       updateModeButtons();
     }
 
