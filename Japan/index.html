@@ -4,36 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#f9f9f9">
+  <meta name="theme-color" content="#f8fafc">
   <title>日本地理学習アプリ</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- くすみカラーのカスタム設定 -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            base: '#f9f9f9',      /* 全体背景 */
-            surface: '#ffffff',   /* パネル背景 */
-            text: '#555555',      /* 基本テキスト */
-            subtext: '#999999',   /* 補助テキスト */
-            border: '#eaeaea',    /* 基本ボーダー */
-            /* くすみカラーパレット */
-            sage: { 50: '#f4f6f5', 100: '#eef1ef', 400: '#a3b5aa', 500: '#8ba394', 600: '#6d8576' },
-            dustyblue: { 50: '#f4f7f9', 100: '#edf2f6', 400: '#94abc0', 500: '#7a96a9', 600: '#5c788c' },
-            dustyrose: { 50: '#fbf6f7', 100: '#f7eff0', 400: '#cca0a6', 500: '#b87c84', 600: '#9b5f67' },
-            dustyyellow: { 50: '#fdfbf6', 100: '#f8f5eb', 400: '#d5c093', 500: '#c5a86d', 600: '#a88c54' },
-            dustypurple: { 50: '#f8f6f9', 100: '#f3eff5', 400: '#aba0b5', 500: '#8c7d9a', 600: '#726280' }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- 元のサイトのグローバルCSS (これがないとアイコンが割り当てられません) -->
+  <!-- 元のサイトのグローバルCSS -->
   <link rel="stylesheet" href="https://www.granfairs.com/_codetest/iconfont-for-map/assets/css/global.css">
 
   <style>
@@ -56,21 +33,21 @@
       font-weight: normal; font-style: normal; font-display: block;
     }
 
-    /* ガビガビ対策: 描画ベースを1200pxの高解像度にする */
+    /* ガビガビ対策: ベースを2000pxの超高解像度にする */
     #map-transform {
-      width: 1200px; height: 1200px; position: absolute; top: 0; left: 0;
+      width: 2000px; height: 2000px; position: absolute; top: 0; left: 0;
       transform-origin: 0 0; 
       transition: transform 0.7s cubic-bezier(0.34, 1.15, 0.64, 1); 
-      /* ※will-change を外すことで、ブラウザに都度再描画(高画質化)させます */
+      will-change: transform;
     }
     #map-transform ul { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; }
 
     /* 都道府県フォントを強制適用 */
     #map-transform li, #map-transform li::before {
       font-family: 'map' !important;
-      font-size: 1200px !important; /* 解像度アップ */
+      font-size: 2000px !important;
       line-height: 1 !important;
-      transition: color 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
+      transition: color 0.4s ease, opacity 0.4s ease;
       position: absolute !important; top: 0 !important; left: 0 !important;
       width: 100% !important; height: 100% !important;
       margin: 0 !important; padding: 0 !important;
@@ -79,33 +56,29 @@
 
     /* 境界線 (白抜き) */
     #map-transform li.p-eveMapLine, #map-transform li.p-eveMapLine::before {
-      color: #ffffff !important; z-index: 1; pointer-events: none; opacity: 0.9 !important;
+      color: #ffffff !important; z-index: 1; pointer-events: none; opacity: 0.8 !important;
     }
 
     /* ================= マップのモード別カラー ================= */
     
     /* 【1】 通常モード */
-    .mode-normal li:not(.p-eveMapLine) { color: #e6e6e6 !important; opacity: 1 !important; }
-    .mode-normal li.is-open { 
-      color: #6d8576 !important; /* sage-600 */
-      z-index: 10; 
-      filter: none !important; /* 光彩(ドロップシャドウ)を消し、フラットに */
-    }
+    #map-container.mode-normal li:not(.p-eveMapLine) { color: #e2e8f0 !important; opacity: 1 !important; }
+    #map-container.mode-normal li.is-open { color: #10b981 !important; z-index: 10; filter: drop-shadow(0px 2px 8px rgba(16,185,129,0.3)) !important; }
     
     /* 【2】 シルエットモード */
-    .mode-silhouette li:not(.p-eveMapLine) { 
-      color: #e6e6e6 !important; 
-      opacity: 0.3 !important; /* 問題以外の県をうっすら表示 */
+    #map-container.mode-silhouette li:not(.p-eveMapLine) { 
+      color: #cbd5e1 !important; 
+      opacity: 0.25 !important; 
     } 
-    .mode-silhouette li.p-eveMapLine {
+    #map-container.mode-silhouette li.p-eveMapLine {
       opacity: 0.15 !important;
     }
-    .mode-silhouette li.is-open,
-    .mode-silhouette li.is-open::before { 
-      color: #7a96a9 !important; /* dustyblue-500 */
+    #map-container.mode-silhouette li.is-open,
+    #map-container.mode-silhouette li.is-open::before { 
+      color: #1e293b !important; 
       opacity: 1 !important; 
       z-index: 10; 
-      filter: none !important;
+      filter: drop-shadow(0px 4px 12px rgba(0,0,0,0.25)) !important;
     }
 
     /* アニメーション */
@@ -116,18 +89,18 @@
   </style>
 </head>
 
-<!-- Tailwindの動的クラスを確実に読み込ませるためのセーフリスト -->
-<div class="hidden text-sage-500 text-dustyblue-500 text-dustyyellow-500 text-dustyrose-500 text-dustypurple-500 text-text text-subtext bg-sage-50 bg-dustyblue-50 bg-dustyyellow-50 bg-dustyrose-50 bg-dustypurple-50 bg-surface bg-base bg-sage-100 bg-dustyblue-100 bg-dustyyellow-100 bg-dustyrose-100 bg-dustypurple-100 bg-sage-500 bg-dustyblue-500 bg-dustyyellow-500 bg-dustyrose-500 bg-dustypurple-500 bg-text border-sage-100 border-dustyblue-100 border-dustyyellow-100 border-dustyrose-100 border-dustypurple-100 hover:bg-sage-50 hover:bg-dustyblue-50 hover:bg-dustyyellow-50 hover:bg-dustyrose-50 hover:bg-dustypurple-50 hover:text-sage-600 hover:text-dustyblue-600 hover:text-dustyyellow-600 hover:text-dustyrose-600 hover:text-dustypurple-600 hover:text-text hover:border-sage-400 hover:border-dustyblue-400 hover:border-dustyyellow-400 hover:border-dustyrose-400 hover:border-dustypurple-400 text-sage-600 text-dustyblue-600 text-dustyyellow-600 text-dustyrose-600 text-dustypurple-600 bg-sage-600 bg-dustyblue-600 bg-dustyyellow-600"></div>
+<!-- Tailwindの動的クラスを確実に読み込ませるための隠し要素 -->
+<div class="hidden bg-emerald-500 bg-amber-500 bg-orange-500 bg-rose-500 bg-indigo-500 text-emerald-500 text-amber-500 text-orange-500 text-rose-500 text-indigo-500 text-slate-100 text-rose-100"></div>
 
-<body class="bg-base text-text h-[100dvh] overflow-hidden flex flex-col p-3 gap-3 md:p-6 md:gap-4 selection:bg-sage-100">
+<body class="bg-slate-50 text-slate-800 h-[100dvh] overflow-hidden flex flex-col p-3 gap-3 md:p-6 md:gap-4 selection:bg-emerald-200">
 
   <!-- ヘッダー -->
-  <header class="flex justify-between items-center px-2 py-1 shrink-0">
-    <div class="flex items-center gap-2 text-sage-600 font-bold text-lg tracking-tight">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+  <header class="flex justify-between items-center px-3 py-1 shrink-0">
+    <div class="flex items-center gap-2 text-emerald-500 font-black text-xl tracking-tight">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       GEO LEARNING
     </div>
-    <button id="btn-back" class="hidden bg-surface border border-border hover:bg-sage-50 text-subtext font-bold px-4 py-2 rounded-full text-xs transition-transform active:scale-95">
+    <button id="btn-back" class="hidden bg-white shadow-sm border-2 border-slate-100 hover:bg-slate-50 text-slate-500 font-bold px-4 py-2 rounded-2xl text-xs transition-transform active:scale-95">
       トップに戻る
     </button>
   </header>
@@ -136,10 +109,8 @@
   <div class="flex flex-col lg:flex-row flex-grow gap-3 md:gap-4 overflow-hidden min-h-0 max-w-6xl mx-auto w-full">
     
     <!-- ================= マップエリア (左側) ================= -->
-    <div class="w-full lg:w-1/2 h-[32vh] lg:h-full bg-surface rounded-[2rem] border border-border relative overflow-hidden shrink-0 flex items-center justify-center shadow-sm" id="map-wrapper">
-      
-      <!-- ★ここに「p-eveMap」クラスを付与し、global.cssが確実に当たるように修正しました -->
-      <div id="map-transform" class="p-eveMap">
+    <div class="w-full lg:w-1/2 h-[35vh] lg:h-full bg-white rounded-[2rem] border-2 border-slate-100 relative overflow-hidden shrink-0 shadow-sm flex items-center justify-center" id="map-wrapper">
+      <div id="map-transform">
         <ul id="map-container" class="mode-normal">
           <li class="p-eveMapLine"></li>
           <li class="p-eveMapPref--hokkaido"></li><li class="p-eveMapPref--aomori"></li><li class="p-eveMapPref--iwate"></li>
@@ -160,149 +131,138 @@
           <li class="p-eveMapPref--kagoshima"></li><li class="p-eveMapPref--okinawa"></li>
         </ul>
       </div>
-
       <!-- ロード中 -->
-      <div id="loading-cover" class="absolute inset-0 bg-surface z-50 flex flex-col items-center justify-center transition-opacity duration-500">
-        <svg class="animate-spin text-sage-400 mb-4" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      <div id="loading-cover" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <svg class="animate-spin text-emerald-500 mb-4" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <p class="text-[11px] font-bold text-slate-400 tracking-widest">MAP LOADING...</p>
       </div>
     </div>
 
     <!-- ================= コンテンツエリア (右側) ================= -->
-    <div class="w-full lg:w-1/2 flex-1 bg-surface rounded-[2rem] relative overflow-hidden flex flex-col border border-border shadow-sm">
+    <div class="w-full lg:w-1/2 flex-1 bg-white rounded-[2rem] shadow-sm relative overflow-hidden flex flex-col border-2 border-slate-100">
       
-      <!-- 【1】 トップメニュー (横スクロールスワイプ) -->
-      <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden bg-surface">
+      <!-- 【1】 トップメニュー (スワイプ対応) -->
+      <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden bg-slate-50/50">
         
         <!-- カルーセル本体 -->
         <div id="top-carousel" class="flex-grow flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full scroll-smooth">
           
           <!-- ページ1: 1人で学ぶ・遊ぶ -->
-          <div class="w-full h-full shrink-0 snap-center p-5 md:p-6 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
-            <h2 class="text-xl font-black text-text mb-4 text-center mt-2">1人で学ぶ・遊ぶ</h2>
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
+            <h2 class="text-xl font-black text-slate-800 mb-2 text-center mt-2">1人で学ぶ・遊ぶ</h2>
             
             <div class="grid grid-cols-2 gap-3 pb-8">
               <!-- 学習辞書 -->
-              <button onclick="switchView('study')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-sage-400">
-                <div class="bg-sage-50 text-sage-500 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">学習辞書</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">県の特徴を学ぶ</span>
+              <button onclick="switchView('study')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-emerald-300 shadow-sm">
+                <div class="bg-emerald-100 text-emerald-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
+                <span class="font-black text-sm text-slate-800">学習辞書</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">県の特徴を学ぶ</span>
               </button>
               
-              <!-- 総合テスト -->
-              <button onclick="switchView('test-config')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-dustyblue-400">
-                <div class="bg-dustyblue-50 text-dustyblue-500 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">総合テスト</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">様々な形式で出題</span>
+              <!-- テスト -->
+              <button onclick="switchView('test-config')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-blue-300 shadow-sm">
+                <div class="bg-blue-100 text-blue-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
+                <span class="font-black text-sm text-slate-800">テスト</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">様々な形式で出題</span>
               </button>
               
-              <!-- シルエットクイズ -->
-              <button onclick="switchView('sil-config')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-sage-400">
-                <div class="bg-sage-50 text-sage-500 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">シルエット</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">形だけで当てる</span>
+              <!-- シルエット -->
+              <button onclick="switchView('sil-config')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-amber-300 shadow-sm">
+                <div class="bg-amber-100 text-amber-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+                <span class="font-black text-sm text-slate-800">シルエット</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">形だけで当てる</span>
               </button>
               
               <!-- ご当地クイズ -->
-              <button onclick="startQuiz('local', 'name')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-dustyyellow-400">
-                <div class="bg-dustyyellow-50 text-dustyyellow-600 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a5 5 0 1 0 5 5c0 2.2-2 3-2 3v2H9v-2s-2-.8-2-3a5 5 0 1 0 5-5Z"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">ご当地クイズ</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">名物や観光地から</span>
+              <button onclick="startQuiz('local', 'name')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-orange-300 shadow-sm">
+                <div class="bg-orange-100 text-orange-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a5 5 0 1 0 5 5c0 2.2-2 3-2 3v2H9v-2s-2-.8-2-3a5 5 0 1 0 5-5Z"/></svg></div>
+                <span class="font-black text-sm text-slate-800">ご当地クイズ</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">名物や観光地から</span>
               </button>
 
               <!-- 旧国名クイズ -->
-              <button onclick="startQuiz('oldprov', 'name')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-dustyblue-400">
-                <div class="bg-dustyblue-50 text-dustyblue-600 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">旧国名クイズ</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">昔の国名から推理</span>
+              <button onclick="startQuiz('oldprov', 'name')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-indigo-300 shadow-sm">
+                <div class="bg-indigo-100 text-indigo-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+                <span class="font-black text-sm text-slate-800">旧国名クイズ</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">昔の国名から推理</span>
               </button>
 
               <!-- 難読地名クイズ -->
-              <button onclick="startQuiz('hardread', 'name')" class="flex flex-col items-center p-4 bg-base rounded-[1.5rem] active:scale-95 transition-transform border border-border hover:border-dustyrose-400">
-                <div class="bg-dustyrose-50 text-dustyrose-600 p-4 rounded-2xl mb-2 shrink-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                </div>
-                <span class="font-black text-sm text-text">難読地名クイズ</span>
-                <span class="text-[10px] font-bold text-subtext mt-1 text-center">読めない地名はどこ</span>
+              <button onclick="startQuiz('hardread', 'name')" class="flex flex-col items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-rose-300 shadow-sm">
+                <div class="bg-rose-100 text-rose-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
+                <span class="font-black text-sm text-slate-800">難読地名クイズ</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-1">読めない地名はどこ</span>
               </button>
             </div>
           </div>
 
           <!-- ページ2: みんなで遊ぶ -->
-          <div class="w-full h-full shrink-0 snap-center p-5 md:p-6 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
-            <h2 class="text-xl font-black text-text mb-4 text-center mt-2">みんなで遊ぶ (マルチプレイ)</h2>
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
+            <h2 class="text-xl font-black text-slate-800 mb-4 text-center mt-2">みんなで遊ぶ (マルチプレイ)</h2>
             
-            <button onclick="switchPartyConfig('ww')" class="flex items-center p-5 bg-base border border-border rounded-3xl active:scale-95 transition-transform text-left hover:border-dustypurple-400">
-              <div class="bg-dustypurple-50 text-dustypurple-600 p-4 rounded-2xl mr-4 shrink-0">
+            <button onclick="switchPartyConfig('ww')" class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-purple-300 shadow-sm">
+              <div class="bg-purple-100 text-purple-500 p-4 rounded-2xl mr-4 shrink-0">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div>
-                <div class="font-black text-base text-text">地理ワードウルフ</div>
-                <div class="text-[10px] font-bold text-subtext mt-1">1人だけ違う県を配られた人を探せ！</div>
+                <div class="font-black text-base text-slate-800">地理ワードウルフ</div>
+                <div class="text-[10px] font-bold text-slate-400 mt-1">1人だけ違う県を配られた人を探せ！</div>
               </div>
             </button>
 
-            <button onclick="switchPartyConfig('ng')" class="flex items-center p-5 bg-base border border-border rounded-3xl active:scale-95 transition-transform text-left hover:border-dustyrose-400">
-              <div class="bg-dustyrose-50 text-dustyrose-600 p-4 rounded-2xl mr-4 shrink-0">
+            <button onclick="switchPartyConfig('ng')" class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-rose-300 shadow-sm">
+              <div class="bg-rose-100 text-rose-500 p-4 rounded-2xl mr-4 shrink-0">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>
               </div>
               <div>
-                <div class="font-black text-base text-text">地理NGワード</div>
-                <div class="text-[10px] font-bold text-subtext mt-1">自分のNGワードを言わずに県を語れ！</div>
+                <div class="font-black text-base text-slate-800">地理NGワード</div>
+                <div class="text-[10px] font-bold text-slate-400 mt-1">自分のNGワードを言わずに県を語れ！</div>
               </div>
             </button>
           </div>
+          
         </div>
 
         <!-- ページネーション (ドット) -->
-        <div class="absolute bottom-0 left-0 w-full flex justify-center gap-3 p-4 bg-gradient-to-t from-surface via-surface to-transparent pointer-events-none z-10">
-          <div id="dot-0" class="w-2.5 h-2.5 rounded-full bg-sage-500 transition-colors"></div>
-          <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-border transition-colors"></div>
+        <div class="absolute bottom-0 left-0 w-full flex justify-center gap-3 p-4 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent pointer-events-none z-10">
+          <div id="dot-0" class="w-2.5 h-2.5 rounded-full bg-emerald-500 transition-colors"></div>
+          <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors"></div>
         </div>
       </div>
 
       <!-- 【2】 学習モード -->
-      <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-surface">
+      <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-white">
         <!-- 詳細表示シート -->
-        <div id="study-detail" class="absolute bottom-0 left-0 w-full bg-surface border-t border-border rounded-t-[2.5rem] p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] transition-transform duration-400 transform translate-y-full z-20 flex flex-col max-h-[85%]">
+        <div id="study-detail" class="absolute bottom-0 left-0 w-full bg-emerald-500 text-white rounded-t-[2.5rem] p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] transition-transform duration-400 transform translate-y-full z-20 flex flex-col max-h-[85%]">
           <div class="flex justify-between items-start mb-2 shrink-0">
-            <div class="bg-sage-50 text-sage-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest" id="study-region"></div>
-            <button onclick="closeStudyDetail()" class="text-subtext hover:bg-base p-2 rounded-full active:scale-90 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            <div class="bg-emerald-700/50 px-3 py-1 rounded-full text-[10px] font-black tracking-widest" id="study-region"></div>
+            <button onclick="closeStudyDetail()" class="bg-emerald-700/50 p-2 rounded-full active:scale-90 transition-transform"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
           </div>
-          <div class="text-2xl font-bold mb-1 shrink-0 text-text" id="study-name"></div>
-          <div class="text-xs font-bold text-subtext mb-4 shrink-0">県庁所在地: <span id="study-capital" class="text-text"></span></div>
+          <div class="text-3xl font-black mb-1 shrink-0" id="study-name"></div>
+          <div class="text-xs font-bold text-emerald-100 mb-4 shrink-0">県庁所在地: <span id="study-capital" class="text-white"></span></div>
           
           <div class="overflow-y-auto no-scrollbar pb-6 flex flex-col gap-2">
-            <div class="bg-base border border-border p-4 rounded-3xl">
-              <div class="text-sage-600 text-[10px] font-bold mb-1">名物・ご当地グルメ</div>
-              <div class="font-bold text-sm leading-snug text-text" id="study-food"></div>
+            <div class="bg-white/10 p-4 rounded-3xl">
+              <div class="text-emerald-200 text-[10px] font-bold mb-1">名物・ご当地グルメ</div>
+              <div class="font-bold text-sm leading-snug" id="study-food"></div>
             </div>
-            <div class="bg-base border border-border p-4 rounded-3xl">
-              <div class="text-sage-600 text-[10px] font-bold mb-1">観光地・名所</div>
-              <div class="font-bold text-sm leading-snug text-text" id="study-tourism"></div>
+            <div class="bg-white/10 p-4 rounded-3xl">
+              <div class="text-emerald-200 text-[10px] font-bold mb-1">観光地・名所</div>
+              <div class="font-bold text-sm leading-snug" id="study-tourism"></div>
             </div>
-            <div class="flex gap-2">
-              <div class="bg-base border border-border p-4 rounded-3xl flex-1">
-                <div class="text-sage-600 text-[10px] font-bold mb-1">旧国名</div>
-                <div class="font-bold text-sm leading-snug text-text" id="study-oldprov"></div>
+            <div class="bg-white/10 p-4 rounded-3xl flex justify-between">
+              <div>
+                <div class="text-emerald-200 text-[10px] font-bold mb-1">旧国名</div>
+                <div class="font-bold text-sm leading-snug" id="study-oldprov"></div>
               </div>
-              <div class="bg-base border border-border p-4 rounded-3xl flex-1 text-right">
-                <div class="text-sage-600 text-[10px] font-bold mb-1">難読地名</div>
-                <div class="font-bold text-sm leading-snug text-text" id="study-hardread"></div>
+              <div class="text-right">
+                <div class="text-emerald-200 text-[10px] font-bold mb-1">難読地名</div>
+                <div class="font-bold text-sm leading-snug" id="study-hardread"></div>
               </div>
             </div>
-            <div class="bg-base border border-border p-4 rounded-3xl">
-              <div class="text-sage-600 text-[10px] font-bold mb-1">豆知識</div>
-              <div class="font-medium text-xs leading-relaxed text-text" id="study-trivia"></div>
+            <div class="bg-white/10 p-4 rounded-3xl">
+              <div class="text-emerald-200 text-[10px] font-bold mb-1">豆知識</div>
+              <div class="font-bold text-xs leading-relaxed" id="study-trivia"></div>
             </div>
           </div>
         </div>
@@ -311,87 +271,83 @@
       </div>
 
       <!-- 【3】 テスト設定 -->
-      <div id="view-test-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-bold mb-6 text-text text-center mt-2">テストの設定</h2>
-        <div class="flex flex-col gap-2 mb-auto">
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
-            <input type="radio" name="test-format" value="map2name" class="w-5 h-5 accent-dustyblue-500" checked>
-            <span class="ml-3 font-bold text-text text-sm">マップ位置 → 都道府県名</span>
+      <div id="view-test-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar">
+        <h2 class="text-xl font-black mb-6 text-slate-800 text-center">テストの設定</h2>
+        <div class="flex flex-col gap-3 mb-auto">
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="map2name" class="w-5 h-5 accent-emerald-500" checked>
+            <span class="ml-3 font-bold text-slate-700 text-sm">マップ位置 → 都道府県名</span>
           </label>
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
-            <input type="radio" name="test-format" value="map2capital" class="w-5 h-5 accent-dustyblue-500">
-            <span class="ml-3 font-bold text-text text-sm">マップ位置 → 県庁所在地</span>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="map2capital" class="w-5 h-5 accent-emerald-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">マップ位置 → 県庁所在地</span>
           </label>
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
-            <input type="radio" name="test-format" value="name2capital" class="w-5 h-5 accent-dustyblue-500">
-            <span class="ml-3 font-bold text-text text-sm">都道府県名 → 県庁所在地</span>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="name2capital" class="w-5 h-5 accent-emerald-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 県庁所在地</span>
           </label>
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
-            <input type="radio" name="test-format" value="capital2name" class="w-5 h-5 accent-dustyblue-500">
-            <span class="ml-3 font-bold text-text text-sm">県庁所在地 → 都道府県名</span>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="capital2name" class="w-5 h-5 accent-emerald-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">県庁所在地 → 都道府県名</span>
           </label>
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
-            <input type="radio" name="test-format" value="name2region" class="w-5 h-5 accent-dustyblue-500">
-            <span class="ml-3 font-bold text-text text-sm">都道府県名 → 地方名</span>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="name2region" class="w-5 h-5 accent-emerald-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 地方名</span>
           </label>
         </div>
-        <button onclick="startQuiz('test')" class="w-full py-4 mt-6 bg-text text-surface rounded-2xl font-bold text-sm active:scale-95 transition-transform shrink-0">テスト開始 (全47問)</button>
+        <button onclick="startQuiz('test')" class="w-full py-4 mt-6 bg-emerald-500 text-white rounded-2xl font-black text-lg active:scale-95 transition-transform shrink-0 shadow-sm">テスト開始 (全47問)</button>
       </div>
 
       <!-- 【3.5】 シルエット設定 -->
-      <div id="view-sil-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-bold mb-6 text-text text-center mt-2">シルエットクイズの設定</h2>
-        <div class="flex flex-col gap-2 mb-auto">
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-sage-400 transition-colors active:scale-95">
-            <input type="radio" name="sil-format" value="map2name" class="w-5 h-5 accent-sage-500" checked>
-            <span class="ml-3 font-bold text-text text-sm">シルエット → 都道府県名</span>
+      <div id="view-sil-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar">
+        <h2 class="text-xl font-black mb-6 text-slate-800 text-center">シルエットクイズの設定</h2>
+        <div class="flex flex-col gap-3 mb-auto">
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-amber-50 transition-colors active:scale-95">
+            <input type="radio" name="sil-format" value="map2name" class="w-5 h-5 accent-amber-500" checked>
+            <span class="ml-3 font-bold text-slate-700 text-sm">シルエット → 都道府県名</span>
           </label>
-          <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-sage-400 transition-colors active:scale-95">
-            <input type="radio" name="sil-format" value="map2capital" class="w-5 h-5 accent-sage-500">
-            <span class="ml-3 font-bold text-text text-sm">シルエット → 県庁所在地</span>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-amber-50 transition-colors active:scale-95">
+            <input type="radio" name="sil-format" value="map2capital" class="w-5 h-5 accent-amber-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">シルエット → 県庁所在地</span>
           </label>
         </div>
-        <div class="p-4 bg-sage-50 rounded-2xl mb-6 text-[11px] text-sage-600 font-medium leading-relaxed shrink-0 text-center border border-sage-100">
+        <div class="p-4 bg-slate-50 rounded-2xl mb-6 text-xs text-slate-500 font-bold leading-relaxed shrink-0 text-center border-2 border-slate-100">
           対象の都道府県は濃い色で表示されます。<br>周りの県もうっすら見えるので、<br>位置関係もヒントにして当てましょう！
         </div>
-        <button onclick="startQuiz('sil')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-bold text-sm active:scale-95 transition-transform shrink-0">クイズ開始 (全47問)</button>
+        <button onclick="startQuiz('sil')" class="w-full py-4 mt-auto bg-amber-500 text-white rounded-2xl font-black text-lg active:scale-95 transition-transform shrink-0 shadow-sm">クイズ開始 (全47問)</button>
       </div>
 
-      <!-- 【4】 クイズプレイ画面 (全共通) -->
-      <div id="view-quiz-play" class="app-view hidden absolute inset-0 flex flex-col p-5 md:p-6 overflow-hidden bg-surface">
+      <!-- 【4】 クイズプレイ画面 (テスト/シルエット/ご当地/旧国名/難読共通) -->
+      <div id="view-quiz-play" class="app-view hidden absolute inset-0 flex flex-col p-5 md:p-6 overflow-hidden bg-white">
         
         <!-- プログレスバー -->
-        <div class="flex justify-between items-center mb-5 shrink-0 gap-4">
-          <div class="w-full bg-base border border-border rounded-full h-2 overflow-hidden">
+        <div class="flex justify-between items-center mb-4 shrink-0 gap-4">
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
             <div id="quiz-progress" class="h-full rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
           </div>
-          <div class="text-lg font-bold text-subtext whitespace-nowrap">
-            <span id="quiz-q-count" class="text-text">1</span><span class="text-xs">/</span><span id="quiz-total-count" class="text-xs">47</span>
+          <div class="text-xl font-black text-slate-300 whitespace-nowrap">
+            <span id="quiz-q-count" class="text-slate-800 text-2xl">1</span><span class="text-sm">/</span><span id="quiz-total-count" class="text-sm">47</span>
           </div>
         </div>
 
         <div class="relative z-10 flex-grow flex flex-col h-full">
-          <p id="quiz-header-mode" class="text-[10px] font-bold tracking-widest mb-2"></p>
+          <p id="quiz-header-mode" class="text-[11px] font-black tracking-widest mb-1"></p>
           
-          <p id="quiz-question-text" class="text-xl font-bold mb-4 text-text shrink-0 min-h-[4rem] leading-snug"></p>
+          <!-- タイマープログレスバー -->
+          <div class="w-full bg-slate-100 rounded-full h-1.5 mb-4 shrink-0 overflow-hidden">
+            <div id="quiz-timer-bar" class="h-full rounded-full w-full"></div>
+          </div>
+
+          <p id="quiz-question-text" class="text-xl lg:text-2xl font-black mb-4 text-slate-800 shrink-0 min-h-[4rem] leading-snug"></p>
           
-          <div id="quiz-hint" class="mb-4 p-4 hidden bg-base rounded-2xl shrink-0 animate-fade-in border border-border">
-            <p id="quiz-hint-label" class="font-bold text-[11px] flex items-center mb-1">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div id="quiz-hint" class="mb-4 p-4 hidden bg-slate-50 rounded-2xl shrink-0 animate-fade-in border-2 border-slate-100">
+            <p id="quiz-hint-label" class="font-bold text-xs flex items-center mb-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               ヒント
             </p>
-            <p id="quiz-hint-text" class="text-sm font-bold text-text ml-5"></p>
+            <p id="quiz-hint-text" class="text-sm font-bold text-slate-700 ml-5"></p>
           </div>
           <div id="quiz-hint-space" class="mb-4 h-[60px] shrink-0"></div>
-
-          <!-- タイマーサークル -->
-          <div class="absolute right-0 top-16 w-14 h-14 flex items-center justify-center pointer-events-none opacity-30 z-0">
-            <svg class="transform -rotate-90 w-full h-full">
-              <circle cx="28" cy="28" r="24" stroke="currentColor" stroke-width="4" fill="transparent" class="text-border" />
-              <circle id="timer-circle" cx="28" cy="28" r="24" stroke="currentColor" stroke-width="4" fill="transparent" class="transition-all duration-1000 ease-linear" stroke-dasharray="150.7" stroke-dashoffset="0" />
-            </svg>
-            <span id="test-timer-text" class="absolute text-lg font-bold text-text">15</span>
-          </div>
 
           <div id="quiz-options" class="grid grid-cols-1 gap-2 mt-auto pb-2 shrink-0">
             <!-- 選択肢 -->
@@ -400,58 +356,58 @@
       </div>
 
       <!-- 【5】 クイズ 結果画面 -->
-      <div id="view-quiz-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center overflow-y-auto no-scrollbar bg-surface">
+      <div id="view-quiz-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center overflow-y-auto no-scrollbar">
         <div class="my-auto w-full">
-          <div class="w-16 h-16 bg-base rounded-full flex items-center justify-center mx-auto mb-4 border border-border" id="result-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sage-500"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-slate-100" id="result-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
           </div>
-          <p class="text-subtext font-bold mb-1 tracking-widest text-[10px]" id="result-label">SCORE</p>
-          <div class="text-6xl font-bold text-text mb-2">
-            <span id="result-score">0</span><span id="result-max" class="text-2xl text-subtext">/47</span>
+          <p class="text-slate-400 font-bold mb-1 tracking-widest text-xs" id="result-label">SCORE</p>
+          <div class="text-7xl font-black text-slate-800 mb-2">
+            <span id="result-score">0</span><span id="result-max" class="text-3xl text-slate-300">/47</span>
           </div>
-          <p class="text-subtext font-medium mb-8 text-xs">お疲れ様でした！</p>
+          <p class="text-slate-500 font-bold mb-8 text-xs">お疲れ様でした！</p>
           
-          <div class="flex flex-col gap-2 mb-6">
-            <button id="btn-review-mistakes" onclick="showReviewMistakes()" class="w-full py-3 bg-surface border border-sage-500 text-sage-600 rounded-2xl font-bold active:scale-95 transition-transform text-sm hidden">間違えた問題を復習する</button>
-            <button id="btn-retry-mistakes" onclick="startRetry()" class="w-full py-3 text-surface rounded-2xl font-bold active:scale-95 transition-transform text-sm hidden bg-text">間違えた問題だけやり直す</button>
+          <div class="flex flex-col gap-3 mb-6">
+            <button id="btn-review-mistakes" onclick="showReviewMistakes()" class="w-full py-4 bg-white border-2 border-slate-200 text-slate-600 rounded-2xl font-black active:scale-95 transition-transform text-sm hidden shadow-sm">間違えた問題を復習する</button>
+            <button id="btn-retry-mistakes" onclick="startRetry()" class="w-full py-4 text-white rounded-2xl font-black active:scale-95 transition-transform text-sm hidden shadow-sm">間違えた問題だけやり直す</button>
           </div>
 
-          <button onclick="switchView('top')" class="w-full py-4 bg-base border border-border text-text rounded-2xl font-bold active:scale-95 transition-transform text-sm mt-auto">トップに戻る</button>
+          <button onclick="switchView('top')" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black active:scale-95 transition-transform text-base shadow-sm mt-auto">トップに戻る</button>
         </div>
       </div>
 
       <!-- 【追加】 復習画面 -->
-      <div id="view-review-mistakes" class="app-view hidden absolute inset-0 p-5 overflow-y-auto flex flex-col bg-surface no-scrollbar">
-        <h2 class="text-lg font-bold mb-2 text-text text-center">間違えた問題の復習</h2>
-        <p class="text-[10px] font-medium text-subtext mb-6 text-center">タップして詳細を確認しましょう</p>
-        <div id="review-list-container" class="grid grid-cols-2 gap-2 mb-6 overflow-y-auto no-scrollbar flex-grow"></div>
-        <button onclick="switchView('quiz-result')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-bold text-sm active:scale-95 transition-transform shrink-0">結果画面に戻る</button>
+      <div id="view-review-mistakes" class="app-view hidden absolute inset-0 p-5 overflow-y-auto flex flex-col bg-slate-50 no-scrollbar">
+        <h2 class="text-xl font-black mb-2 text-slate-800 text-center">間違えた問題の復習</h2>
+        <p class="text-xs font-bold text-slate-500 mb-6 text-center">タップして詳細を確認しましょう</p>
+        <div id="review-list-container" class="grid grid-cols-2 gap-3 mb-6 overflow-y-auto no-scrollbar flex-grow"></div>
+        <button onclick="switchView('quiz-result')" class="w-full py-4 mt-auto bg-slate-800 text-white rounded-2xl font-black text-base active:scale-95 transition-transform shrink-0 shadow-sm">結果画面に戻る</button>
       </div>
 
       <!-- 【6】 パーティーゲーム共通設定 -->
-      <div id="view-party-config" class="app-view hidden absolute inset-0 p-5 md:p-6 overflow-y-auto flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-bold mb-6 text-text text-center flex justify-center items-center mt-2">
+      <div id="view-party-config" class="app-view hidden absolute inset-0 p-5 md:p-6 overflow-y-auto flex flex-col no-scrollbar">
+        <h2 class="text-lg font-black mb-6 text-slate-800 text-center flex justify-center items-center">
           <span id="party-icon" class="mr-2"></span>
           <span id="party-title"></span>
         </h2>
         
-        <div class="flex flex-col gap-3 mb-6">
-          <div class="bg-base p-4 rounded-2xl flex justify-between items-center border border-border">
-            <label class="text-sm font-bold text-text">プレイヤー人数</label>
-            <select id="party-player-count" class="bg-surface border border-border rounded-xl font-bold text-text p-2 text-right outline-none">
+        <div class="flex flex-col gap-4 mb-6">
+          <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center border-2 border-slate-100">
+            <label class="text-sm font-bold text-slate-600">プレイヤー人数</label>
+            <select id="party-player-count" class="bg-white border-none rounded-xl font-black text-slate-800 p-2 text-right outline-none">
               <option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option>
               <option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>
             </select>
           </div>
-          <div id="party-wolf-count-wrap" class="bg-base p-4 rounded-2xl flex justify-between items-center border border-border">
-            <label class="text-sm font-bold text-text">ウルフの数</label>
-            <select id="party-wolf-count" class="bg-surface border border-border rounded-xl font-bold text-text p-2 text-right outline-none">
+          <div id="party-wolf-count-wrap" class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center border-2 border-slate-100">
+            <label class="text-sm font-bold text-slate-600">ウルフの数</label>
+            <select id="party-wolf-count" class="bg-white border-none rounded-xl font-black text-slate-800 p-2 text-right outline-none">
               <option value="1" selected>1人</option><option value="2">2人</option>
             </select>
           </div>
-          <div id="party-topic-wrap" class="bg-base p-4 rounded-2xl flex flex-col gap-2 border border-border">
-            <label class="text-sm font-bold text-text">お題のジャンル</label>
-            <select id="party-topic-genre" class="bg-surface border border-border rounded-xl font-bold text-text p-3 outline-none w-full text-center">
+          <div id="party-topic-wrap" class="bg-slate-50 p-4 rounded-3xl flex flex-col gap-2 border-2 border-slate-100">
+            <label class="text-sm font-bold text-slate-600">お題のジャンル</label>
+            <select id="party-topic-genre" class="bg-white border-none rounded-xl font-black text-slate-800 p-3 outline-none w-full text-center">
               <option value="name" selected>都道府県名 (例: 北海道)</option>
               <option value="capital">県庁所在地 (例: 札幌市)</option>
               <option value="food">名物・特産 (例: ジンギスカン)</option>
@@ -459,86 +415,86 @@
             </select>
           </div>
         </div>
-        <div id="party-rule-text" class="p-4 bg-sage-50 rounded-2xl mb-6 text-[11px] text-sage-600 font-medium leading-relaxed shrink-0 border border-sage-100"></div>
-        <button onclick="goToPartyNames()" class="w-full py-4 bg-text text-surface rounded-2xl font-bold text-sm active:scale-95 transition-transform mt-auto shrink-0">次へ (名前入力)</button>
+        <div id="party-rule-text" class="p-4 bg-slate-50 rounded-2xl mb-6 text-[11px] text-slate-600 font-bold leading-relaxed shrink-0 border-2 border-slate-100"></div>
+        <button onclick="goToPartyNames()" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black text-lg active:scale-95 transition-transform mt-auto shrink-0 shadow-sm">次へ (名前入力)</button>
       </div>
 
       <!-- 【7】 パーティー 名前入力 -->
-      <div id="view-party-names" class="app-view hidden absolute inset-0 p-5 md:p-6 overflow-y-auto flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-bold mb-1 text-text text-center mt-2">参加者の名前</h2>
-        <p class="text-[10px] font-medium text-subtext mb-6 text-center">ゲームに参加する人の名前を入力</p>
-        <div id="party-names-container" class="flex flex-col gap-2 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
-        <button onclick="startPartyGame()" class="w-full py-4 mt-2 bg-text text-surface rounded-2xl font-bold text-sm active:scale-95 transition-transform shrink-0">ゲームスタート</button>
+      <div id="view-party-names" class="app-view hidden absolute inset-0 p-5 md:p-6 overflow-y-auto flex flex-col no-scrollbar">
+        <h2 class="text-xl font-black mb-1 text-slate-800 text-center">参加者の名前</h2>
+        <p class="text-[10px] font-bold text-slate-400 mb-6 text-center">ゲームに参加する人の名前を入力</p>
+        <div id="party-names-container" class="flex flex-col gap-3 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
+        <button onclick="startPartyGame()" class="w-full py-4 mt-2 bg-slate-800 text-white rounded-2xl font-black text-lg shadow-sm active:scale-95 transition-transform shrink-0">ゲームスタート</button>
       </div>
 
       <!-- 【8】 パーティー お題確認 -->
-      <div id="view-party-check" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center bg-surface">
-        <h2 class="text-xl font-bold mb-1 text-text"><span id="party-player-name" class="text-dustypurple-500"></span> さんの番</h2>
-        <p class="text-subtext font-medium mb-8 text-[11px]">周りに見られないように確認してください</p>
+      <div id="view-party-check" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center">
+        <h2 class="text-2xl font-black mb-1 text-slate-800"><span id="party-player-name" class="text-purple-500"></span> さんの番</h2>
+        <p class="text-slate-400 font-bold mb-8 text-xs">周りに見られないように確認してください</p>
         
         <div class="relative w-full mb-8 flex-grow flex flex-col justify-center">
-          <button id="btn-party-show" class="w-full py-16 bg-dustypurple-500 text-surface text-base font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-dustypurple-600">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <button id="btn-party-show" class="w-full py-16 bg-slate-800 text-white text-lg font-black rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             長押しして確認する
           </button>
           
           <!-- 長押し中表示 -->
-          <div id="party-word-layer" class="absolute inset-0 bg-base border-2 border-dustypurple-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar">
-            <p class="text-[10px] text-dustypurple-500 font-bold mb-1 shrink-0 mt-2" id="party-word-label">あなたのお題</p>
-            <p class="text-2xl font-bold text-text mb-6 shrink-0" id="party-word-text"></p>
+          <div id="party-word-layer" class="absolute inset-0 bg-slate-50 border-4 border-slate-300 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm">
+            <p class="text-[10px] text-slate-500 font-bold mb-1 shrink-0 mt-2" id="party-word-label">あなたのお題</p>
+            <p class="text-3xl font-black text-slate-800 mb-6 shrink-0" id="party-word-text"></p>
             
-            <div class="text-left bg-surface p-4 rounded-2xl text-text text-[10px] w-full mb-2 shrink-0 border border-border shadow-sm">
-              <p class="font-bold text-center mb-3 text-text border-b border-border pb-2 flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-dustyyellow-500"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                参考データ：<span id="party-word-pref-name" class="text-sm ml-1"></span>
+            <div class="text-left bg-white p-4 rounded-2xl text-slate-700 text-[10px] w-full mb-2 shrink-0 shadow-sm border border-slate-100">
+              <p class="font-black text-center mb-3 text-slate-800 border-b-2 border-slate-50 pb-2 flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                参考データ：<span id="party-word-pref-name" class="text-base ml-1"></span>
               </p>
-              <div class="mb-1.5"><span class="font-bold text-subtext">県庁所在地:</span> <span id="party-word-capital" class="font-bold"></span></div>
-              <div class="mb-1.5"><span class="font-bold text-subtext">名物・特産:</span> <span id="party-word-food" class="font-bold"></span></div>
-              <div class="mb-1.5"><span class="font-bold text-subtext">観光地・名所:</span> <span id="party-word-tourism" class="font-bold"></span></div>
-              <div><span class="font-bold text-subtext">豆知識:</span> <br><span id="party-word-trivia" class="leading-relaxed font-bold"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">県庁所在地:</span> <span id="party-word-capital" class="font-bold"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">名物・特産:</span> <span id="party-word-food" class="font-bold"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">観光地・名所:</span> <span id="party-word-tourism" class="font-bold"></span></div>
+              <div><span class="font-bold text-slate-400">豆知識:</span> <br><span id="party-word-trivia" class="leading-relaxed font-bold"></span></div>
             </div>
-            <p class="text-[9px] font-medium text-subtext mt-auto shrink-0 flex items-center justify-center pt-2">マップの位置も光っています</p>
+            <p class="text-[10px] font-bold text-slate-400 mt-auto shrink-0 flex items-center justify-center pt-2">マップの位置も光っています</p>
           </div>
         </div>
-        <button id="btn-party-next" onclick="nextPartyPlayer()" class="w-full py-4 bg-base border border-border text-subtext font-bold rounded-2xl opacity-0 pointer-events-none transition-opacity shrink-0 active:scale-95 text-sm">確認完了（次の人へ）</button>
+        <button id="btn-party-next" onclick="nextPartyPlayer()" class="w-full py-4 bg-slate-200 text-slate-600 font-bold rounded-2xl opacity-0 pointer-events-none transition-opacity shrink-0 active:scale-95">確認完了（次の人へ）</button>
       </div>
 
       <!-- 【9】 パーティー 議論 -->
-      <div id="view-party-discuss" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center overflow-y-auto no-scrollbar bg-surface">
-        <h2 class="text-lg font-bold mb-1 text-text shrink-0">議論タイム</h2>
-        <p class="text-[11px] font-medium mb-4 text-subtext shrink-0" id="party-discuss-desc"></p>
+      <div id="view-party-discuss" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center overflow-y-auto no-scrollbar">
+        <h2 class="text-lg font-black mb-1 text-slate-800 shrink-0">議論タイム</h2>
+        <p class="text-xs font-bold mb-4 text-slate-400 shrink-0" id="party-discuss-desc"></p>
         
-        <div id="party-timer" class="text-6xl font-bold mb-6 text-dustypurple-500 tabular-nums tracking-tighter shrink-0">3:00</div>
+        <div id="party-timer" class="text-7xl font-black mb-6 text-slate-800 tabular-nums tracking-tighter shrink-0">3:00</div>
         
-        <div class="w-full bg-base border border-border p-4 rounded-3xl mb-auto shrink-0 relative flex flex-col items-center">
-          <p class="text-[10px] font-bold text-dustypurple-500 mb-2 flex items-center justify-center tracking-widest shrink-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <div class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-3xl mb-auto shrink-0 relative flex flex-col items-center">
+          <p class="text-[10px] font-bold text-slate-400 mb-2 flex items-center justify-center tracking-widest shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             話題ヒント
           </p>
           <div id="party-question-container" class="flex-grow flex flex-col items-center justify-center mb-4 w-full"></div>
-          <button onclick="changeWWQuestion()" class="text-[10px] font-bold bg-surface border border-border px-4 py-2 rounded-xl text-subtext active:scale-95 transition-transform shrink-0 shadow-sm">別の質問にする</button>
+          <button onclick="changeWWQuestion()" class="text-[10px] font-bold bg-white shadow-sm border border-slate-200 px-4 py-2 rounded-xl text-slate-500 active:scale-95 transition-transform shrink-0">別の質問にする</button>
         </div>
         
-        <button onclick="endPartyDiscuss()" class="w-full py-4 mt-4 bg-text text-surface font-bold rounded-2xl active:scale-95 transition-transform shrink-0 text-sm">議論終了</button>
+        <button onclick="endPartyDiscuss()" class="w-full py-4 mt-4 bg-slate-800 text-white font-black rounded-2xl active:scale-95 transition-transform shrink-0 text-lg shadow-sm">議論終了</button>
       </div>
 
       <!-- 【10】 パーティー 投票 (WWのみ) -->
-      <div id="view-party-vote" class="app-view hidden absolute inset-0 p-5 flex flex-col overflow-y-auto no-scrollbar bg-surface">
-        <h2 class="text-base font-bold mb-1 text-text text-center shrink-0" id="party-vote-title"></h2>
-        <p class="text-[10px] font-medium text-subtext mb-6 text-center shrink-0">ウルフだと思う人を1人選んでください</p>
+      <div id="view-party-vote" class="app-view hidden absolute inset-0 p-5 flex flex-col overflow-y-auto no-scrollbar">
+        <h2 class="text-base font-black mb-1 text-slate-800 text-center shrink-0" id="party-vote-title"></h2>
+        <p class="text-xs font-bold text-slate-400 mb-6 text-center shrink-0">ウルフだと疑わしい人を1人選んでください</p>
         <div id="party-vote-container" class="flex flex-col gap-2 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
-        <button id="btn-party-vote-next" class="w-full py-4 bg-text text-surface rounded-2xl font-bold mt-auto opacity-50 pointer-events-none transition-opacity shrink-0 text-sm">投票する</button>
+        <button id="btn-party-vote-next" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black mt-auto opacity-50 pointer-events-none transition-opacity shrink-0 text-lg shadow-sm">投票する</button>
       </div>
 
       <!-- 【11】 パーティー 結果 -->
-      <div id="view-party-result" class="app-view hidden absolute inset-0 p-5 flex flex-col text-center overflow-y-auto no-scrollbar bg-surface">
-        <h2 class="text-xl font-bold mb-4 text-text mt-2 shrink-0">結果発表</h2>
-        <div id="party-win-message" class="text-lg font-bold text-text mb-4 shrink-0"></div>
-        <div class="bg-base rounded-3xl p-4 border border-border mb-4 shrink-0">
-          <p class="text-[10px] font-bold text-subtext mb-3 tracking-widest" id="party-result-label"></p>
-          <ul id="party-result-list" class="flex flex-col gap-2 text-left"></ul>
+      <div id="view-party-result" class="app-view hidden absolute inset-0 p-5 flex flex-col text-center overflow-y-auto no-scrollbar">
+        <h2 class="text-2xl font-black mb-4 text-slate-800 mt-2 shrink-0">結果発表</h2>
+        <div id="party-win-message" class="text-xl font-black text-slate-800 mb-4 shrink-0"></div>
+        <div class="bg-slate-50 rounded-3xl p-4 border-2 border-slate-100 mb-4 shrink-0">
+          <p class="text-[10px] font-bold text-slate-400 mb-4 tracking-widest" id="party-result-label"></p>
+          <ul id="party-result-list" class="flex flex-col gap-3 text-left"></ul>
         </div>
-        <button onclick="switchView('top')" class="w-full py-4 bg-text text-surface font-bold rounded-2xl active:scale-95 transition-transform mt-auto shrink-0 text-sm shadow-sm">トップに戻る</button>
+        <button onclick="switchView('top')" class="w-full py-4 bg-slate-800 text-white font-black rounded-2xl active:scale-95 transition-transform mt-auto shrink-0 text-lg shadow-sm">トップに戻る</button>
       </div>
 
     </div>
@@ -664,9 +620,9 @@
         const page = Math.round(carousel.scrollLeft / carousel.clientWidth);
         dots.forEach((dot, index) => {
           if (index === page) {
-            dot.className = "w-2.5 h-2.5 rounded-full bg-sage-500 transition-colors";
+            dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 transition-colors";
           } else {
-            dot.className = "w-2.5 h-2.5 rounded-full bg-border transition-colors";
+            dot.className = "w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors";
           }
         });
       });
@@ -726,14 +682,10 @@
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       
       PREFECTURES.forEach(p => {
-        // `p-eveMapPref--xxx` のクラスを持つ要素を作ってcontentを取得する
-        const dummy = document.createElement('div');
-        dummy.className = `p-eveMapPref--${p.id} p-eveMap`;
-        document.body.appendChild(dummy);
-        let content = window.getComputedStyle(dummy, '::before').content;
-        document.body.removeChild(dummy);
-
-        if (content && content !== 'none' && content !== 'normal') {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (!el) return;
+        let content = window.getComputedStyle(el, '::before').content;
+        if (content && content !== 'none') {
           content = content.replace(/^["']|["']$/g, '');
           if (content.length > 1 && content.startsWith('\\')) {
             content = String.fromCharCode(parseInt(content.substring(1), 16));
@@ -745,7 +697,6 @@
           
           const imgData = ctx.getImageData(0, 0, size, size).data;
           let minX = size, minY = size, maxX = 0, maxY = 0, found = false;
-          // ピクセル間引きで高速化
           for (let y = 0; y < size; y+=8) {
             for (let x = 0; x < size; x+=8) {
               if (imgData[(y * size + x) * 4 + 3] > 10) { 
@@ -762,8 +713,6 @@
           } else {
             prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
           }
-        } else {
-           prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
         }
       });
     }
@@ -801,7 +750,7 @@
 
       REGIONS.forEach(region => {
         const title = document.createElement('div');
-        title.className = "text-[11px] font-bold text-sage-600 mt-5 mb-2 pl-3 border-l-4 border-sage-500 rounded-full";
+        title.className = "text-[11px] font-black text-slate-400 mt-5 mb-2 pl-3 border-l-4 border-emerald-500 rounded-full";
         title.textContent = region;
         container.appendChild(title);
 
@@ -810,17 +759,16 @@
 
         PREFECTURES.filter(p => p.region === region).forEach(p => {
           const btn = document.createElement('button');
-          btn.className = "bg-base border border-border py-3 rounded-2xl text-sm font-bold text-text hover:bg-sage-50 hover:border-sage-400 hover:text-sage-600 transition-colors shadow-sm active:scale-95";
+          btn.className = "bg-white border-2 border-slate-100 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-sm active:scale-95";
           btn.textContent = p.name;
-          btn.onclick = () => showStudyDetail(p, 'study');
+          btn.onclick = () => showStudyDetail(p);
           grid.appendChild(btn);
         });
         container.appendChild(grid);
       });
     }
 
-    function showStudyDetail(pref, backView = 'study') {
-      currentDetailBackView = backView;
+    function showStudyDetail(pref) {
       highlightMap(pref.id, 'normal', true);
       document.getElementById('study-region').textContent = pref.region;
       document.getElementById('study-name').textContent = pref.name;
@@ -890,75 +838,75 @@
       
       let qText = '', correctAns = '', hint = p.region + '地方';
       let optType = 'name'; 
-      let colorClass = 'sage';
+      let colorClass = 'emerald';
       let headerText = 'TEST MODE';
 
       if (qState.mode === 'test') {
-        headerText = "総合テスト";
-        colorClass = 'dustyblue';
+        headerText = "TEST MODE";
+        colorClass = 'blue';
         if (qState.format === 'map2name') {
-          qText = 'この<span class="text-dustyblue-600">都道府県名</span>は？';
+          qText = 'この<span class="text-blue-500">都道府県名</span>は？';
           correctAns = p.name; optType = 'name';
           highlightMap(p.id, 'normal', true);
         } else if (qState.format === 'map2capital') {
-          qText = 'この県の<span class="text-dustyblue-600">県庁所在地</span>は？';
+          qText = 'この県の<span class="text-blue-500">県庁所在地</span>は？';
           correctAns = p.capital; optType = 'capital';
           highlightMap(p.id, 'normal', true);
         } else if (qState.format === 'name2capital') {
-          qText = `${p.name}の<span class="text-dustyblue-600">県庁所在地</span>は？`;
+          qText = `${p.name}の<span class="text-blue-500">県庁所在地</span>は？`;
           correctAns = p.capital; optType = 'capital';
           highlightMap(null, 'normal', false);
         } else if (qState.format === 'capital2name') {
-          qText = `県庁所在地が「${p.capital}」の<span class="text-dustyblue-600">都道府県名</span>は？`;
+          qText = `県庁所在地が「${p.capital}」の<span class="text-blue-500">都道府県名</span>は？`;
           correctAns = p.name; optType = 'name';
           highlightMap(null, 'normal', false);
         } else if (qState.format === 'name2region') {
-          qText = `${p.name}は何<span class="text-dustyblue-600">地方</span>？`;
+          qText = `${p.name}は何<span class="text-blue-500">地方</span>？`;
           correctAns = p.region; optType = 'region';
           hint = "名物: " + p.food.split('・')[0]; 
           highlightMap(null, 'normal', false);
         }
 
       } else if (qState.mode === 'sil') {
-        headerText = "シルエットクイズ";
-        colorClass = 'sage';
+        headerText = "SILHOUETTE QUIZ";
+        colorClass = 'amber';
         highlightMap(p.id, 'silhouette', true); // ★シルエット描画（周りが薄く見える）
         if (qState.format === 'map2capital') {
-          qText = 'この<span class="text-sage-600">都道府県</span>の<span class="text-sage-600">県庁所在地</span>は？';
+          qText = 'この<span class="text-amber-500">都道府県</span>の<span class="text-amber-500">県庁所在地</span>は？';
           correctAns = p.capital; optType = 'capital';
         } else {
-          qText = 'この<span class="text-sage-600">都道府県</span>は？';
+          qText = 'この<span class="text-amber-500">都道府県</span>は？';
           correctAns = p.name; optType = 'name';
         }
 
       } else if (qState.mode === 'local') {
         headerText = "ご当地クイズ";
-        colorClass = 'dustyyellow';
+        colorClass = 'orange';
         highlightMap(null, 'normal', false);
         const isFood = Math.random() > 0.5;
         const topicText = isFood ? p.food.split('・')[0] : p.tourism.split('・')[0];
         const typeLabel = isFood ? '名物・特産' : '観光地・名所';
-        qText = `<span class="text-[12px] font-bold text-dustyyellow-600 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-dustyyellow-600">都道府県</span>は？`;
+        qText = `<span class="text-[12px] font-bold text-orange-500 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-orange-500">都道府県</span>は？`;
         correctAns = p.name; optType = 'name';
 
       } else if (qState.mode === 'oldprov') {
         headerText = "旧国名クイズ";
-        colorClass = 'dustyblue';
+        colorClass = 'indigo';
         highlightMap(null, 'normal', false);
-        qText = `<span class="text-[12px] font-bold text-dustyblue-600 block mb-1">【令制国】</span>「${p.oldProv}」があった<span class="text-dustyblue-600">都道府県</span>は？`;
+        qText = `<span class="text-[12px] font-bold text-indigo-500 block mb-1">【令制国】</span>「${p.oldProv}」があった<span class="text-indigo-500">都道府県</span>は？`;
         correctAns = p.name; optType = 'name';
 
       } else if (qState.mode === 'hardread') {
         headerText = "難読地名クイズ";
-        colorClass = 'dustyrose';
+        colorClass = 'rose';
         highlightMap(null, 'normal', false);
-        qText = `<span class="text-[12px] font-bold text-dustyrose-600 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-dustyrose-600">都道府県</span>は？`;
+        qText = `<span class="text-[12px] font-bold text-rose-500 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-rose-500">都道府県</span>は？`;
         correctAns = p.name; optType = 'name';
       }
 
       const hMode = document.getElementById('quiz-header-mode');
-      hMode.className = `text-[11px] font-bold text-${colorClass}-600 tracking-widest mb-1`;
-      if(qState.mistakes.length > 0 && qState.remaining.length + qState.mistakes.length < qState.totalQ) {
+      hMode.className = `text-[11px] font-black text-${colorClass}-500 tracking-widest mb-1`;
+      if(qState.mistakes.length > 0 && qState.remaining.length + qState.mistakes.length < 47) {
         hMode.textContent = headerText + " (復習)";
       } else {
         hMode.textContent = headerText;
@@ -986,8 +934,8 @@
       container.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = `py-4 px-4 bg-base border border-border rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors text-text shadow-sm active:scale-95 flex items-center justify-between group`;
-        btn.innerHTML = `<span>${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.className = `py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:text-${colorClass}-600 hover:bg-${colorClass}-50 transition-colors text-slate-700 shadow-sm active:scale-95 flex items-center justify-between`;
+        btn.innerHTML = `<span>${opt}</span><span class="text-slate-300">❯</span>`;
         btn.onclick = () => checkAnswer(opt, correctAns);
         container.appendChild(btn);
       });
@@ -1007,37 +955,30 @@
           document.getElementById('quiz-hint').classList.remove('hidden');
           document.getElementById('quiz-hint-space').classList.add('hidden');
           const hintBox = document.getElementById('quiz-hint');
-          hintBox.className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border border-${colorClass}-100`;
-          hintBox.querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-600`;
+          hintBox.className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border-2 border-${colorClass}-100`;
+          hintBox.querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-500`;
         }
         if (qState.timer <= 0) checkAnswer(null, null); 
       }, 1000);
     }
 
     function updateQuizTimerUI(colorClass) {
-      const circle = document.getElementById('timer-circle');
-      const text = document.getElementById('test-timer-text');
+      const timerBar = document.getElementById('quiz-timer-bar');
       
       if(qState.timer === 15) {
-        circle.style.transition = 'none';
-        circle.style.strokeDashoffset = '0';
-        requestAnimationFrame(() => requestAnimationFrame(() => circle.style.transition = 'stroke-dashoffset 1s linear, stroke 0.3s ease'));
+        timerBar.style.transition = 'none';
+        timerBar.style.width = '100%';
+        void timerBar.offsetWidth; 
+        timerBar.style.transition = 'width 1s linear, background-color 0.3s ease';
+      } else {
+        const progress = (qState.timer / 15) * 100;
+        timerBar.style.width = `${progress}%`;
       }
 
-      text.textContent = qState.timer;
-      const progress = qState.timer / 15;
-      circle.style.strokeDashoffset = 150.7 * (1 - progress);
-      
-      circle.classList.remove('text-sage-600','text-dustyblue-600','text-dustyyellow-600','text-dustyrose-600','text-dustypurple-600','text-rose-500');
-
       if (qState.timer <= 5) {
-        circle.classList.add('text-dustyrose-600');
-        text.classList.add('text-dustyrose-600');
-        text.classList.remove('text-text');
+        timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear bg-rose-500`;
       } else {
-        circle.classList.add(`text-${colorClass}-600`);
-        text.classList.add('text-text');
-        text.classList.remove('text-dustyrose-600');
+        timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear bg-${colorClass}-500`;
       }
 
       const progBar = document.getElementById('quiz-progress');
@@ -1081,9 +1022,9 @@
       
       qState.mistakes.forEach(p => {
         const btn = document.createElement('button');
-        btn.className = "bg-base border border-border py-4 rounded-2xl text-sm font-bold text-text hover:bg-sage-50 hover:border-sage-400 transition-colors shadow-sm active:scale-95";
+        btn.className = "bg-white border-2 border-slate-100 py-4 rounded-2xl text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-sm active:scale-95";
         btn.textContent = p.name;
-        btn.onclick = () => showStudyDetail(p, 'review-mistakes');
+        btn.onclick = () => showStudyDetail(p);
         container.appendChild(btn);
       });
 
@@ -1097,13 +1038,13 @@
     function switchPartyConfig(type) {
       partyState.gameType = type;
       if (type === 'ww') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-purple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
         document.getElementById('party-title').textContent = "地理ワードウルフ";
         document.getElementById('party-wolf-count-wrap').classList.remove('hidden');
         document.getElementById('party-topic-wrap').classList.remove('hidden');
         document.getElementById('party-rule-text').innerHTML = "全員に「お題」が配られます。一人だけ違うお題（同地方の別県のもの）を配られたウルフを探し出してください！";
       } else {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
+        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-rose-500"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
         document.getElementById('party-title').textContent = "地理NGワード";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
@@ -1129,7 +1070,7 @@
       for(let i=0; i<pc; i++){
         const input = document.createElement('input');
         input.type = 'text';
-        input.className = "w-full p-4 bg-base border border-border rounded-2xl font-bold text-text focus:outline-none focus:border-dustypurple-400 focus:bg-surface transition-colors party-name-input shrink-0";
+        input.className = "w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-colors party-name-input shrink-0";
         input.placeholder = `プレイヤー ${i+1}`;
         container.appendChild(input);
       }
@@ -1186,31 +1127,31 @@
     function setupPartyCheckUI() {
       const player = partyState.players[partyState.currentIdx];
       
-      const themeColor = partyState.gameType === 'ww' ? 'dustypurple' : 'dustyrose';
+      const themeColor = partyState.gameType === 'ww' ? 'purple' : 'rose';
       document.getElementById('party-player-name').textContent = player.name;
-      document.getElementById('party-player-name').className = `text-${themeColor}-600 text-2xl`;
+      document.getElementById('party-player-name').className = `text-${themeColor}-500 text-2xl`;
       
       const btnShow = document.getElementById('btn-party-show');
-      btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
+      btnShow.className = `w-full py-16 bg-${themeColor}-500 text-white text-lg font-black rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm`;
 
       const layer = document.getElementById('party-word-layer');
-      layer.className = `absolute inset-0 bg-base border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
+      layer.className = `absolute inset-0 bg-slate-50 border-4 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
 
       if (partyState.gameType === 'ww') {
         document.getElementById('party-word-label').textContent = "あなたのお題";
         document.getElementById('party-word-text').textContent = player.topic;
-        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-6 shrink-0`;
+        document.getElementById('party-word-text').className = "text-3xl font-black text-purple-600 mb-6 shrink-0";
         const existingSub = document.getElementById('ng-sub-label');
         if(existingSub) existingSub.remove();
       } else {
         document.getElementById('party-word-label').textContent = "あなたのNGワード";
         document.getElementById('party-word-text').textContent = player.ngWord;
-        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-2 shrink-0`;
+        document.getElementById('party-word-text').className = "text-3xl font-black text-rose-500 mb-2 shrink-0";
         const existingSub = document.getElementById('ng-sub-label');
         if(existingSub) existingSub.remove();
         const sub = document.createElement('div');
         sub.id = "ng-sub-label";
-        sub.className = "text-sm font-bold text-subtext mb-4";
+        sub.className = "text-sm font-bold text-slate-500 mb-4";
         sub.textContent = `(お題: ${player.pref.name})`;
         document.getElementById('party-word-text').after(sub);
       }
@@ -1265,11 +1206,9 @@
       
       const desc = document.getElementById('party-discuss-desc');
       if(partyState.gameType === 'ng') {
-        desc.innerHTML = `NGワードを言わないように<br><span class="text-dustyrose-600 text-base mt-1 inline-block">「${partyState.players[0].pref.name}」</span><br>について語りましょう`;
-        document.getElementById('party-timer').className = "text-6xl font-bold mb-6 text-dustyrose-500 tabular-nums tracking-tighter shrink-0";
+        desc.innerHTML = `NGワードを言わないように<br><span class="text-rose-500 text-base mt-1 inline-block">「${partyState.players[0].pref.name}」</span><br>について語りましょう`;
       } else {
         desc.textContent = "誰が違うお題を持っているか探り合いましょう";
-        document.getElementById('party-timer').className = "text-6xl font-bold mb-6 text-dustypurple-500 tabular-nums tracking-tighter shrink-0";
       }
 
       clearInterval(partyState.interval);
@@ -1293,8 +1232,8 @@
       
       const container = document.getElementById('party-question-container');
       container.innerHTML = `
-        <p class="text-sm font-bold text-text leading-snug mb-3 w-full">「${q.q}」</p>
-        <p class="text-[10px] font-bold text-subtext bg-surface border border-border px-3 py-2 rounded-xl text-left leading-relaxed w-full shadow-sm">
+        <p class="text-sm font-black text-slate-800 leading-snug mb-3 w-full">「${q.q}」</p>
+        <p class="text-[10px] font-bold text-purple-600 bg-purple-50 border border-purple-100 px-3 py-2 rounded-xl text-left leading-relaxed w-full shadow-sm">
           ${q.hint}
         </p>
       `;
@@ -1328,11 +1267,11 @@
       partyState.players.forEach(p => {
         if (p.id === voter.id) return; 
         const btn = document.createElement('button');
-        btn.className = "py-4 px-4 bg-surface border border-border rounded-2xl font-bold text-text text-left hover:bg-dustypurple-50 hover:border-dustypurple-400 transition-colors shadow-sm active:scale-95 party-vote-btn shrink-0";
+        btn.className = "py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-700 text-left hover:bg-purple-50 hover:border-purple-400 transition-colors shadow-sm active:scale-95 party-vote-btn shrink-0";
         btn.textContent = p.name;
         btn.onclick = () => {
-          document.querySelectorAll('.party-vote-btn').forEach(b => b.classList.remove('bg-text', 'text-surface', 'border-text'));
-          btn.classList.add('bg-text', 'text-surface', 'border-text');
+          document.querySelectorAll('.party-vote-btn').forEach(b => b.classList.remove('bg-slate-800', 'text-white', 'border-slate-800'));
+          btn.classList.add('bg-slate-800', 'text-white', 'border-slate-800');
           wwVoteState.votedTarget = p.id;
           btnNextVote.classList.remove('opacity-50', 'pointer-events-none');
         };
@@ -1370,38 +1309,38 @@
         document.getElementById('party-result-label').textContent = "それぞれの役職とお題";
         partyState.players.forEach(p => {
           const li = document.createElement('li');
-          li.className = "flex flex-col py-3 border-b border-border last:border-0 shrink-0";
+          li.className = "flex flex-col py-3 border-b-2 border-slate-50 last:border-0 shrink-0";
           const roleHtml = p.role === 'wolf' 
-            ? `<span class="bg-dustyrose-100 text-dustyrose-600 text-[10px] font-black px-2 py-1 rounded-lg ml-2">ウルフ</span>` 
-            : `<span class="bg-base text-subtext text-[10px] font-black px-2 py-1 rounded-lg ml-2">市民</span>`;
+            ? `<span class="bg-rose-100 text-rose-600 text-[10px] font-black px-2 py-1 rounded-lg ml-2">ウルフ</span>` 
+            : `<span class="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-1 rounded-lg ml-2">市民</span>`;
           li.innerHTML = `
             <div class="flex justify-between items-center mb-1">
-              <div><span class="font-bold text-text">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-subtext ml-1">(${wwVoteState.votes[p.id]}票)</span></div>
-              <div class="font-black text-dustypurple-600">${p.topic}</div>
+              <div><span class="font-bold text-slate-800">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-slate-400 ml-1">(${wwVoteState.votes[p.id]}票)</span></div>
+              <div class="font-black text-purple-600">${p.topic}</div>
             </div>
-            <div class="text-[10px] text-subtext text-right">(${p.pref.name})</div>
+            <div class="text-[10px] text-slate-400 text-right">(${p.pref.name})</div>
           `;
           list.appendChild(li);
         });
 
         if (wolfKilled) {
-          msg.innerHTML = `市民の勝利！<br><span class="text-sm font-bold text-subtext mt-2 block">見事ウルフを処刑しました！</span>`;
+          msg.innerHTML = `市民の勝利！<br><span class="text-sm font-bold text-slate-500 mt-2 block">見事ウルフを処刑しました！</span>`;
         } else {
-          msg.innerHTML = `<span class="text-dustyrose-600">ウルフの勝利！</span><br><span class="text-sm font-bold text-subtext mt-2 block">ウルフが逃げ切りました。</span>`;
+          msg.innerHTML = `<span class="text-rose-500">ウルフの勝利！</span><br><span class="text-sm font-bold text-slate-500 mt-2 block">ウルフが逃げ切りました。</span>`;
         }
       } else {
         document.getElementById('party-result-label').textContent = "それぞれのNGワード";
         partyState.players.forEach(p => {
           const li = document.createElement('li');
-          li.className = "flex justify-between items-center py-3 border-b border-border last:border-0 shrink-0";
+          li.className = "flex justify-between items-center py-3 border-b-2 border-slate-50 last:border-0 shrink-0";
           li.innerHTML = `
-            <div class="font-bold text-text">${p.name}</div>
-            <div class="font-black text-dustyrose-600 text-lg">${p.ngWord}</div>
+            <div class="font-bold text-slate-800">${p.name}</div>
+            <div class="font-black text-rose-500 text-lg">${p.ngWord}</div>
           `;
           list.appendChild(li);
         });
-        msg.className = "text-xl font-black text-text mb-4 shrink-0";
-        msg.innerHTML = `お題: <span class="text-dustyrose-600">${partyState.players[0].pref.name}</span><br><span class="text-xs font-medium text-subtext mt-2 block">NGワードを言ってしまった人は負け！</span>`;
+        msg.className = "text-xl font-black text-slate-800 mb-4 shrink-0";
+        msg.innerHTML = `お題: <span class="text-emerald-500">${partyState.players[0].pref.name}</span><br><span class="text-sm font-bold text-slate-500 mt-2 block">NGワードを言ってしまった人は負け！</span>`;
       }
     }
 
