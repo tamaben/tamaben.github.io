@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>日本地理学習アプリ</title>
   
   <!-- Tailwind CSS -->
@@ -21,15 +21,15 @@
       font-display: block;
     }
 
-    /* マップコンテナの基本設定: 元の120pxベースに戻し正確にスケールさせる */
+    /* マップコンテナの基本設定 */
     #map-transform {
-      width: 120px;
-      height: 120px;
+      width: 1000px;
+      height: 1000px;
       position: absolute;
       top: 0;
       left: 0;
       transform-origin: 0 0; 
-      transition: transform 0.7s cubic-bezier(0.34, 1.15, 0.64, 1); 
+      transition: transform 0.6s cubic-bezier(0.34, 1.15, 0.64, 1); 
       will-change: transform;
     }
 
@@ -41,11 +41,11 @@
       list-style: none;
     }
 
-    /* 都道府県のフォント設定 */
+    /* 都道府県のフォント設定（強制上書き） */
     #map-transform li,
     #map-transform li::before {
       font-family: 'map' !important;
-      font-size: 120px !important;
+      font-size: 1000px !important;
       line-height: 1 !important;
       color: #cbd5e1 !important; /* 通常時のグレー */
       transition: color 0.3s ease;
@@ -66,7 +66,7 @@
       pointer-events: none;
     }
 
-    /* クイズ/学習中の非対象の都道府県 (背景と同化しない薄グレー) */
+    /* 非対象の都道府県 (背景と同化しないソリッドな薄グレー) */
     #map-container.is-focus li:not(.is-open):not(.p-eveMapLine),
     #map-container.is-focus li:not(.is-open):not(.p-eveMapLine)::before {
       color: #e2e8f0 !important; 
@@ -92,14 +92,12 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
+<body class="min-h-screen bg-gray-50 p-4 md:p-6 flex flex-col font-sans text-gray-800 selection:bg-emerald-200">
 
-<!-- 画面全体をデバイスの高さに固定し、外側はスクロールさせない -->
-<body class="h-[100dvh] overflow-hidden bg-gray-50 p-3 md:p-6 flex flex-col font-sans text-gray-800 selection:bg-emerald-200">
-
-  <div class="flex flex-col lg:flex-row flex-grow gap-4 lg:gap-6 max-w-7xl mx-auto w-full min-h-0">
+  <div class="flex flex-col lg:flex-row flex-grow gap-6 max-w-7xl mx-auto w-full">
     
-    <!-- ================= マップ表示エリア (左側/上部) ================= -->
-    <div id="map-wrapper" class="w-full lg:w-3/5 h-[35vh] lg:h-full bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden relative z-10 shadow-sm shrink-0 lg:shrink">
+    <!-- ================= マップ表示エリア (左側) ================= -->
+    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-[2rem] border border-gray-200 flex items-center justify-center overflow-hidden min-h-[350px] lg:min-h-[600px] relative z-10 shadow-sm">
       <div id="map-transform">
         <ul id="map-container">
           <li class="p-eveMapLine"></li>
@@ -123,270 +121,275 @@
       </div>
     </div>
 
-    <!-- ================= UI/コントロールエリア (右側/下部) ================= -->
-    <div class="w-full lg:w-2/5 flex flex-col relative z-50 flex-grow min-h-0">
-      <div class="bg-white rounded-3xl border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm relative">
+    <!-- ================= UI/コントロールエリア (右側) ================= -->
+    <div class="w-full lg:w-2/5 flex flex-col relative z-50">
+      <div class="bg-white rounded-[2rem] border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm relative">
         
-        <!-- 共通ヘッダー (ここはスクロールせず固定) -->
-        <header class="flex justify-between items-center p-4 lg:p-6 border-b border-gray-100 shrink-0 bg-white relative z-20">
+        <!-- 共通ヘッダー -->
+        <header class="flex justify-between items-center p-6 border-b border-gray-100 shrink-0 bg-white relative z-20">
           <h1 class="text-xl font-black tracking-tighter flex items-center text-gray-800">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
+            <!-- 角丸に統一したマップピンアイコン -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
             </svg>
             日本地理学習
           </h1>
-          <button id="btn-back" class="hidden text-xs font-bold text-gray-500 hover:text-emerald-600 bg-gray-100 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-colors">
-            戻る
+          <button id="btn-back" class="hidden text-sm font-bold text-gray-500 hover:text-emerald-600 bg-gray-100 hover:bg-emerald-50 px-3 py-1.5 rounded-xl transition-colors">
+            トップに戻る
           </button>
         </header>
 
-        <!-- メインのビューコンテナ (この中で各画面がスクロール可能) -->
-        <div class="relative flex-grow bg-white overflow-hidden">
+        <!-- ビューコンテナ -->
+        <div class="relative flex-grow overflow-hidden bg-white">
           
           <!-- 【1】 トップメニュー -->
-          <div id="view-top" class="app-view absolute inset-0 p-5 lg:p-6 flex flex-col overflow-y-auto no-scrollbar">
-            <div class="my-auto">
-              <p class="text-gray-400 font-bold mb-4 text-xs tracking-wider text-center">モードを選択してください</p>
-              <div class="flex flex-col gap-3">
-                <button onclick="switchView('study')" class="flex items-center p-4 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
-                  <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl mr-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                  </div>
-                  <div>
-                    <div class="font-bold text-base text-gray-800">学習モード</div>
-                    <div class="text-[10px] text-gray-500 mt-1 leading-tight">都道府県の特徴や場所を辞書のように学べます</div>
-                  </div>
-                </button>
+          <div id="view-top" class="app-view absolute inset-0 p-6 flex flex-col justify-center overflow-y-auto">
+            <p class="text-gray-400 font-bold mb-4 text-sm tracking-wider text-center">モードを選択してください</p>
+            <div class="flex flex-col gap-4">
+              <!-- 学習モード -->
+              <button onclick="switchView('study')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
+                <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl mr-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">学習モード</div>
+                  <div class="text-xs text-gray-500 mt-1">都道府県の特徴や場所を辞書のように学べます</div>
+                </div>
+              </button>
 
-                <button onclick="switchView('test-config')" class="flex items-center p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
-                  <div class="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
-                  </div>
-                  <div>
-                    <div class="font-bold text-base text-gray-800">テストモード</div>
-                    <div class="text-[10px] text-gray-500 mt-1 leading-tight">様々な形式で地理の知識をテストします</div>
-                  </div>
-                </button>
+              <!-- テストモード -->
+              <button onclick="switchView('test-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">テストモード</div>
+                  <div class="text-xs text-gray-500 mt-1">様々な形式で地理の知識をテストします</div>
+                </div>
+              </button>
 
-                <button onclick="switchView('ww-config')" class="flex items-center p-4 rounded-2xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
-                  <div class="bg-purple-100 text-purple-600 p-3 rounded-xl mr-4 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  </div>
-                  <div>
-                    <div class="font-bold text-base text-gray-800">地理ワードウルフ</div>
-                    <div class="text-[10px] text-gray-500 mt-1 leading-tight">1台の端末を回して遊ぶマルチプレイゲーム</div>
-                  </div>
-                </button>
-              </div>
+              <!-- ワードウルフ -->
+              <button onclick="switchView('ww-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
+                <div class="bg-purple-100 text-purple-600 p-3 rounded-xl mr-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">地理ワードウルフ</div>
+                  <div class="text-xs text-gray-500 mt-1">1台の端末を回して遊ぶマルチプレイヤーゲーム</div>
+                </div>
+              </button>
             </div>
           </div>
 
           <!-- 【2】 学習モード -->
-          <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-gray-50 overflow-hidden">
-            <!-- 詳細表示エリア(上に隠しておき、スライドして表示) -->
-            <div id="study-detail" class="shrink-0 p-5 bg-emerald-700 text-white shadow-md transition-transform duration-300 transform -translate-y-full absolute top-0 left-0 w-full z-20 rounded-b-3xl">
+          <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-gray-50">
+            <!-- 詳細表示エリア -->
+            <div id="study-detail" class="shrink-0 p-5 bg-emerald-700 text-white shadow-md transition-transform duration-300 transform -translate-y-full absolute w-full z-20 rounded-b-3xl">
               <div class="flex justify-between items-start mb-2">
                 <div class="text-emerald-200 font-bold text-xs tracking-widest" id="study-region"></div>
                 <button onclick="closeStudyDetail()" class="text-white hover:text-emerald-200 bg-emerald-800/50 p-1.5 rounded-full">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
               </div>
-              <div class="text-2xl font-black mb-3 flex items-end gap-3">
+              <div class="text-3xl font-black mb-4 flex items-end gap-3">
                 <span id="study-name"></span>
-                <span id="study-capital" class="text-xs font-bold text-emerald-200 mb-1"></span>
+                <span id="study-capital" class="text-sm font-bold text-emerald-200 mb-1"></span>
               </div>
-              <div class="grid grid-cols-1 gap-2 text-sm max-h-[160px] overflow-y-auto no-scrollbar">
-                <div class="bg-emerald-800/50 p-3 rounded-2xl flex gap-2">
-                  <div class="text-emerald-300 text-[10px] font-bold shrink-0 w-12">名物等</div>
-                  <div class="font-bold text-xs" id="study-food"></div>
+              <div class="grid grid-cols-1 gap-2 text-sm">
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">名物・特産</div>
+                  <div class="font-bold text-sm" id="study-food"></div>
                 </div>
-                <div class="bg-emerald-800/50 p-3 rounded-2xl flex gap-2">
-                  <div class="text-emerald-300 text-[10px] font-bold shrink-0 w-12">名所等</div>
-                  <div class="font-bold text-xs" id="study-tourism"></div>
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">観光地・名所</div>
+                  <div class="font-bold text-sm" id="study-tourism"></div>
                 </div>
-                <div class="bg-emerald-800/50 p-3 rounded-2xl flex flex-col gap-1">
-                  <div class="text-emerald-300 text-[10px] font-bold">豆知識</div>
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">豆知識</div>
                   <div class="font-medium text-xs leading-relaxed" id="study-trivia"></div>
                 </div>
               </div>
             </div>
             
-            <!-- リストエリア (スクロール可) -->
-            <div class="flex-grow overflow-y-auto p-4 z-10" id="study-list-container">
+            <!-- リストエリア -->
+            <div class="flex-grow overflow-y-auto p-4 z-10 pt-4" id="study-list-container">
               <!-- JSで生成 -->
             </div>
           </div>
 
           <!-- 【3】 テスト設定 -->
-          <div id="view-test-config" class="app-view hidden absolute inset-0 p-5 lg:p-6 overflow-y-auto flex flex-col">
-            <h2 class="text-base font-bold mb-4 text-gray-800">テストの設定</h2>
+          <div id="view-test-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-4 text-gray-800">テストの設定</h2>
+            
             <div class="mb-auto">
-              <p class="text-xs font-bold text-gray-500 mb-2">出題形式を選択</p>
+              <p class="text-sm font-bold text-gray-500 mb-3">出題形式を選択</p>
               <div class="flex flex-col gap-2">
-                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="map2name" class="w-4 h-4 text-emerald-600" checked>
-                  <span class="ml-3 font-bold text-gray-700 text-sm">マップ位置 → 都道府県名</span>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                  <input type="radio" name="test-format" value="map2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500" checked>
+                  <span class="ml-3 font-bold text-gray-700">マップ位置 → 都道府県名</span>
                 </label>
-                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="map2capital" class="w-4 h-4 text-emerald-600">
-                  <span class="ml-3 font-bold text-gray-700 text-sm">マップ位置 → 県庁所在地</span>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                  <input type="radio" name="test-format" value="map2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">マップ位置 → 県庁所在地</span>
                 </label>
-                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="name2capital" class="w-4 h-4 text-emerald-600">
-                  <span class="ml-3 font-bold text-gray-700 text-sm">都道府県名 → 県庁所在地</span>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                  <input type="radio" name="test-format" value="name2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">都道府県名 → 県庁所在地</span>
                 </label>
-                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="capital2name" class="w-4 h-4 text-emerald-600">
-                  <span class="ml-3 font-bold text-gray-700 text-sm">県庁所在地 → 都道府県名</span>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                  <input type="radio" name="test-format" value="capital2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">県庁所在地 → 都道府県名</span>
                 </label>
-                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="name2region" class="w-4 h-4 text-emerald-600">
-                  <span class="ml-3 font-bold text-gray-700 text-sm">都道府県名 → 地方名</span>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                  <input type="radio" name="test-format" value="name2region" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">都道府県名 → 地方名</span>
                 </label>
               </div>
             </div>
-            <button onclick="startTest()" class="w-full py-4 mt-6 bg-emerald-600 text-white rounded-xl font-black text-base shadow-sm hover:bg-emerald-700 transition-colors shrink-0">テスト開始 (全47問)</button>
+            
+            <button onclick="startTest()" class="w-full py-4 mt-6 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">テスト開始 (全47問)</button>
           </div>
 
           <!-- 【4】 テストプレイ画面 -->
-          <div id="view-test-play" class="app-view hidden absolute inset-0 flex flex-col p-5 lg:p-6 overflow-y-auto no-scrollbar">
-            <!-- 巨大タイマー -->
-            <div id="test-timer-bg" class="absolute top-4 right-4 text-[80px] leading-none font-black text-gray-100 opacity-50 pointer-events-none select-none">15</div>
+          <div id="view-test-play" class="app-view hidden absolute inset-0 flex flex-col p-6">
+            <div id="test-timer-bg" class="absolute top-4 right-6 text-[100px] leading-none font-black text-gray-100 opacity-50 pointer-events-none select-none">15</div>
             
             <div class="relative z-10 flex-grow flex flex-col">
-              <p class="text-xs font-bold text-gray-400 mb-1">問題 <span id="test-q-count">1</span> / 47</p>
-              <p id="test-question-text" class="text-xl lg:text-2xl font-black mb-4 text-gray-800 min-h-[3.5rem]"></p>
+              <p class="text-sm font-bold text-gray-400 mb-2">問題 <span id="test-q-count">1</span> / 47</p>
+              <p id="test-question-text" class="text-2xl font-black mb-6 text-gray-800 min-h-[4rem]"></p>
               
-              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border border-emerald-100 rounded-xl animate-fade-in shrink-0">
-                <p class="text-emerald-600 font-bold text-xs flex items-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border border-emerald-100 rounded-2xl animate-fade-in">
+                <p class="text-emerald-600 font-bold text-sm flex items-center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   ヒント: <span id="test-hint-text" class="ml-1"></span>
                 </p>
               </div>
-              <div id="test-hint-space" class="mb-4 h-[42px] shrink-0"></div>
+              <div id="test-hint-space" class="mb-4 h-[46px]"></div>
 
-              <div id="test-options" class="grid grid-cols-2 gap-2 mt-auto pb-2 shrink-0">
-                <!-- 選択肢ボタン -->
-              </div>
+              <div id="test-options" class="grid grid-cols-2 gap-3 mt-auto"></div>
             </div>
           </div>
 
           <!-- 【5】 テスト結果 -->
-          <div id="view-test-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-            <div class="my-auto w-full">
-              <p class="text-emerald-600 font-bold mb-1 tracking-widest text-sm">RESULT</p>
-              <div class="text-6xl font-black text-gray-800 mb-2"><span id="test-score">0</span><span class="text-2xl text-gray-300">/47</span></div>
-              <p class="text-gray-500 font-bold mb-8 text-sm">お疲れ様でした！</p>
-              <button onclick="switchView('test-config')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
-            </div>
+          <div id="view-test-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <p class="text-emerald-600 font-bold mb-2 tracking-widest">RESULT</p>
+            <div class="text-7xl font-black text-gray-800 mb-2"><span id="test-score">0</span><span class="text-3xl text-gray-300">/47</span></div>
+            <p class="text-gray-500 font-bold mb-10">お疲れ様でした！</p>
+            <button onclick="switchView('test-config')" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
+            <button onclick="switchView('top')" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-black transition-colors">トップに戻る</button>
           </div>
 
           <!-- 【6】 ワードウルフ設定 -->
-          <div id="view-ww-config" class="app-view hidden absolute inset-0 p-5 lg:p-6 overflow-y-auto flex flex-col">
-            <h2 class="text-base font-bold mb-4 text-gray-800 flex items-center">
-              <span class="bg-purple-100 text-purple-600 p-1.5 rounded-lg mr-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div id="view-ww-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-6 text-gray-800 flex items-center">
+              <span class="bg-purple-100 text-purple-600 p-2 rounded-xl mr-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </span>
               ワードウルフの設定
             </h2>
             
-            <div class="mb-4">
-              <label class="block text-xs font-bold text-gray-500 mb-1">プレイヤー人数</label>
-              <select id="ww-player-count" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:border-emerald-500">
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-gray-500 mb-2">プレイヤー人数</label>
+              <select id="ww-player-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500">
                 <option value="3">3人</option>
                 <option value="4" selected>4人</option>
                 <option value="5">5人</option>
                 <option value="6">6人</option>
               </select>
             </div>
-            <div class="mb-6">
-              <label class="block text-xs font-bold text-gray-500 mb-1">ウルフの数</label>
-              <select id="ww-wolf-count" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:border-emerald-500">
+            
+            <div class="mb-8">
+              <label class="block text-sm font-bold text-gray-500 mb-2">ウルフの数</label>
+              <select id="ww-wolf-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500">
                 <option value="1" selected>1人</option>
                 <option value="2">2人</option>
               </select>
             </div>
-            <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-6 text-xs text-emerald-800 font-bold leading-relaxed">
-              ルール：配られたお題の「都道府県」について話し合い、一人だけ違うお題（同じ地方の別の県）を配られたウルフを探し出してください！
+
+            <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl mb-6 text-sm text-emerald-800 font-bold leading-relaxed">
+              ルール：配られたお題の「都道府県」について話し合います。一人だけ違うお題（同じ地方の別の県）を配られたウルフを探し出してください！
             </div>
-            <button onclick="goToWWNames()" class="w-full py-3 bg-emerald-600 text-white rounded-xl font-black text-base shadow-sm hover:bg-emerald-700 transition-colors mt-auto shrink-0">次へ (名前入力)</button>
+            
+            <button onclick="goToWWNames()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors mt-auto">次へ (名前入力)</button>
           </div>
 
           <!-- 【6.5】 ワードウルフ 名前入力 -->
-          <div id="view-ww-names" class="app-view hidden absolute inset-0 p-5 lg:p-6 overflow-y-auto flex flex-col">
-            <h2 class="text-base font-bold mb-1 text-gray-800">参加者の名前</h2>
-            <p class="text-[10px] font-bold text-gray-500 mb-4">ゲームに参加する人の名前を入力してください</p>
-            <div id="ww-names-container" class="flex flex-col gap-2 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
-            <button onclick="startWW()" class="w-full py-3 mt-2 bg-emerald-600 text-white rounded-xl font-black text-base shadow-sm hover:bg-emerald-700 transition-colors shrink-0">ゲームスタート</button>
+          <div id="view-ww-names" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-2 text-gray-800">参加者の名前</h2>
+            <p class="text-xs font-bold text-gray-500 mb-6">ゲームに参加する人の名前を入力してください</p>
+            <div id="ww-names-container" class="flex flex-col gap-3 mb-6 flex-grow"></div>
+            <button onclick="startWW()" class="w-full py-4 mt-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">ゲームスタート</button>
           </div>
 
           <!-- 【7】 ワードウルフ確認 -->
-          <div id="view-ww-check" class="app-view hidden absolute inset-0 p-5 lg:p-6 flex flex-col justify-center items-center text-center">
-            <h2 class="text-xl font-black mb-1 text-gray-800"><span id="ww-player-name" class="text-emerald-600 text-2xl"></span> さんの番</h2>
-            <p class="text-gray-500 font-bold mb-6 text-xs">周りに見られないように確認してください。</p>
+          <div id="view-ww-check" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
+            <h2 class="text-2xl font-black mb-2 text-gray-800"><span id="ww-player-name" class="text-emerald-600 text-3xl"></span> さんの番</h2>
+            <p class="text-gray-500 font-bold mb-6 text-sm">周りに見られないように確認してください。</p>
             
             <div class="relative w-full mb-6 flex-grow flex flex-col justify-center">
-              <button id="btn-ww-show" class="w-full py-12 bg-emerald-600 text-white text-lg font-black rounded-3xl shadow-md touch-none select-none relative z-10 transition-transform active:scale-95">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <button id="btn-ww-show" class="w-full py-16 bg-emerald-600 text-white text-xl font-black rounded-[2rem] shadow-md touch-none select-none relative z-10 transition-transform active:scale-95">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 長押ししてお題を見る
               </button>
               
               <!-- 長押し中表示 -->
-              <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-emerald-500 rounded-3xl flex flex-col items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200 z-20 shadow-xl overflow-y-auto no-scrollbar">
-                <p class="text-[10px] text-gray-500 font-bold mb-1 shrink-0">あなたのお題</p>
-                <p class="text-2xl font-black text-emerald-600 mb-3 shrink-0" id="ww-word-text"></p>
-                <div class="text-left bg-emerald-50 p-3 rounded-xl text-emerald-900 text-[10px] w-full mb-1 shrink-0">
-                  <div class="mb-1"><span class="font-bold text-emerald-700">県庁所在地:</span> <span id="ww-word-capital"></span></div>
-                  <div class="mb-1"><span class="font-bold text-emerald-700">名物・特産:</span> <span id="ww-word-food"></span></div>
-                  <div class="mb-1"><span class="font-bold text-emerald-700">有名な場所:</span> <span id="ww-word-tourism"></span></div>
+              <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-emerald-500 rounded-[2rem] flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-200 z-20 shadow-xl">
+                <p class="text-xs text-gray-500 font-bold mb-1">あなたのお題</p>
+                <p class="text-3xl font-black text-emerald-600 mb-4" id="ww-word-text"></p>
+                <div class="text-left bg-emerald-50 p-4 rounded-2xl text-emerald-900 text-xs w-full mb-2">
+                  <div class="mb-2"><span class="font-bold text-emerald-700">県庁所在地:</span> <span id="ww-word-capital"></span></div>
+                  <div class="mb-2"><span class="font-bold text-emerald-700">名物・特産:</span> <span id="ww-word-food"></span></div>
+                  <div class="mb-2"><span class="font-bold text-emerald-700">有名な場所:</span> <span id="ww-word-tourism"></span></div>
                   <div><span class="font-bold text-emerald-700">豆知識:</span> <br><span id="ww-word-trivia"></span></div>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 mt-auto shrink-0">※マップの位置も光っています</p>
+                <p class="text-[10px] font-bold text-gray-400 mt-auto">※マップの位置も光っています</p>
               </div>
             </div>
-            <button id="btn-ww-next" onclick="nextWWPlayer()" class="w-full py-3 bg-gray-800 text-white font-bold rounded-xl opacity-0 pointer-events-none transition-opacity shrink-0">確認完了（次の人へ）</button>
+
+            <button id="btn-ww-next" onclick="nextWWPlayer()" class="w-full py-4 bg-gray-800 text-white font-bold rounded-2xl opacity-0 pointer-events-none transition-opacity">確認完了（次の人へ）</button>
           </div>
 
           <!-- 【8】 ワードウルフ議論 -->
-          <div id="view-ww-discuss" class="app-view hidden absolute inset-0 p-5 lg:p-6 flex flex-col justify-center items-center text-center overflow-y-auto">
-            <h2 class="text-lg font-bold mb-1 text-gray-800 shrink-0">議論タイム</h2>
-            <p class="text-xs font-bold mb-4 text-gray-500 shrink-0">誰が違うお題を持っているか話し合いましょう</p>
+          <div id="view-ww-discuss" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">議論タイム</h2>
+            <p class="text-sm font-bold mb-6 text-gray-500">誰が違うお題を持っているか話し合いましょう</p>
             
-            <div id="ww-timer" class="text-6xl font-black mb-6 text-emerald-600 tabular-nums tracking-tighter shrink-0">3:00</div>
+            <div id="ww-timer" class="text-7xl font-black mb-8 text-emerald-600 tabular-nums tracking-tighter">3:00</div>
             
-            <div class="w-full bg-gray-50 border border-gray-200 p-4 rounded-2xl mb-auto shrink-0">
-              <p class="text-[10px] font-bold text-emerald-600 mb-2 flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <div class="w-full bg-gray-50 border border-gray-200 p-5 rounded-3xl mb-auto relative">
+              <p class="text-xs font-bold text-emerald-600 mb-3 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                 話題に困ったら？
               </p>
-              <p id="ww-question-text" class="text-xs font-bold text-gray-800 min-h-[2.5rem] flex items-center justify-center mb-3 leading-relaxed">「有名な温泉やテーマパークはある？」</p>
-              <button onclick="changeWWQuestion()" class="text-[10px] font-bold bg-white border border-gray-200 shadow-sm px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">別の質問を出す</button>
+              <p id="ww-question-text" class="text-sm font-bold text-gray-800 min-h-[3rem] flex items-center justify-center mb-4">「有名な温泉やテーマパークはある？」</p>
+              <button onclick="changeWWQuestion()" class="text-xs font-bold bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">別の質問を出す</button>
             </div>
             
-            <button onclick="goToWWVote()" class="w-full py-4 mt-4 bg-emerald-600 text-white font-black rounded-xl shadow-sm hover:bg-emerald-700 transition-colors shrink-0">議論を終了して投票へ</button>
+            <button onclick="goToWWVote()" class="w-full py-4 mt-6 bg-emerald-600 text-white font-black rounded-2xl shadow-sm hover:bg-emerald-700 transition-colors">議論を終了して投票へ</button>
           </div>
 
           <!-- 【9】 ワードウルフ投票 -->
-          <div id="view-ww-vote" class="app-view hidden absolute inset-0 p-5 lg:p-6 flex flex-col overflow-y-auto">
-            <h2 class="text-base font-bold mb-1 text-gray-800 text-center shrink-0">ウルフを指名する</h2>
-            <p class="text-xs font-bold text-gray-500 mb-4 text-center shrink-0">話し合いの結果、最もウルフ（少数派）だと疑わしい人を1人選んでください。</p>
-            <div id="ww-vote-container" class="flex flex-col gap-2 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
-            <button id="btn-ww-result" onclick="finishWWGame()" class="w-full py-3 bg-gray-800 text-white rounded-xl font-black mt-auto opacity-50 pointer-events-none transition-opacity shrink-0">結果を見る</button>
+          <div id="view-ww-vote" class="app-view hidden absolute inset-0 p-6 flex flex-col overflow-y-auto">
+            <h2 class="text-lg font-bold mb-2 text-gray-800 text-center">ウルフを指名する</h2>
+            <p class="text-sm font-bold text-gray-500 mb-6 text-center">話し合いの結果、最もウルフ（少数派）だと疑わしい人を1人選んでください。</p>
+            <div id="ww-vote-container" class="flex flex-col gap-3 mb-6 flex-grow"></div>
+            <button id="btn-ww-result" onclick="finishWWGame()" class="w-full py-4 bg-gray-800 text-white rounded-2xl font-black mt-auto opacity-50 pointer-events-none transition-opacity">結果を見る</button>
           </div>
 
           <!-- 【10】 ワードウルフ結果 -->
-          <div id="view-ww-result" class="app-view hidden absolute inset-0 p-5 lg:p-6 flex flex-col text-center overflow-y-auto">
-            <h2 class="text-xl font-black mb-4 text-gray-800 mt-2 shrink-0">結果発表</h2>
+          <div id="view-ww-result" class="app-view hidden absolute inset-0 p-6 flex flex-col text-center overflow-y-auto">
+            <h2 class="text-2xl font-black mb-6 text-gray-800 mt-2">結果発表</h2>
             
-            <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200 mb-4 shrink-0">
-              <p class="text-xs font-bold text-gray-500 mb-3">それぞれの役職とお題</p>
-              <ul id="ww-result-list" class="flex flex-col gap-2 text-left">
+            <div class="bg-gray-50 rounded-3xl p-5 border border-gray-200 mb-6">
+              <p class="text-sm font-bold text-gray-500 mb-4">それぞれの役職とお題</p>
+              <ul id="ww-result-list" class="flex flex-col gap-3 text-left">
                 <!-- JSで生成 -->
               </ul>
             </div>
             
-            <div id="ww-win-message" class="text-lg font-black text-emerald-600 mb-6 shrink-0"></div>
-            <button onclick="switchView('ww-config')" class="w-full py-3 bg-emerald-600 text-white font-black rounded-xl shadow-sm hover:bg-emerald-700 transition-colors mb-2 mt-auto shrink-0">もう一度遊ぶ</button>
+            <div id="ww-win-message" class="text-xl font-black text-emerald-600 mb-8"></div>
+            
+            <button onclick="switchView('ww-config')" class="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-sm hover:bg-emerald-700 transition-colors mb-3 mt-auto">もう一度遊ぶ</button>
           </div>
 
         </div>
@@ -448,8 +451,9 @@
 
     const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
     
+    // 341個の質問・話題ヒント (カンマ区切りで詰め込んでいます)
     const WW_QUESTIONS = [
-      "海に面している？","雪はよく降る？","有名な温泉はある？","新幹線は通っている？","特産品の果物は？","人口は多い方だと思う？","お城などの歴史的な建造物はある？","その県を代表するご当地グルメは？","面積は大きい方？小さい方？","修学旅行で行く定番の場所？","テーマパークや遊園地はある？","その県のイメージカラーは何色？","動物にまつわる有名なものはある？","冬は雪が積もる？","夏はかなり暑くなる？","1年中比較的暖かい？","梅雨の時期は雨が多い？","台風がよく来るイメージはある？","冬の寒さは厳しい？","日照時間は長い方だと思う？","避暑地として行く場所がある？","春の訪れは早い方？","秋の紅葉は綺麗？","湿度が高いイメージはある？","カラッとした気候？","ウィンタースポーツは盛ん？","海水浴のシーズンは長い？","豪雪地帯と呼ばれる場所はある？","盆地で夏暑く冬寒い？","海風が強いイメージはある？","一日の寒暖差は大きい？","桜の開花は全国的に見て早い方？遅い方？","冬はこたつが必須？","スキー場はたくさんある？","霧がよく発生する場所はある？","季節風の影響を強く受ける？","フェーン現象の影響を受ける？","氷点下になることはよくある？","夏はクーラーがないと生きていけない？","降水量は全国的に見て多い方？","快晴の日が多いイメージ？","流氷は見られる？","冬に雪かきは日課になる？","山が多い地形？","内陸県（海がない県）？","大きな湖はある？","島（離島）はある？","有名な川は流れている？","森林の割合は多い？","平野が広がっている？","活火山はある？","国立公園はある？","砂丘や砂漠のような場所はある？","湿原や沼地はある？","標高の高い山（アルプスなど）はある？","半島になっている部分はある？","岬は有名なのがある？","湾や入り江が多い？","海岸線は長い？","盆地はある？","カルスト台地や鍾乳洞はある？","渓谷や峡谷で有名な場所はある？","滝で有名なスポットはある？","自然豊かで空気がきれいなイメージ？","星空が綺麗に見える場所はある？","固有の動植物はいる？","海の透明度は高い？","温泉の源泉数は多い方？","地熱地帯はある？","ジオパークに認定されている場所はある？","断崖絶壁の景勝地はある？","干潟はある？","広い高原はある？","リアス式海岸はある？","天然記念物に指定されている自然はある？","巨木や一本桜で有名なものはある？","サンゴ礁はある？","マングローブ林はある？","高山植物が見られる？","日本百名山に選ばれた山はある？","カルデラ地形はある？","飛行機で行くことが多い？","東京からのアクセスは良い？","大阪（関西）からのアクセスは良い？","日本の北半分にある？南半分にある？","太平洋側に面している？","日本海側に面している？","瀬戸内海に面している？","隣接している県は多い？（4つ以上）","首都圏に含まれる？","関西圏に含まれる？","橋を渡らないと行けない？","フェリーで行くことはある？","高速道路の主要なジャンクションはある？","日本の端っこ（東西南北）の県？","東京から日帰りで行ける？","夜行バスで行く人が多い？","空港は県内に2つ以上ある？","国際空港はある？","地下鉄は走っている？","路面電車は走っている？","モノレールはある？","新幹線の終点になる駅はある？","リニアモーターカーが通る予定はある？","島国（本州、北海道、四国、九州）のどれ？","関東と関西の境界付近にある？","東北地方にある？","九州地方にある？","四国地方にある？","中国地方にある？","中部地方にある？","海峡に面している？","本州の端っこ？","新幹線ののぞみ（最速達）は止まる？","交通系ICカードは全国のものが使える？","船でしか行けない有名な島はある？","他の県に行くのに山越えが必要？","隣の県と海を挟んで接している？","国道1号線は通っている？","ドライブ旅行に向いている？","その県を代表するご当地ラーメンはある？","魚介類は美味しい？","有名なブランド牛はある？","お米の生産量は多い？","日本酒が有名な県？","焼酎が有名な県？","お茶の産地として有名？","麺類（うどん・そば等）で有名なものはある？","ご当地の鍋料理はある？","海苔や昆布などの海藻が有名？","お菓子・スイーツの有名なお土産はある？","乳製品（牛乳・チーズ）は有名？","ご当地カレーはある？","B級グルメで有名なものはある？","豚肉の料理が有名？","鶏肉（地鶏）が有名？","カニやエビが特産？","みかんなど柑橘類が有名？","りんごやサクランボなどの寒い地域の果物が有名？","メロンやスイカが有名？","いちごのブランドはある？","郷土料理に独特の調味料を使う？","味噌汁は赤だし？白味噌？","醤油ラーメンのイメージ？豚骨ラーメンのイメージ？","海鮮丼といえばこの県？","かまぼこやちくわなどの練り物が有名？","お酒のおつまみになる珍味はある？","和菓子で全国的に有名なお土産はある？","洋菓子・ケーキの消費量が多い？","パンの消費量が多い？","ご飯に合う最強のお供がある？","ご当地バーガーはある？","フライドポテトや唐揚げにご当地の味付けがある？","屋台で食べる文化はある？","喫茶店のモーニング文化は盛ん？","餃子の消費量は全国トップクラス？","たこ焼きやお好み焼きのイメージ？","郷土料理にお餅や団子を使う？","ジビエ（鹿肉・猪肉など）は食べる？","独特な形のお弁当（駅弁など）はある？","お茶漬けや雑炊のご当地メニューはある？","発酵食品（納豆・漬物など）が有名？","うなぎが有名？","牡蠣（かき）が特産？","マグロやカツオの漁獲量が多い？","ご当地アイスやソフトクリームはある？","その県発祥のチェーン店（飲食店）はある？"
+      "海に面している？","雪はよく降る？","有名な温泉はある？","新幹線は通っている？","特産品の果物は？","人口は多い方だと思う？","お城などの歴史的な建造物はある？","ご当地グルメは？","面積は大きい方？","修学旅行で行く？","テーマパークはある？","イメージカラーは？","動物で有名なものは？","冬は雪が積もる？","夏は暑い？","1年中暖かい？","梅雨は雨が多い？","台風がよく来る？","冬の寒さは厳しい？","日照時間は長い？","避暑地はある？","春の訪れは早い？","秋の紅葉は綺麗？","湿度は高い？","カラッとした気候？","ウィンタースポーツは盛ん？","海水浴のシーズンは長い？","豪雪地帯はある？","盆地で夏暑く冬寒い？","海風が強い？","寒暖差は大きい？","桜の開花は早い？","冬はこたつ必須？","スキー場は多い？","霧がよく発生する？","季節風の影響を受ける？","フェーン現象はある？","氷点下によくなる？","夏はクーラー必須？","降水量は多い？","快晴の日が多い？","流氷は見られる？","雪かきは日課？","山が多い地形？","海がない内陸県？","大きな湖はある？","島はある？","有名な川はある？","森林が多い？","平野が広い？","活火山はある？","国立公園はある？","砂丘や砂漠はある？","湿原や沼地はある？","標高の高い山はある？","半島はある？","有名な岬はある？","湾や入り江が多い？","海岸線は長い？","盆地はある？","カルスト台地はある？","渓谷や峡谷はある？","滝で有名な場所はある？","自然豊かで空気がきれい？","星空が綺麗？","固有の動植物はいる？","海の透明度は高い？","温泉の源泉数は多い？","地熱地帯はある？","ジオパークはある？","断崖絶壁はある？","干潟はある？","広い高原はある？","リアス式海岸はある？","天然記念物はある？","巨木や一本桜はある？","サンゴ礁はある？","マングローブはある？","高山植物はある？","日本百名山はある？","カルデラはある？","飛行機で行くことが多い？","東京からのアクセスは？","大阪からのアクセスは？","日本の北の方？南の方？","太平洋側？","日本海側？","瀬戸内海側？","隣接する県は多い？","首都圏？","関西圏？","橋を渡らないと行けない？","フェリーで行く？","高速のジャンクションはある？","日本の端っこの県？","東京から日帰りできる？","夜行バスで行く？","空港は2つ以上ある？","国際空港はある？","地下鉄はある？","路面電車はある？","モノレールはある？","新幹線の終点駅はある？","リニアの予定はある？","本州？北海道？四国？九州？","関東と関西の境界？","東北地方？","九州地方？","四国地方？","中国地方？","中部地方？","海峡に面している？","本州の端っこ？","のぞみは止まる？","交通系ICは使える？","船でしか行けない島はある？","山越えが必要？","海を挟んで接している？","国道1号線は通る？","ドライブに向いている？","ご当地ラーメンはある？","魚介類は美味しい？","有名なブランド牛はある？","お米の生産量は多い？","日本酒が有名？","焼酎が有名？","お茶の産地？","うどんやそばが有名？","ご当地鍋はある？","海藻が有名？","スイーツのお土産は？","乳製品は有名？","ご当地カレーはある？","B級グルメはある？","豚肉料理が有名？","地鶏が有名？","カニやエビが特産？","柑橘類が有名？","寒い地域の果物が有名？","メロンやスイカは？","いちごのブランドは？","独特な調味料を使う？","味噌汁は赤？白？","醤油ラーメン？豚骨？","海鮮丼といえば？","練り物が有名？","珍味はある？","和菓子のお土産は？","洋菓子の消費量が多い？","パンの消費量が多い？","ご飯のお供がある？","ご当地バーガーはある？","唐揚げのご当地味は？","屋台文化はある？","モーニング文化はある？","餃子の消費量は？","たこ焼き・お好み焼き？","お餅や団子を使う郷土料理？","ジビエは食べる？","独特な駅弁はある？","お茶漬けや雑炊のご当地？","発酵食品が有名？","うなぎが有名？","牡蠣が特産？","マグロやカツオは？","ご当地アイスはある？","発祥のチェーン店はある？","方言はかわいい？","独特のイントネーション？","一人称が変わっている？","語尾に特徴がある？","他県民には通じない言葉がある？","敬語のような方言はある？","早口なイメージ？","のんびりした話し方？","テレビでよくいじられる？","お笑い芸人が多い？","有名なミュージシャンの出身地？","アイドルが多い？","スポーツ選手が多い？","プロ野球の球団はある？","Jリーグのチームはある？","J1のサッカーチームはある？","バスケのBリーグチームはある？","高校野球が強い？","サッカーの強豪校はある？","ラグビーが盛ん？","マラソンや駅伝が強い？","ウィンタースポーツの選手が多い？","相撲取りが多い？","柔道が盛ん？","剣道が強い？","卓球が盛ん？","体操のメダリストがいる？","水泳の強豪？","バレーボールが強い？","フィギュアスケートが盛ん？","スキー・スノボの選手が多い？","オリンピックのメダリストが多い？","プロレスラーの出身地？","格闘技が盛ん？","モータースポーツのサーキットはある？","競馬場はある？","競輪場はある？","競艇場はある？","オートレース場はある？","ボートレース場はある？","お祭り好きが多い？","日本三大祭りがある？","七夕祭りは有名？","ねぶた・ねぷたがある？","祇園祭のようなお祭りはある？","阿波踊りのような踊りはある？","雪祭りは有名？","花火大会の規模が大きい？","だんじり祭りのような激しいお祭りはある？","お盆の行事が独特？","お正月料理が変わっている？","節分の風習が独特？","ひな祭りに落花生をまく？","七五三の祝い方が違う？","お月見の風習は？","クリスマスに食べるものが違う？","大晦日の過ごし方は？","成人式が派手？","結婚式が豪華？","お葬式の風習が違う？","お墓参りの習慣は？","独自の宗教・信仰がある？","パワースポットが多い？","世界遺産はある？","国宝の建築物はある？","重要文化財が多い？","史跡や遺跡がある？","古墳がたくさんある？","城跡が有名？","お城は国宝？","城下町の風情が残っている？","武家屋敷がある？","古い町並みが保存されている？","近代建築の名作がある？","有名な美術館はある？","博物館の規模が大きい？","水族館が有名？","動物園が人気？","植物園が充実している？","科学館が面白い？","図書館が立派？","コンサートホールが大きい？","劇場やオペラハウスはある？","映画のロケ地になった？","ドラマの舞台になった？","アニメの聖地巡礼で人気？","小説の舞台になった？","ご当地キャラクターは有名？","ゆるキャラグランプリで優勝した？","特産品をモチーフにしたキャラがいる？","ご当地ヒーローがいる？","方言を使ったキャラがいる？","歴史上の人物のキャラ？","動物モチーフのキャラ？","ご当地キティちゃんはある？","ご当地キューピーはある？","ご当地チョッパーはある？","ご当地ガチャピンはある？","ご当地ドラえもんはある？","ご当地リラックマはある？","ご当地スヌーピーはある？","ご当地目玉おやじはある？","ご当地ショボーンはある？","ご当地まりもっこりはある？","お土産の定番キーホルダーは？","木刀やペナントは売っている？","提灯のお土産はある？","絵葉書は売っている？","スノードームのお土産はある？","ご当地Tシャツは？","ご当地ステッカーは？","ご当地マグカップは？","ご当地タンブラーは？","ご当地トートバッグは？","ご当地エコバッグは？","ご当地タオルは？","ご当地手ぬぐいは？","ご当地ハンカチは？","ご当地うちわは？","ご当地扇子は？","ご当地カレンダーは？","県民性は真面目？","おしゃべり好き？","新しいもの好き？","保守的？","お金にシビア？","おおらか？","せっかち？","のんびり屋？","頑固？","人見知り？","社交的？","見栄っ張り？","倹約家？","浪費家？","お酒に強い？","甘党が多い？","辛党が多い？","うどん派？そば派？","コーヒー派？紅茶派？","犬派？猫派？","インドア派？アウトドア派？","車社会？電車社会？","持ち家率が高い？","共働きが多い？","三世代同居が多い？","長寿の県？","出生率が高い？","教育熱心？","習い事をよくする？","スポーツ少年団が盛ん？","塾に通う子が多い？","私立の中学に行く子が多い？","高校は公立志向？私立志向？","大学進学率は高い？","地元に残る人が多い？","上京する人が多い？","Uターンする人が多い？","Iターンが多い？","移住者に人気？","別荘を持つ人が多い？","リゾートバイトで行く？","ワーケーションに向いている？","ノマドワーカーが多い？","起業する人が多い？","社長の輩出数が多い？","フリーランスが多い？","副業をしている人が多い？","農業に従事する人が多い？","漁業が盛ん？","林業が盛ん？","製造業が強い？","IT企業が多い？","観光業が主要産業？","伝統工芸の職人が多い？","医療や福祉の仕事が多い？","公務員志向が強い？","接客業が多い？","建設業が盛ん？","運輸・物流業が多い？","金融業が強い？","不動産業が盛ん？","小売業が多い？","飲食業が盛ん？","サービス業が多い？","エンタメ産業がある？","メディア・出版業がある？","教育産業が盛ん？","美容・理容業が多い？","アパレル産業がある？","ブライダル産業が盛ん？","葬祭業が多い？","ペット産業が盛ん？","スポーツ産業がある？","ゲーム産業がある？","音楽産業がある？"
     ];
 
     // ================= 共通処理 =================
@@ -486,13 +490,10 @@
     function resetMapScale() {
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
-      const mapSize = 120; // 元フォントのサイズ
-      
+      const mapSize = 1000;
       baseScale = Math.min(vw, vh) / mapSize * 0.9;
-      
       const tx = vw / 2 - (mapSize / 2) * baseScale;
       const ty = vh / 2 - (mapSize / 2) * baseScale;
-
       mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${baseScale})`;
     }
 
@@ -534,8 +535,7 @@
             }
           }
           if (found) {
-            // 中心点を fontSize (120) で割って割合を出す
-            prefCenters[p.id] = { px: ((minX + maxX)/2 - offset)/fontSize, py: ((minY + maxY)/2 - offset)/fontSize };
+            prefCenters[p.id] = { px: (minX + maxX)/2/fontSize - (offset/fontSize), py: (minY + maxY)/2/fontSize - (offset/fontSize) };
           } else {
             prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
           }
@@ -555,10 +555,11 @@
         if (zoom && prefCenters[prefId]) {
           const vw = mapWrapper.clientWidth;
           const vh = mapWrapper.clientHeight;
-          const mapSize = 120;
+          const mapSize = 1000;
           const targetScale = baseScale * 4;
           const tx = vw / 2 - (prefCenters[prefId].px * mapSize) * targetScale;
           const ty = vh / 2 - (prefCenters[prefId].py * mapSize) * targetScale;
+          mapTransform.style.transformOrigin = `0 0`;
           mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${targetScale})`;
         } else {
           resetMapScale();
@@ -581,11 +582,11 @@
         container.appendChild(title);
 
         const grid = document.createElement('div');
-        grid.className = "grid grid-cols-2 lg:grid-cols-3 gap-2";
+        grid.className = "grid grid-cols-3 gap-2";
 
         PREFECTURES.filter(p => p.region === region).forEach(p => {
           const btn = document.createElement('button');
-          btn.className = "bg-white border border-gray-200 py-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-sm cursor-pointer";
+          btn.className = "bg-white border-2 border-gray-100 py-3 rounded-2xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-sm cursor-pointer";
           btn.textContent = p.name;
           btn.onclick = () => showStudyDetail(p);
           grid.appendChild(btn);
@@ -598,7 +599,7 @@
       highlightMap(pref.id, true, true);
       document.getElementById('study-region').textContent = pref.region;
       document.getElementById('study-name').textContent = pref.name;
-      document.getElementById('study-capital').textContent = '県庁所在地: ' + pref.capital;
+      document.getElementById('study-capital').textContent = pref.capital;
       document.getElementById('study-food').textContent = pref.food;
       document.getElementById('study-tourism').textContent = pref.tourism;
       document.getElementById('study-trivia').textContent = pref.trivia;
@@ -681,7 +682,7 @@
       container.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = "py-4 px-2 bg-white border border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm cursor-pointer";
+        btn.className = "py-5 px-2 bg-white border-2 border-gray-100 rounded-2xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm cursor-pointer";
         btn.textContent = opt;
         btn.onclick = () => answerTest(opt, correctAns);
         container.appendChild(btn);
@@ -696,26 +697,19 @@
       testState.interval = setInterval(() => {
         testState.timer--;
         updateTestTimerUI();
-        if (testState.timer <= 5) {
+        if (testState.timer === 5) {
           document.getElementById('test-hint').classList.remove('hidden');
           document.getElementById('test-hint-space').classList.add('hidden');
         }
-        if (testState.timer <= 0) {
-          answerTest(null, correctAns); 
-        }
+        if (testState.timer <= 0) answerTest(null, correctAns); 
       }, 1000);
     }
 
     function updateTestTimerUI() {
       const td = document.getElementById('test-timer-bg');
       td.textContent = testState.timer;
-      if (testState.timer <= 5) {
-        td.classList.replace('text-gray-100', 'text-rose-100');
-        td.classList.replace('opacity-50', 'opacity-20');
-      } else {
-        td.classList.replace('text-rose-100', 'text-gray-100');
-        td.classList.replace('opacity-20', 'opacity-50');
-      }
+      if (testState.timer <= 5) td.classList.replace('text-gray-100', 'text-rose-100');
+      else td.classList.replace('text-rose-100', 'text-gray-100');
     }
 
     function answerTest(ans, correctAns) {
@@ -752,7 +746,7 @@
       for(let i=0; i<pc; i++){
         const input = document.createElement('input');
         input.type = 'text';
-        input.className = "w-full p-4 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors ww-name-input shrink-0";
+        input.className = "w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors ww-name-input";
         input.placeholder = `プレイヤー ${i+1} の名前`;
         input.value = `プレイヤー ${i+1}`;
         container.appendChild(input);
@@ -800,6 +794,7 @@
       highlightMap(null, false, false);
     }
 
+    // 長押しイベント
     const btnShow = document.getElementById('btn-ww-show');
     const wordLayer = document.getElementById('ww-word-layer');
     const btnNext = document.getElementById('btn-ww-next');
@@ -865,7 +860,7 @@
       
       wwState.players.forEach(p => {
         const btn = document.createElement('button');
-        btn.className = "py-4 px-4 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 text-left hover:bg-emerald-50 hover:border-emerald-500 transition-colors shadow-sm cursor-pointer ww-vote-btn shrink-0";
+        btn.className = "py-5 px-4 bg-white border-2 border-gray-100 rounded-2xl font-bold text-gray-700 text-left hover:bg-emerald-50 hover:border-emerald-500 transition-colors shadow-sm cursor-pointer ww-vote-btn";
         btn.textContent = p.name;
         btn.onclick = () => {
           document.querySelectorAll('.ww-vote-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600'));
@@ -884,7 +879,7 @@
       list.innerHTML = '';
       wwState.players.forEach(p => {
         const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b border-gray-100 last:border-0 shrink-0";
+        li.className = "flex justify-between items-center py-3 border-b border-gray-100 last:border-0";
         const roleHtml = p.role === 'wolf' 
           ? `<span class="bg-rose-100 text-rose-600 text-[10px] font-black px-2 py-1 rounded-md ml-2">ウルフ</span>` 
           : `<span class="bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-1 rounded-md ml-2">市民</span>`;
@@ -906,7 +901,6 @@
       document.fonts.ready.then(() => {
         setTimeout(calculatePrefCenters, 100);
         resetMapScale();
-        window.addEventListener('resize', resetMapScale);
       });
     });
   </script>
