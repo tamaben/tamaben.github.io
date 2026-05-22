@@ -32,19 +32,27 @@
       opacity: 0.5;
     }
 
-    /* クイズ中の非アクティブな都道府県（薄いグレー） */
-    .is-quiz .p-eveMap li:not(.is-open):not(.p-eveMapLine) {
-      opacity: 0.25;
-      filter: grayscale(1);
+    /* 
+     * クイズ中の非アクティブな都道府県
+     * 背景(#f8fafc)と同化しない、見やすいグレー(#cbd5e1)を設定 
+     */
+    .p-eveMap ul.is-quiz li:not(.is-open):not(.p-eveMapLine),
+    .p-eveMap ul.is-quiz li:not(.is-open):not(.p-eveMapLine)::before {
+      color: #cbd5e1 !important; 
+      opacity: 1 !important;
+      filter: none !important;
     }
     
-    /* アクティブ（出題中）になった都道府県のスタイル（元の色を活かしてハイライト） */
+    /* 
+     * アクティブ（出題中）になった都道府県のスタイル
+     * 元のカラーを維持しつつ、少し浮かせて目立たせる
+     */
     .p-eveMap li.is-open { 
       opacity: 1 !important; 
-      filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 0, 0, 0.4)); 
+      filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3)) !important; 
       z-index: 10; 
       position: relative; 
-      transform: scale(1.02); /* 少しだけ浮かせる効果 */
+      transform: scale(1.02);
     }
 
     /* ヒント表示時のアニメーション */
@@ -149,7 +157,7 @@
 
         <!-- クイズ画面 -->
         <div id="screen-quiz" class="mt-4 hidden">
-          <p class="text-sm font-bold text-slate-400 mb-2">問題 <span id="question-count">1</span>/10</p>
+          <p class="text-sm font-bold text-slate-400 mb-2">問題 <span id="question-count">1</span>/47</p>
           <p id="question-text" class="text-2xl lg:text-3xl font-black mb-4 min-h-[4rem]">この県の県庁所在地は？</p>
           
           <div id="hint-container" class="mb-6 p-3 h-[48px] hidden bg-rose-50 rounded-lg animate-hint">
@@ -170,7 +178,7 @@
         <!-- 結果画面 -->
         <div id="screen-result" class="mt-4 text-center hidden">
           <p class="text-sm font-bold text-slate-400 mb-2">結果発表</p>
-          <div class="text-6xl font-black text-rose-500 mb-2"><span id="score-display">0</span><span class="text-3xl text-slate-300">/10</span></div>
+          <div class="text-6xl font-black text-rose-500 mb-2"><span id="score-display">0</span><span class="text-3xl text-slate-300">/47</span></div>
           <p class="text-slate-500 font-bold mb-8">正解できましたか？</p>
           <button id="btn-restart" class="w-full py-4 flex items-center justify-center bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition shadow-lg shadow-slate-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 w-5 h-5">
@@ -243,6 +251,7 @@
     let score = 0;
     let questionCount = 0;
     let timerInterval = null;
+    let remainingPrefs = []; // 出題用の配列
 
     // Elements
     const mapContainer = document.getElementById('map-container');
@@ -294,12 +303,15 @@
       questionCount = 1;
       gameState = 'quiz';
       
+      // 出題用の47都道府県配列をシャッフルして準備
+      remainingPrefs = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      
       screenReady.classList.add('hidden');
       screenResult.classList.add('hidden');
       screenQuiz.classList.remove('hidden');
       timerDisplay.classList.remove('hidden');
       
-      // クイズ中は is-quiz クラスを付与して他の都道府県を暗くする
+      // クイズ中は is-quiz クラスを付与して他の都道府県をグレーにする
       mapContainer.classList.add('is-quiz');
       
       updateModeButtons();
@@ -308,24 +320,20 @@
 
     // 問題の生成とUI更新
     function generateQuestion() {
-      // 重複しないように次の県を選ぶ
-      let target;
-      do {
-        target = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      } while (currentPref && target.id === currentPref.id);
-      currentPref = target;
+      // remainingPrefs から最後の1つを取り出して出題
+      currentPref = remainingPrefs.pop();
 
       // 間違いの選択肢を3つ生成
       const wrongOptions = [];
       while (wrongOptions.length < 3) {
         const candidate = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital;
-        if (candidate !== target.capital && !wrongOptions.includes(candidate)) {
+        if (candidate !== currentPref.capital && !wrongOptions.includes(candidate)) {
           wrongOptions.push(candidate);
         }
       }
       
       // 選択肢をシャッフル
-      const options = [target.capital, ...wrongOptions].sort(() => Math.random() - 0.5);
+      const options = [currentPref.capital, ...wrongOptions].sort(() => Math.random() - 0.5);
 
       // UIのテキスト更新
       questionCountEl.textContent = questionCount;
@@ -399,7 +407,8 @@
         score++;
       }
 
-      if (questionCount >= 10) {
+      // 47問出題し終わったら終了
+      if (questionCount >= 47) {
         endGame();
       } else {
         questionCount++;
