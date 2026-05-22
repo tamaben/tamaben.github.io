@@ -534,4 +534,34 @@
     function handleAnswer(ans) {
       clearInterval(timerInterval);
       
-      if (ans === currentPref.
+      if (ans === currentPref.capital) {
+        score++;
+      }
+
+      if (questionCount >= 47) {
+        endGame();
+      } else {
+        questionCount++;
+        generateQuestion();
+      }
+    }
+
+    function endGame() {
+      gameState = 'result';
+      screenQuiz.classList.add('hidden');
+      timerDisplay.classList.add('hidden');
+      screenResult.classList.remove('hidden');
+      
+      scoreDisplay.textContent = score;
+      
+      mapContainer.classList.remove('is-quiz');
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
+      resetMapScale();
+      
+      updateModeButtons();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
