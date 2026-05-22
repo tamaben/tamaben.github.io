@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>県庁所在地学習</title>
   
-  <!-- Tailwind CSS (UIのレイアウト用) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- 元のサイトのグローバルCSS (アイコンフォントの配置や初期設定用) -->
+  <!-- 元のサイトのグローバルCSS -->
   <link rel="stylesheet" href="https://www.granfairs.com/_codetest/iconfont-for-map/assets/css/global.css">
 
   <style>
@@ -21,15 +21,10 @@
       font-display: block;
     }
 
-    /* 読み込んだフォントを強制適用し、アニメーションを設定 */
+    /* 読み込んだフォントを強制適用 */
     .p-eveMap li {
       font-family: 'map' !important;
-      transition: all 0.5s ease;
-    }
-
-    /* 背景の境界線などは常に少し薄く表示 */
-    .p-eveMap li.p-eveMapLine {
-      opacity: 0.5;
+      transition: color 0.5s ease, filter 0.5s ease, opacity 0.5s ease;
     }
 
     /* 
@@ -42,17 +37,25 @@
       opacity: 1 !important;
       filter: none !important;
     }
+
+    /* 背景の境界線などはさらに薄いグレーに */
+    .p-eveMap ul.is-quiz li.p-eveMapLine,
+    .p-eveMap ul.is-quiz li.p-eveMapLine::before {
+      color: #f1f5f9 !important;
+      opacity: 1 !important;
+    }
     
     /* 
      * アクティブ（出題中）になった都道府県のスタイル
-     * 元のカラーを維持しつつ、少し浮かせて目立たせる
+     * 赤色にして浮かせて目立たせる
      */
-    .p-eveMap li.is-open { 
+    .p-eveMap li.is-open,
+    .p-eveMap li.is-open::before { 
+      color: #f43f5e !important; 
       opacity: 1 !important; 
-      filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3)) !important; 
+      filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.4)) !important; 
       z-index: 10; 
       position: relative; 
-      transform: scale(1.02);
     }
 
     /* ヒント表示時のアニメーション */
@@ -65,7 +68,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-white p-6 flex flex-col font-sans text-slate-800">
+<body class="min-h-screen bg-white p-6 flex flex-col font-sans text-slate-800 overflow-hidden">
 
   <header class="flex justify-between items-center mb-8">
     <h1 class="text-2xl font-black tracking-tighter flex items-center">
@@ -86,8 +89,9 @@
     
     <!-- マップ表示エリア -->
     <div class="w-full md:w-2/3 bg-slate-50 rounded-3xl p-10 flex items-center justify-center shadow-inner overflow-hidden min-h-[400px]">
-      <div class="p-eveMap text-[120px] transition-transform duration-1000" style="transform: scale(2.5)">
-        <ul id="map-container">
+      <!-- 拡大・移動用コンテナ -->
+      <div class="p-eveMap transition-transform duration-1000 ease-in-out w-[120px] h-[120px] relative text-[120px]" id="map-transform" style="transform: scale(2.5) translate(0px, 0px);">
+        <ul id="map-container" class="absolute inset-0">
           <li class="p-eveMapLine"></li>
           <li class="p-eveMapPref--hokkaido"></li>
           <li class="p-eveMapPref--aomori"></li>
@@ -179,7 +183,7 @@
         <div id="screen-result" class="mt-4 text-center hidden">
           <p class="text-sm font-bold text-slate-400 mb-2">結果発表</p>
           <div class="text-6xl font-black text-rose-500 mb-2"><span id="score-display">0</span><span class="text-3xl text-slate-300">/47</span></div>
-          <p class="text-slate-500 font-bold mb-8">正解できましたか？</p>
+          <p class="text-slate-500 font-bold mb-8">お疲れ様でした！</p>
           <button id="btn-restart" class="w-full py-4 flex items-center justify-center bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition shadow-lg shadow-slate-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 w-5 h-5">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
@@ -244,16 +248,18 @@
     ];
 
     // State
-    let gameState = 'ready'; // 'ready', 'quiz', 'result'
-    let quizMode = 'shape';  // 'shape', 'name', 'place'
+    let gameState = 'ready'; 
+    let quizMode = 'shape';  
     let currentPref = null;
     let timer = 20;
     let score = 0;
     let questionCount = 0;
     let timerInterval = null;
-    let remainingPrefs = []; // 出題用の配列
+    let remainingPrefs = []; 
+    let prefCenters = {}; // 各都道府県の重心座標を保存
 
     // Elements
+    const mapTransform = document.getElementById('map-transform');
     const mapContainer = document.getElementById('map-container');
     const screenReady = document.getElementById('screen-ready');
     const screenQuiz = document.getElementById('screen-quiz');
@@ -267,20 +273,78 @@
     const optionsContainer = document.getElementById('options-container');
     const scoreDisplay = document.getElementById('score-display');
     const modeButtons = document.querySelectorAll('.mode-btn');
-    const allPrefElements = document.querySelectorAll('.p-eveMap li');
+    const allPrefElements = document.querySelectorAll('#map-container li');
 
     // 初期化処理
-    function init() {
+    async function init() {
+      // フォントの読み込みを待ってから重心を計算
+      await document.fonts.ready;
+      calculatePrefectureCenters();
+
       // イベントリスナー登録
       document.getElementById('btn-start').addEventListener('click', startGame);
       document.getElementById('btn-restart').addEventListener('click', startGame);
 
       modeButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-          if (gameState === 'quiz') return; // クイズ中は変更不可
+          if (gameState === 'quiz') return; 
           quizMode = e.target.getAttribute('data-mode');
           updateModeButtons();
         });
+      });
+    }
+
+    // Canvasを使ってフォント(都道府県)の重心を計算する
+    function calculatePrefectureCenters() {
+      const canvas = document.createElement('canvas');
+      const size = 200; 
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      
+      PREFECTURES.forEach(p => {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (!el) return;
+        
+        // CSSの ::before からフォントの文字を取得
+        const style = window.getComputedStyle(el, '::before');
+        let content = style.content;
+        if (content && content !== 'none') {
+          content = content.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+          
+          ctx.clearRect(0, 0, size, size);
+          ctx.font = `${size}px map`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'black';
+          ctx.fillText(content, size / 2, size / 2);
+          
+          const imgData = ctx.getImageData(0, 0, size, size).data;
+          let minX = size, minY = size, maxX = 0, maxY = 0;
+          let found = false;
+          
+          for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+              if (imgData[(y * size + x) * 4 + 3] > 10) { // アルファ値で判定
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+                found = true;
+              }
+            }
+          }
+          
+          if (found) {
+            const boundingCx = (minX + maxX) / 2;
+            const boundingCy = (minY + maxY) / 2;
+            // 0.5を中心にオフセット割合を計算
+            prefCenters[p.id] = {
+              cx: 0.5 + ((boundingCx - (size / 2)) / size),
+              cy: 0.5 + ((boundingCy - (size / 2)) / size)
+            };
+          }
+        }
       });
     }
 
@@ -303,7 +367,6 @@
       questionCount = 1;
       gameState = 'quiz';
       
-      // 出題用の47都道府県配列をシャッフルして準備
       remainingPrefs = [...PREFECTURES].sort(() => Math.random() - 0.5);
       
       screenReady.classList.add('hidden');
@@ -311,16 +374,32 @@
       screenQuiz.classList.remove('hidden');
       timerDisplay.classList.remove('hidden');
       
-      // クイズ中は is-quiz クラスを付与して他の都道府県をグレーにする
+      // クイズ中は is-quiz クラスを付与
       mapContainer.classList.add('is-quiz');
       
       updateModeButtons();
       generateQuestion();
     }
 
+    // 対象の都道府県へなめらかにズーム・移動する
+    function focusOnPrefecture(prefId) {
+      const center = prefCenters[prefId];
+      if (!center) return;
+
+      const W = 120; // mapTransformの幅
+      const H = 120; // mapTransformの高さ
+      const S = 5;   // ズーム倍率
+
+      // 要素の中心(0.5, 0.5)から対象の重心へのズレ分を逆方向にtranslateする
+      const dx = -(center.cx - 0.5) * W * S;
+      const dy = -(center.cy - 0.5) * H * S;
+      
+      mapTransform.style.transformOrigin = `center center`;
+      mapTransform.style.transform = `translate(${dx}px, ${dy}px) scale(${S})`;
+    }
+
     // 問題の生成とUI更新
     function generateQuestion() {
-      // remainingPrefs から最後の1つを取り出して出題
       currentPref = remainingPrefs.pop();
 
       // 間違いの選択肢を3つ生成
@@ -332,7 +411,6 @@
         }
       }
       
-      // 選択肢をシャッフル
       const options = [currentPref.capital, ...wrongOptions].sort(() => Math.random() - 0.5);
 
       // UIのテキスト更新
@@ -354,12 +432,15 @@
         optionsContainer.appendChild(btn);
       });
 
-      // マップのハイライト処理
+      // マップのハイライト処理とフォーカス移動
       allPrefElements.forEach(el => el.classList.remove('is-open')); 
-
       if (quizMode === 'shape' || quizMode === 'place') {
         const targetEl = document.querySelector(`.p-eveMapPref--${currentPref.id}`);
         if (targetEl) targetEl.classList.add('is-open');
+        focusOnPrefecture(currentPref.id); // ズーム実行
+      } else {
+        // 名前からモードの時は中心に戻す
+        mapTransform.style.transform = `translate(0px, 0px) scale(2.5)`;
       }
 
       // ヒントとタイマーのリセット
@@ -382,7 +463,7 @@
         
         if (timer <= 0) {
           clearInterval(timerInterval);
-          handleAnswer(null); // 時間切れ
+          handleAnswer(null);
         }
       }, 1000);
     }
@@ -425,9 +506,11 @@
       
       scoreDisplay.textContent = score;
       
-      // is-quizクラスを外してフルカラーに戻し、ハイライトも消す
+      // 全体表示に戻す
       mapContainer.classList.remove('is-quiz');
       allPrefElements.forEach(el => el.classList.remove('is-open'));
+      mapTransform.style.transform = `translate(0px, 0px) scale(2.5)`;
+      
       updateModeButtons();
     }
 
