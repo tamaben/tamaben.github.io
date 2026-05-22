@@ -8,7 +8,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- 元のサイトのグローバルCSS -->
+  <!-- 元のサイトのグローバルCSS (マッピングデータ用) -->
   <link rel="stylesheet" href="https://www.granfairs.com/_codetest/iconfont-for-map/assets/css/global.css">
 
   <style>
@@ -21,50 +21,63 @@
       font-display: block;
     }
 
-    /* マップ要素の基本設定 (フラットなグレー) */
-    .p-eveMap {
-      width: 120px;
-      height: 120px;
+    /* マップコンテナの基本設定 */
+    #map-transform {
+      width: 1000px;
+      height: 1000px;
       position: absolute;
       top: 0;
       left: 0;
-      /* 滑らかに移動・拡大縮小させるための設定 */
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: 0 0; /* 常に左上を基準にスケーリング */
+      transition: transform 0.8s cubic-bezier(0.34, 1.15, 0.64, 1); /* なめらかで少し弾む動き */
       will-change: transform;
     }
 
-    .p-eveMap li,
-    .p-eveMap li::before {
-      font-family: 'map' !important;
-      color: #cbd5e1 !important; /* 通常時のグレー */
-      transition: color 0.4s ease, opacity 0.4s ease;
+    #map-transform ul {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
-    /* 日本地図の全体境界線 */
-    .p-eveMap li.p-eveMapLine,
-    .p-eveMap li.p-eveMapLine::before {
-      color: #f8fafc !important; /* ほとんど見えない白に近いグレー */
+    /* 都道府県のフォント設定（強制上書き） */
+    #map-transform li,
+    #map-transform li::before {
+      font-family: 'map' !important;
+      font-size: 1000px !important;
+      line-height: 1 !important;
+      color: #cbd5e1 !important; /* 通常時のグレー */
+      transition: color 0.4s ease;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* 日本地図の全体境界線（白で抜いて県同士の境界を作る） */
+    #map-transform li.p-eveMapLine,
+    #map-transform li.p-eveMapLine::before {
+      color: #ffffff !important;
       z-index: 1;
+      pointer-events: none;
     }
 
-    /* クイズ中の非対象の都道府県 (背景より少し濃いグレー) */
-    .is-quiz .p-eveMap li:not(.is-open):not(.p-eveMapLine),
-    .is-quiz .p-eveMap li:not(.is-open):not(.p-eveMapLine)::before {
-      color: #e2e8f0 !important; /* 同化しないソリッドなグレー */
+    /* クイズ中の非対象の都道府県 (背景の白と同化しないソリッドなグレー) */
+    .is-quiz #map-transform li:not(.is-open):not(.p-eveMapLine),
+    .is-quiz #map-transform li:not(.is-open):not(.p-eveMapLine)::before {
+      color: #e2e8f0 !important; 
     }
-    
-    /* アクティブ（出題中）になった都道府県 */
-    .p-eveMap li.is-open,
-    .p-eveMap li.is-open::before { 
+
+    /* アクティブ(出題中)の都道府県 */
+    #map-transform li.is-open,
+    #map-transform li.is-open::before {
       color: #4f46e5 !important; /* ベタ塗りのインディゴブルー */
-      z-index: 10; 
-      /* ネオン(ドロップシャドウ)を削除し、フラットに */
-      filter: none !important;
+      z-index: 10;
+      filter: none !important; /* 光彩などはすべて除去 */
     }
 
     /* ヒント表示時のアニメーション */
@@ -77,6 +90,7 @@
     }
   </style>
 </head>
+<!-- overflow-hidden を削除し、画面サイズが小さくてもスクロール可能に -->
 <body class="min-h-screen bg-gray-50 p-4 md:p-8 flex flex-col font-sans text-gray-800">
 
   <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -89,19 +103,19 @@
     </h1>
     <!-- モード切り替えタブ -->
     <div class="flex gap-1 bg-gray-200/60 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
-      <button data-mode="shape" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gray-800 text-white shadow-sm flex-shrink-0">形から</button>
-      <button data-mode="name" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-transparent text-gray-500 hover:text-gray-800 flex-shrink-0">名前から</button>
-      <button data-mode="place" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-transparent text-gray-500 hover:text-gray-800 flex-shrink-0">場所と名から</button>
+      <button data-mode="shape" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gray-800 text-white shadow-sm flex-shrink-0 cursor-pointer">形から</button>
+      <button data-mode="name" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-transparent text-gray-500 hover:text-gray-800 flex-shrink-0 cursor-pointer">名前から</button>
+      <button data-mode="place" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-transparent text-gray-500 hover:text-gray-800 flex-shrink-0 cursor-pointer">場所と名から</button>
     </div>
   </header>
 
   <div class="flex flex-col lg:flex-row flex-grow gap-6">
     
     <!-- マップ表示エリア -->
-    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-[600px] relative">
-      <!-- スクリプトで transform を操作するコンテナ -->
-      <div class="p-eveMap text-[120px]" id="map-transform">
-        <ul id="map-container" class="absolute inset-0">
+    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-[600px] relative z-10">
+      <!-- 拡大・移動用コンテナ -->
+      <div id="map-transform">
+        <ul id="map-container">
           <li class="p-eveMapLine"></li>
           <li class="p-eveMapPref--hokkaido"></li>
           <li class="p-eveMapPref--aomori"></li>
@@ -155,16 +169,16 @@
     </div>
 
     <!-- UI/コントロールエリア -->
-    <div class="w-full lg:w-2/5 flex flex-col gap-6">
-      <div class="bg-white rounded-3xl border border-gray-200 p-8 relative flex flex-col justify-center h-full overflow-hidden">
+    <div class="w-full lg:w-2/5 flex flex-col gap-6 relative z-50">
+      <div class="bg-white rounded-3xl border border-gray-200 p-8 relative flex flex-col justify-center h-full overflow-hidden shadow-sm">
         
         <!-- 背景の巨大タイマー -->
-        <div id="timer-display" class="absolute top-4 right-6 text-[120px] leading-none font-black transition-colors hidden text-gray-100 opacity-50 z-0">20</div>
+        <div id="timer-display" class="absolute top-4 right-6 text-[120px] leading-none font-black transition-colors hidden text-gray-200 opacity-30 z-0 select-none pointer-events-none">20</div>
         
         <!-- 準備画面 -->
         <div id="screen-ready" class="text-center relative z-10">
           <p class="text-xl font-bold mb-10 text-gray-500">モードを選んでスタート！</p>
-          <button id="btn-start" class="w-full py-5 bg-indigo-600 text-white text-xl font-bold rounded-2xl hover:bg-indigo-700 transition-colors shadow-sm">
+          <button id="btn-start" class="w-full py-5 bg-indigo-600 text-white text-xl font-bold rounded-2xl hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer">
             ゲームスタート
           </button>
         </div>
@@ -196,7 +210,7 @@
           <p class="text-sm font-bold text-gray-400 mb-2 tracking-wide">結果発表</p>
           <div class="text-7xl font-black text-indigo-600 mb-2"><span id="score-display">0</span><span class="text-3xl text-gray-300">/47</span></div>
           <p class="text-gray-500 font-bold mb-10">お疲れ様でした！</p>
-          <button id="btn-restart" class="w-full py-4 flex items-center justify-center bg-gray-800 text-white font-bold rounded-2xl hover:bg-gray-900 transition-colors shadow-sm">
+          <button id="btn-restart" class="w-full py-4 flex items-center justify-center bg-gray-800 text-white font-bold rounded-2xl hover:bg-gray-900 transition-colors shadow-sm cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 w-5 h-5">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
             </svg>
@@ -267,7 +281,7 @@
     let questionCount = 0;
     let timerInterval = null;
     let remainingPrefs = []; 
-    let prefCenters = {}; // 各都道府県の重心座標(px, py)
+    let prefCenters = {}; // 各都道府県の重心座標を保存
     let baseScale = 1;
 
     const mapWrapper = document.getElementById('map-wrapper');
@@ -287,18 +301,19 @@
     const modeButtons = document.querySelectorAll('.mode-btn');
     const allPrefElements = document.querySelectorAll('#map-container li');
 
+    // 初期化処理
     async function init() {
-      // フォントの読み込みを待つ
+      // フォントが確実に読み込まれるのを待つ
       await document.fonts.ready;
-      // 要素のレンダリングが完了するのを少し待機
-      await new Promise(resolve => setTimeout(resolve, 100));
       
+      // Canvasを使って各都道府県の中心(重心)を計算する
       calculatePrefectureCenters();
-      updateBaseScale();
+      
+      // 全体が見えるようにスケールを初期化
       resetMapScale();
 
+      // ウィンドウサイズが変わった時の再計算
       window.addEventListener('resize', () => {
-        updateBaseScale();
         if (gameState === 'quiz' && currentPref && (quizMode === 'shape' || quizMode === 'place')) {
           focusOnPrefecture(currentPref.id);
         } else {
@@ -306,6 +321,7 @@
         }
       });
 
+      // ボタンのイベントリスナー
       document.getElementById('btn-start').addEventListener('click', startGame);
       document.getElementById('btn-restart').addEventListener('click', startGame);
 
@@ -318,26 +334,19 @@
       });
     }
 
-    function updateBaseScale() {
-      const vw = mapWrapper.clientWidth;
-      const vh = mapWrapper.clientHeight;
-      // オリジナルのフォント枠サイズは120px
-      // 画面内に85%で収まるように基本スケールを計算
-      baseScale = Math.min(vw, vh) / 120 * 0.85;
-    }
-
-    // TransformOriginを0,0に固定し、translateで画面中央に配置する
+    // マップ全体が枠内に収まるように計算して配置
     function resetMapScale() {
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
-      const mapW = 120;
-      const mapH = 120;
+      const mapSize = 1000; // cssで設定した #map-transform の width/height
       
-      // コンテナの中央から、マップの半分の大きさを引いて配置
-      const tx = vw / 2 - (mapW * 0.5) * baseScale;
-      const ty = vh / 2 - (mapH * 0.5) * baseScale;
+      // マップがコンテナの90%に収まるようにスケールを計算
+      baseScale = Math.min(vw, vh) / mapSize * 0.9;
+      
+      // コンテナの中央にマップの中心を合わせるための移動量
+      const tx = vw / 2 - (mapSize / 2) * baseScale;
+      const ty = vh / 2 - (mapSize / 2) * baseScale;
 
-      mapTransform.style.transformOrigin = `0 0`;
       mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${baseScale})`;
     }
 
@@ -356,13 +365,11 @@
         const el = document.querySelector(`.p-eveMapPref--${p.id}`);
         if (!el) return;
         
+        // CSSの ::before からUnicode文字を取得
         let content = window.getComputedStyle(el, '::before').content;
         if (content && content !== 'none') {
           content = content.replace(/^["']|["']$/g, '');
-          if (content.length > 1 && content.startsWith('\\')) {
-            content = String.fromCharCode(parseInt(content.substring(1), 16));
-          }
-
+          
           ctx.clearRect(0, 0, size, size);
           ctx.font = `${fontSize}px map`;
           ctx.textBaseline = 'top';
@@ -375,6 +382,7 @@
           let minX = size, minY = size, maxX = 0, maxY = 0;
           let found = false;
           
+          // 描画されたピクセルの範囲(バウンディングボックス)を取得
           for (let y = 0; y < size; y++) {
             for (let x = 0; x < size; x++) {
               if (imgData[(y * size + x) * 4 + 3] > 10) { 
@@ -406,9 +414,9 @@
       modeButtons.forEach(btn => {
         const mode = btn.getAttribute('data-mode');
         if (mode === quizMode) {
-          btn.className = "mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gray-800 text-white shadow-sm flex-shrink-0";
+          btn.className = "mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gray-800 text-white shadow-sm flex-shrink-0 cursor-pointer";
         } else {
-          const disabledClass = gameState === 'quiz' ? 'opacity-50 cursor-not-allowed' : 'hover:text-gray-800 hover:bg-gray-100';
+          const disabledClass = gameState === 'quiz' ? 'opacity-50 cursor-not-allowed' : 'hover:text-gray-800 hover:bg-white cursor-pointer';
           btn.className = `mode-btn px-4 py-2 rounded-lg text-sm font-bold transition-all bg-transparent text-gray-400 ${disabledClass} flex-shrink-0`;
         }
       });
@@ -426,6 +434,7 @@
       screenQuiz.classList.remove('hidden');
       timerDisplay.classList.remove('hidden');
       
+      // クイズ中は is-quiz クラスを付与
       mapContainer.classList.add('is-quiz');
       
       updateModeButtons();
@@ -439,23 +448,22 @@
 
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
-      const mapW = 120;
-      const mapH = 120;
+      const mapSize = 1000;
       
-      // 出題時は基本スケールの3.5倍に拡大
-      const targetScale = baseScale * 3.5;
+      // 出題時は基本スケールの4倍に拡大
+      const targetScale = baseScale * 4;
 
       // 画面中央に、対象の重心が来るようにtranslateを計算
-      const tx = vw / 2 - (mapW * center.px) * targetScale;
-      const ty = vh / 2 - (mapH * center.py) * targetScale;
+      const tx = vw / 2 - (center.px * mapSize) * targetScale;
+      const ty = vh / 2 - (center.py * mapSize) * targetScale;
 
-      mapTransform.style.transformOrigin = `0 0`;
       mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${targetScale})`;
     }
 
     function generateQuestion() {
       currentPref = remainingPrefs.pop();
 
+      // 間違いの選択肢を3つ生成
       const wrongOptions = [];
       while (wrongOptions.length < 3) {
         const candidate = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital;
@@ -473,11 +481,11 @@
         questionTextEl.textContent = `${currentPref.name}の県庁所在地は？`;
       }
 
-      // 選択肢ボタンの生成
+      // 選択肢ボタンの生成 (白背景・ボーダーのフラットデザイン)
       optionsContainer.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = "py-4 px-2 bg-white border-2 border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors text-gray-700 shadow-sm";
+        btn.className = "py-4 px-2 bg-white border-2 border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors text-gray-700 shadow-sm cursor-pointer";
         btn.textContent = opt;
         btn.onclick = () => handleAnswer(opt);
         optionsContainer.appendChild(btn);
