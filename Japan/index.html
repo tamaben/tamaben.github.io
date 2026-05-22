@@ -58,7 +58,7 @@
       padding: 0 !important;
     }
 
-    /* 日本地図の全体境界線（白で抜いて県同士の境界を作る） */
+    /* 日本地図の全体境界線 */
     #map-transform li.p-eveMapLine,
     #map-transform li.p-eveMapLine::before {
       color: #ffffff !important;
@@ -66,7 +66,7 @@
       pointer-events: none;
     }
 
-    /* クイズ/学習中の非対象の都道府県 (背景と同化しないソリッドな薄グレー) */
+    /* 非対象の都道府県 (背景と同化しないソリッドな薄グレー) */
     #map-container.is-focus li:not(.is-open):not(.p-eveMapLine),
     #map-container.is-focus li:not(.is-open):not(.p-eveMapLine)::before {
       color: #e2e8f0 !important; 
@@ -97,7 +97,7 @@
   <div class="flex flex-col lg:flex-row flex-grow gap-6 max-w-7xl mx-auto w-full">
     
     <!-- ================= マップ表示エリア (左側) ================= -->
-    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden min-h-[350px] lg:min-h-[600px] relative z-10 shadow-sm">
+    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-[2rem] border border-gray-200 flex items-center justify-center overflow-hidden min-h-[350px] lg:min-h-[600px] relative z-10 shadow-sm">
       <div id="map-transform">
         <ul id="map-container">
           <li class="p-eveMapLine"></li>
@@ -123,41 +123,44 @@
 
     <!-- ================= UI/コントロールエリア (右側) ================= -->
     <div class="w-full lg:w-2/5 flex flex-col relative z-50">
-      <div class="bg-white rounded-3xl border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm">
+      <div class="bg-white rounded-[2rem] border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm relative">
         
         <!-- 共通ヘッダー -->
-        <header class="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
+        <header class="flex justify-between items-center p-6 border-b border-gray-100 shrink-0 bg-white relative z-20">
           <h1 class="text-xl font-black tracking-tighter flex items-center text-gray-800">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
+            <!-- 角丸に統一したマップピンアイコン -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
             </svg>
             日本地理学習
           </h1>
-          <button id="btn-back" class="hidden text-sm font-bold text-gray-500 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
+          <button id="btn-back" class="hidden text-sm font-bold text-gray-500 hover:text-emerald-600 bg-gray-100 hover:bg-emerald-50 px-3 py-1.5 rounded-xl transition-colors">
             トップに戻る
           </button>
         </header>
 
         <!-- ビューコンテナ -->
-        <div class="relative flex-grow overflow-hidden">
+        <div class="relative flex-grow overflow-hidden bg-white">
           
           <!-- 【1】 トップメニュー -->
           <div id="view-top" class="app-view absolute inset-0 p-6 flex flex-col justify-center overflow-y-auto">
             <p class="text-gray-400 font-bold mb-4 text-sm tracking-wider text-center">モードを選択してください</p>
             <div class="flex flex-col gap-4">
+              <!-- 学習モード -->
               <button onclick="switchView('study')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
                 <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl mr-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
                 <div>
                   <div class="font-bold text-lg text-gray-800">学習モード</div>
-                  <div class="text-xs text-gray-500 mt-1">各都道府県の特徴や場所を辞書のように学べます</div>
+                  <div class="text-xs text-gray-500 mt-1">都道府県の特徴や場所を辞書のように学べます</div>
                 </div>
               </button>
 
-              <button onclick="switchView('test-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
+              <!-- テストモード -->
+              <button onclick="switchView('test-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
                 <div class="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
                 </div>
                 <div>
                   <div class="font-bold text-lg text-gray-800">テストモード</div>
@@ -165,9 +168,10 @@
                 </div>
               </button>
 
-              <button onclick="switchView('ww-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
+              <!-- ワードウルフ -->
+              <button onclick="switchView('ww-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
                 <div class="bg-purple-100 text-purple-600 p-3 rounded-xl mr-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
                 <div>
                   <div class="font-bold text-lg text-gray-800">地理ワードウルフ</div>
@@ -178,22 +182,31 @@
           </div>
 
           <!-- 【2】 学習モード -->
-          <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-gray-50/50">
+          <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-gray-50">
             <!-- 詳細表示エリア -->
-            <div id="study-detail" class="shrink-0 p-6 bg-emerald-600 text-white shadow-md transition-all duration-300 transform -translate-y-full absolute w-full z-20">
+            <div id="study-detail" class="shrink-0 p-5 bg-emerald-700 text-white shadow-md transition-transform duration-300 transform -translate-y-full absolute w-full z-20 rounded-b-3xl">
               <div class="flex justify-between items-start mb-2">
                 <div class="text-emerald-200 font-bold text-xs tracking-widest" id="study-region"></div>
-                <button onclick="closeStudyDetail()" class="text-white hover:text-emerald-200"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                <button onclick="closeStudyDetail()" class="text-white hover:text-emerald-200 bg-emerald-800/50 p-1.5 rounded-full">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
               </div>
-              <div class="text-3xl font-black mb-4" id="study-name"></div>
-              <div class="grid grid-cols-2 gap-3 text-sm">
-                <div class="bg-emerald-700/50 p-3 rounded-xl">
-                  <div class="text-emerald-200 text-xs mb-1">県庁所在地</div>
-                  <div class="font-bold" id="study-capital"></div>
+              <div class="text-3xl font-black mb-4 flex items-end gap-3">
+                <span id="study-name"></span>
+                <span id="study-capital" class="text-sm font-bold text-emerald-200 mb-1"></span>
+              </div>
+              <div class="grid grid-cols-1 gap-2 text-sm">
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">名物・特産</div>
+                  <div class="font-bold text-sm" id="study-food"></div>
                 </div>
-                <div class="bg-emerald-700/50 p-3 rounded-xl">
-                  <div class="text-emerald-200 text-xs mb-1">特徴・名所</div>
-                  <div class="font-bold" id="study-feature"></div>
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">観光地・名所</div>
+                  <div class="font-bold text-sm" id="study-tourism"></div>
+                </div>
+                <div class="bg-emerald-800/50 p-3 rounded-2xl">
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">豆知識</div>
+                  <div class="font-medium text-xs leading-relaxed" id="study-trivia"></div>
                 </div>
               </div>
             </div>
@@ -205,58 +218,55 @@
           </div>
 
           <!-- 【3】 テスト設定 -->
-          <div id="view-test-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto">
-            <h2 class="text-lg font-bold mb-6 text-gray-800">テストの設定</h2>
+          <div id="view-test-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-4 text-gray-800">テストの設定</h2>
             
-            <div class="mb-8">
+            <div class="mb-auto">
               <p class="text-sm font-bold text-gray-500 mb-3">出題形式を選択</p>
-              <div class="flex flex-col gap-2" id="test-format-group">
-                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+              <div class="flex flex-col gap-2">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
                   <input type="radio" name="test-format" value="map2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500" checked>
                   <span class="ml-3 font-bold text-gray-700">マップ位置 → 都道府県名</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
                   <input type="radio" name="test-format" value="map2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-gray-700">マップ位置 → 県庁所在地</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
                   <input type="radio" name="test-format" value="name2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-gray-700">都道府県名 → 県庁所在地</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
                   <input type="radio" name="test-format" value="capital2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-gray-700">県庁所在地 → 都道府県名</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
                   <input type="radio" name="test-format" value="name2region" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-gray-700">都道府県名 → 地方名</span>
                 </label>
               </div>
             </div>
             
-            <button onclick="startTest()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">テストスタート (全47問)</button>
+            <button onclick="startTest()" class="w-full py-4 mt-6 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">テスト開始 (全47問)</button>
           </div>
 
           <!-- 【4】 テストプレイ画面 -->
           <div id="view-test-play" class="app-view hidden absolute inset-0 flex flex-col p-6">
-            <!-- 巨大タイマー -->
             <div id="test-timer-bg" class="absolute top-4 right-6 text-[100px] leading-none font-black text-gray-100 opacity-50 pointer-events-none select-none">15</div>
             
             <div class="relative z-10 flex-grow flex flex-col">
               <p class="text-sm font-bold text-gray-400 mb-2">問題 <span id="test-q-count">1</span> / 47</p>
               <p id="test-question-text" class="text-2xl font-black mb-6 text-gray-800 min-h-[4rem]"></p>
               
-              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border border-emerald-100 rounded-xl animate-fade-in">
+              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border border-emerald-100 rounded-2xl animate-fade-in">
                 <p class="text-emerald-600 font-bold text-sm flex items-center">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   ヒント: <span id="test-hint-text" class="ml-1"></span>
                 </p>
               </div>
               <div id="test-hint-space" class="mb-4 h-[46px]"></div>
 
-              <div id="test-options" class="grid grid-cols-2 gap-3 mt-auto">
-                <!-- 選択肢ボタン -->
-              </div>
+              <div id="test-options" class="grid grid-cols-2 gap-3 mt-auto"></div>
             </div>
           </div>
 
@@ -265,86 +275,121 @@
             <p class="text-emerald-600 font-bold mb-2 tracking-widest">RESULT</p>
             <div class="text-7xl font-black text-gray-800 mb-2"><span id="test-score">0</span><span class="text-3xl text-gray-300">/47</span></div>
             <p class="text-gray-500 font-bold mb-10">お疲れ様でした！</p>
-            <button onclick="switchView('test-config')" class="w-full py-4 bg-gray-800 hover:bg-gray-900 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
+            <button onclick="switchView('test-config')" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
             <button onclick="switchView('top')" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-black transition-colors">トップに戻る</button>
           </div>
 
           <!-- 【6】 ワードウルフ設定 -->
           <div id="view-ww-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
-            <h2 class="text-lg font-bold mb-6 text-gray-800">ワードウルフの設定</h2>
+            <h2 class="text-lg font-bold mb-6 text-gray-800 flex items-center">
+              <span class="bg-purple-100 text-purple-600 p-2 rounded-xl mr-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              ワードウルフの設定
+            </h2>
             
             <div class="mb-6">
               <label class="block text-sm font-bold text-gray-500 mb-2">プレイヤー人数</label>
-              <select id="ww-player-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-purple-500">
+              <select id="ww-player-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500">
                 <option value="3">3人</option>
                 <option value="4" selected>4人</option>
                 <option value="5">5人</option>
                 <option value="6">6人</option>
-                <option value="7">7人</option>
-                <option value="8">8人</option>
               </select>
             </div>
             
             <div class="mb-8">
-              <label class="block text-sm font-bold text-gray-500 mb-2">ウルフ（少数派）の数</label>
-              <select id="ww-wolf-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-purple-500">
+              <label class="block text-sm font-bold text-gray-500 mb-2">ウルフの数</label>
+              <select id="ww-wolf-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500">
                 <option value="1" selected>1人</option>
                 <option value="2">2人</option>
               </select>
             </div>
 
-            <div class="p-4 bg-purple-50 border border-purple-100 rounded-xl mb-8 text-sm text-purple-800 font-medium">
+            <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl mb-6 text-sm text-emerald-800 font-bold leading-relaxed">
               ルール：配られたお題の「都道府県」について話し合います。一人だけ違うお題（同じ地方の別の県）を配られたウルフを探し出してください！
             </div>
             
-            <button onclick="startWW()" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-purple-700 transition-colors mt-auto">ゲームスタート</button>
+            <button onclick="goToWWNames()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors mt-auto">次へ (名前入力)</button>
+          </div>
+
+          <!-- 【6.5】 ワードウルフ 名前入力 -->
+          <div id="view-ww-names" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-2 text-gray-800">参加者の名前</h2>
+            <p class="text-xs font-bold text-gray-500 mb-6">ゲームに参加する人の名前を入力してください</p>
+            <div id="ww-names-container" class="flex flex-col gap-3 mb-6 flex-grow"></div>
+            <button onclick="startWW()" class="w-full py-4 mt-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">ゲームスタート</button>
           </div>
 
           <!-- 【7】 ワードウルフ確認 -->
           <div id="view-ww-check" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
-            <h2 class="text-2xl font-black mb-2 text-gray-800">プレイヤー <span id="ww-player-num" class="text-purple-600 text-3xl">1</span> の番</h2>
-            <p class="text-gray-500 font-medium mb-8 text-sm">他の人に見られないように確認してください。</p>
+            <h2 class="text-2xl font-black mb-2 text-gray-800"><span id="ww-player-name" class="text-emerald-600 text-3xl"></span> さんの番</h2>
+            <p class="text-gray-500 font-bold mb-6 text-sm">周りに見られないように確認してください。</p>
             
-            <div class="relative w-full mb-8">
-              <button id="btn-ww-show" class="w-full py-12 bg-purple-600 text-white text-xl font-black rounded-2xl shadow-sm touch-none select-none">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto mb-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <div class="relative w-full mb-6 flex-grow flex flex-col justify-center">
+              <button id="btn-ww-show" class="w-full py-16 bg-emerald-600 text-white text-xl font-black rounded-[2rem] shadow-md touch-none select-none relative z-10 transition-transform active:scale-95">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 長押ししてお題を見る
               </button>
               
-              <!-- 長押し中に表示 -->
-              <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-purple-500 rounded-2xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 z-20">
-                <p class="text-sm text-gray-500 font-bold mb-1">あなたのお題</p>
-                <p class="text-4xl font-black text-purple-600" id="ww-word-text"></p>
-                <p class="text-xs text-gray-400 mt-2">マップも確認してください</p>
+              <!-- 長押し中表示 -->
+              <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-emerald-500 rounded-[2rem] flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-200 z-20 shadow-xl">
+                <p class="text-xs text-gray-500 font-bold mb-1">あなたのお題</p>
+                <p class="text-3xl font-black text-emerald-600 mb-4" id="ww-word-text"></p>
+                <div class="text-left bg-emerald-50 p-4 rounded-2xl text-emerald-900 text-xs w-full mb-2">
+                  <div class="mb-2"><span class="font-bold text-emerald-700">県庁所在地:</span> <span id="ww-word-capital"></span></div>
+                  <div class="mb-2"><span class="font-bold text-emerald-700">名物・特産:</span> <span id="ww-word-food"></span></div>
+                  <div class="mb-2"><span class="font-bold text-emerald-700">有名な場所:</span> <span id="ww-word-tourism"></span></div>
+                  <div><span class="font-bold text-emerald-700">豆知識:</span> <br><span id="ww-word-trivia"></span></div>
+                </div>
+                <p class="text-[10px] font-bold text-gray-400 mt-auto">※マップの位置も光っています</p>
               </div>
             </div>
 
-            <button id="btn-ww-next" onclick="nextWWPlayer()" class="w-full py-4 bg-gray-800 text-white font-bold rounded-xl opacity-0 pointer-events-none transition-opacity">次の人へ交代する</button>
+            <button id="btn-ww-next" onclick="nextWWPlayer()" class="w-full py-4 bg-gray-800 text-white font-bold rounded-2xl opacity-0 pointer-events-none transition-opacity">確認完了（次の人へ）</button>
           </div>
 
           <!-- 【8】 ワードウルフ議論 -->
-          <div id="view-ww-discuss" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center bg-purple-600 text-white">
-            <h2 class="text-xl font-bold mb-2 text-purple-200">議論タイム</h2>
-            <p class="text-sm font-medium mb-8 text-purple-100">誰が違うお題を持っているか話し合いましょう</p>
+          <div id="view-ww-discuss" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">議論タイム</h2>
+            <p class="text-sm font-bold mb-6 text-gray-500">誰が違うお題を持っているか話し合いましょう</p>
             
-            <div id="ww-timer" class="text-8xl font-black mb-12 tabular-nums">3:00</div>
+            <div id="ww-timer" class="text-7xl font-black mb-8 text-emerald-600 tabular-nums tracking-tighter">3:00</div>
             
-            <button onclick="finishWWDiscuss()" class="w-full py-4 bg-white text-purple-600 font-black rounded-2xl shadow-sm">議論を終了して投票へ</button>
+            <div class="w-full bg-gray-50 border border-gray-200 p-5 rounded-3xl mb-auto relative">
+              <p class="text-xs font-bold text-emerald-600 mb-3 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                話題に困ったら？
+              </p>
+              <p id="ww-question-text" class="text-sm font-bold text-gray-800 min-h-[3rem] flex items-center justify-center mb-4">「有名な温泉やテーマパークはある？」</p>
+              <button onclick="changeWWQuestion()" class="text-xs font-bold bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">別の質問を出す</button>
+            </div>
+            
+            <button onclick="goToWWVote()" class="w-full py-4 mt-6 bg-emerald-600 text-white font-black rounded-2xl shadow-sm hover:bg-emerald-700 transition-colors">議論を終了して投票へ</button>
           </div>
 
-          <!-- 【9】 ワードウルフ結果 -->
+          <!-- 【9】 ワードウルフ投票 -->
+          <div id="view-ww-vote" class="app-view hidden absolute inset-0 p-6 flex flex-col overflow-y-auto">
+            <h2 class="text-lg font-bold mb-2 text-gray-800 text-center">ウルフを指名する</h2>
+            <p class="text-sm font-bold text-gray-500 mb-6 text-center">話し合いの結果、最もウルフ（少数派）だと疑わしい人を1人選んでください。</p>
+            <div id="ww-vote-container" class="flex flex-col gap-3 mb-6 flex-grow"></div>
+            <button id="btn-ww-result" onclick="finishWWGame()" class="w-full py-4 bg-gray-800 text-white rounded-2xl font-black mt-auto opacity-50 pointer-events-none transition-opacity">結果を見る</button>
+          </div>
+
+          <!-- 【10】 ワードウルフ結果 -->
           <div id="view-ww-result" class="app-view hidden absolute inset-0 p-6 flex flex-col text-center overflow-y-auto">
-            <h2 class="text-2xl font-black mb-6 text-gray-800 mt-4">結果発表</h2>
+            <h2 class="text-2xl font-black mb-6 text-gray-800 mt-2">結果発表</h2>
             
-            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 mb-6">
+            <div class="bg-gray-50 rounded-3xl p-5 border border-gray-200 mb-6">
               <p class="text-sm font-bold text-gray-500 mb-4">それぞれの役職とお題</p>
               <ul id="ww-result-list" class="flex flex-col gap-3 text-left">
                 <!-- JSで生成 -->
               </ul>
             </div>
             
-            <button onclick="switchView('ww-config')" class="w-full py-4 bg-purple-600 text-white font-black rounded-2xl shadow-sm mb-3 mt-auto">もう一度遊ぶ</button>
-            <button onclick="switchView('top')" class="w-full py-4 bg-gray-100 text-gray-600 font-black rounded-2xl">トップに戻る</button>
+            <div id="ww-win-message" class="text-xl font-black text-emerald-600 mb-8"></div>
+            
+            <button onclick="switchView('ww-config')" class="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-sm hover:bg-emerald-700 transition-colors mb-3 mt-auto">もう一度遊ぶ</button>
           </div>
 
         </div>
@@ -353,66 +398,72 @@
   </div>
 
   <script>
+    // ================= データ定義 =================
     const PREFECTURES = [
-      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', feature: 'ジンギスカン・時計台' },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', feature: 'りんご・ねぶた祭' },
-      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', feature: 'わんこそば・中尊寺' },
-      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', feature: '牛タン・伊達政宗' },
-      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', feature: 'なまはげ・きりたんぽ' },
-      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', feature: 'さくらんぼ・蔵王' },
-      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', feature: '喜多方ラーメン・白虎隊' },
-      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', feature: '納豆・偕楽園' },
-      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', feature: '餃子・日光東照宮' },
-      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', feature: 'こんにゃく・草津温泉' },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', feature: '草加せんべい・鉄道博物館' },
-      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', feature: '落花生・ディズニーリゾート' },
-      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', feature: '東京タワー・浅草寺' },
-      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', feature: '中華街・鎌倉' },
-      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', feature: 'コシヒカリ・佐渡島' },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', feature: 'ホタルイカ・黒部ダム' },
-      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', feature: '兼六園・金箔' },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', feature: '越前ガニ・恐竜博物館' },
-      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', feature: 'ぶどう・富士山' },
-      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', feature: '信州そば・善光寺' },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', feature: '白川郷・飛騨牛' },
-      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', feature: 'お茶・富士山' },
-      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', feature: 'ひつまぶし・名古屋城' },
-      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', feature: '伊勢神宮・松阪牛' },
-      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', feature: '琵琶湖・ひこにゃん' },
-      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', feature: '金閣寺・抹茶' },
-      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', feature: 'たこ焼き・道頓堀' },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', feature: '神戸牛・姫路城' },
-      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', feature: '大仏・鹿' },
-      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', feature: 'みかん・高野山' },
-      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', feature: '鳥取砂丘・梨' },
-      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', feature: '出雲大社・しじみ' },
-      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', feature: '桃太郎・後楽園' },
-      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', feature: 'お好み焼き・厳島神社' },
-      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', feature: 'ふぐ・錦帯橋' },
-      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', feature: '阿波踊り・すだち' },
-      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', feature: '讃岐うどん・小豆島' },
-      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', feature: 'みかん・道後温泉' },
-      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', feature: 'カツオのタタキ・坂本龍馬' },
-      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', feature: '明太子・太宰府天満宮' },
-      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', feature: '吉野ヶ里遺跡・有田焼' },
-      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', feature: 'カステラ・ハウステンボス' },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', feature: '熊本城・馬刺し' },
-      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', feature: '別府温泉・とり天' },
-      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', feature: 'チキン南蛮・高千穂峡' },
-      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', feature: '桜島・黒豚' },
-      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', feature: '首里城・ゴーヤチャンプルー' }
+      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', food: '海鮮丼・ジンギスカン・メロン', tourism: '時計台・旭山動物園・富良野', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。' },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・弘前城・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。' },
+      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺金色堂・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。' },
+      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', food: '牛タン・ずんだ餅・笹かまぼこ', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。' },
+      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。' },
+      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', food: 'さくらんぼ・米沢牛・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。' },
+      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・スパリゾートハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。' },
+      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', food: '納豆・メロン', tourism: '偕楽園・国営ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。' },
+      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
+      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。' },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。' },
+      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', food: '落花生・なめろう', tourism: '東京ディズニーリゾート・鴨川シーワールド', trivia: '成田空港があり、日本の空の玄関口です。' },
+      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺・渋谷', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。' },
+      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏・箱根', trivia: '人口が東京に次いで日本で2番目に多いです。' },
+      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', food: 'コシヒカリ・笹だんご・日本酒', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。' },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', food: 'ホタルイカ・ます寿司・ブラックラーメン', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。' },
+      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', food: '金沢カレー・海鮮丼・治部煮', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。' },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。' },
+      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。' },
+      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', food: '信州そば・おやき・りんご', tourism: '善光寺・松本城・軽井沢', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。' },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
+      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', food: 'お茶・うなぎ・さわやか（ハンバーグ）', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。' },
+      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', food: 'ひつまぶし・味噌カツ・手羽先', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。' },
+      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', food: '松阪牛・赤福・伊勢うどん', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾（あごわん）や忍者発祥の地（伊賀）があります。' },
+      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。' },
+      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', food: '八ツ橋・湯豆腐・宇治抹茶', tourism: '金閣寺・清水寺・伏見稲荷', trivia: '古都として数多くの世界遺産や神社仏閣があります。' },
+      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', food: 'たこ焼き・お好み焼き・串カツ', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。' },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。' },
+      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。' },
+      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。' },
+      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。' },
+      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。' },
+      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。' },
+      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。' },
+      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。' },
+      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。' },
+      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。' },
+      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。' },
+      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。' },
+      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', food: '明太子・豚骨ラーメン・もつ鍋', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。' },
+      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡・有田ポーセリンパーク', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。' },
+      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。' },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。' },
+      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。' },
+      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。' },
+      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。' },
+      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', food: 'ゴーヤチャンプルー・沖縄そば', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。' }
     ];
 
     const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
+    
+    // 341個の質問・話題ヒント (カンマ区切りで詰め込んでいます)
+    const WW_QUESTIONS = [
+      "海に面している？","雪はよく降る？","有名な温泉はある？","新幹線は通っている？","特産品の果物は？","人口は多い方だと思う？","お城などの歴史的な建造物はある？","ご当地グルメは？","面積は大きい方？","修学旅行で行く？","テーマパークはある？","イメージカラーは？","動物で有名なものは？","冬は雪が積もる？","夏は暑い？","1年中暖かい？","梅雨は雨が多い？","台風がよく来る？","冬の寒さは厳しい？","日照時間は長い？","避暑地はある？","春の訪れは早い？","秋の紅葉は綺麗？","湿度は高い？","カラッとした気候？","ウィンタースポーツは盛ん？","海水浴のシーズンは長い？","豪雪地帯はある？","盆地で夏暑く冬寒い？","海風が強い？","寒暖差は大きい？","桜の開花は早い？","冬はこたつ必須？","スキー場は多い？","霧がよく発生する？","季節風の影響を受ける？","フェーン現象はある？","氷点下によくなる？","夏はクーラー必須？","降水量は多い？","快晴の日が多い？","流氷は見られる？","雪かきは日課？","山が多い地形？","海がない内陸県？","大きな湖はある？","島はある？","有名な川はある？","森林が多い？","平野が広い？","活火山はある？","国立公園はある？","砂丘や砂漠はある？","湿原や沼地はある？","標高の高い山はある？","半島はある？","有名な岬はある？","湾や入り江が多い？","海岸線は長い？","盆地はある？","カルスト台地はある？","渓谷や峡谷はある？","滝で有名な場所はある？","自然豊かで空気がきれい？","星空が綺麗？","固有の動植物はいる？","海の透明度は高い？","温泉の源泉数は多い？","地熱地帯はある？","ジオパークはある？","断崖絶壁はある？","干潟はある？","広い高原はある？","リアス式海岸はある？","天然記念物はある？","巨木や一本桜はある？","サンゴ礁はある？","マングローブはある？","高山植物はある？","日本百名山はある？","カルデラはある？","飛行機で行くことが多い？","東京からのアクセスは？","大阪からのアクセスは？","日本の北の方？南の方？","太平洋側？","日本海側？","瀬戸内海側？","隣接する県は多い？","首都圏？","関西圏？","橋を渡らないと行けない？","フェリーで行く？","高速のジャンクションはある？","日本の端っこの県？","東京から日帰りできる？","夜行バスで行く？","空港は2つ以上ある？","国際空港はある？","地下鉄はある？","路面電車はある？","モノレールはある？","新幹線の終点駅はある？","リニアの予定はある？","本州？北海道？四国？九州？","関東と関西の境界？","東北地方？","九州地方？","四国地方？","中国地方？","中部地方？","海峡に面している？","本州の端っこ？","のぞみは止まる？","交通系ICは使える？","船でしか行けない島はある？","山越えが必要？","海を挟んで接している？","国道1号線は通る？","ドライブに向いている？","ご当地ラーメンはある？","魚介類は美味しい？","有名なブランド牛はある？","お米の生産量は多い？","日本酒が有名？","焼酎が有名？","お茶の産地？","うどんやそばが有名？","ご当地鍋はある？","海藻が有名？","スイーツのお土産は？","乳製品は有名？","ご当地カレーはある？","B級グルメはある？","豚肉料理が有名？","地鶏が有名？","カニやエビが特産？","柑橘類が有名？","寒い地域の果物が有名？","メロンやスイカは？","いちごのブランドは？","独特な調味料を使う？","味噌汁は赤？白？","醤油ラーメン？豚骨？","海鮮丼といえば？","練り物が有名？","珍味はある？","和菓子のお土産は？","洋菓子の消費量が多い？","パンの消費量が多い？","ご飯のお供がある？","ご当地バーガーはある？","唐揚げのご当地味は？","屋台文化はある？","モーニング文化はある？","餃子の消費量は？","たこ焼き・お好み焼き？","お餅や団子を使う郷土料理？","ジビエは食べる？","独特な駅弁はある？","お茶漬けや雑炊のご当地？","発酵食品が有名？","うなぎが有名？","牡蠣が特産？","マグロやカツオは？","ご当地アイスはある？","発祥のチェーン店はある？","方言はかわいい？","独特のイントネーション？","一人称が変わっている？","語尾に特徴がある？","他県民には通じない言葉がある？","敬語のような方言はある？","早口なイメージ？","のんびりした話し方？","テレビでよくいじられる？","お笑い芸人が多い？","有名なミュージシャンの出身地？","アイドルが多い？","スポーツ選手が多い？","プロ野球の球団はある？","Jリーグのチームはある？","J1のサッカーチームはある？","バスケのBリーグチームはある？","高校野球が強い？","サッカーの強豪校はある？","ラグビーが盛ん？","マラソンや駅伝が強い？","ウィンタースポーツの選手が多い？","相撲取りが多い？","柔道が盛ん？","剣道が強い？","卓球が盛ん？","体操のメダリストがいる？","水泳の強豪？","バレーボールが強い？","フィギュアスケートが盛ん？","スキー・スノボの選手が多い？","オリンピックのメダリストが多い？","プロレスラーの出身地？","格闘技が盛ん？","モータースポーツのサーキットはある？","競馬場はある？","競輪場はある？","競艇場はある？","オートレース場はある？","ボートレース場はある？","お祭り好きが多い？","日本三大祭りがある？","七夕祭りは有名？","ねぶた・ねぷたがある？","祇園祭のようなお祭りはある？","阿波踊りのような踊りはある？","雪祭りは有名？","花火大会の規模が大きい？","だんじり祭りのような激しいお祭りはある？","お盆の行事が独特？","お正月料理が変わっている？","節分の風習が独特？","ひな祭りに落花生をまく？","七五三の祝い方が違う？","お月見の風習は？","クリスマスに食べるものが違う？","大晦日の過ごし方は？","成人式が派手？","結婚式が豪華？","お葬式の風習が違う？","お墓参りの習慣は？","独自の宗教・信仰がある？","パワースポットが多い？","世界遺産はある？","国宝の建築物はある？","重要文化財が多い？","史跡や遺跡がある？","古墳がたくさんある？","城跡が有名？","お城は国宝？","城下町の風情が残っている？","武家屋敷がある？","古い町並みが保存されている？","近代建築の名作がある？","有名な美術館はある？","博物館の規模が大きい？","水族館が有名？","動物園が人気？","植物園が充実している？","科学館が面白い？","図書館が立派？","コンサートホールが大きい？","劇場やオペラハウスはある？","映画のロケ地になった？","ドラマの舞台になった？","アニメの聖地巡礼で人気？","小説の舞台になった？","ご当地キャラクターは有名？","ゆるキャラグランプリで優勝した？","特産品をモチーフにしたキャラがいる？","ご当地ヒーローがいる？","方言を使ったキャラがいる？","歴史上の人物のキャラ？","動物モチーフのキャラ？","ご当地キティちゃんはある？","ご当地キューピーはある？","ご当地チョッパーはある？","ご当地ガチャピンはある？","ご当地ドラえもんはある？","ご当地リラックマはある？","ご当地スヌーピーはある？","ご当地目玉おやじはある？","ご当地ショボーンはある？","ご当地まりもっこりはある？","お土産の定番キーホルダーは？","木刀やペナントは売っている？","提灯のお土産はある？","絵葉書は売っている？","スノードームのお土産はある？","ご当地Tシャツは？","ご当地ステッカーは？","ご当地マグカップは？","ご当地タンブラーは？","ご当地トートバッグは？","ご当地エコバッグは？","ご当地タオルは？","ご当地手ぬぐいは？","ご当地ハンカチは？","ご当地うちわは？","ご当地扇子は？","ご当地カレンダーは？","県民性は真面目？","おしゃべり好き？","新しいもの好き？","保守的？","お金にシビア？","おおらか？","せっかち？","のんびり屋？","頑固？","人見知り？","社交的？","見栄っ張り？","倹約家？","浪費家？","お酒に強い？","甘党が多い？","辛党が多い？","うどん派？そば派？","コーヒー派？紅茶派？","犬派？猫派？","インドア派？アウトドア派？","車社会？電車社会？","持ち家率が高い？","共働きが多い？","三世代同居が多い？","長寿の県？","出生率が高い？","教育熱心？","習い事をよくする？","スポーツ少年団が盛ん？","塾に通う子が多い？","私立の中学に行く子が多い？","高校は公立志向？私立志向？","大学進学率は高い？","地元に残る人が多い？","上京する人が多い？","Uターンする人が多い？","Iターンが多い？","移住者に人気？","別荘を持つ人が多い？","リゾートバイトで行く？","ワーケーションに向いている？","ノマドワーカーが多い？","起業する人が多い？","社長の輩出数が多い？","フリーランスが多い？","副業をしている人が多い？","農業に従事する人が多い？","漁業が盛ん？","林業が盛ん？","製造業が強い？","IT企業が多い？","観光業が主要産業？","伝統工芸の職人が多い？","医療や福祉の仕事が多い？","公務員志向が強い？","接客業が多い？","建設業が盛ん？","運輸・物流業が多い？","金融業が強い？","不動産業が盛ん？","小売業が多い？","飲食業が盛ん？","サービス業が多い？","エンタメ産業がある？","メディア・出版業がある？","教育産業が盛ん？","美容・理容業が多い？","アパレル産業がある？","ブライダル産業が盛ん？","葬祭業が多い？","ペット産業が盛ん？","スポーツ産業がある？","ゲーム産業がある？","音楽産業がある？"
+    ];
 
-    // 共通
+    // ================= 共通処理 =================
     const mapWrapper = document.getElementById('map-wrapper');
     const mapTransform = document.getElementById('map-transform');
     const mapContainer = document.getElementById('map-container');
     const allPrefElements = document.querySelectorAll('#map-container li');
     let baseScale = 1;
+    let prefCenters = {};
 
-    // ビュー切り替え
     function switchView(viewId) {
       document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
       document.getElementById('view-' + viewId).classList.remove('hidden');
@@ -426,10 +477,10 @@
       }
 
       if (viewId === 'study') initStudyMode();
+      if (viewId === 'ww-config' || viewId === 'test-config') highlightMap(null, false, false);
     }
 
     document.getElementById('btn-back').addEventListener('click', () => {
-      // 進行中の処理をリセット
       clearInterval(testState.interval);
       clearInterval(wwState.interval);
       switchView('top');
@@ -452,7 +503,47 @@
       resetMapScale();
     }
 
-    function highlightMap(prefId, focusMode = true) {
+    function calculatePrefCenters() {
+      const fontSize = 120, offset = 40, size = fontSize + offset * 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      
+      PREFECTURES.forEach(p => {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (!el) return;
+        let content = window.getComputedStyle(el, '::before').content;
+        if (content && content !== 'none') {
+          content = content.replace(/^["']|["']$/g, '');
+          if (content.length > 1 && content.startsWith('\\')) {
+            content = String.fromCharCode(parseInt(content.substring(1), 16));
+          }
+          ctx.clearRect(0, 0, size, size);
+          ctx.font = `${fontSize}px map`;
+          ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.fillStyle = 'black';
+          ctx.fillText(content, offset, offset);
+          
+          const imgData = ctx.getImageData(0, 0, size, size).data;
+          let minX = size, minY = size, maxX = 0, maxY = 0, found = false;
+          for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+              if (imgData[(y * size + x) * 4 + 3] > 10) { 
+                if (x < minX) minX = x; if (x > maxX) maxX = x;
+                if (y < minY) minY = y; if (y > maxY) maxY = y;
+                found = true;
+              }
+            }
+          }
+          if (found) {
+            prefCenters[p.id] = { px: (minX + maxX)/2/fontSize - (offset/fontSize), py: (minY + maxY)/2/fontSize - (offset/fontSize) };
+          } else {
+            prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
+          }
+        }
+      });
+    }
+
+    function highlightMap(prefId, focusMode = true, zoom = false) {
       allPrefElements.forEach(el => el.classList.remove('is-open'));
       if (focusMode) mapContainer.classList.add('is-focus');
       else mapContainer.classList.remove('is-focus');
@@ -460,18 +551,33 @@
       if (prefId) {
         const targetEl = document.querySelector(`.p-eveMapPref--${prefId}`);
         if (targetEl) targetEl.classList.add('is-open');
+        
+        if (zoom && prefCenters[prefId]) {
+          const vw = mapWrapper.clientWidth;
+          const vh = mapWrapper.clientHeight;
+          const mapSize = 1000;
+          const targetScale = baseScale * 4;
+          const tx = vw / 2 - (prefCenters[prefId].px * mapSize) * targetScale;
+          const ty = vh / 2 - (prefCenters[prefId].py * mapSize) * targetScale;
+          mapTransform.style.transformOrigin = `0 0`;
+          mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${targetScale})`;
+        } else {
+          resetMapScale();
+        }
+      } else {
+        resetMapScale();
       }
     }
 
     // ================= 学習モード =================
     function initStudyMode() {
-      resetMapState();
+      highlightMap(null, false, false);
       const container = document.getElementById('study-list-container');
-      if (container.innerHTML !== '') return; // 生成済みならスキップ
+      if (container.innerHTML !== '') return;
 
       REGIONS.forEach(region => {
         const title = document.createElement('div');
-        title.className = "text-xs font-bold text-gray-400 mt-4 mb-2 pl-2";
+        title.className = "text-xs font-bold text-gray-400 mt-5 mb-2 pl-3 border-l-4 border-emerald-500 rounded-sm";
         title.textContent = region;
         container.appendChild(title);
 
@@ -480,7 +586,7 @@
 
         PREFECTURES.filter(p => p.region === region).forEach(p => {
           const btn = document.createElement('button');
-          btn.className = "bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition-colors";
+          btn.className = "bg-white border-2 border-gray-100 py-3 rounded-2xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-sm cursor-pointer";
           btn.textContent = p.name;
           btn.onclick = () => showStudyDetail(p);
           grid.appendChild(btn);
@@ -490,11 +596,13 @@
     }
 
     function showStudyDetail(pref) {
-      highlightMap(pref.id, true);
+      highlightMap(pref.id, true, true);
       document.getElementById('study-region').textContent = pref.region;
       document.getElementById('study-name').textContent = pref.name;
       document.getElementById('study-capital').textContent = pref.capital;
-      document.getElementById('study-feature').textContent = pref.feature;
+      document.getElementById('study-food').textContent = pref.food;
+      document.getElementById('study-tourism').textContent = pref.tourism;
+      document.getElementById('study-trivia').textContent = pref.trivia;
       
       const detail = document.getElementById('study-detail');
       detail.classList.remove('-translate-y-full');
@@ -504,7 +612,7 @@
     function closeStudyDetail() {
       document.getElementById('study-detail').classList.remove('translate-y-0');
       document.getElementById('study-detail').classList.add('-translate-y-full');
-      resetMapState();
+      highlightMap(null, false, false);
     }
 
     // ================= テストモード =================
@@ -532,37 +640,35 @@
       const p = testState.currentPref;
       const f = testState.format;
 
-      // 問題文と正解、ヒントの設定
       let qText = '', correctAns = '', hint = p.region;
       
       if (f === 'map2name') {
         qText = 'この<span class="text-emerald-600">都道府県名</span>は？';
         correctAns = p.name;
-        highlightMap(p.id, true);
+        highlightMap(p.id, true, true);
       } else if (f === 'map2capital') {
         qText = 'この県の<span class="text-emerald-600">県庁所在地</span>は？';
         correctAns = p.capital;
-        highlightMap(p.id, true);
+        highlightMap(p.id, true, true);
       } else if (f === 'name2capital') {
         qText = `${p.name}の<span class="text-emerald-600">県庁所在地</span>は？`;
         correctAns = p.capital;
-        highlightMap(null, false);
+        highlightMap(null, false, false);
       } else if (f === 'capital2name') {
         qText = `県庁所在地が「${p.capital}」の<span class="text-emerald-600">都道府県名</span>は？`;
         correctAns = p.name;
-        highlightMap(null, false);
+        highlightMap(null, false, false);
       } else if (f === 'name2region') {
         qText = `${p.name}は何<span class="text-emerald-600">地方</span>？`;
         correctAns = p.region;
-        hint = p.feature; // ヒントを特徴に変更
-        highlightMap(null, false);
+        hint = "名物: " + p.food; 
+        highlightMap(null, false, false);
       }
 
       document.getElementById('test-q-count').textContent = testState.currentQ;
       document.getElementById('test-question-text').innerHTML = qText;
       document.getElementById('test-hint-text').textContent = hint;
 
-      // 選択肢の生成
       const optionsSet = new Set([correctAns]);
       while (optionsSet.size < 4) {
         const randP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
@@ -576,13 +682,12 @@
       container.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = "py-4 px-2 bg-white border-2 border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm";
+        btn.className = "py-5 px-2 bg-white border-2 border-gray-100 rounded-2xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm cursor-pointer";
         btn.textContent = opt;
         btn.onclick = () => answerTest(opt, correctAns);
         container.appendChild(btn);
       });
 
-      // タイマーリセット
       document.getElementById('test-hint').classList.add('hidden');
       document.getElementById('test-hint-space').classList.remove('hidden');
       testState.timer = 15;
@@ -592,25 +697,19 @@
       testState.interval = setInterval(() => {
         testState.timer--;
         updateTestTimerUI();
-        
-        if (testState.timer === 5) { // 5秒でヒント
+        if (testState.timer === 5) {
           document.getElementById('test-hint').classList.remove('hidden');
           document.getElementById('test-hint-space').classList.add('hidden');
         }
-        if (testState.timer <= 0) {
-          answerTest(null, correctAns); // 時間切れ
-        }
+        if (testState.timer <= 0) answerTest(null, correctAns); 
       }, 1000);
     }
 
     function updateTestTimerUI() {
       const td = document.getElementById('test-timer-bg');
       td.textContent = testState.timer;
-      if (testState.timer <= 5) {
-        td.classList.replace('text-gray-100', 'text-rose-100');
-      } else {
-        td.classList.replace('text-rose-100', 'text-gray-100');
-      }
+      if (testState.timer <= 5) td.classList.replace('text-gray-100', 'text-rose-100');
+      else td.classList.replace('text-rose-100', 'text-gray-100');
     }
 
     function answerTest(ans, correctAns) {
@@ -621,46 +720,57 @@
     }
 
     function showTestResult() {
-      resetMapState();
+      highlightMap(null, false, false);
       document.getElementById('test-score').textContent = testState.score;
       switchView('test-result');
     }
 
 
     // ================= 地理ワードウルフ =================
-    let wwState = { players: [], currentIdx: 0, timer: 180, interval: null };
+    let wwState = { players: [], currentIdx: 0, timer: 180, interval: null, votedPlayer: null };
 
-    // 人数変更時のウルフ数制御
     document.getElementById('ww-player-count').addEventListener('change', (e) => {
       const pc = parseInt(e.target.value);
       const wcSelect = document.getElementById('ww-wolf-count');
       if (pc >= 6) {
         if (wcSelect.options.length === 1) wcSelect.add(new Option('2人', '2'));
       } else {
-        if (wcSelect.options.length > 1) {
-          wcSelect.value = '1';
-          wcSelect.remove(1);
-        }
+        if (wcSelect.options.length > 1) { wcSelect.value = '1'; wcSelect.remove(1); }
       }
     });
+
+    function goToWWNames() {
+      const pc = parseInt(document.getElementById('ww-player-count').value);
+      const container = document.getElementById('ww-names-container');
+      container.innerHTML = '';
+      for(let i=0; i<pc; i++){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = "w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl font-bold text-gray-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors ww-name-input";
+        input.placeholder = `プレイヤー ${i+1} の名前`;
+        input.value = `プレイヤー ${i+1}`;
+        container.appendChild(input);
+      }
+      switchView('ww-names');
+    }
 
     function startWW() {
       const pc = parseInt(document.getElementById('ww-player-count').value);
       const wc = parseInt(document.getElementById('ww-wolf-count').value);
+      const inputs = document.querySelectorAll('.ww-name-input');
+      const names = Array.from(inputs).map(inp => inp.value || inp.placeholder);
       
-      // 同じ地方から2県選ぶ
       const region = REGIONS[Math.floor(Math.random() * REGIONS.length)];
       const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
-      // 万が一1県しかない地方があれば全体から選ぶ（実際にはないが）
       const prefA = prefsInRegion[0];
       const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p=>p.id!==prefA.id);
 
-      // 役職割り当て
       let roles = Array(wc).fill('wolf').concat(Array(pc - wc).fill('citizen'));
       roles = roles.sort(() => Math.random() - 0.5);
       
       wwState.players = roles.map((r, i) => ({
         id: i + 1,
+        name: names[i],
         role: r,
         pref: r === 'wolf' ? prefB : prefA
       }));
@@ -672,19 +782,19 @@
 
     function setupWWCheckUI() {
       const player = wwState.players[wwState.currentIdx];
-      document.getElementById('ww-player-num').textContent = player.id;
+      document.getElementById('ww-player-name').textContent = player.name;
       document.getElementById('ww-word-text').textContent = player.pref.name;
+      document.getElementById('ww-word-capital').textContent = player.pref.capital;
+      document.getElementById('ww-word-food').textContent = player.pref.food;
+      document.getElementById('ww-word-tourism').textContent = player.pref.tourism;
+      document.getElementById('ww-word-trivia').textContent = player.pref.trivia;
       
-      const btnShow = document.getElementById('btn-show');
-      const layer = document.getElementById('ww-word-layer');
-      const btnNext = document.getElementById('btn-ww-next');
-      
-      btnNext.classList.add('opacity-0', 'pointer-events-none');
-      layer.classList.add('opacity-0', 'pointer-events-none');
-      resetMapState();
+      document.getElementById('btn-ww-next').classList.add('opacity-0', 'pointer-events-none');
+      document.getElementById('ww-word-layer').classList.add('opacity-0', 'pointer-events-none');
+      highlightMap(null, false, false);
     }
 
-    // 長押しイベント設定
+    // 長押しイベント
     const btnShow = document.getElementById('btn-ww-show');
     const wordLayer = document.getElementById('ww-word-layer');
     const btnNext = document.getElementById('btn-ww-next');
@@ -692,15 +802,12 @@
     function showWWWord(e) {
       e.preventDefault();
       wordLayer.classList.remove('opacity-0', 'pointer-events-none');
-      const p = wwState.players[wwState.currentIdx];
-      highlightMap(p.pref.id, true);
+      highlightMap(wwState.players[wwState.currentIdx].pref.id, true, true);
     }
-
     function hideWWWord(e) {
       e.preventDefault();
       wordLayer.classList.add('opacity-0', 'pointer-events-none');
-      resetMapState();
-      // 一度見たら次へ進める
+      highlightMap(null, false, false);
       btnNext.classList.remove('opacity-0', 'pointer-events-none');
     }
 
@@ -713,15 +820,13 @@
 
     function nextWWPlayer() {
       wwState.currentIdx++;
-      if (wwState.currentIdx >= wwState.players.length) {
-        startWWDiscuss();
-      } else {
-        setupWWCheckUI();
-      }
+      if (wwState.currentIdx >= wwState.players.length) startWWDiscuss();
+      else setupWWCheckUI();
     }
 
     function startWWDiscuss() {
       switchView('ww-discuss');
+      changeWWQuestion();
       wwState.timer = 180;
       updateWWTimerUI();
       
@@ -729,9 +834,7 @@
       wwState.interval = setInterval(() => {
         wwState.timer--;
         updateWWTimerUI();
-        if (wwState.timer <= 0) {
-          finishWWDiscuss();
-        }
+        if (wwState.timer <= 0) goToWWVote();
       }, 1000);
     }
 
@@ -741,28 +844,63 @@
       document.getElementById('ww-timer').textContent = `${m}:${s}`;
     }
 
-    function finishWWDiscuss() {
+    function changeWWQuestion() {
+      const q = WW_QUESTIONS[Math.floor(Math.random() * WW_QUESTIONS.length)];
+      document.getElementById('ww-question-text').textContent = `「${q}」`;
+    }
+
+    function goToWWVote() {
       clearInterval(wwState.interval);
+      switchView('ww-vote');
+      
+      const container = document.getElementById('ww-vote-container');
+      container.innerHTML = '';
+      wwState.votedPlayer = null;
+      document.getElementById('btn-ww-result').classList.add('opacity-50', 'pointer-events-none');
+      
+      wwState.players.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = "py-5 px-4 bg-white border-2 border-gray-100 rounded-2xl font-bold text-gray-700 text-left hover:bg-emerald-50 hover:border-emerald-500 transition-colors shadow-sm cursor-pointer ww-vote-btn";
+        btn.textContent = p.name;
+        btn.onclick = () => {
+          document.querySelectorAll('.ww-vote-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600'));
+          btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+          document.getElementById('btn-ww-result').classList.remove('opacity-50', 'pointer-events-none');
+          wwState.votedPlayer = p;
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function finishWWGame() {
       switchView('ww-result');
       
       const list = document.getElementById('ww-result-list');
       list.innerHTML = '';
       wwState.players.forEach(p => {
         const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-2 border-b border-gray-100 last:border-0";
+        li.className = "flex justify-between items-center py-3 border-b border-gray-100 last:border-0";
         const roleHtml = p.role === 'wolf' 
-          ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-1 rounded">ウルフ</span>` 
-          : `<span class="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded">市民</span>`;
-        li.innerHTML = `<div><span class="font-bold mr-2">プレイヤー ${p.id}</span> ${roleHtml}</div><div class="font-black text-purple-600">${p.pref.name}</div>`;
+          ? `<span class="bg-rose-100 text-rose-600 text-[10px] font-black px-2 py-1 rounded-md ml-2">ウルフ</span>` 
+          : `<span class="bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-1 rounded-md ml-2">市民</span>`;
+        li.innerHTML = `<div><span class="font-bold text-gray-800">${p.name}</span>${roleHtml}</div><div class="font-black text-emerald-600">${p.pref.name}</div>`;
         list.appendChild(li);
       });
+
+      const msg = document.getElementById('ww-win-message');
+      if (wwState.votedPlayer.role === 'wolf') {
+        msg.innerHTML = `市民の勝利！<br><span class="text-sm font-bold text-gray-500 mt-2 block">見事ウルフ(${wwState.votedPlayer.name})を見つけ出しました！</span>`;
+      } else {
+        const wolves = wwState.players.filter(p=>p.role==='wolf').map(p=>p.name).join(', ');
+        msg.innerHTML = `<span class="text-rose-600">ウルフの勝利！</span><br><span class="text-sm font-bold text-gray-500 mt-2 block">ウルフは ${wolves} でした。</span>`;
+      }
     }
 
     // 初期起動
     window.addEventListener('DOMContentLoaded', () => {
       document.fonts.ready.then(() => {
+        setTimeout(calculatePrefCenters, 100);
         resetMapScale();
-        window.addEventListener('resize', resetMapScale);
       });
     });
   </script>
