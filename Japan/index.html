@@ -56,25 +56,31 @@
 
     /* ================= マップのモード別カラー ================= */
     
-    /* 【1】 通常モード (学習, テスト, 連想など) */
-    #map-container.mode-normal li { color: #e2e8f0 !important; } /* ベース: 薄グレー */
-    #map-container.mode-normal li.is-open { color: #10b981 !important; z-index: 10; filter: drop-shadow(0px 2px 8px rgba(16,185,129,0.3)) !important; } /* アクティブ: エメラルド */
+    /* 【1】 通常モード (学習, テストなど) */
+    #map-container.mode-normal li:not(.p-eveMapLine) { color: #e2e8f0 !important; opacity: 1 !important; }
+    #map-container.mode-normal li.is-open { color: #10b981 !important; z-index: 10; filter: drop-shadow(0px 2px 8px rgba(16,185,129,0.3)) !important; }
     
     /* 【2】 シルエットモード */
-    #map-container.mode-silhouette li { 
-      color: #cbd5e1 !important; /* ベース: グレー */
-      opacity: 0.4 !important;   /* 薄くうっすら見せる */
+    #map-container.mode-silhouette li:not(.p-eveMapLine) { 
+      color: #cbd5e1 !important; 
+      opacity: 0.25 !important; /* 問題以外の県をうっすら表示 */
     } 
-    #map-container.mode-silhouette li.is-open { 
-      color: #1e293b !important; /* アクティブ: 濃い黒寄りのグレー */
+    #map-container.mode-silhouette li.p-eveMapLine {
+      opacity: 0.15 !important;
+    }
+    #map-container.mode-silhouette li.is-open,
+    #map-container.mode-silhouette li.is-open::before { 
+      color: #1e293b !important; /* 問題の県は濃い黒寄りのグレー */
       opacity: 1 !important; 
       z-index: 10; 
-      filter: drop-shadow(0px 4px 12px rgba(0,0,0,0.2)) !important;
+      filter: drop-shadow(0px 4px 12px rgba(0,0,0,0.25)) !important;
     }
 
     /* アニメーション */
     @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
   </style>
 </head>
 
@@ -127,50 +133,74 @@
     <!-- ================= コンテンツエリア (右側) ================= -->
     <div class="w-full lg:w-1/2 flex-1 bg-white rounded-[2rem] shadow-sm relative overflow-hidden flex flex-col border-2 border-slate-100">
       
-      <!-- 【1】トップメニュー -->
-      <div id="view-top" class="app-view absolute inset-0 p-5 md:p-6 flex flex-col overflow-y-auto no-scrollbar">
-        <h2 class="text-xl font-black text-slate-800 mb-4 text-center mt-2">何を学びますか？</h2>
+      <!-- 【1】トップメニュー (タブ切り替え式) -->
+      <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden">
         
-        <p class="text-[11px] font-bold text-slate-400 mb-2 tracking-widest pl-2">1人で学ぶ・遊ぶ</p>
-        <div class="grid grid-cols-2 gap-3 mb-6">
-          <button onclick="switchView('study')" class="flex flex-col items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-emerald-300">
-            <div class="bg-emerald-100 text-emerald-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
-            <span class="font-black text-sm text-slate-800">学習辞書</span>
-            <span class="text-[9px] font-bold text-slate-400 mt-1">県の特徴を学ぶ</span>
-          </button>
-          <button onclick="switchView('test-config')" class="flex flex-col items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-blue-300">
-            <div class="bg-blue-100 text-blue-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
-            <span class="font-black text-sm text-slate-800">テスト</span>
-            <span class="text-[9px] font-bold text-slate-400 mt-1">様々な形式で出題</span>
-          </button>
-          <button onclick="startQuiz('silhouette')" class="flex flex-col items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-slate-800">
-            <div class="bg-slate-800 text-white p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
-            <span class="font-black text-sm text-slate-800">シルエット</span>
-            <span class="text-[9px] font-bold text-slate-400 mt-1">形だけで当てる</span>
-          </button>
-          <button onclick="startQuiz('local')" class="flex flex-col items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-orange-300">
-            <div class="bg-orange-100 text-orange-500 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a5 5 0 1 0 5 5c0 2.2-2 3-2 3v2H9v-2s-2-.8-2-3a5 5 0 1 0 5-5Z"/></svg></div>
-            <span class="font-black text-sm text-slate-800">ご当地クイズ</span>
-            <span class="text-[9px] font-bold text-slate-400 mt-1">名産品から推理</span>
-          </button>
+        <!-- タブナビゲーション -->
+        <div class="flex p-3 gap-2 bg-slate-50 border-b border-slate-100 shrink-0 overflow-x-auto no-scrollbar">
+          <button onclick="switchTopTab('basic')" id="tab-basic" class="flex-1 py-3 px-2 rounded-2xl font-black text-sm bg-white shadow-sm text-emerald-600 transition-all active:scale-95 whitespace-nowrap">基礎学習</button>
+          <button onclick="switchTopTab('advance')" id="tab-advance" class="flex-1 py-3 px-2 rounded-2xl font-black text-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">応用クイズ</button>
+          <button onclick="switchTopTab('party')" id="tab-party" class="flex-1 py-3 px-2 rounded-2xl font-black text-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap">マルチプレイ</button>
         </div>
 
-        <p class="text-[11px] font-bold text-slate-400 mb-2 tracking-widest pl-2">みんなで遊ぶ (マルチプレイ)</p>
-        <div class="flex flex-col gap-3 pb-4">
-          <button onclick="switchPartyConfig('ww')" class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-purple-300">
-            <div class="bg-purple-100 text-purple-500 p-3 rounded-2xl mr-4 shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            <div>
-              <div class="font-black text-sm text-slate-800">地理ワードウルフ</div>
-              <div class="text-[10px] font-bold text-slate-400 mt-0.5">1人だけ違う県を配られた人を探せ！</div>
-            </div>
-          </button>
-          <button onclick="switchPartyConfig('ng')" class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-rose-300">
-            <div class="bg-rose-100 text-rose-500 p-3 rounded-2xl mr-4 shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg></div>
-            <div>
-              <div class="font-black text-sm text-slate-800">地理NGワード</div>
-              <div class="text-[10px] font-bold text-slate-400 mt-0.5">NGワードを言わずに県を語れ！</div>
-            </div>
-          </button>
+        <!-- タブコンテンツ -->
+        <div class="flex-grow overflow-y-auto no-scrollbar p-5 pb-8 relative">
+          
+          <!-- タブ1: 基礎学習 -->
+          <div id="top-content-basic" class="flex flex-col gap-3 animate-fade-in">
+            <button onclick="switchView('study')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-emerald-300 shadow-sm">
+              <div class="bg-emerald-100 text-emerald-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
+              <span class="font-black text-base text-slate-800">学習辞書</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">県の特徴や特産品を学べます</span>
+            </button>
+            <button onclick="switchView('test-config')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-blue-300 shadow-sm">
+              <div class="bg-blue-100 text-blue-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
+              <span class="font-black text-base text-slate-800">総合テスト</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">様々な形式で実力をテストします</span>
+            </button>
+            <button onclick="switchView('sil-config')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-amber-300 shadow-sm">
+              <div class="bg-amber-100 text-amber-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+              <span class="font-black text-base text-slate-800">シルエットクイズ</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">県の形だけで名前や県庁所在地を当てます</span>
+            </button>
+          </div>
+
+          <!-- タブ2: 応用クイズ (中高生・大人向け) -->
+          <div id="top-content-advance" class="hidden flex-col gap-3 animate-fade-in">
+            <button onclick="startQuiz('local', 'name')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-orange-300 shadow-sm">
+              <div class="bg-orange-100 text-orange-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a5 5 0 1 0 5 5c0 2.2-2 3-2 3v2H9v-2s-2-.8-2-3a5 5 0 1 0 5-5Z"/></svg></div>
+              <span class="font-black text-base text-slate-800">ご当地クイズ</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">名産品や観光地から県を推理します</span>
+            </button>
+            <button onclick="startQuiz('oldprov', 'name')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-indigo-300 shadow-sm">
+              <div class="bg-indigo-100 text-indigo-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+              <span class="font-black text-base text-slate-800">旧国名クイズ</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">「尾張・越後」など昔の国名から県を当てます</span>
+            </button>
+            <button onclick="startQuiz('hardread', 'name')" class="flex flex-col items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform hover:border-rose-300 shadow-sm">
+              <div class="bg-rose-100 text-rose-500 p-3 rounded-2xl mb-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
+              <span class="font-black text-base text-slate-800">難読地名クイズ</span>
+              <span class="text-[10px] font-bold text-slate-400 mt-1">読めない地名がどの県にあるか当てます</span>
+            </button>
+          </div>
+
+          <!-- タブ3: マルチプレイ -->
+          <div id="top-content-party" class="hidden flex-col gap-3 animate-fade-in">
+            <button onclick="switchPartyConfig('ww')" class="flex items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-purple-300 shadow-sm">
+              <div class="bg-purple-100 text-purple-500 p-3 rounded-2xl mr-4 shrink-0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div>
+                <div class="font-black text-base text-slate-800">地理ワードウルフ</div>
+                <div class="text-[10px] font-bold text-slate-400 mt-1">1人だけ違う県を配られた人を探せ！</div>
+              </div>
+            </button>
+            <button onclick="switchPartyConfig('ng')" class="flex items-center p-5 bg-white border-2 border-slate-100 rounded-3xl active:scale-95 transition-transform text-left hover:border-rose-300 shadow-sm">
+              <div class="bg-rose-100 text-rose-500 p-3 rounded-2xl mr-4 shrink-0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg></div>
+              <div>
+                <div class="font-black text-base text-slate-800">地理NGワード</div>
+                <div class="text-[10px] font-bold text-slate-400 mt-1">自分のNGワードを言わずに県を語れ！</div>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -193,6 +223,10 @@
             <div class="bg-white/10 p-4 rounded-3xl">
               <div class="text-emerald-200 text-[10px] font-bold mb-1">観光地・名所</div>
               <div class="font-bold text-sm leading-snug" id="study-tourism"></div>
+            </div>
+            <div class="bg-white/10 p-4 rounded-3xl">
+              <div class="text-emerald-200 text-[10px] font-bold mb-1">旧国名（令制国）</div>
+              <div class="font-bold text-sm leading-snug" id="study-oldprov"></div>
             </div>
             <div class="bg-white/10 p-4 rounded-3xl">
               <div class="text-emerald-200 text-[10px] font-bold mb-1">豆知識</div>
@@ -221,6 +255,10 @@
             <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 県庁所在地</span>
           </label>
           <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
+            <input type="radio" name="test-format" value="capital2name" class="w-5 h-5 accent-emerald-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">県庁所在地 → 都道府県名</span>
+          </label>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors active:scale-95">
             <input type="radio" name="test-format" value="name2region" class="w-5 h-5 accent-emerald-500">
             <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 地方名</span>
           </label>
@@ -228,7 +266,26 @@
         <button onclick="startQuiz('test')" class="w-full py-4 mt-6 bg-emerald-500 text-white rounded-2xl font-black text-lg active:scale-95 transition-transform shrink-0">テスト開始 (全47問)</button>
       </div>
 
-      <!-- 【4】 クイズプレイ画面 (テスト/シルエット/ご当地共通) -->
+      <!-- 【3.5】 シルエット設定 -->
+      <div id="view-sil-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar">
+        <h2 class="text-xl font-black mb-6 text-slate-800 text-center">シルエットクイズの設定</h2>
+        <div class="flex flex-col gap-3 mb-auto">
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-amber-50 transition-colors active:scale-95">
+            <input type="radio" name="sil-format" value="map2name" class="w-5 h-5 accent-amber-500" checked>
+            <span class="ml-3 font-bold text-slate-700 text-sm">シルエット → 都道府県名</span>
+          </label>
+          <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-amber-50 transition-colors active:scale-95">
+            <input type="radio" name="sil-format" value="map2capital" class="w-5 h-5 accent-amber-500">
+            <span class="ml-3 font-bold text-slate-700 text-sm">シルエット → 県庁所在地</span>
+          </label>
+        </div>
+        <div class="p-4 bg-amber-50 rounded-2xl mb-6 text-xs text-amber-800 font-bold leading-relaxed shrink-0">
+          対象の都道府県は濃い色で表示されます。周りの県も薄く見えるので、位置関係もヒントにして当てましょう！
+        </div>
+        <button onclick="startQuiz('sil')" class="w-full py-4 mt-auto bg-amber-500 text-white rounded-2xl font-black text-lg active:scale-95 transition-transform shrink-0">クイズ開始 (全47問)</button>
+      </div>
+
+      <!-- 【4】 クイズプレイ画面 (全クイズ共通) -->
       <div id="view-quiz-play" class="app-view hidden absolute inset-0 flex flex-col p-5 md:p-6 overflow-hidden bg-white">
         
         <!-- プログレスバー -->
@@ -305,20 +362,20 @@
         <div class="flex flex-col gap-4 mb-6">
           <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center border-2 border-slate-100">
             <label class="text-sm font-bold text-slate-600">プレイヤー人数</label>
-            <select id="party-player-count" class="bg-white rounded-xl font-black text-slate-800 p-2 text-right outline-none">
+            <select id="party-player-count" class="bg-white border-none rounded-xl font-black text-slate-800 p-2 text-right outline-none">
               <option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option>
               <option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>
             </select>
           </div>
           <div id="party-wolf-count-wrap" class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center border-2 border-slate-100">
             <label class="text-sm font-bold text-slate-600">ウルフの数</label>
-            <select id="party-wolf-count" class="bg-white rounded-xl font-black text-slate-800 p-2 text-right outline-none">
+            <select id="party-wolf-count" class="bg-white border-none rounded-xl font-black text-slate-800 p-2 text-right outline-none">
               <option value="1" selected>1人</option><option value="2">2人</option>
             </select>
           </div>
           <div id="party-topic-wrap" class="bg-slate-50 p-4 rounded-3xl flex flex-col gap-2 border-2 border-slate-100">
             <label class="text-sm font-bold text-slate-600">お題のジャンル</label>
-            <select id="party-topic-genre" class="bg-white rounded-xl font-black text-slate-800 p-3 outline-none w-full text-center">
+            <select id="party-topic-genre" class="bg-white border-none rounded-xl font-black text-slate-800 p-3 outline-none w-full text-center">
               <option value="name" selected>都道府県名 (例: 北海道)</option>
               <option value="capital">県庁所在地 (例: 札幌市)</option>
               <option value="food">名物・特産 (例: ジンギスカン)</option>
@@ -354,15 +411,15 @@
             <p class="text-[10px] text-slate-500 font-bold mb-1 shrink-0 mt-2" id="party-word-label">あなたのお題</p>
             <p class="text-3xl font-black text-slate-800 mb-6 shrink-0" id="party-word-text"></p>
             
-            <div class="text-left bg-white p-4 rounded-2xl text-slate-700 w-full mb-2 shrink-0 shadow-sm border border-slate-100">
-              <p class="font-black text-center mb-3 text-slate-800 border-b-2 border-slate-50 pb-2 text-sm flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                参考データ：<span id="party-word-pref-name" class="ml-1"></span>
+            <div class="text-left bg-white p-4 rounded-2xl text-slate-700 text-[10px] w-full mb-2 shrink-0 shadow-sm border border-slate-100">
+              <p class="font-black text-center mb-3 text-slate-800 border-b-2 border-slate-50 pb-2 flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                参考データ：<span id="party-word-pref-name" class="text-base ml-1"></span>
               </p>
-              <div class="mb-2 text-[11px]"><span class="font-bold text-slate-400">県庁所在地:</span> <span id="party-word-capital" class="font-bold ml-1"></span></div>
-              <div class="mb-2 text-[11px]"><span class="font-bold text-slate-400">名物・特産:</span> <span id="party-word-food" class="font-bold ml-1"></span></div>
-              <div class="mb-2 text-[11px]"><span class="font-bold text-slate-400">観光地・名所:</span> <span id="party-word-tourism" class="font-bold ml-1"></span></div>
-              <div class="text-[10px]"><span class="font-bold text-slate-400">豆知識:</span> <br><span id="party-word-trivia" class="leading-relaxed font-bold block mt-1"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">県庁所在地:</span> <span id="party-word-capital" class="font-bold"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">名物・特産:</span> <span id="party-word-food" class="font-bold"></span></div>
+              <div class="mb-1.5"><span class="font-bold text-slate-400">観光地・名所:</span> <span id="party-word-tourism" class="font-bold"></span></div>
+              <div><span class="font-bold text-slate-400">豆知識:</span> <br><span id="party-word-trivia" class="leading-relaxed font-bold"></span></div>
             </div>
             <p class="text-[10px] font-bold text-slate-400 mt-auto shrink-0 flex items-center justify-center pt-2">マップの位置も光っています</p>
           </div>
@@ -372,13 +429,13 @@
 
       <!-- 【9】 パーティー 議論 -->
       <div id="view-party-discuss" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center overflow-y-auto no-scrollbar">
-        <h2 class="text-xl font-black mb-1 text-slate-800 shrink-0">議論タイム</h2>
+        <h2 class="text-lg font-black mb-1 text-slate-800 shrink-0">議論タイム</h2>
         <p class="text-xs font-bold mb-4 text-slate-400 shrink-0" id="party-discuss-desc"></p>
         
         <div id="party-timer" class="text-7xl font-black mb-6 text-slate-800 tabular-nums tracking-tighter shrink-0">3:00</div>
         
-        <div class="w-full bg-slate-50 border-2 border-slate-100 p-5 rounded-3xl mb-auto shrink-0 relative flex flex-col items-center">
-          <p class="text-[10px] font-bold text-purple-500 mb-3 flex items-center justify-center tracking-widest shrink-0">
+        <div class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-3xl mb-auto shrink-0 relative flex flex-col items-center">
+          <p class="text-[10px] font-bold text-purple-500 mb-2 flex items-center justify-center tracking-widest shrink-0">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             話題ヒント
           </p>
@@ -391,7 +448,7 @@
 
       <!-- 【10】 パーティー 投票 (WWのみ) -->
       <div id="view-party-vote" class="app-view hidden absolute inset-0 p-5 flex flex-col overflow-y-auto no-scrollbar">
-        <h2 class="text-lg font-black mb-1 text-slate-800 text-center shrink-0" id="party-vote-title"></h2>
+        <h2 class="text-base font-black mb-1 text-slate-800 text-center shrink-0" id="party-vote-title"></h2>
         <p class="text-xs font-bold text-slate-400 mb-6 text-center shrink-0">ウルフだと疑わしい人を1人選んでください</p>
         <div id="party-vote-container" class="flex flex-col gap-2 mb-4 flex-grow overflow-y-auto no-scrollbar"></div>
         <button id="btn-party-vote-next" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black mt-auto opacity-50 pointer-events-none transition-opacity shrink-0 text-lg shadow-sm">投票する</button>
@@ -413,99 +470,99 @@
 
   <script>
     // ================= データ定義 =================
+    // 旧国名(oldProv)と難読地名(hardRead)を追加した詳細データ
     const PREFECTURES = [
-      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。' },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。' },
-      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。' },
-      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。' },
-      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。' },
-      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。' },
-      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。' },
-      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。' },
-      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
-      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。' },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。' },
-      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。' },
-      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。' },
-      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。' },
-      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。' },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。' },
-      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。' },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。' },
-      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。' },
-      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。' },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
-      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。' },
-      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。' },
-      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', food: '松阪牛・赤福・伊勢うどん', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。' },
-      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。' },
-      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。' },
-      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。' },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。' },
-      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。' },
-      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。' },
-      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。' },
-      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。' },
-      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。' },
-      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。' },
-      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。' },
-      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。' },
-      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。' },
-      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。' },
-      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。' },
-      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。' },
-      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。' },
-      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。' },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。' },
-      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。' },
-      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。' },
-      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。' },
-      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。' }
+      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。' },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。' },
+      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中国（りくちゅう）', hardRead: '不来方（こずかた）', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。' },
+      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前国（りくぜん）', hardRead: '愛子（あやし）', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。' },
+      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後国（うご）', hardRead: '生保内（おぼない）', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。' },
+      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前国（うぜん）', hardRead: '左沢（あてらざわ）', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。' },
+      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代国・磐城国', hardRead: '桑折（こおり）', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。' },
+      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。' },
+      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
+      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。' },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。' },
+      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国・安房国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。' },
+      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。' },
+      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。' },
+      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。' },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。' },
+      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。' },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。' },
+      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。' },
+      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（しなの）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。' },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがはら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
+      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国・伊豆国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。' },
+      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。' },
+      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。' },
+      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。' },
+      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国・丹後国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。' },
+      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（ほうてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。' },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国・淡路国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。' },
+      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。' },
+      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。' },
+      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。' },
+      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', oldProv: '出雲国・石見国・隠岐国', hardRead: '温泉津（ゆのつ）', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。' },
+      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', oldProv: '備前国・備中国・美作国', hardRead: '邑久（おく）', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。' },
+      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', oldProv: '安芸国・備後国', hardRead: '向洋（むかいなだ）', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。' },
+      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', oldProv: '長門国・周防国', hardRead: '特牛（こっとい）', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。' },
+      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', oldProv: '阿波国（あわ）', hardRead: '祖谷（いや）', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。' },
+      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', oldProv: '讃岐国（さぬき）', hardRead: '観音寺（かんおんじ）', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。' },
+      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', oldProv: '伊予国（いよ）', hardRead: '忽那（くつな）', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。' },
+      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', oldProv: '土佐国（とさ）', hardRead: '宿毛（すくも）', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。' },
+      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。' },
+      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。' },
+      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。' },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。' },
+      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。' },
+      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。' },
+      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。' },
+      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球国（りゅうきゅう）', hardRead: '南風原（はえばる）', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。' }
     ];
 
     const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
     
-    // 話題ヒント（豆知識付き）
+    // パーティーゲーム用の質問集
     const WW_QUESTIONS = {
       name: [
-        { q: "海に面していますか？", hint: "日本には海に面していない「内陸県」が8つあります。" },
-        { q: "新幹線は通っていますか？", hint: "四国地方には新幹線が通っていません。また本州でも通っていない県があります。" },
-        { q: "人口は全国平均より多い方だと思う？", hint: "日本の都道府県の平均人口は約260万人。平均以上の県は13程度しかありません。" },
-        { q: "面積は大きい方ですか？小さい方ですか？", hint: "日本最大の面積は北海道、最小は香川県です。内陸県は面積が大きい傾向があります。" },
-        { q: "冬は雪がよく降る地域ですか？", hint: "日本海側は冬の季節風の影響で世界有数の豪雪地帯となっています。" },
+        { q: "海に面していますか？", hint: "日本には海に面していない内陸県が8つあります。" },
+        { q: "新幹線は通っていますか？", hint: "四国地方には新幹線が通っていません。" },
+        { q: "人口は全国平均より多い方？", hint: "都道府県の平均人口は約260万人です。" },
+        { q: "面積は大きい方ですか？小さい方ですか？", hint: "最大は北海道、最小は香川県です。" },
+        { q: "冬は雪がよく降る地域ですか？", hint: "日本海側は世界有数の豪雪地帯です。" },
         { q: "隣接している県は多いですか？", hint: "最も多くの県と接しているのは長野県（8県）です。" },
-        { q: "島（離島）はある県ですか？", hint: "日本には約12万の島があり、長崎県や鹿児島県などは特に島の数が多いです。" },
-        { q: "高い山はある地形ですか？", hint: "日本アルプスがある長野、岐阜、富山、山梨などは標高3000m級の山々が連なります。" },
-        { q: "名前（漢字）に山、川、島など自然を表す字が入っていますか？", hint: "日本の都道府県名の多くは、その土地の地形や自然環境が由来となっています。" },
-        { q: "その県には政令指定都市がありますか？", hint: "政令指定都市は全国に20都市あり、人口50万人以上の大都市です。" }
+        { q: "島（離島）はある県ですか？", hint: "長崎県や鹿児島県などは特に島の数が多いです。" },
+        { q: "高い山はある地形ですか？", hint: "日本アルプスがある県は標高3000m級の山々が連なります。" },
+        { q: "名前（漢字）に山、川、島など自然を表す字が入っていますか？", hint: "都道府県名の多くは、その土地の地形や自然環境が由来です。" },
+        { q: "その県には政令指定都市がありますか？", hint: "政令指定都市は全国に20都市あります。" }
       ],
       capital: [
-        { q: "県庁所在地の名前は、県名と同じですか？", hint: "都道府県名と県庁所在地名が違う県は全国に18あります（例：宮城県→仙台市）。" },
-        { q: "その都市は海に面していますか？", hint: "多くの県庁所在地は港町として発展しましたが、内陸に位置する県庁所在地もあります。" },
-        { q: "その都市に大きなお城（城跡）はありますか？", hint: "江戸時代、多くの県庁所在地は「城下町」として政治・経済の中心でした。" },
-        { q: "人口は100万人を超えている大都市ですか？", hint: "日本で人口100万人を超える都市は、全国に12都市しかありません。" },
-        { q: "その都市を代表する有名な駅や空港はありますか？", hint: "交通の結節点となる県庁所在地には、新幹線のターミナル駅や拠点空港が存在します。" }
+        { q: "県庁所在地の名前は、県名と同じですか？", hint: "県名と県庁所在地名が違う県は全国に18あります。" },
+        { q: "その都市は海に面していますか？", hint: "多くの県庁所在地は港町ですが、内陸の都市もあります。" },
+        { q: "その都市に大きなお城（城跡）はありますか？", hint: "江戸時代、多くの県庁所在地は「城下町」として栄えました。" },
+        { q: "人口は100万人を超えている大都市ですか？", hint: "人口100万人を超える都市は、全国に12都市しかありません。" },
+        { q: "その都市を代表する有名な駅や空港はありますか？", hint: "新幹線のターミナル駅や拠点空港が存在します。" }
       ],
       food: [
-        { q: "その名産品は海産物（魚介類）ですか？", hint: "日本は海流の影響で、太平洋側と日本海側、また地域によって獲れる魚が大きく異なります。" },
-        { q: "それは農作物（野菜や果物）ですか？", hint: "果物や野菜は気候（気温、日照時間、降水量）や地形に適したものが栽培されます。" },
+        { q: "その名産品は海産物（魚介類）ですか？", hint: "太平洋側と日本海側で獲れる魚が異なります。" },
+        { q: "それは農作物（野菜や果物）ですか？", hint: "果物や野菜は気候（気温、日照時間、降水量）に大きく左右されます。" },
         { q: "その料理はお肉（牛・豚・鶏など）を使っていますか？", hint: "ブランド牛や地鶏などは、その土地の気候や飼料を活かして育てられています。" },
-        { q: "それは麺類（うどん、そば、ラーメンなど）ですか？", hint: "水の綺麗な地域ではそば作りが、小麦の生産が盛んな地域ではうどん作りが発展しました。" },
-        { q: "それはお菓子やデザートですか？", hint: "昔、砂糖が貴重だった時代に貿易港があった場所（長崎など）では独自の洋菓子文化が根付きました。" }
+        { q: "それは麺類（うどん、そば、ラーメンなど）ですか？", hint: "水が綺麗な地域はそば、小麦の生産が盛んな地域はうどんが発展しました。" },
+        { q: "それはお菓子やデザートですか？", hint: "昔、貿易港があった場所では独自の洋菓子文化が根付きました。" }
       ],
       tourism: [
-        { q: "そこは歴史的な建造物（お城や神社仏閣など）ですか？", hint: "京都や奈良だけでなく、各地にその土地の権力者や信仰を示す歴史的建造物が残っています。" },
-        { q: "そこは自然を楽しむスポット（山、湖、海など）ですか？", hint: "日本は国土の約7割が森林であり、火山列島であるため独特の自然景観が豊富です。" },
-        { q: "そこは世界遺産、または国宝ですか？", hint: "日本には文化遺産や自然遺産など、世界的に認められた貴重なスポットが数多くあります。" },
-        { q: "そこはテーマパークや近代的な施設ですか？", hint: "大都市圏や広大な土地を持つ地域には、全国から人が集まる巨大なテーマパークが作られやすいです。" },
-        { q: "そこは温泉街ですか？", hint: "日本は活火山が多く、源泉数は世界トップクラス。地域ごとに泉質も異なります。" }
+        { q: "そこは歴史的な建造物（お城や神社仏閣など）ですか？", hint: "京都や奈良だけでなく、各地に歴史的建造物が残っています。" },
+        { q: "そこは自然を楽しむスポット（山、湖、海など）ですか？", hint: "日本は国土の約7割が森林であり、独特の自然景観が豊富です。" },
+        { q: "そこは世界遺産、または国宝ですか？", hint: "日本には文化遺産や自然遺産など、世界的に認められたスポットが多数あります。" },
+        { q: "そこはテーマパークや近代的な施設ですか？", hint: "大都市圏や広大な土地を持つ地域には、巨大なテーマパークが作られやすいです。" },
+        { q: "そこは温泉街ですか？", hint: "日本は活火山が多く、源泉数は世界トップクラスです。" }
       ]
     };
 
-    // ================= 状態管理 =================
-    // 統合状態オブジェクト (テスト, シルエット, ご当地)
-    let quizState = {
-      type: '', // 'test', 'sil', 'local'
+    // ================= 状態管理 (統合) =================
+    let qState = {
+      mode: '', // 'test', 'sil', 'local', 'oldprov', 'hardread'
       format: '',
       currentQ: 1,
       totalQ: 47,
@@ -523,7 +580,23 @@
     let baseScale = 1;
     let prefCenters = {};
 
-    // ================= 共通処理 =================
+    // トップ画面のタブ切り替え
+    function switchTopTab(tabId) {
+      document.querySelectorAll('#tab-basic, #tab-advance, #tab-party').forEach(el => {
+        el.className = "flex-1 py-3 px-2 rounded-2xl font-black text-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all active:scale-95 whitespace-nowrap";
+      });
+      document.getElementById('tab-' + tabId).className = "flex-1 py-3 px-2 rounded-2xl font-black text-sm bg-white shadow-sm text-emerald-600 transition-all active:scale-95 whitespace-nowrap";
+
+      document.getElementById('top-content-basic').classList.add('hidden');
+      document.getElementById('top-content-advance').classList.add('hidden');
+      document.getElementById('top-content-party').classList.add('hidden');
+      
+      const content = document.getElementById('top-content-' + tabId);
+      content.classList.remove('hidden');
+      content.classList.add('flex');
+    }
+
+    // ビュー切り替え
     function switchView(viewId) {
       document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
       const view = document.getElementById('view-' + viewId);
@@ -538,16 +611,18 @@
       }
 
       if (viewId === 'study') initStudyMode();
-      if (viewId === 'test-config' || viewId === 'party-config') highlightMap(null, 'normal', false);
+      if (viewId === 'test-config' || viewId === 'sil-config' || viewId === 'party-config') {
+        highlightMap(null, 'normal', false);
+      }
     }
 
     document.getElementById('btn-back').addEventListener('click', () => {
-      clearInterval(quizState.interval);
+      clearInterval(qState.interval);
       if(typeof partyState !== 'undefined') clearInterval(partyState.interval);
       switchView('top');
     });
 
-    // ================= ガビガビ対策済みのマップ制御 =================
+    // ================= マップ制御 =================
     function resetMapScale() {
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
@@ -567,10 +642,9 @@
       resetMapScale();
     }
 
-    // キャンバスを使ってフォントの実際の描画領域(バウンディングボックス)を計算
-    // ※負荷を激減させるため、計算用Canvasはサイズを10分の1 (200px) にして実行
+    // フォントから実際のピクセル重心を計算
     function calculatePrefCenters() {
-      const fontSize = 200, offset = 40, size = fontSize + offset * 2;
+      const fontSize = 2000, offset = 400, size = fontSize + offset * 2;
       const canvas = document.createElement('canvas');
       canvas.width = size; canvas.height = size;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -591,9 +665,8 @@
           
           const imgData = ctx.getImageData(0, 0, size, size).data;
           let minX = size, minY = size, maxX = 0, maxY = 0, found = false;
-          // ピクセル間引きでさらに高速化
-          for (let y = 0; y < size; y+=2) {
-            for (let x = 0; x < size; x+=2) {
+          for (let y = 0; y < size; y+=4) {
+            for (let x = 0; x < size; x+=4) {
               if (imgData[(y * size + x) * 4 + 3] > 10) { 
                 if (!found) { minX = maxX = x; minY = maxY = y; found = true; }
                 else {
@@ -604,7 +677,6 @@
             }
           }
           if (found) {
-            // 比率を計算して保存
             prefCenters[p.id] = { px: ((minX + maxX)/2 - offset)/fontSize, py: ((minY + maxY)/2 - offset)/fontSize };
           } else {
             prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
@@ -638,101 +710,6 @@
       }
     }
 
-    // ================= 共通クイズ・タイマーUI更新 =================
-    function updateQuizTimerUI(colorClass) {
-      const circle = document.getElementById('timer-circle');
-      const text = document.getElementById('test-timer-text');
-      const bg = document.getElementById('test-timer-bg');
-      
-      // リセット時
-      if(quizState.timer === 15) {
-        circle.style.transition = 'none';
-        circle.style.strokeDashoffset = '0';
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            circle.style.transition = 'stroke-dashoffset 1s linear, color 0.3s ease';
-          });
-        });
-      }
-
-      text.textContent = quizState.timer;
-      const progress = quizState.timer / 15;
-      circle.style.strokeDashoffset = 175.9 * (1 - progress);
-      
-      circle.classList.remove('text-emerald-500', 'text-amber-500', 'text-orange-500', 'text-rose-500');
-      bg.classList.remove('text-slate-100', 'text-rose-100');
-
-      if (quizState.timer <= 5) {
-        circle.classList.add('text-rose-500');
-        bg.classList.add('text-rose-100');
-      } else {
-        circle.classList.add(`text-${colorClass}-500`);
-        bg.classList.add('text-slate-100');
-      }
-
-      const progBar = document.getElementById('quiz-progress');
-      progBar.style.width = `${((quizState.currentQ - 1) / quizState.totalQ) * 100}%`;
-      progBar.className = `h-full rounded-full transition-all duration-300 ease-out bg-${colorClass}-500`;
-    }
-
-    // 結果画面表示
-    function showSingleResult() {
-      highlightMap(null, 'normal', false);
-      document.getElementById('result-score').textContent = quizState.score;
-      document.getElementById('result-max').textContent = `/${quizState.totalQ}`;
-      
-      const retryBtn = document.getElementById('btn-retry-mistakes');
-      const reviewBtn = document.getElementById('btn-review-mistakes');
-      
-      if (quizState.mistakes && quizState.mistakes.length > 0) {
-        retryBtn.classList.remove('hidden');
-        reviewBtn.classList.remove('hidden');
-      } else {
-        retryBtn.classList.add('hidden');
-        reviewBtn.classList.add('hidden');
-      }
-      
-      switchView('quiz-result');
-    }
-
-    function showReviewMistakes() {
-      const container = document.getElementById('review-list-container');
-      container.innerHTML = '';
-      
-      quizState.mistakes.forEach(p => {
-        const btn = document.createElement('button');
-        btn.className = "bg-white border-2 border-slate-100 py-4 rounded-2xl text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-sm active:scale-95";
-        btn.textContent = p.name;
-        btn.onclick = () => showStudyDetail(p);
-        container.appendChild(btn);
-      });
-
-      switchView('review-mistakes');
-    }
-
-    function startRetry() {
-      quizState.remaining = [...quizState.mistakes].sort(() => Math.random() - 0.5);
-      quizState.totalQ = quizState.remaining.length;
-      quizState.mistakes = [];
-      quizState.score = 0;
-      quizState.currentQ = 1;
-      
-      switchView('test-play');
-      
-      if (quizState.type === 'test') {
-        document.getElementById('test-header-mode').textContent = "TEST MODE (復習)";
-        nextTestQuestion();
-      } else if (quizState.type === 'sil') {
-        document.getElementById('test-header-mode').textContent = "SILHOUETTE QUIZ (復習)";
-        nextSilQuestion();
-      } else if (quizState.type === 'local') {
-        document.getElementById('test-header-mode').textContent = "ご当地クイズ (復習)";
-        nextLocalQuestion();
-      }
-      document.getElementById('quiz-total-count').textContent = quizState.totalQ;
-    }
-
-
     // ================= 学習モード =================
     function initStudyMode() {
       highlightMap(null, 'normal', false);
@@ -741,7 +718,7 @@
 
       REGIONS.forEach(region => {
         const title = document.createElement('div');
-        title.className = "text-xs font-bold text-slate-400 mt-5 mb-2 pl-3 border-l-4 border-emerald-500 rounded-sm";
+        title.className = "text-[11px] font-black text-slate-400 mt-5 mb-2 pl-3 border-l-4 border-emerald-500 rounded-full";
         title.textContent = region;
         container.appendChild(title);
 
@@ -764,6 +741,7 @@
       document.getElementById('study-region').textContent = pref.region;
       document.getElementById('study-name').textContent = pref.name;
       document.getElementById('study-capital').textContent = pref.capital;
+      document.getElementById('study-oldprov').textContent = pref.oldProv;
       document.getElementById('study-food').textContent = pref.food;
       document.getElementById('study-tourism').textContent = pref.tourism;
       document.getElementById('study-trivia').textContent = pref.trivia;
@@ -777,182 +755,249 @@
       const detail = document.getElementById('study-detail');
       detail.classList.remove('translate-y-0');
       detail.classList.add('translate-y-full');
-      
-      if (!document.getElementById('view-review-mistakes').classList.contains('hidden')) {
-        highlightMap(null, 'normal', false);
-      } else {
-        highlightMap(null, 'normal', false);
-      }
+      highlightMap(null, 'normal', false);
     }
 
-
-    // ================= クイズ起動管理 =================
-    function startQuiz(type) {
-      quizState.type = type;
-      quizState.score = 0;
-      quizState.currentQ = 1;
-      quizState.totalQ = 47;
-      quizState.mistakes = [];
-      quizState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
-      
-      switchView('test-play');
-      document.getElementById('quiz-total-count').textContent = "47";
-
-      if (type === 'test') {
-        const formatObj = document.querySelector('input[name="test-format"]:checked');
-        if(!formatObj) return;
-        quizState.format = formatObj.value;
-        document.getElementById('test-header-mode').className = "text-[11px] font-black text-blue-500 tracking-widest";
-        document.getElementById('test-header-mode').textContent = "TEST MODE";
-        nextTestQuestion();
-      } else if (type === 'silhouette') {
-        quizState.type = 'sil';
-        document.getElementById('test-header-mode').className = "text-[11px] font-black text-amber-500 tracking-widest";
-        document.getElementById('test-header-mode').textContent = "SILHOUETTE QUIZ";
-        nextSilQuestion();
-      } else if (type === 'local') {
-        document.getElementById('test-header-mode').className = "text-[11px] font-black text-orange-500 tracking-widest";
-        document.getElementById('test-header-mode').textContent = "ご当地クイズ";
-        nextLocalQuestion();
+    // ================= クイズ・テスト共通処理 =================
+    function startQuiz(mode, format = null) {
+      qState.mode = mode;
+      if(format) qState.format = format;
+      else if(mode === 'test') {
+        const fObj = document.querySelector('input[name="test-format"]:checked');
+        if(fObj) qState.format = fObj.value;
+      } else if (mode === 'sil') {
+        const fObj = document.querySelector('input[name="sil-format"]:checked');
+        if(fObj) qState.format = fObj.value;
       }
+      
+      qState.score = 0;
+      qState.currentQ = 1;
+      qState.totalQ = 47;
+      qState.mistakes = [];
+      qState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      
+      switchView('quiz-play');
+      document.getElementById('quiz-total-count').textContent = qState.totalQ;
+      
+      nextQuestion();
     }
 
-    // 選択肢生成の共通関数
-    function generateOptions(correctAns, optionsType, btnColorClass) {
+    function startRetry() {
+      qState.remaining = [...qState.mistakes].sort(() => Math.random() - 0.5);
+      qState.totalQ = qState.remaining.length;
+      qState.mistakes = [];
+      qState.score = 0;
+      qState.currentQ = 1;
+      
+      switchView('quiz-play');
+      document.getElementById('quiz-total-count').textContent = qState.totalQ;
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      if (qState.currentQ > qState.totalQ) {
+        showQuizResult();
+        return;
+      }
+
+      qState.currentPref = qState.remaining.pop();
+      const p = qState.currentPref;
+      
+      let qText = '', correctAns = '', hint = p.region + '地方';
+      let optType = 'name'; // 選択肢の種類 (name, capital, region)
+      let colorClass = 'emerald';
+      let headerText = 'TEST MODE';
+
+      if (qState.mode === 'test') {
+        headerText = "TEST MODE";
+        colorClass = 'blue';
+        if (qState.format === 'map2name') {
+          qText = 'この<span class="text-blue-500">都道府県名</span>は？';
+          correctAns = p.name; optType = 'name';
+          highlightMap(p.id, 'normal', true);
+        } else if (qState.format === 'map2capital') {
+          qText = 'この県の<span class="text-blue-500">県庁所在地</span>は？';
+          correctAns = p.capital; optType = 'capital';
+          highlightMap(p.id, 'normal', true);
+        } else if (qState.format === 'name2capital') {
+          qText = `${p.name}の<span class="text-blue-500">県庁所在地</span>は？`;
+          correctAns = p.capital; optType = 'capital';
+          highlightMap(null, 'normal', false);
+        } else if (qState.format === 'capital2name') {
+          qText = `県庁所在地が「${p.capital}」の<span class="text-blue-500">都道府県名</span>は？`;
+          correctAns = p.name; optType = 'name';
+          highlightMap(null, 'normal', false);
+        } else if (qState.format === 'name2region') {
+          qText = `${p.name}は何<span class="text-blue-500">地方</span>？`;
+          correctAns = p.region; optType = 'region';
+          hint = "名物: " + p.food.split('・')[0]; 
+          highlightMap(null, 'normal', false);
+        }
+
+      } else if (qState.mode === 'sil') {
+        headerText = "SILHOUETTE QUIZ";
+        colorClass = 'amber';
+        highlightMap(p.id, 'silhouette', true); // シルエット描画
+        if (qState.format === 'map2capital') {
+          qText = 'この<span class="text-amber-500">都道府県</span>の<span class="text-amber-500">県庁所在地</span>は？';
+          correctAns = p.capital; optType = 'capital';
+        } else {
+          qText = 'この<span class="text-amber-500">都道府県</span>は？';
+          correctAns = p.name; optType = 'name';
+        }
+
+      } else if (qState.mode === 'local') {
+        headerText = "ご当地クイズ";
+        colorClass = 'orange';
+        highlightMap(null, 'normal', false);
+        const isFood = Math.random() > 0.5;
+        const topicText = isFood ? p.food.split('・')[0] : p.tourism.split('・')[0];
+        const typeLabel = isFood ? '名物・特産' : '観光地・名所';
+        qText = `<span class="text-[12px] font-bold text-orange-500 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-orange-500">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+
+      } else if (qState.mode === 'oldprov') {
+        headerText = "旧国名クイズ";
+        colorClass = 'indigo';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-indigo-500 block mb-1">【令制国】</span>「${p.oldProv}」があった<span class="text-indigo-500">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+
+      } else if (qState.mode === 'hardread') {
+        headerText = "難読地名クイズ";
+        colorClass = 'rose';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-rose-500 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-rose-500">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+      }
+
+      document.getElementById('quiz-header-mode').className = `text-[11px] font-black text-${colorClass}-500 tracking-widest mb-1`;
+      document.getElementById('quiz-header-mode').textContent = headerText;
+      document.getElementById('quiz-q-count').textContent = qState.currentQ;
+      document.getElementById('quiz-question-text').innerHTML = qText;
+      document.getElementById('quiz-hint-text').textContent = hint;
+
+      generateOptions(correctAns, optType, colorClass);
+      startQuizTimer(colorClass);
+    }
+
+    function generateOptions(correctAns, optType, colorClass) {
       const optionsSet = new Set([correctAns]);
       while (optionsSet.size < 4) {
         const randP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-        if (optionsType === 'region') optionsSet.add(randP.region);
-        else if (optionsType === 'name') optionsSet.add(randP.name);
+        if (optType === 'region') optionsSet.add(randP.region);
+        else if (optType === 'name') optionsSet.add(randP.name);
         else optionsSet.add(randP.capital);
       }
       const options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
 
-      const container = document.getElementById('test-options');
+      const container = document.getElementById('quiz-options');
       container.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = `py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm lg:text-base hover:border-${btnColorClass}-500 hover:text-${btnColorClass}-600 hover:bg-${btnColorClass}-50 transition-colors text-slate-700 shadow-sm active:scale-95 flex items-center justify-between`;
+        btn.className = `py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:text-${colorClass}-600 hover:bg-${colorClass}-50 transition-colors text-slate-700 shadow-sm active:scale-95 flex items-center justify-between`;
         btn.innerHTML = `<span>${opt}</span><span class="text-slate-300">❯</span>`;
         btn.onclick = () => checkAnswer(opt, correctAns);
         container.appendChild(btn);
       });
     }
 
-    function checkAnswer(ans, correctAns) {
-      clearInterval(quizState.interval);
-      if (ans === correctAns) {
-        quizState.score++;
-      } else {
-        quizState.mistakes.push(quizState.currentPref);
-      }
-      quizState.currentQ++;
-      
-      if (quizState.type === 'test') nextTestQuestion();
-      else if (quizState.type === 'sil') nextSilQuestion();
-      else if (quizState.type === 'local') nextLocalQuestion();
-    }
-
-    // --- テストモード ---
-    function nextTestQuestion() {
-      if (quizState.currentQ > quizState.totalQ) { showSingleResult(); return; }
-
-      quizState.currentPref = quizState.remaining.pop();
-      const p = quizState.currentPref;
-      const f = quizState.format;
-
-      let qText = '', correctAns = '', hint = p.region + '地方', optType = 'name';
-      
-      if (f === 'map2name') {
-        qText = 'この<span class="text-blue-500">都道府県名</span>は？';
-        correctAns = p.name; optType = 'name';
-        highlightMap(p.id, 'normal', true);
-      } else if (f === 'map2capital') {
-        qText = 'この県の<span class="text-blue-500">県庁所在地</span>は？';
-        correctAns = p.capital; optType = 'capital';
-        highlightMap(p.id, 'normal', true);
-      } else if (f === 'name2capital') {
-        qText = `${p.name}の<span class="text-blue-500">県庁所在地</span>は？`;
-        correctAns = p.capital; optType = 'capital';
-        highlightMap(null, 'normal', false);
-      } else if (f === 'capital2name') {
-        qText = `県庁所在地が「${p.capital}」の<span class="text-blue-500">都道府県名</span>は？`;
-        correctAns = p.name; optType = 'name';
-        highlightMap(null, 'normal', false);
-      } else if (f === 'name2region') {
-        qText = `${p.name}は何<span class="text-blue-500">地方</span>？`;
-        correctAns = p.region; optType = 'region';
-        hint = "名物: " + p.food.split('・')[0]; 
-        highlightMap(null, 'normal', false);
-      }
-
-      document.getElementById('quiz-q-count').textContent = quizState.currentQ;
-      document.getElementById('test-question-text').innerHTML = qText;
-      document.getElementById('test-hint-text').textContent = hint;
-
-      generateOptions(correctAns, optType, 'blue');
-      startQuizTimer('blue');
-    }
-
-    // --- シルエットクイズ ---
-    function nextSilQuestion() {
-      if (quizState.currentQ > quizState.totalQ) { showSingleResult(); return; }
-
-      quizState.currentPref = quizState.remaining.pop();
-      const p = quizState.currentPref;
-
-      highlightMap(p.id, 'silhouette', true);
-
-      document.getElementById('quiz-q-count').textContent = quizState.currentQ;
-      document.getElementById('test-question-text').innerHTML = 'この<span class="text-amber-500">都道府県</span>は？';
-      document.getElementById('test-hint-text').textContent = p.region + "地方です";
-
-      generateOptions(p.name, 'name', 'amber');
-      startQuizTimer('amber');
-    }
-
-    // --- ご当地クイズ ---
-    function nextLocalQuestion() {
-      if (quizState.currentQ > quizState.totalQ) { showSingleResult(); return; }
-
-      quizState.currentPref = quizState.remaining.pop();
-      const p = quizState.currentPref;
-      
-      highlightMap(null, 'normal', false);
-
-      // 名物か観光地かランダム
-      const isFood = Math.random() > 0.5;
-      const topicText = isFood ? p.food.split('・')[0] : p.tourism.split('・')[0];
-      const typeLabel = isFood ? '名物・特産' : '観光地・名所';
-
-      document.getElementById('quiz-q-count').textContent = quizState.currentQ;
-      document.getElementById('test-question-text').innerHTML = `<span class="text-[14px] text-orange-500 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-orange-500">都道府県</span>は？`;
-      document.getElementById('test-hint-text').textContent = p.region + "地方です";
-
-      generateOptions(p.name, 'name', 'orange');
-      startQuizTimer('orange');
-    }
-
     function startQuizTimer(colorClass) {
-      document.getElementById('test-hint').classList.add('hidden');
-      document.getElementById('test-hint-space').classList.remove('hidden');
-      quizState.timer = 15;
+      document.getElementById('quiz-hint').classList.add('hidden');
+      document.getElementById('quiz-hint-space').classList.remove('hidden');
+      qState.timer = 15;
       updateQuizTimerUI(colorClass);
 
-      clearInterval(quizState.interval);
-      quizState.interval = setInterval(() => {
-        quizState.timer--;
+      clearInterval(qState.interval);
+      qState.interval = setInterval(() => {
+        qState.timer--;
         updateQuizTimerUI(colorClass);
-        if (quizState.timer <= 5) {
-          document.getElementById('test-hint').classList.remove('hidden');
-          document.getElementById('test-hint-space').classList.add('hidden');
-          document.getElementById('test-hint').querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-500`;
-          document.getElementById('test-hint').className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border-2 border-${colorClass}-100`;
+        if (qState.timer <= 5) {
+          document.getElementById('quiz-hint').classList.remove('hidden');
+          document.getElementById('quiz-hint-space').classList.add('hidden');
+          const hintBox = document.getElementById('quiz-hint');
+          hintBox.className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border-2 border-${colorClass}-100`;
+          hintBox.querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-500`;
         }
-        if (quizState.timer <= 0) checkAnswer(null, null); 
+        if (qState.timer <= 0) checkAnswer(null, null); 
       }, 1000);
     }
 
+    function updateQuizTimerUI(colorClass) {
+      const circle = document.getElementById('timer-circle');
+      const text = document.getElementById('test-timer-text');
+      const bg = document.getElementById('test-timer-bg');
+      
+      if(qState.timer === 15) {
+        circle.style.transition = 'none';
+        circle.style.strokeDashoffset = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => circle.style.transition = 'stroke-dashoffset 1s linear, color 0.3s ease'));
+      }
+
+      text.textContent = qState.timer;
+      const progress = qState.timer / 15;
+      circle.style.strokeDashoffset = 175.9 * (1 - progress);
+      
+      circle.classList.remove('text-emerald-500','text-amber-500','text-orange-500','text-rose-500','text-blue-500','text-indigo-500');
+      bg.classList.remove('text-slate-100', 'text-rose-100');
+
+      if (qState.timer <= 5) {
+        circle.classList.add('text-rose-500');
+        bg.classList.add('text-rose-100');
+      } else {
+        circle.classList.add(`text-${colorClass}-500`);
+        bg.classList.add('text-slate-100');
+      }
+
+      const progBar = document.getElementById('quiz-progress');
+      progBar.style.width = `${((qState.currentQ - 1) / qState.totalQ) * 100}%`;
+      progBar.className = `h-full rounded-full transition-all duration-300 ease-out bg-${colorClass}-500`;
+    }
+
+    function checkAnswer(ans, correctAns) {
+      clearInterval(qState.interval);
+      if (ans === correctAns) {
+        qState.score++;
+      } else {
+        qState.mistakes.push(qState.currentPref);
+      }
+      qState.currentQ++;
+      nextQuestion();
+    }
+
+    function showQuizResult() {
+      highlightMap(null, 'normal', false);
+      document.getElementById('result-score').textContent = qState.score;
+      document.getElementById('result-max').textContent = `/${qState.totalQ}`;
+      
+      const retryBtn = document.getElementById('btn-retry-mistakes');
+      const reviewBtn = document.getElementById('btn-review-mistakes');
+      
+      if (qState.mistakes && qState.mistakes.length > 0) {
+        retryBtn.classList.remove('hidden');
+        reviewBtn.classList.remove('hidden');
+      } else {
+        retryBtn.classList.add('hidden');
+        reviewBtn.classList.add('hidden');
+      }
+      
+      switchView('quiz-result');
+    }
+
+    function showReviewMistakes() {
+      const container = document.getElementById('review-list-container');
+      container.innerHTML = '';
+      
+      qState.mistakes.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = "bg-white border-2 border-slate-100 py-4 rounded-2xl text-sm font-bold text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-sm active:scale-95";
+        btn.textContent = p.name;
+        btn.onclick = () => showStudyDetail(p, 'review-mistakes');
+        container.appendChild(btn);
+      });
+
+      switchView('review-mistakes');
+    }
 
     // ================= パーティーゲーム =================
     let partyState = { gameType: 'ww', players: [], currentIdx: 0, timer: 180, interval: null, topicGenre: 'name' };
@@ -1272,7 +1317,7 @@
       const cover = document.getElementById('loading-cover');
       
       document.fonts.ready.then(() => {
-        // 重心計算を10分の1サイズで実行してクラッシュを回避
+        // 重心計算を間引きで高速化
         setTimeout(() => {
           calculatePrefCenters();
           resetMapScale();
