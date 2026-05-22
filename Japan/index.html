@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>県庁所在地学習</title>
+  <title>日本地理学習アプリ</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,7 +29,7 @@
       top: 0;
       left: 0;
       transform-origin: 0 0; 
-      transition: transform 0.8s cubic-bezier(0.34, 1.15, 0.64, 1); 
+      transition: transform 0.6s cubic-bezier(0.34, 1.15, 0.64, 1); 
       will-change: transform;
     }
 
@@ -48,7 +48,7 @@
       font-size: 1000px !important;
       line-height: 1 !important;
       color: #cbd5e1 !important; /* 通常時のグレー */
-      transition: color 0.4s ease;
+      transition: color 0.3s ease;
       position: absolute !important;
       top: 0 !important;
       left: 0 !important;
@@ -66,164 +66,287 @@
       pointer-events: none;
     }
 
-    /* クイズ中の非対象の都道府県 (背景と同化しないソリッドな薄グレー) */
-    #map-container.is-quiz li:not(.is-open):not(.p-eveMapLine),
-    #map-container.is-quiz li:not(.is-open):not(.p-eveMapLine)::before {
+    /* クイズ/学習中の非対象の都道府県 (背景と同化しないソリッドな薄グレー) */
+    #map-container.is-focus li:not(.is-open):not(.p-eveMapLine),
+    #map-container.is-focus li:not(.is-open):not(.p-eveMapLine)::before {
       color: #e2e8f0 !important; 
     }
 
-    /* アクティブ(出題中)の都道府県 */
+    /* アクティブ(出題中・選択中)の都道府県 */
     #map-transform li.is-open,
     #map-transform li.is-open::before {
-      color: #059669 !important; /* ベタ塗りのエメラルドグリーン */
+      color: #059669 !important; /* エメラルドグリーン */
       z-index: 10;
-      filter: none !important; /* 光彩などはすべて除去 */
+      filter: none !important;
     }
 
-    /* ヒント表示時のアニメーション */
+    /* アニメーション */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-hint {
-      animation: fadeIn 0.3s ease-out forwards;
-    }
+    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    
+    /* スクロールバー非表示 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="min-h-screen bg-gray-50 p-4 md:p-6 flex flex-col font-sans text-gray-800 selection:bg-emerald-200">
 
-  <!-- ================= トップ画面 ================= -->
-  <div id="view-top" class="fixed inset-0 bg-gray-50 z-[100] flex flex-col items-center justify-center p-6 transition-opacity duration-500">
-    <div class="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-200 text-center max-w-md w-full">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
+  <div class="flex flex-col lg:flex-row flex-grow gap-6 max-w-7xl mx-auto w-full">
+    
+    <!-- ================= マップ表示エリア (左側) ================= -->
+    <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden min-h-[350px] lg:min-h-[600px] relative z-10 shadow-sm">
+      <div id="map-transform">
+        <ul id="map-container">
+          <li class="p-eveMapLine"></li>
+          <li class="p-eveMapPref--hokkaido"></li><li class="p-eveMapPref--aomori"></li><li class="p-eveMapPref--iwate"></li>
+          <li class="p-eveMapPref--miyagi"></li><li class="p-eveMapPref--akita"></li><li class="p-eveMapPref--yamagata"></li>
+          <li class="p-eveMapPref--fukushima"></li><li class="p-eveMapPref--ibaraki"></li><li class="p-eveMapPref--tochigi"></li>
+          <li class="p-eveMapPref--gumma"></li><li class="p-eveMapPref--saitama"></li><li class="p-eveMapPref--chiba"></li>
+          <li class="p-eveMapPref--tokyo"></li><li class="p-eveMapPref--kanagawa"></li><li class="p-eveMapPref--niigata"></li>
+          <li class="p-eveMapPref--toyama"></li><li class="p-eveMapPref--ishikawa"></li><li class="p-eveMapPref--fukui"></li>
+          <li class="p-eveMapPref--yamanashi"></li><li class="p-eveMapPref--nagano"></li><li class="p-eveMapPref--gifu"></li>
+          <li class="p-eveMapPref--shizuoka"></li><li class="p-eveMapPref--aichi"></li><li class="p-eveMapPref--mie"></li>
+          <li class="p-eveMapPref--shiga"></li><li class="p-eveMapPref--kyoto"></li><li class="p-eveMapPref--osaka"></li>
+          <li class="p-eveMapPref--hyogo"></li><li class="p-eveMapPref--nara"></li><li class="p-eveMapPref--wakayama"></li>
+          <li class="p-eveMapPref--tottori"></li><li class="p-eveMapPref--shimane"></li><li class="p-eveMapPref--okayama"></li>
+          <li class="p-eveMapPref--hiroshima"></li><li class="p-eveMapPref--yamaguchi"></li><li class="p-eveMapPref--tokushima"></li>
+          <li class="p-eveMapPref--kagawa"></li><li class="p-eveMapPref--ehime"></li><li class="p-eveMapPref--kochi"></li>
+          <li class="p-eveMapPref--fukuoka"></li><li class="p-eveMapPref--saga"></li><li class="p-eveMapPref--nagasaki"></li>
+          <li class="p-eveMapPref--kumamoto"></li><li class="p-eveMapPref--oita"></li><li class="p-eveMapPref--miyazaki"></li>
+          <li class="p-eveMapPref--kagoshima"></li><li class="p-eveMapPref--okinawa"></li>
+        </ul>
       </div>
-      <h1 class="text-3xl font-black text-gray-800 mb-8 tracking-tighter">県庁所在地学習</h1>
-      
-      <p class="text-gray-400 font-bold mb-4 text-sm tracking-wider">出題モードを選択</p>
-      <div class="flex flex-col gap-3 mb-10">
-        <button data-mode="shape" class="top-mode-btn bg-emerald-600 text-white py-3 rounded-xl font-bold transition-colors border-2 border-emerald-600 cursor-pointer">形から</button>
-        <button data-mode="name" class="top-mode-btn bg-white text-gray-500 py-3 rounded-xl font-bold transition-colors border-2 border-gray-200 hover:border-emerald-300 hover:text-gray-700 cursor-pointer">名前から</button>
-        <button data-mode="place" class="top-mode-btn bg-white text-gray-500 py-3 rounded-xl font-bold transition-colors border-2 border-gray-200 hover:border-emerald-300 hover:text-gray-700 cursor-pointer">場所と名から</button>
-      </div>
-      
-      <button id="btn-top-start" class="w-full py-4 bg-gray-800 text-white rounded-2xl font-black text-lg shadow-sm transition-colors opacity-50 cursor-not-allowed" disabled>読み込み中...</button>
     </div>
-  </div>
 
-  <!-- ================= 結果画面 ================= -->
-  <div id="view-result" class="fixed inset-0 bg-gray-50 z-[100] flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-500">
-    <div class="bg-white p-10 md:p-14 rounded-3xl shadow-sm border border-gray-200 text-center max-w-md w-full">
-      <p class="text-emerald-600 font-bold mb-2 tracking-widest">RESULT</p>
-      <div class="text-7xl font-black text-gray-800 mb-2"><span id="score-display">0</span><span class="text-3xl text-gray-300">/47</span></div>
-      <p class="text-gray-500 font-bold mb-10">お疲れ様でした！</p>
-      <button id="btn-restart" class="w-full py-4 bg-gray-800 hover:bg-gray-900 text-white rounded-2xl font-black text-lg shadow-sm transition-colors cursor-pointer">トップに戻る</button>
-    </div>
-  </div>
+    <!-- ================= UI/コントロールエリア (右側) ================= -->
+    <div class="w-full lg:w-2/5 flex flex-col relative z-50">
+      <div class="bg-white rounded-3xl border border-gray-200 flex flex-col h-full overflow-hidden shadow-sm">
+        
+        <!-- 共通ヘッダー -->
+        <header class="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
+          <h1 class="text-xl font-black tracking-tighter flex items-center text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            日本地理学習
+          </h1>
+          <button id="btn-back" class="hidden text-sm font-bold text-gray-500 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
+            トップに戻る
+          </button>
+        </header>
 
-  <!-- ================= ゲーム画面 ================= -->
-  <div id="view-game" class="min-h-screen p-4 md:p-8 flex flex-col">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 relative z-50">
-      <h1 class="text-2xl font-black tracking-tighter flex items-center text-gray-800">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-600">
-          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        県庁所在地学習
-      </h1>
-      <!-- ゲーム中のモード表示 (クリック不可) -->
-      <div class="flex gap-1 bg-gray-200/60 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
-        <button data-mode="shape" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white flex-shrink-0 cursor-default">形から</button>
-        <button data-mode="name" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold bg-transparent text-gray-400 flex-shrink-0 cursor-default">名前から</button>
-        <button data-mode="place" class="mode-btn px-4 py-2 rounded-lg text-sm font-bold bg-transparent text-gray-400 flex-shrink-0 cursor-default">場所と名から</button>
-      </div>
-    </header>
-
-    <div class="flex flex-col lg:flex-row flex-grow gap-6">
-      <!-- マップ表示エリア -->
-      <div id="map-wrapper" class="w-full lg:w-3/5 bg-white rounded-3xl border border-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-[600px] relative z-10">
-        <div id="map-transform">
-          <ul id="map-container">
-            <li class="p-eveMapLine"></li>
-            <li class="p-eveMapPref--hokkaido"></li>
-            <li class="p-eveMapPref--aomori"></li>
-            <li class="p-eveMapPref--iwate"></li>
-            <li class="p-eveMapPref--akita"></li>
-            <li class="p-eveMapPref--yamagata"></li>
-            <li class="p-eveMapPref--miyagi"></li>
-            <li class="p-eveMapPref--fukushima"></li>
-            <li class="p-eveMapPref--ibaraki"></li>
-            <li class="p-eveMapPref--tochigi"></li>
-            <li class="p-eveMapPref--gumma"></li>
-            <li class="p-eveMapPref--saitama"></li>
-            <li class="p-eveMapPref--chiba"></li>
-            <li class="p-eveMapPref--tokyo"></li>
-            <li class="p-eveMapPref--kanagawa"></li>
-            <li class="p-eveMapPref--yamanashi"></li>
-            <li class="p-eveMapPref--nagano"></li>
-            <li class="p-eveMapPref--niigata"></li>
-            <li class="p-eveMapPref--toyama"></li>
-            <li class="p-eveMapPref--ishikawa"></li>
-            <li class="p-eveMapPref--fukui"></li>
-            <li class="p-eveMapPref--shizuoka"></li>
-            <li class="p-eveMapPref--aichi"></li>
-            <li class="p-eveMapPref--gifu"></li>
-            <li class="p-eveMapPref--mie"></li>
-            <li class="p-eveMapPref--shiga"></li>
-            <li class="p-eveMapPref--kyoto"></li>
-            <li class="p-eveMapPref--osaka"></li>
-            <li class="p-eveMapPref--hyogo"></li>
-            <li class="p-eveMapPref--nara"></li>
-            <li class="p-eveMapPref--wakayama"></li>
-            <li class="p-eveMapPref--tottori"></li>
-            <li class="p-eveMapPref--shimane"></li>
-            <li class="p-eveMapPref--okayama"></li>
-            <li class="p-eveMapPref--hiroshima"></li>
-            <li class="p-eveMapPref--yamaguchi"></li>
-            <li class="p-eveMapPref--kagawa"></li>
-            <li class="p-eveMapPref--ehime"></li>
-            <li class="p-eveMapPref--tokushima"></li>
-            <li class="p-eveMapPref--kochi"></li>
-            <li class="p-eveMapPref--fukuoka"></li>
-            <li class="p-eveMapPref--saga"></li>
-            <li class="p-eveMapPref--nagasaki"></li>
-            <li class="p-eveMapPref--kumamoto"></li>
-            <li class="p-eveMapPref--oita"></li>
-            <li class="p-eveMapPref--miyazaki"></li>
-            <li class="p-eveMapPref--kagoshima"></li>
-            <li class="p-eveMapPref--okinawa"></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- UI/コントロールエリア -->
-      <div class="w-full lg:w-2/5 flex flex-col gap-6 relative z-50">
-        <div class="bg-white rounded-3xl border border-gray-200 p-8 relative flex flex-col justify-between h-full overflow-hidden shadow-sm">
+        <!-- ビューコンテナ -->
+        <div class="relative flex-grow overflow-hidden">
           
-          <!-- 背景の巨大タイマー -->
-          <div id="timer-display" class="absolute top-4 right-6 text-[120px] leading-none font-black transition-colors text-gray-100 opacity-50 z-0 select-none pointer-events-none">15</div>
-          
-          <div class="relative z-10">
-            <p class="text-sm font-bold text-gray-400 mb-2 tracking-wide">問題 <span id="question-count">1</span> / 47</p>
-            <p id="question-text" class="text-2xl lg:text-3xl font-black mb-6 text-gray-800 min-h-[4rem]">この県の県庁所在地は？</p>
-            
-            <div id="hint-container" class="mb-8 p-4 hidden bg-emerald-50 border border-emerald-100 rounded-xl animate-hint">
-              <p class="text-emerald-600 font-bold flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 w-5 h-5">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                ヒント: <span id="hint-text" class="ml-1"></span>地方です
-              </p>
+          <!-- 【1】 トップメニュー -->
+          <div id="view-top" class="app-view absolute inset-0 p-6 flex flex-col justify-center overflow-y-auto">
+            <p class="text-gray-400 font-bold mb-4 text-sm tracking-wider text-center">モードを選択してください</p>
+            <div class="flex flex-col gap-4">
+              <button onclick="switchView('study')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
+                <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl mr-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">学習モード</div>
+                  <div class="text-xs text-gray-500 mt-1">各都道府県の特徴や場所を辞書のように学べます</div>
+                </div>
+              </button>
+
+              <button onclick="switchView('test-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">テストモード</div>
+                  <div class="text-xs text-gray-500 mt-1">様々な形式で地理の知識をテストします</div>
+                </div>
+              </button>
+
+              <button onclick="switchView('ww-config')" class="flex items-center p-5 rounded-2xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
+                <div class="bg-purple-100 text-purple-600 p-3 rounded-xl mr-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div class="font-bold text-lg text-gray-800">地理ワードウルフ</div>
+                  <div class="text-xs text-gray-500 mt-1">1台の端末を回して遊ぶマルチプレイヤーゲーム</div>
+                </div>
+              </button>
             </div>
-            <div id="hint-placeholder" class="mb-8 p-4 h-[58px]"></div>
           </div>
 
-          <div id="options-container" class="grid grid-cols-2 gap-3 mt-auto relative z-10">
-            <!-- 選択肢ボタンが生成されます -->
+          <!-- 【2】 学習モード -->
+          <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-gray-50/50">
+            <!-- 詳細表示エリア -->
+            <div id="study-detail" class="shrink-0 p-6 bg-emerald-600 text-white shadow-md transition-all duration-300 transform -translate-y-full absolute w-full z-20">
+              <div class="flex justify-between items-start mb-2">
+                <div class="text-emerald-200 font-bold text-xs tracking-widest" id="study-region"></div>
+                <button onclick="closeStudyDetail()" class="text-white hover:text-emerald-200"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+              </div>
+              <div class="text-3xl font-black mb-4" id="study-name"></div>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="bg-emerald-700/50 p-3 rounded-xl">
+                  <div class="text-emerald-200 text-xs mb-1">県庁所在地</div>
+                  <div class="font-bold" id="study-capital"></div>
+                </div>
+                <div class="bg-emerald-700/50 p-3 rounded-xl">
+                  <div class="text-emerald-200 text-xs mb-1">特徴・名所</div>
+                  <div class="font-bold" id="study-feature"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- リストエリア -->
+            <div class="flex-grow overflow-y-auto p-4 z-10 pt-4" id="study-list-container">
+              <!-- JSで生成 -->
+            </div>
           </div>
+
+          <!-- 【3】 テスト設定 -->
+          <div id="view-test-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto">
+            <h2 class="text-lg font-bold mb-6 text-gray-800">テストの設定</h2>
+            
+            <div class="mb-8">
+              <p class="text-sm font-bold text-gray-500 mb-3">出題形式を選択</p>
+              <div class="flex flex-col gap-2" id="test-format-group">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                  <input type="radio" name="test-format" value="map2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500" checked>
+                  <span class="ml-3 font-bold text-gray-700">マップ位置 → 都道府県名</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                  <input type="radio" name="test-format" value="map2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">マップ位置 → 県庁所在地</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                  <input type="radio" name="test-format" value="name2capital" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">都道府県名 → 県庁所在地</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                  <input type="radio" name="test-format" value="capital2name" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">県庁所在地 → 都道府県名</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50">
+                  <input type="radio" name="test-format" value="name2region" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="ml-3 font-bold text-gray-700">都道府県名 → 地方名</span>
+                </label>
+              </div>
+            </div>
+            
+            <button onclick="startTest()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-emerald-700 transition-colors">テストスタート (全47問)</button>
+          </div>
+
+          <!-- 【4】 テストプレイ画面 -->
+          <div id="view-test-play" class="app-view hidden absolute inset-0 flex flex-col p-6">
+            <!-- 巨大タイマー -->
+            <div id="test-timer-bg" class="absolute top-4 right-6 text-[100px] leading-none font-black text-gray-100 opacity-50 pointer-events-none select-none">15</div>
+            
+            <div class="relative z-10 flex-grow flex flex-col">
+              <p class="text-sm font-bold text-gray-400 mb-2">問題 <span id="test-q-count">1</span> / 47</p>
+              <p id="test-question-text" class="text-2xl font-black mb-6 text-gray-800 min-h-[4rem]"></p>
+              
+              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border border-emerald-100 rounded-xl animate-fade-in">
+                <p class="text-emerald-600 font-bold text-sm flex items-center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  ヒント: <span id="test-hint-text" class="ml-1"></span>
+                </p>
+              </div>
+              <div id="test-hint-space" class="mb-4 h-[46px]"></div>
+
+              <div id="test-options" class="grid grid-cols-2 gap-3 mt-auto">
+                <!-- 選択肢ボタン -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 【5】 テスト結果 -->
+          <div id="view-test-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <p class="text-emerald-600 font-bold mb-2 tracking-widest">RESULT</p>
+            <div class="text-7xl font-black text-gray-800 mb-2"><span id="test-score">0</span><span class="text-3xl text-gray-300">/47</span></div>
+            <p class="text-gray-500 font-bold mb-10">お疲れ様でした！</p>
+            <button onclick="switchView('test-config')" class="w-full py-4 bg-gray-800 hover:bg-gray-900 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
+            <button onclick="switchView('top')" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-black transition-colors">トップに戻る</button>
+          </div>
+
+          <!-- 【6】 ワードウルフ設定 -->
+          <div id="view-ww-config" class="app-view hidden absolute inset-0 p-6 overflow-y-auto flex flex-col">
+            <h2 class="text-lg font-bold mb-6 text-gray-800">ワードウルフの設定</h2>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-gray-500 mb-2">プレイヤー人数</label>
+              <select id="ww-player-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-purple-500">
+                <option value="3">3人</option>
+                <option value="4" selected>4人</option>
+                <option value="5">5人</option>
+                <option value="6">6人</option>
+                <option value="7">7人</option>
+                <option value="8">8人</option>
+              </select>
+            </div>
+            
+            <div class="mb-8">
+              <label class="block text-sm font-bold text-gray-500 mb-2">ウルフ（少数派）の数</label>
+              <select id="ww-wolf-count" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-purple-500">
+                <option value="1" selected>1人</option>
+                <option value="2">2人</option>
+              </select>
+            </div>
+
+            <div class="p-4 bg-purple-50 border border-purple-100 rounded-xl mb-8 text-sm text-purple-800 font-medium">
+              ルール：配られたお題の「都道府県」について話し合います。一人だけ違うお題（同じ地方の別の県）を配られたウルフを探し出してください！
+            </div>
+            
+            <button onclick="startWW()" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black text-lg shadow-sm hover:bg-purple-700 transition-colors mt-auto">ゲームスタート</button>
+          </div>
+
+          <!-- 【7】 ワードウルフ確認 -->
+          <div id="view-ww-check" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center">
+            <h2 class="text-2xl font-black mb-2 text-gray-800">プレイヤー <span id="ww-player-num" class="text-purple-600 text-3xl">1</span> の番</h2>
+            <p class="text-gray-500 font-medium mb-8 text-sm">他の人に見られないように確認してください。</p>
+            
+            <div class="relative w-full mb-8">
+              <button id="btn-ww-show" class="w-full py-12 bg-purple-600 text-white text-xl font-black rounded-2xl shadow-sm touch-none select-none">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto mb-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                長押ししてお題を見る
+              </button>
+              
+              <!-- 長押し中に表示 -->
+              <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-purple-500 rounded-2xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 z-20">
+                <p class="text-sm text-gray-500 font-bold mb-1">あなたのお題</p>
+                <p class="text-4xl font-black text-purple-600" id="ww-word-text"></p>
+                <p class="text-xs text-gray-400 mt-2">マップも確認してください</p>
+              </div>
+            </div>
+
+            <button id="btn-ww-next" onclick="nextWWPlayer()" class="w-full py-4 bg-gray-800 text-white font-bold rounded-xl opacity-0 pointer-events-none transition-opacity">次の人へ交代する</button>
+          </div>
+
+          <!-- 【8】 ワードウルフ議論 -->
+          <div id="view-ww-discuss" class="app-view hidden absolute inset-0 p-6 flex flex-col justify-center items-center text-center bg-purple-600 text-white">
+            <h2 class="text-xl font-bold mb-2 text-purple-200">議論タイム</h2>
+            <p class="text-sm font-medium mb-8 text-purple-100">誰が違うお題を持っているか話し合いましょう</p>
+            
+            <div id="ww-timer" class="text-8xl font-black mb-12 tabular-nums">3:00</div>
+            
+            <button onclick="finishWWDiscuss()" class="w-full py-4 bg-white text-purple-600 font-black rounded-2xl shadow-sm">議論を終了して投票へ</button>
+          </div>
+
+          <!-- 【9】 ワードウルフ結果 -->
+          <div id="view-ww-result" class="app-view hidden absolute inset-0 p-6 flex flex-col text-center overflow-y-auto">
+            <h2 class="text-2xl font-black mb-6 text-gray-800 mt-4">結果発表</h2>
+            
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 mb-6">
+              <p class="text-sm font-bold text-gray-500 mb-4">それぞれの役職とお題</p>
+              <ul id="ww-result-list" class="flex flex-col gap-3 text-left">
+                <!-- JSで生成 -->
+              </ul>
+            </div>
+            
+            <button onclick="switchView('ww-config')" class="w-full py-4 bg-purple-600 text-white font-black rounded-2xl shadow-sm mb-3 mt-auto">もう一度遊ぶ</button>
+            <button onclick="switchView('top')" class="w-full py-4 bg-gray-100 text-gray-600 font-black rounded-2xl">トップに戻る</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -231,381 +354,417 @@
 
   <script>
     const PREFECTURES = [
-      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道' },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北' },
-      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北' },
-      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北' },
-      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北' },
-      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北' },
-      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北' },
-      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東' },
-      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東' },
-      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東' },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東' },
-      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東' },
-      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東' },
-      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東' },
-      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部' },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部' },
-      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部' },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部' },
-      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部' },
-      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部' },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部' },
-      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部' },
-      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部' },
-      { id: 'mie', name: '三重県', capital: '津市', region: '近畿' },
-      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿' },
-      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿' },
-      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿' },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿' },
-      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿' },
-      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿' },
-      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国' },
-      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国' },
-      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国' },
-      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国' },
-      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国' },
-      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国' },
-      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国' },
-      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国' },
-      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国' },
-      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄' },
-      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄' },
-      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄' },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄' },
-      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄' },
-      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄' },
-      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄' },
-      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄' },
+      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', feature: 'ジンギスカン・時計台' },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', feature: 'りんご・ねぶた祭' },
+      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', feature: 'わんこそば・中尊寺' },
+      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', feature: '牛タン・伊達政宗' },
+      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', feature: 'なまはげ・きりたんぽ' },
+      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', feature: 'さくらんぼ・蔵王' },
+      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', feature: '喜多方ラーメン・白虎隊' },
+      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', feature: '納豆・偕楽園' },
+      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', feature: '餃子・日光東照宮' },
+      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', feature: 'こんにゃく・草津温泉' },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', feature: '草加せんべい・鉄道博物館' },
+      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', feature: '落花生・ディズニーリゾート' },
+      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', feature: '東京タワー・浅草寺' },
+      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', feature: '中華街・鎌倉' },
+      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', feature: 'コシヒカリ・佐渡島' },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', feature: 'ホタルイカ・黒部ダム' },
+      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', feature: '兼六園・金箔' },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', feature: '越前ガニ・恐竜博物館' },
+      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', feature: 'ぶどう・富士山' },
+      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', feature: '信州そば・善光寺' },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', feature: '白川郷・飛騨牛' },
+      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', feature: 'お茶・富士山' },
+      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', feature: 'ひつまぶし・名古屋城' },
+      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', feature: '伊勢神宮・松阪牛' },
+      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', feature: '琵琶湖・ひこにゃん' },
+      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', feature: '金閣寺・抹茶' },
+      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', feature: 'たこ焼き・道頓堀' },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', feature: '神戸牛・姫路城' },
+      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', feature: '大仏・鹿' },
+      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', feature: 'みかん・高野山' },
+      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', feature: '鳥取砂丘・梨' },
+      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', feature: '出雲大社・しじみ' },
+      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', feature: '桃太郎・後楽園' },
+      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', feature: 'お好み焼き・厳島神社' },
+      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', feature: 'ふぐ・錦帯橋' },
+      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', feature: '阿波踊り・すだち' },
+      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', feature: '讃岐うどん・小豆島' },
+      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', feature: 'みかん・道後温泉' },
+      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', feature: 'カツオのタタキ・坂本龍馬' },
+      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', feature: '明太子・太宰府天満宮' },
+      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', feature: '吉野ヶ里遺跡・有田焼' },
+      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', feature: 'カステラ・ハウステンボス' },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', feature: '熊本城・馬刺し' },
+      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', feature: '別府温泉・とり天' },
+      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', feature: 'チキン南蛮・高千穂峡' },
+      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', feature: '桜島・黒豚' },
+      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', feature: '首里城・ゴーヤチャンプルー' }
     ];
 
-    let gameState = 'ready'; 
-    let quizMode = 'shape';  
-    let currentPref = null;
-    let timer = 15; // ★ 15秒に変更
-    let score = 0;
-    let questionCount = 0;
-    let timerInterval = null;
-    let remainingPrefs = []; 
-    let prefCenters = {}; 
-    let baseScale = 1;
+    const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
 
-    // Elements
+    // 共通
     const mapWrapper = document.getElementById('map-wrapper');
     const mapTransform = document.getElementById('map-transform');
     const mapContainer = document.getElementById('map-container');
-    const viewTop = document.getElementById('view-top');
-    const viewResult = document.getElementById('view-result');
-    const btnTopStart = document.getElementById('btn-top-start');
-    
-    const timerDisplay = document.getElementById('timer-display');
-    const questionCountEl = document.getElementById('question-count');
-    const questionTextEl = document.getElementById('question-text');
-    const hintContainer = document.getElementById('hint-container');
-    const hintPlaceholder = document.getElementById('hint-placeholder');
-    const hintTextEl = document.getElementById('hint-text');
-    const optionsContainer = document.getElementById('options-container');
-    const scoreDisplay = document.getElementById('score-display');
-    
-    const topModeButtons = document.querySelectorAll('.top-mode-btn');
-    const gameModeButtons = document.querySelectorAll('.mode-btn');
     const allPrefElements = document.querySelectorAll('#map-container li');
+    let baseScale = 1;
 
-    // 初期化処理
-    async function init() {
-      // フォントの読み込みを待つ
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
+    // ビュー切り替え
+    function switchView(viewId) {
+      document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      
+      const btnBack = document.getElementById('btn-back');
+      if (viewId === 'top') {
+        btnBack.classList.add('hidden');
+        resetMapState();
+      } else {
+        btnBack.classList.remove('hidden');
       }
-      
-      // DOMレンダリング反映のために少し待機
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      calculatePrefectureCenters();
-      updateBaseScale();
-      resetMapScale();
 
-      // リサイズイベント
-      window.addEventListener('resize', () => {
-        updateBaseScale();
-        if (gameState === 'quiz' && currentPref && (quizMode === 'shape' || quizMode === 'place')) {
-          focusOnPrefecture(currentPref.id);
-        } else {
-          resetMapScale();
-        }
-      });
-
-      // トップ画面のスタートボタン有効化
-      btnTopStart.disabled = false;
-      btnTopStart.classList.remove('opacity-50', 'cursor-not-allowed');
-      btnTopStart.classList.add('cursor-pointer', 'hover:bg-gray-900');
-      btnTopStart.textContent = "スタート";
-
-      // イベントリスナー
-      btnTopStart.addEventListener('click', startGame);
-      document.getElementById('btn-restart').addEventListener('click', () => {
-        viewResult.classList.add('opacity-0', 'pointer-events-none');
-        viewTop.classList.remove('opacity-0', 'pointer-events-none');
-        gameState = 'ready';
-      });
-
-      // トップ画面でのモード切り替え
-      topModeButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          quizMode = e.target.getAttribute('data-mode');
-          updateModeButtonsUI();
-        });
-      });
+      if (viewId === 'study') initStudyMode();
     }
 
-    function updateBaseScale() {
-      const vw = mapWrapper.clientWidth;
-      const vh = mapWrapper.clientHeight;
-      const mapSize = 1000;
-      // コンテナ内に90%で収まるように計算
-      baseScale = Math.min(vw, vh) / mapSize * 0.9;
-    }
+    document.getElementById('btn-back').addEventListener('click', () => {
+      // 進行中の処理をリセット
+      clearInterval(testState.interval);
+      clearInterval(wwState.interval);
+      switchView('top');
+    });
 
-    // 全体が見えるように中央に配置
+    // ================= マップ制御 =================
     function resetMapScale() {
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
       const mapSize = 1000;
-      
+      baseScale = Math.min(vw, vh) / mapSize * 0.9;
       const tx = vw / 2 - (mapSize / 2) * baseScale;
       const ty = vh / 2 - (mapSize / 2) * baseScale;
-
       mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${baseScale})`;
     }
 
-    // Canvasを使ってフォント上のピクセルから「実際の都道府県の重心」を計算
-    function calculatePrefectureCenters() {
-      const fontSize = 120;
-      const offset = 40; 
-      const size = fontSize + offset * 2;
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      
-      PREFECTURES.forEach(p => {
-        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
-        if (!el) return;
-        
-        let content = window.getComputedStyle(el, '::before').content;
-        if (content && content !== 'none') {
-          content = content.replace(/^["']|["']$/g, '');
-          if (content.length > 1 && content.startsWith('\\')) {
-            content = String.fromCharCode(parseInt(content.substring(1), 16));
-          }
-
-          ctx.clearRect(0, 0, size, size);
-          ctx.font = `${fontSize}px map`;
-          ctx.textBaseline = 'top';
-          ctx.textAlign = 'left';
-          ctx.fillStyle = 'black';
-          ctx.fillText(content, offset, offset);
-          
-          const imgData = ctx.getImageData(0, 0, size, size).data;
-          let minX = size, minY = size, maxX = 0, maxY = 0;
-          let found = false;
-          
-          for (let y = 0; y < size; y++) {
-            for (let x = 0; x < size; x++) {
-              if (imgData[(y * size + x) * 4 + 3] > 10) { 
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
-                found = true;
-              }
-            }
-          }
-          
-          if (found) {
-            const cx = (minX + maxX) / 2;
-            const cy = (minY + maxY) / 2;
-            // 0.0〜1.0 の割合として保存
-            prefCenters[p.id] = {
-              px: (cx - offset) / fontSize,
-              py: (cy - offset) / fontSize
-            };
-          } else {
-            prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
-          }
-        }
-      });
+    function resetMapState() {
+      mapContainer.classList.remove('is-focus');
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
+      resetMapScale();
     }
 
-    // ボタンのスタイル更新
-    function updateModeButtonsUI() {
-      // トップ画面のボタン
-      topModeButtons.forEach(btn => {
-        const mode = btn.getAttribute('data-mode');
-        if (mode === quizMode) {
-          btn.className = "top-mode-btn bg-emerald-600 text-white py-3 rounded-xl font-bold shadow-sm transition-colors border-2 border-emerald-600 cursor-pointer";
-        } else {
-          btn.className = "top-mode-btn bg-white text-gray-500 py-3 rounded-xl font-bold transition-colors border-2 border-gray-200 hover:border-emerald-300 hover:text-gray-700 cursor-pointer";
-        }
-      });
-      // ゲーム画面の表示用ボタン
-      gameModeButtons.forEach(btn => {
-        const mode = btn.getAttribute('data-mode');
-        if (mode === quizMode) {
-          btn.className = "mode-btn px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white flex-shrink-0 cursor-default shadow-sm";
-        } else {
-          btn.className = "mode-btn px-4 py-2 rounded-lg text-sm font-bold bg-transparent text-gray-400 flex-shrink-0 cursor-default";
-        }
-      });
-    }
+    function highlightMap(prefId, focusMode = true) {
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
+      if (focusMode) mapContainer.classList.add('is-focus');
+      else mapContainer.classList.remove('is-focus');
 
-    function startGame() {
-      score = 0;
-      questionCount = 1;
-      gameState = 'quiz';
-      
-      remainingPrefs = [...PREFECTURES].sort(() => Math.random() - 0.5);
-      
-      viewTop.classList.add('opacity-0', 'pointer-events-none');
-      mapContainer.classList.add('is-quiz');
-      
-      updateModeButtonsUI();
-      generateQuestion();
-    }
-
-    // 対象の都道府県へなめらかにズーム・移動する
-    function focusOnPrefecture(prefId) {
-      const center = prefCenters[prefId];
-      if (!center) return;
-
-      const vw = mapWrapper.clientWidth;
-      const vh = mapWrapper.clientHeight;
-      const mapSize = 1000;
-      
-      // 出題時は基本スケールの4倍に拡大
-      const targetScale = baseScale * 4;
-
-      // 画面中央に、対象の重心が来るようにtranslateを計算
-      const tx = vw / 2 - (center.px * mapSize) * targetScale;
-      const ty = vh / 2 - (center.py * mapSize) * targetScale;
-
-      mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${targetScale})`;
-    }
-
-    function generateQuestion() {
-      currentPref = remainingPrefs.pop();
-
-      // 間違いの選択肢を3つ生成
-      const wrongOptions = [];
-      while (wrongOptions.length < 3) {
-        const candidate = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital;
-        if (candidate !== currentPref.capital && !wrongOptions.includes(candidate)) {
-          wrongOptions.push(candidate);
-        }
+      if (prefId) {
+        const targetEl = document.querySelector(`.p-eveMapPref--${prefId}`);
+        if (targetEl) targetEl.classList.add('is-open');
       }
-      
-      const options = [currentPref.capital, ...wrongOptions].sort(() => Math.random() - 0.5);
+    }
 
-      questionCountEl.textContent = questionCount;
+    // ================= 学習モード =================
+    function initStudyMode() {
+      resetMapState();
+      const container = document.getElementById('study-list-container');
+      if (container.innerHTML !== '') return; // 生成済みならスキップ
+
+      REGIONS.forEach(region => {
+        const title = document.createElement('div');
+        title.className = "text-xs font-bold text-gray-400 mt-4 mb-2 pl-2";
+        title.textContent = region;
+        container.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = "grid grid-cols-3 gap-2";
+
+        PREFECTURES.filter(p => p.region === region).forEach(p => {
+          const btn = document.createElement('button');
+          btn.className = "bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition-colors";
+          btn.textContent = p.name;
+          btn.onclick = () => showStudyDetail(p);
+          grid.appendChild(btn);
+        });
+        container.appendChild(grid);
+      });
+    }
+
+    function showStudyDetail(pref) {
+      highlightMap(pref.id, true);
+      document.getElementById('study-region').textContent = pref.region;
+      document.getElementById('study-name').textContent = pref.name;
+      document.getElementById('study-capital').textContent = pref.capital;
+      document.getElementById('study-feature').textContent = pref.feature;
       
-      if (quizMode === 'shape') {
-        questionTextEl.textContent = 'この県の県庁所在地は？';
-      } else {
-        questionTextEl.textContent = `${currentPref.name}の県庁所在地は？`;
+      const detail = document.getElementById('study-detail');
+      detail.classList.remove('-translate-y-full');
+      detail.classList.add('translate-y-0');
+    }
+
+    function closeStudyDetail() {
+      document.getElementById('study-detail').classList.remove('translate-y-0');
+      document.getElementById('study-detail').classList.add('-translate-y-full');
+      resetMapState();
+    }
+
+    // ================= テストモード =================
+    let testState = { format: 'map2name', currentQ: 1, score: 0, timer: 15, interval: null, remaining: [], currentPref: null };
+
+    function startTest() {
+      const formatObj = document.querySelector('input[name="test-format"]:checked');
+      if(!formatObj) return;
+      testState.format = formatObj.value;
+      testState.score = 0;
+      testState.currentQ = 1;
+      testState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      
+      switchView('test-play');
+      nextTestQuestion();
+    }
+
+    function nextTestQuestion() {
+      if (testState.currentQ > 47) {
+        showTestResult();
+        return;
       }
 
-      // 選択肢ボタンの生成
-      optionsContainer.innerHTML = '';
+      testState.currentPref = testState.remaining.pop();
+      const p = testState.currentPref;
+      const f = testState.format;
+
+      // 問題文と正解、ヒントの設定
+      let qText = '', correctAns = '', hint = p.region;
+      
+      if (f === 'map2name') {
+        qText = 'この<span class="text-emerald-600">都道府県名</span>は？';
+        correctAns = p.name;
+        highlightMap(p.id, true);
+      } else if (f === 'map2capital') {
+        qText = 'この県の<span class="text-emerald-600">県庁所在地</span>は？';
+        correctAns = p.capital;
+        highlightMap(p.id, true);
+      } else if (f === 'name2capital') {
+        qText = `${p.name}の<span class="text-emerald-600">県庁所在地</span>は？`;
+        correctAns = p.capital;
+        highlightMap(null, false);
+      } else if (f === 'capital2name') {
+        qText = `県庁所在地が「${p.capital}」の<span class="text-emerald-600">都道府県名</span>は？`;
+        correctAns = p.name;
+        highlightMap(null, false);
+      } else if (f === 'name2region') {
+        qText = `${p.name}は何<span class="text-emerald-600">地方</span>？`;
+        correctAns = p.region;
+        hint = p.feature; // ヒントを特徴に変更
+        highlightMap(null, false);
+      }
+
+      document.getElementById('test-q-count').textContent = testState.currentQ;
+      document.getElementById('test-question-text').innerHTML = qText;
+      document.getElementById('test-hint-text').textContent = hint;
+
+      // 選択肢の生成
+      const optionsSet = new Set([correctAns]);
+      while (optionsSet.size < 4) {
+        const randP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        if (f === 'name2region') optionsSet.add(randP.region);
+        else if (f === 'map2name' || f === 'capital2name') optionsSet.add(randP.name);
+        else optionsSet.add(randP.capital);
+      }
+      const options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('test-options');
+      container.innerHTML = '';
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = "py-4 px-2 bg-white border-2 border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm cursor-pointer";
+        btn.className = "py-4 px-2 bg-white border-2 border-gray-200 rounded-xl font-bold text-sm lg:text-base hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors text-gray-700 shadow-sm";
         btn.textContent = opt;
-        btn.onclick = () => handleAnswer(opt);
-        optionsContainer.appendChild(btn);
+        btn.onclick = () => answerTest(opt, correctAns);
+        container.appendChild(btn);
       });
 
-      // マップのハイライトとズーム
-      allPrefElements.forEach(el => el.classList.remove('is-open')); 
-      if (quizMode === 'shape' || quizMode === 'place') {
-        const targetEl = document.querySelector(`.p-eveMapPref--${currentPref.id}`);
-        if (targetEl) targetEl.classList.add('is-open');
-        focusOnPrefecture(currentPref.id); 
-      } else {
-        resetMapScale();
-      }
+      // タイマーリセット
+      document.getElementById('test-hint').classList.add('hidden');
+      document.getElementById('test-hint-space').classList.remove('hidden');
+      testState.timer = 15;
+      updateTestTimerUI();
 
-      // ヒントとタイマーのリセット
-      hintContainer.classList.add('hidden');
-      hintPlaceholder.classList.remove('hidden');
-      
-      timer = 15;
-      updateTimerUI();
-      
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timer--;
-        updateTimerUI();
+      clearInterval(testState.interval);
+      testState.interval = setInterval(() => {
+        testState.timer--;
+        updateTestTimerUI();
         
-        // 残り5秒でヒント表示
-        if (timer === 5) {
-          hintTextEl.textContent = currentPref.region;
-          hintContainer.classList.remove('hidden');
-          hintPlaceholder.classList.add('hidden');
+        if (testState.timer === 5) { // 5秒でヒント
+          document.getElementById('test-hint').classList.remove('hidden');
+          document.getElementById('test-hint-space').classList.add('hidden');
         }
-        
-        // 0秒で時間切れ（不正解扱い）
-        if (timer <= 0) {
-          clearInterval(timerInterval);
-          handleAnswer(null);
+        if (testState.timer <= 0) {
+          answerTest(null, correctAns); // 時間切れ
         }
       }, 1000);
     }
 
-    function updateTimerUI() {
-      timerDisplay.textContent = timer;
-      if (timer <= 5) {
-        timerDisplay.classList.remove('text-gray-100');
-        timerDisplay.classList.add('text-rose-500');
-        timerDisplay.classList.replace('opacity-50', 'opacity-20');
+    function updateTestTimerUI() {
+      const td = document.getElementById('test-timer-bg');
+      td.textContent = testState.timer;
+      if (testState.timer <= 5) {
+        td.classList.replace('text-gray-100', 'text-rose-100');
       } else {
-        timerDisplay.classList.add('text-gray-100');
-        timerDisplay.classList.remove('text-rose-500');
-        timerDisplay.classList.replace('opacity-20', 'opacity-50');
+        td.classList.replace('text-rose-100', 'text-gray-100');
       }
     }
 
-    function handleAnswer(ans) {
-      clearInterval(timerInterval);
-      
-      // 正解の場合のみスコア加算
-      if (ans === currentPref.capital) {
-        score++;
-      }
+    function answerTest(ans, correctAns) {
+      clearInterval(testState.interval);
+      if (ans === correctAns) testState.score++;
+      testState.currentQ++;
+      nextTestQuestion();
+    }
 
-      if (questionCount >= 47) {
-        endGame();
+    function showTestResult() {
+      resetMapState();
+      document.getElementById('test-score').textContent = testState.score;
+      switchView('test-result');
+    }
+
+
+    // ================= 地理ワードウルフ =================
+    let wwState = { players: [], currentIdx: 0, timer: 180, interval: null };
+
+    // 人数変更時のウルフ数制御
+    document.getElementById('ww-player-count').addEventListener('change', (e) => {
+      const pc = parseInt(e.target.value);
+      const wcSelect = document.getElementById('ww-wolf-count');
+      if (pc >= 6) {
+        if (wcSelect.options.length === 1) wcSelect.add(new Option('2人', '2'));
       } else {
-        questionCount++;
-        generateQuestion();
+        if (wcSelect.options.length > 1) {
+          wcSelect.value = '1';
+          wcSelect.remove(1);
+        }
+      }
+    });
+
+    function startWW() {
+      const pc = parseInt(document.getElementById('ww-player-count').value);
+      const wc = parseInt(document.getElementById('ww-wolf-count').value);
+      
+      // 同じ地方から2県選ぶ
+      const region = REGIONS[Math.floor(Math.random() * REGIONS.length)];
+      const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
+      // 万が一1県しかない地方があれば全体から選ぶ（実際にはないが）
+      const prefA = prefsInRegion[0];
+      const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p=>p.id!==prefA.id);
+
+      // 役職割り当て
+      let roles = Array(wc).fill('wolf').concat(Array(pc - wc).fill('citizen'));
+      roles = roles.sort(() => Math.random() - 0.5);
+      
+      wwState.players = roles.map((r, i) => ({
+        id: i + 1,
+        role: r,
+        pref: r === 'wolf' ? prefB : prefA
+      }));
+
+      wwState.currentIdx = 0;
+      switchView('ww-check');
+      setupWWCheckUI();
+    }
+
+    function setupWWCheckUI() {
+      const player = wwState.players[wwState.currentIdx];
+      document.getElementById('ww-player-num').textContent = player.id;
+      document.getElementById('ww-word-text').textContent = player.pref.name;
+      
+      const btnShow = document.getElementById('btn-show');
+      const layer = document.getElementById('ww-word-layer');
+      const btnNext = document.getElementById('btn-ww-next');
+      
+      btnNext.classList.add('opacity-0', 'pointer-events-none');
+      layer.classList.add('opacity-0', 'pointer-events-none');
+      resetMapState();
+    }
+
+    // 長押しイベント設定
+    const btnShow = document.getElementById('btn-ww-show');
+    const wordLayer = document.getElementById('ww-word-layer');
+    const btnNext = document.getElementById('btn-ww-next');
+
+    function showWWWord(e) {
+      e.preventDefault();
+      wordLayer.classList.remove('opacity-0', 'pointer-events-none');
+      const p = wwState.players[wwState.currentIdx];
+      highlightMap(p.pref.id, true);
+    }
+
+    function hideWWWord(e) {
+      e.preventDefault();
+      wordLayer.classList.add('opacity-0', 'pointer-events-none');
+      resetMapState();
+      // 一度見たら次へ進める
+      btnNext.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    btnShow.addEventListener('mousedown', showWWWord);
+    btnShow.addEventListener('touchstart', showWWWord, {passive: false});
+    btnShow.addEventListener('mouseup', hideWWWord);
+    btnShow.addEventListener('mouseleave', hideWWWord);
+    btnShow.addEventListener('touchend', hideWWWord);
+    btnShow.addEventListener('touchcancel', hideWWWord);
+
+    function nextWWPlayer() {
+      wwState.currentIdx++;
+      if (wwState.currentIdx >= wwState.players.length) {
+        startWWDiscuss();
+      } else {
+        setupWWCheckUI();
       }
     }
 
-    function endGame() {
-      gameState = 'result';
+    function startWWDiscuss() {
+      switchView('ww-discuss');
+      wwState.timer = 180;
+      updateWWTimerUI();
       
-      scoreDisplay.textContent = score;
-      
-      mapContainer.classList.remove('is-quiz');
-      allPrefElements.forEach(el => el.classList.remove('is-open'));
-      resetMapScale();
-      
-      // 結果画面表示
-      viewResult.classList.remove('opacity-0', 'pointer-events-none');
+      clearInterval(wwState.interval);
+      wwState.interval = setInterval(() => {
+        wwState.timer--;
+        updateWWTimerUI();
+        if (wwState.timer <= 0) {
+          finishWWDiscuss();
+        }
+      }, 1000);
     }
 
-    window.addEventListener('DOMContentLoaded', init);
+    function updateWWTimerUI() {
+      const m = Math.floor(wwState.timer / 60);
+      const s = ('0' + (wwState.timer % 60)).slice(-2);
+      document.getElementById('ww-timer').textContent = `${m}:${s}`;
+    }
+
+    function finishWWDiscuss() {
+      clearInterval(wwState.interval);
+      switchView('ww-result');
+      
+      const list = document.getElementById('ww-result-list');
+      list.innerHTML = '';
+      wwState.players.forEach(p => {
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center py-2 border-b border-gray-100 last:border-0";
+        const roleHtml = p.role === 'wolf' 
+          ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-1 rounded">ウルフ</span>` 
+          : `<span class="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded">市民</span>`;
+        li.innerHTML = `<div><span class="font-bold mr-2">プレイヤー ${p.id}</span> ${roleHtml}</div><div class="font-black text-purple-600">${p.pref.name}</div>`;
+        list.appendChild(li);
+      });
+    }
+
+    // 初期起動
+    window.addEventListener('DOMContentLoaded', () => {
+      document.fonts.ready.then(() => {
+        resetMapScale();
+        window.addEventListener('resize', resetMapScale);
+      });
+    });
   </script>
 </body>
 </html>
