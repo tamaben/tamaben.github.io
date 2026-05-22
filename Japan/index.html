@@ -7,82 +7,145 @@
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- D3.js (SVGマップ描画用) -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <!-- 元のサイトのグローバルCSS -->
+  <link rel="stylesheet" href="https://www.granfairs.com/_codetest/iconfont-for-map/assets/css/global.css">
 
   <style>
-    /* 全体のスクロールを抑止 */
-    body {
-      overflow: hidden;
-      overscroll-behavior-y: none;
-    }
-    
-    /* スクロールバーの非表示（内部スクロール用） */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* --- SVGマップのスタイル --- */
-    .pref-path {
-      fill: #cbd5e1; /* 通常時のグレー */
-      stroke: #ffffff;
-      stroke-width: 1.5px;
-      stroke-linejoin: round;
-      stroke-linecap: round;
-      transition: fill 0.4s ease;
-      cursor: pointer;
-    }
-    .pref-path:hover {
-      fill: #a7f3d0; /* ホバー時は薄い緑 */
+    /* ローカルの map.ttf を読み込む設定 */
+    @font-face {
+      font-family: 'map';
+      src: url('./map.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: block;
     }
 
-    /* クイズ中の非対象の都道府県 (背景より少し濃いソリッドなグレー) */
-    .is-quiz .pref-path:not(.is-open) {
-      fill: #e2e8f0;
-      pointer-events: none; /* クイズ中はクリック不可 */
+    /* ガビガビ対策: マップのベースサイズを10倍の1200pxにする */
+    #map-transform {
+      width: 1200px;
+      height: 1200px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0; 
+      transition: transform 0.7s cubic-bezier(0.34, 1.15, 0.64, 1); 
+      will-change: transform;
+    }
+
+    #map-transform ul {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* 都道府県のフォント設定 */
+    #map-transform li,
+    #map-transform li::before {
+      font-family: 'map' !important;
+      font-size: 1200px !important; /* 解像度を高く保つ */
+      line-height: 1 !important;
+      color: #cbd5e1 !important; /* 通常時のグレー */
+      transition: color 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* 日本地図の全体境界線 */
+    #map-transform li.p-eveMapLine,
+    #map-transform li.p-eveMapLine::before {
+      color: #ffffff !important;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* [モード別] クイズ・学習中の非対象の都道府県 */
+    #map-container.is-focus li:not(.is-open):not(.p-eveMapLine),
+    #map-container.is-focus li:not(.is-open):not(.p-eveMapLine)::before {
+      color: #e2e8f0 !important; /* 背景に同化しないソリッドな薄グレー */
+    }
+
+    /* [モード別] シルエットクイズ時の非対象の都道府県 (完全に隠す) */
+    #map-container.is-silhouette li:not(.is-open),
+    #map-container.is-silhouette li:not(.is-open)::before,
+    #map-container.is-silhouette li.p-eveMapLine {
+      opacity: 0 !important;
     }
 
     /* アクティブ(出題中・選択中)の都道府県 */
-    .pref-path.is-open {
-      fill: #10b981 !important; /* エメラルドグリーン */
-      stroke: #ffffff;
-      stroke-width: 2px;
+    #map-transform li.is-open,
+    #map-transform li.is-open::before {
+      color: #10b981 !important; /* エメラルドグリーン */
+      z-index: 10;
+      filter: none !important;
+    }
+
+    /* シルエットクイズ時の対象の都道府県 (黒に近いグレー) */
+    #map-container.is-silhouette li.is-open,
+    #map-container.is-silhouette li.is-open::before {
+      color: #334155 !important;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)) !important;
     }
 
     /* アニメーション */
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(10px); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
+    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
     
-    @keyframes pulseSoft {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    .animate-pulse-soft { animation: pulseSoft 2s infinite; }
+    /* スクロールバー非表示 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
-<body class="h-[100dvh] bg-slate-50 p-2 md:p-6 flex flex-col font-sans text-slate-800 selection:bg-emerald-200">
+<body class="h-[100dvh] overflow-hidden bg-slate-50 p-2 md:p-6 flex flex-col font-sans text-slate-800 selection:bg-emerald-200">
 
-  <!-- 画面全体を覆うレイアウトコンテナ -->
   <div class="flex flex-col lg:flex-row flex-grow gap-4 lg:gap-6 max-w-7xl mx-auto w-full min-h-0">
     
     <!-- ================= マップ表示エリア (左側/上部) ================= -->
-    <div id="map-wrapper" class="w-full lg:w-3/5 h-[35vh] lg:h-full bg-white rounded-3xl border-2 border-slate-100 flex items-center justify-center overflow-hidden relative z-10 shadow-sm shrink-0 lg:shrink">
-      <!-- D3.jsでここにSVGが生成されます -->
-      <div id="map-container" class="w-full h-full"></div>
-      
-      <!-- ローディング表示 -->
-      <div id="map-loading" class="absolute inset-0 flex flex-col items-center justify-center bg-white z-20">
-        <svg class="animate-spin text-emerald-500 mb-2" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-        <p class="text-xs font-bold text-slate-400 tracking-wider">地図データを読み込み中...</p>
+    <div id="map-wrapper" class="w-full lg:w-3/5 h-[35vh] lg:h-full bg-white rounded-[2rem] border-2 border-slate-100 flex items-center justify-center overflow-hidden relative z-10 shadow-sm shrink-0 lg:shrink">
+      <div id="map-transform">
+        <ul id="map-container">
+          <li class="p-eveMapLine"></li>
+          <li class="p-eveMapPref--hokkaido"></li><li class="p-eveMapPref--aomori"></li><li class="p-eveMapPref--iwate"></li>
+          <li class="p-eveMapPref--miyagi"></li><li class="p-eveMapPref--akita"></li><li class="p-eveMapPref--yamagata"></li>
+          <li class="p-eveMapPref--fukushima"></li><li class="p-eveMapPref--ibaraki"></li><li class="p-eveMapPref--tochigi"></li>
+          <li class="p-eveMapPref--gumma"></li><li class="p-eveMapPref--saitama"></li><li class="p-eveMapPref--chiba"></li>
+          <li class="p-eveMapPref--tokyo"></li><li class="p-eveMapPref--kanagawa"></li><li class="p-eveMapPref--niigata"></li>
+          <li class="p-eveMapPref--toyama"></li><li class="p-eveMapPref--ishikawa"></li><li class="p-eveMapPref--fukui"></li>
+          <li class="p-eveMapPref--yamanashi"></li><li class="p-eveMapPref--nagano"></li><li class="p-eveMapPref--gifu"></li>
+          <li class="p-eveMapPref--shizuoka"></li><li class="p-eveMapPref--aichi"></li><li class="p-eveMapPref--mie"></li>
+          <li class="p-eveMapPref--shiga"></li><li class="p-eveMapPref--kyoto"></li><li class="p-eveMapPref--osaka"></li>
+          <li class="p-eveMapPref--hyogo"></li><li class="p-eveMapPref--nara"></li><li class="p-eveMapPref--wakayama"></li>
+          <li class="p-eveMapPref--tottori"></li><li class="p-eveMapPref--shimane"></li><li class="p-eveMapPref--okayama"></li>
+          <li class="p-eveMapPref--hiroshima"></li><li class="p-eveMapPref--yamaguchi"></li><li class="p-eveMapPref--tokushima"></li>
+          <li class="p-eveMapPref--kagawa"></li><li class="p-eveMapPref--ehime"></li><li class="p-eveMapPref--kochi"></li>
+          <li class="p-eveMapPref--fukuoka"></li><li class="p-eveMapPref--saga"></li><li class="p-eveMapPref--nagasaki"></li>
+          <li class="p-eveMapPref--kumamoto"></li><li class="p-eveMapPref--oita"></li><li class="p-eveMapPref--miyazaki"></li>
+          <li class="p-eveMapPref--kagoshima"></li><li class="p-eveMapPref--okinawa"></li>
+        </ul>
+      </div>
+      <!-- ロード中カバー -->
+      <div id="loading-cover" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <svg class="animate-spin text-emerald-500 mb-3" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <p class="text-xs font-bold text-slate-400">マップデータを準備中...</p>
       </div>
     </div>
 
     <!-- ================= UI/コントロールエリア (右側/下部) ================= -->
     <div class="w-full lg:w-2/5 flex flex-col relative z-50 flex-grow min-h-0">
-      <div class="bg-white rounded-3xl border-2 border-slate-100 flex flex-col h-full overflow-hidden shadow-sm relative">
+      <div class="bg-white rounded-[2rem] border-2 border-slate-100 flex flex-col h-full overflow-hidden shadow-sm relative">
         
         <!-- 共通ヘッダー -->
         <header class="flex justify-between items-center p-5 border-b-2 border-slate-50 shrink-0 bg-white relative z-20">
@@ -90,10 +153,10 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-emerald-500">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
             </svg>
-            日本地理学習
+            日本地理学習アプリ
           </h1>
-          <button id="btn-back" class="hidden text-xs font-bold text-slate-500 hover:text-emerald-600 bg-slate-100 hover:bg-emerald-50 px-3 py-2 rounded-xl transition-colors">
-            トップへ戻る
+          <button id="btn-back" class="hidden text-[10px] md:text-xs font-bold text-slate-500 hover:text-emerald-600 bg-slate-100 hover:bg-emerald-50 px-3 py-2 rounded-xl transition-colors">
+            トップに戻る
           </button>
         </header>
 
@@ -105,7 +168,8 @@
             <div class="my-auto">
               <p class="text-slate-400 font-bold mb-4 text-xs tracking-wider text-center">モードを選択してください</p>
               <div class="flex flex-col gap-3">
-                <button onclick="switchView('study')" class="flex items-center p-4 rounded-2xl border-2 border-slate-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
+                
+                <button onclick="switchView('study')" class="flex items-center p-4 rounded-3xl border-2 border-slate-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group">
                   <div class="bg-emerald-100 text-emerald-600 p-3 rounded-2xl mr-4 group-hover:bg-emerald-500 group-hover:text-white transition-colors shrink-0">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                   </div>
@@ -115,7 +179,7 @@
                   </div>
                 </button>
 
-                <button onclick="switchView('test-config')" class="flex items-center p-4 rounded-2xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
+                <button onclick="switchView('test-config')" class="flex items-center p-4 rounded-3xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
                   <div class="bg-blue-100 text-blue-600 p-3 rounded-2xl mr-4 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
                   </div>
@@ -125,15 +189,26 @@
                   </div>
                 </button>
 
-                <button onclick="switchView('ww-config')" class="flex items-center p-4 rounded-2xl border-2 border-slate-100 hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
+                <button onclick="startSilhouette()" class="flex items-center p-4 rounded-3xl border-2 border-slate-100 hover:border-amber-500 hover:bg-amber-50 transition-all text-left group">
+                  <div class="bg-amber-100 text-amber-600 p-3 rounded-2xl mr-4 group-hover:bg-amber-500 group-hover:text-white transition-colors shrink-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
+                  </div>
+                  <div>
+                    <div class="font-bold text-base text-slate-800">シルエットクイズ</div>
+                    <div class="text-[10px] text-slate-500 mt-1 leading-tight">都道府県の形だけを見て名前を当てます</div>
+                  </div>
+                </button>
+
+                <button onclick="switchView('ww-config')" class="flex items-center p-4 rounded-3xl border-2 border-slate-100 hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
                   <div class="bg-purple-100 text-purple-600 p-3 rounded-2xl mr-4 group-hover:bg-purple-500 group-hover:text-white transition-colors shrink-0">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                   </div>
                   <div>
                     <div class="font-bold text-base text-slate-800">地理ワードウルフ</div>
-                    <div class="text-[10px] text-slate-500 mt-1 leading-tight">1台の端末を回して遊ぶマルチプレイゲーム</div>
+                    <div class="text-[10px] text-slate-500 mt-1 leading-tight">みんなで集まって遊ぶマルチプレイゲーム</div>
                   </div>
                 </button>
+
               </div>
             </div>
           </div>
@@ -141,21 +216,21 @@
           <!-- 【2】 学習モード -->
           <div id="view-study" class="app-view hidden absolute inset-0 flex flex-col bg-slate-50 overflow-hidden">
             <!-- 詳細表示エリア(スライド表示) -->
-            <div id="study-detail" class="shrink-0 p-5 bg-emerald-600 text-white transition-transform duration-300 transform -translate-y-full absolute top-0 left-0 w-full z-20 rounded-b-3xl shadow-lg flex flex-col max-h-[85%]">
+            <div id="study-detail" class="shrink-0 p-5 bg-emerald-600 text-white transition-transform duration-400 transform -translate-y-full absolute top-0 left-0 w-full z-20 rounded-b-[2rem] shadow-lg flex flex-col max-h-[85%]">
               <div class="flex justify-between items-start mb-2 shrink-0">
-                <div class="text-emerald-100 font-bold text-xs tracking-widest bg-emerald-800/40 px-2 py-1 rounded-lg" id="study-region"></div>
-                <button onclick="closeStudyDetail()" class="text-white hover:bg-emerald-700 p-1.5 rounded-full transition-colors">
+                <div class="text-emerald-100 font-bold text-xs tracking-widest bg-emerald-800/40 px-2.5 py-1 rounded-xl" id="study-region"></div>
+                <button onclick="closeStudyDetail()" class="text-white hover:bg-emerald-700 p-2 rounded-full transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
               </div>
               <div class="text-2xl font-black mb-4 flex items-end gap-3 shrink-0">
                 <span id="study-name"></span>
-                <span id="study-capital" class="text-xs font-bold text-emerald-200 mb-1"></span>
+                <span class="text-xs font-bold text-emerald-200 mb-1">県庁所在地: <span id="study-capital"></span></span>
               </div>
               
               <div class="grid grid-cols-2 gap-2 text-sm overflow-y-auto no-scrollbar pb-2">
                 <div class="bg-emerald-700/60 p-3 rounded-2xl col-span-2 sm:col-span-1">
-                  <div class="text-emerald-300 text-[10px] font-bold mb-1">名物・特産</div>
+                  <div class="text-emerald-300 text-[10px] font-bold mb-1">名物・ご当地グルメ</div>
                   <div class="font-bold text-xs leading-snug" id="study-food"></div>
                 </div>
                 <div class="bg-emerald-700/60 p-3 rounded-2xl col-span-2 sm:col-span-1">
@@ -170,7 +245,7 @@
             </div>
             
             <!-- リストエリア (スクロール可) -->
-            <div class="flex-grow overflow-y-auto p-4 z-10 no-scrollbar" id="study-list-container">
+            <div class="flex-grow overflow-y-auto p-4 z-10 no-scrollbar pb-20" id="study-list-container">
               <!-- JSで生成 -->
             </div>
           </div>
@@ -182,46 +257,46 @@
               <p class="text-xs font-bold text-slate-400 mb-3">出題形式を選択</p>
               <div class="flex flex-col gap-2">
                 <label class="flex items-center p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="map2name" class="w-4 h-4 text-emerald-500" checked>
+                  <input type="radio" name="test-format" value="map2name" class="w-5 h-5 text-emerald-500 border-slate-300 focus:ring-emerald-500" checked>
                   <span class="ml-3 font-bold text-slate-700 text-sm">マップ位置 → 都道府県名</span>
                 </label>
                 <label class="flex items-center p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="map2capital" class="w-4 h-4 text-emerald-500">
+                  <input type="radio" name="test-format" value="map2capital" class="w-5 h-5 text-emerald-500 border-slate-300 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-slate-700 text-sm">マップ位置 → 県庁所在地</span>
                 </label>
                 <label class="flex items-center p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="name2capital" class="w-4 h-4 text-emerald-500">
+                  <input type="radio" name="test-format" value="name2capital" class="w-5 h-5 text-emerald-500 border-slate-300 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 県庁所在地</span>
                 </label>
                 <label class="flex items-center p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="capital2name" class="w-4 h-4 text-emerald-500">
+                  <input type="radio" name="test-format" value="capital2name" class="w-5 h-5 text-emerald-500 border-slate-300 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-slate-700 text-sm">県庁所在地 → 都道府県名</span>
                 </label>
                 <label class="flex items-center p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-emerald-50 transition-colors">
-                  <input type="radio" name="test-format" value="name2region" class="w-4 h-4 text-emerald-500">
+                  <input type="radio" name="test-format" value="name2region" class="w-5 h-5 text-emerald-500 border-slate-300 focus:ring-emerald-500">
                   <span class="ml-3 font-bold text-slate-700 text-sm">都道府県名 → 地方名</span>
                 </label>
               </div>
             </div>
-            <button onclick="startTest()" class="w-full py-4 mt-6 bg-emerald-500 text-white rounded-2xl font-black text-base shadow-sm hover:bg-emerald-600 transition-colors shrink-0">テスト開始 (全47問)</button>
+            <button onclick="startTest('normal')" class="w-full py-4 mt-6 bg-emerald-500 text-white rounded-2xl font-black text-base shadow-sm hover:bg-emerald-600 transition-colors shrink-0">テスト開始 (全47問)</button>
           </div>
 
-          <!-- 【4】 テストプレイ画面 -->
+          <!-- 【4】 テスト / シルエット プレイ画面 -->
           <div id="view-test-play" class="app-view hidden absolute inset-0 flex flex-col p-5 overflow-hidden">
             <!-- 巨大タイマー -->
             <div id="test-timer-bg" class="absolute top-2 right-4 text-[80px] leading-none font-black text-slate-100 opacity-60 pointer-events-none select-none z-0">15</div>
             
             <div class="relative z-10 flex-grow flex flex-col h-full">
-              <p class="text-xs font-bold text-slate-400 mb-2 shrink-0 tracking-widest">Q <span id="test-q-count">1</span> / 47</p>
+              <p class="text-xs font-bold text-slate-400 mb-2 shrink-0 tracking-widest" id="test-header-mode">Q <span id="test-q-count">1</span> / 47</p>
               <p id="test-question-text" class="text-xl lg:text-2xl font-black mb-4 text-slate-800 shrink-0 leading-snug min-h-[3.5rem]"></p>
               
-              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border-2 border-emerald-100 rounded-2xl animate-slide-up shrink-0">
+              <div id="test-hint" class="mb-4 p-3 hidden bg-emerald-50 border-2 border-emerald-100 rounded-2xl animate-fade-in shrink-0">
                 <p class="text-emerald-600 font-bold text-xs flex items-center">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   ヒント: <span id="test-hint-text" class="ml-1"></span>
                 </p>
               </div>
-              <div id="test-hint-space" class="mb-4 h-[46px] shrink-0"></div>
+              <div id="test-hint-space" class="mb-4 h-[42px] shrink-0"></div>
 
               <div id="test-options" class="grid grid-cols-2 gap-2 mt-auto pb-2 shrink-0">
                 <!-- 選択肢ボタン -->
@@ -229,13 +304,13 @@
             </div>
           </div>
 
-          <!-- 【5】 テスト結果 -->
+          <!-- 【5】 テスト / シルエット 結果 -->
           <div id="view-test-result" class="app-view hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
             <div class="my-auto w-full">
               <p class="text-emerald-500 font-bold mb-1 tracking-widest text-sm">RESULT</p>
               <div class="text-6xl font-black text-slate-800 mb-2"><span id="test-score">0</span><span class="text-2xl text-slate-300">/47</span></div>
               <p class="text-slate-500 font-bold mb-8 text-sm">お疲れ様でした！</p>
-              <button onclick="switchView('test-config')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">もう一度テストする</button>
+              <button onclick="switchView('top')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black shadow-sm transition-colors mb-3">トップに戻る</button>
             </div>
           </div>
 
@@ -259,15 +334,24 @@
                 <option value="8">8人</option>
               </select>
             </div>
-            <div class="mb-6">
+            <div class="mb-4">
               <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">ウルフの数</label>
               <select id="ww-wolf-count" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-800 outline-none focus:border-purple-400">
                 <option value="1" selected>1人</option>
                 <option value="2">2人</option>
               </select>
             </div>
-            <div class="p-4 bg-purple-50 rounded-2xl mb-6 text-xs text-purple-800 font-bold leading-relaxed">
-              全員に「都道府県」のお題が配られます。<br>一人だけ違うお題（同地方の別県）を配られたウルフを探し出してください！
+            <div class="mb-6">
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">お題のジャンル</label>
+              <select id="ww-topic-genre" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-800 outline-none focus:border-purple-400">
+                <option value="name" selected>都道府県名 (例: 北海道)</option>
+                <option value="capital">県庁所在地 (例: 札幌市)</option>
+                <option value="food">名物・特産 (例: ジンギスカン)</option>
+                <option value="tourism">観光地・名所 (例: 時計台)</option>
+              </select>
+            </div>
+            <div class="p-4 bg-purple-50 rounded-2xl mb-6 text-xs text-purple-800 font-bold leading-relaxed shrink-0">
+              全員に「お題」が配られます。<br>一人だけ違うお題（同地方の別県のもの）を配られたウルフを探し出してください！
             </div>
             <button onclick="goToWWNames()" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black text-base shadow-sm hover:bg-purple-700 transition-colors mt-auto shrink-0">次へ (名前入力)</button>
           </div>
@@ -295,13 +379,15 @@
               <div id="ww-word-layer" class="absolute inset-0 bg-white border-4 border-purple-500 rounded-3xl flex flex-col items-center justify-start p-4 opacity-0 pointer-events-none transition-opacity duration-200 z-20 shadow-xl overflow-y-auto no-scrollbar">
                 <p class="text-[10px] text-purple-400 font-bold mb-1 shrink-0 mt-2">あなたのお題</p>
                 <p class="text-2xl font-black text-purple-600 mb-3 shrink-0" id="ww-word-text"></p>
-                <div class="text-left bg-purple-50 p-3 rounded-2xl text-purple-900 text-[10px] w-full mb-1 shrink-0">
-                  <div class="mb-1"><span class="font-bold text-purple-700">県庁所在地:</span> <span id="ww-word-capital"></span></div>
-                  <div class="mb-1"><span class="font-bold text-purple-700">名物・特産:</span> <span id="ww-word-food"></span></div>
-                  <div class="mb-1"><span class="font-bold text-purple-700">有名な場所:</span> <span id="ww-word-tourism"></span></div>
-                  <div><span class="font-bold text-purple-700">豆知識:</span> <br><span id="ww-word-trivia"></span></div>
+                
+                <div class="text-left bg-emerald-50 p-3 rounded-2xl text-emerald-900 text-[10px] w-full mb-1 shrink-0">
+                  <p class="font-black text-center mb-2 text-emerald-600 border-b-2 border-emerald-100 pb-2">💡 このお題の都道府県：<span id="ww-word-pref-name" class="text-lg ml-1"></span></p>
+                  <div class="mb-1"><span class="font-bold text-emerald-700">県庁所在地:</span> <span id="ww-word-capital"></span></div>
+                  <div class="mb-1"><span class="font-bold text-emerald-700">名物・特産:</span> <span id="ww-word-food"></span></div>
+                  <div class="mb-1"><span class="font-bold text-emerald-700">観光地・名所:</span> <span id="ww-word-tourism"></span></div>
+                  <div><span class="font-bold text-emerald-700">豆知識:</span> <br><span id="ww-word-trivia" class="leading-relaxed"></span></div>
                 </div>
-                <p class="text-[10px] font-bold text-slate-400 mt-auto shrink-0 flex items-center justify-center">
+                <p class="text-[10px] font-bold text-slate-400 mt-auto shrink-0 flex items-center justify-center pt-2">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-1 animate-pulse-soft"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                   マップの位置も光っています
                 </p>
@@ -417,6 +503,7 @@
     const mapWrapper = document.getElementById('map-wrapper');
     const mapTransform = document.getElementById('map-transform');
     const mapContainer = document.getElementById('map-container');
+    const allPrefElements = document.querySelectorAll('#map-container li');
     let baseScale = 1;
     let prefCenters = {};
 
@@ -442,131 +529,178 @@
       switchView('top');
     });
 
-    // ================= D3.jsによるSVGマップ描画 =================
-    // (※今回、D3.jsを使ってGeoJSONからSVGを構築するアプローチに変更しました)
-    async function drawSvgMap() {
-      // ローディング表示を維持
-      const loading = document.getElementById('map-loading');
-      
-      try {
-        // Japan GeoJSONを取得
-        const res = await fetch('https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson');
-        const japanData = await res.json();
-
-        // 既存のul要素を削除
-        d3.select('#map-container').selectAll('*').remove();
-
-        const width = 1000;
-        const height = 1000;
-
-        // SVGキャンバスの作成
-        const svg = d3.select('#map-container')
-          .append('svg')
-          .attr('viewBox', `0 0 ${width} ${height}`)
-          .attr('class', 'w-full h-full')
-          .style('overflow', 'visible');
-
-        // 地図を中央に配置するためのプロジェクション（投影法）
-        const projection = d3.geoMercator()
-          .center([137.5, 38.2]) // 日本の中心付近
-          .scale(2300)
-          .translate([width / 2, height / 2]);
-
-        const path = d3.geoPath().projection(projection);
-
-        // 各都道府県のパスを描画
-        svg.selectAll('path')
-          .data(japanData.features)
-          .enter()
-          .append('path')
-          .attr('d', path)
-          .attr('class', 'pref-path')
-          .attr('id', d => {
-            const name = d.properties.nam_ja;
-            const pref = PREFECTURES.find(p => name.includes(p.name.replace(/(都|道|府|県)$/, '')));
-            return pref ? `pref-${pref.id}` : '';
-          })
-          .on('click', function(event, d) {
-            // 学習モード中にクリックされたら詳細を表示
-            if (!document.getElementById('view-study').classList.contains('hidden')) {
-              const name = d.properties.nam_ja;
-              const pref = PREFECTURES.find(p => name.includes(p.name.replace(/(都|道|府|県)$/, '')));
-              if (pref) showStudyDetail(pref);
-            }
-          });
-
-        // 描画後、各県の正確なバウンディングボックス（重心）を取得して保存
-        svg.selectAll('.pref-path').each(function(d) {
-          const name = d.properties.nam_ja;
-          const pref = PREFECTURES.find(p => name.includes(p.name.replace(/(都|道|府|県)$/, '')));
-          if (pref) {
-            const bbox = this.getBBox();
-            prefCenters[pref.id] = {
-              x: bbox.x + bbox.width / 2,
-              y: bbox.y + bbox.height / 2
-            };
-          }
-        });
-
-        // ローディング非表示
-        loading.classList.add('hidden');
-        resetMapScale();
-
-      } catch (error) {
-        console.error("Map loading failed", error);
-        loading.innerHTML = '<p class="text-rose-500 font-bold text-xs">地図の読み込みに失敗しました。</p>';
-      }
-    }
-
-    // ================= マップ制御 =================
+    // ================= ガビガビ対策済みのマップ制御 =================
+    // 描画ベースは1200px。それを画面サイズに合わせてscaleで縮小することで、解像度を落とさず綺麗に表示
     function resetMapScale() {
       const vw = mapWrapper.clientWidth;
       const vh = mapWrapper.clientHeight;
-      const mapSize = 1000;
+      const mapSize = 1200; // 描画ベースサイズ
       
-      // 全体が収まるようにスケール計算
+      // コンテナ内に90%で収まるように計算
       baseScale = Math.min(vw, vh) / mapSize * 0.9;
       
       const tx = vw / 2 - (mapSize / 2) * baseScale;
       const ty = vh / 2 - (mapSize / 2) * baseScale;
 
-      d3.select('#map-transform')
-        .style('transform', `translate(${tx}px, ${ty}px) scale(${baseScale})`);
+      mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${baseScale})`;
     }
 
     function resetMapState() {
-      d3.select('#map-container').classed('is-quiz', false).classed('is-focus', false);
-      d3.selectAll('.pref-path').classed('is-open', false);
+      mapContainer.className = '';
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
       resetMapScale();
     }
 
-    function highlightMap(prefId, focusMode = true, zoom = false) {
-      d3.selectAll('.pref-path').classed('is-open', false);
+    // キャンバスを使ってフォントの実際の描画領域(バウンディングボックス)を計算
+    function calculatePrefCenters() {
+      const fontSize = 1200;
+      const offset = 400; // はみ出し防止用
+      const size = fontSize + offset * 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       
-      const container = d3.select('#map-container');
-      if (focusMode) container.classed('is-focus', true);
-      else container.classed('is-focus', false);
+      PREFECTURES.forEach(p => {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (!el) return;
+        let content = window.getComputedStyle(el, '::before').content;
+        if (content && content !== 'none') {
+          content = content.replace(/^["']|["']$/g, '');
+          if (content.length > 1 && content.startsWith('\\')) {
+            content = String.fromCharCode(parseInt(content.substring(1), 16));
+          }
+          ctx.clearRect(0, 0, size, size);
+          ctx.font = `${fontSize}px map`;
+          ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.fillStyle = 'black';
+          ctx.fillText(content, offset, offset);
+          
+          const imgData = ctx.getImageData(0, 0, size, size).data;
+          let minX = size, minY = size, maxX = 0, maxY = 0, found = false;
+          for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+              if (imgData[(y * size + x) * 4 + 3] > 10) { 
+                if (!found) { minX = maxX = x; minY = maxY = y; found = true; }
+                else {
+                  if (x < minX) minX = x; if (x > maxX) maxX = x;
+                  if (y < minY) minY = y; if (y > maxY) maxY = y;
+                }
+              }
+            }
+          }
+          if (found) {
+            prefCenters[p.id] = { px: ((minX + maxX)/2 - offset)/fontSize, py: ((minY + maxY)/2 - offset)/fontSize };
+          } else {
+            prefCenters[p.id] = { px: 0.5, py: 0.5 }; 
+          }
+        }
+      });
+    }
+
+    function highlightMap(prefId, focusMode = 'normal', zoom = false) {
+      allPrefElements.forEach(el => el.classList.remove('is-open'));
+      mapContainer.className = '';
+      if (focusMode === 'normal') mapContainer.classList.add('is-focus');
+      else if (focusMode === 'silhouette') mapContainer.classList.add('is-silhouette');
 
       if (prefId) {
-        d3.select(`#pref-${prefId}`).classed('is-open', true);
+        const targetEl = document.querySelector(`.p-eveMapPref--${prefId}`);
+        if (targetEl) targetEl.classList.add('is-open');
         
         if (zoom && prefCenters[prefId]) {
           const vw = mapWrapper.clientWidth;
           const vh = mapWrapper.clientHeight;
+          const mapSize = 1200;
           const targetScale = baseScale * 4.5; // ズーム倍率
-          
-          // 対象の重心を画面の中央に持ってくる計算
-          const tx = vw / 2 - prefCenters[prefId].x * targetScale;
-          const ty = vh / 2 - prefCenters[prefId].y * targetScale;
-          
-          d3.select('#map-transform')
-            .style('transform', `translate(${tx}px, ${ty}px) scale(${targetScale})`);
+          const tx = vw / 2 - (prefCenters[prefId].px * mapSize) * targetScale;
+          const ty = vh / 2 - (prefCenters[prefId].py * mapSize) * targetScale;
+          mapTransform.style.transformOrigin = `0 0`;
+          mapTransform.style.transform = `translate(${tx}px, ${ty}px) scale(${targetScale})`;
         } else {
           resetMapScale();
         }
       } else {
         resetMapScale();
       }
+    }
+
+    // ================= 新機能: シルエットクイズ =================
+    let silState = { currentQ: 1, score: 0, timer: 15, interval: null, remaining: [], currentPref: null };
+
+    function startSilhouette() {
+      silState.score = 0;
+      silState.currentQ = 1;
+      silState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      switchView('test-play');
+      document.getElementById('test-header-mode').innerHTML = `シルエットクイズ <span class="ml-2">Q <span id="test-q-count">1</span> / 47</span>`;
+      nextSilQuestion();
+    }
+
+    function nextSilQuestion() {
+      if (silState.currentQ > 47) {
+        showSilResult();
+        return;
+      }
+      silState.currentPref = silState.remaining.pop();
+      const p = silState.currentPref;
+
+      // シルエットモードでマップ表示（他の県を消して黒っぽくズーム表示）
+      highlightMap(p.id, 'silhouette', true);
+
+      document.getElementById('test-q-count').textContent = silState.currentQ;
+      document.getElementById('test-question-text').innerHTML = 'この<span class="text-amber-500">都道府県</span>は？';
+      document.getElementById('test-hint-text').textContent = p.region + "地方です";
+
+      const optionsSet = new Set([p.name]);
+      while (optionsSet.size < 4) {
+        optionsSet.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
+      }
+      const options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('test-options');
+      container.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "py-5 px-2 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm lg:text-base hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50 transition-colors text-slate-700 shadow-sm cursor-pointer";
+        btn.textContent = opt;
+        btn.onclick = () => answerSil(opt, p.name);
+        container.appendChild(btn);
+      });
+
+      document.getElementById('test-hint').classList.add('hidden');
+      document.getElementById('test-hint-space').classList.remove('hidden');
+      silState.timer = 15;
+      updateSilTimerUI();
+
+      clearInterval(silState.interval);
+      silState.interval = setInterval(() => {
+        silState.timer--;
+        updateSilTimerUI();
+        if (silState.timer <= 5) {
+          document.getElementById('test-hint').classList.remove('hidden');
+          document.getElementById('test-hint-space').classList.add('hidden');
+        }
+        if (silState.timer <= 0) answerSil(null, p.name); 
+      }, 1000);
+    }
+
+    function updateSilTimerUI() {
+      const td = document.getElementById('test-timer-bg');
+      td.textContent = silState.timer;
+      if (silState.timer <= 5) td.classList.replace('text-slate-100', 'text-rose-100');
+      else td.classList.replace('text-rose-100', 'text-slate-100');
+    }
+
+    function answerSil(ans, correctAns) {
+      clearInterval(silState.interval);
+      if (ans === correctAns) silState.score++;
+      silState.currentQ++;
+      nextSilQuestion();
+    }
+
+    function showSilResult() {
+      highlightMap(null, false, false);
+      document.getElementById('test-score').textContent = silState.score;
+      switchView('test-result');
     }
 
     // ================= 学習モード =================
@@ -596,7 +730,7 @@
     }
 
     function showStudyDetail(pref) {
-      highlightMap(pref.id, true, true);
+      highlightMap(pref.id, 'normal', true);
       document.getElementById('study-region').textContent = pref.region;
       document.getElementById('study-name').textContent = pref.name;
       document.getElementById('study-capital').textContent = pref.capital;
@@ -626,8 +760,8 @@
       testState.currentQ = 1;
       testState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
       
-      d3.select('#map-container').classed('is-quiz', true);
       switchView('test-play');
+      document.getElementById('test-header-mode').innerHTML = `Q <span id="test-q-count">1</span> / 47`;
       nextTestQuestion();
     }
 
@@ -641,16 +775,16 @@
       const p = testState.currentPref;
       const f = testState.format;
 
-      let qText = '', correctAns = '', hint = p.region;
+      let qText = '', correctAns = '', hint = p.region + '地方';
       
       if (f === 'map2name') {
         qText = 'この<span class="text-emerald-500">都道府県名</span>は？';
         correctAns = p.name;
-        highlightMap(p.id, false, true); // クイズ用のスタイルはCSSで適用されるので focusMode=false
+        highlightMap(p.id, 'normal', true);
       } else if (f === 'map2capital') {
         qText = 'この県の<span class="text-emerald-500">県庁所在地</span>は？';
         correctAns = p.capital;
-        highlightMap(p.id, false, true);
+        highlightMap(p.id, 'normal', true);
       } else if (f === 'name2capital') {
         qText = `${p.name}の<span class="text-emerald-500">県庁所在地</span>は？`;
         correctAns = p.capital;
@@ -698,7 +832,7 @@
       testState.interval = setInterval(() => {
         testState.timer--;
         updateTestTimerUI();
-        if (testState.timer === 5) {
+        if (testState.timer <= 5) {
           document.getElementById('test-hint').classList.remove('hidden');
           document.getElementById('test-hint-space').classList.add('hidden');
         }
@@ -721,7 +855,6 @@
     }
 
     function showTestResult() {
-      d3.select('#map-container').classed('is-quiz', false);
       highlightMap(null, false, false);
       document.getElementById('test-score').textContent = testState.score;
       switchView('test-result');
@@ -759,6 +892,7 @@
     function startWW() {
       const pc = parseInt(document.getElementById('ww-player-count').value);
       const wc = parseInt(document.getElementById('ww-wolf-count').value);
+      const topicGenre = document.getElementById('ww-topic-genre').value;
       const inputs = document.querySelectorAll('.ww-name-input');
       const names = Array.from(inputs).map(inp => inp.value || inp.placeholder);
       
@@ -774,7 +908,8 @@
         id: i + 1,
         name: names[i],
         role: r,
-        pref: r === 'wolf' ? prefB : prefA
+        pref: r === 'wolf' ? prefB : prefA,
+        topic: r === 'wolf' ? prefB[topicGenre] : prefA[topicGenre]
       }));
 
       wwState.currentIdx = 0;
@@ -785,8 +920,10 @@
     function setupWWCheckUI() {
       const player = wwState.players[wwState.currentIdx];
       document.getElementById('ww-player-name').textContent = player.name;
-      document.getElementById('ww-word-text').textContent = player.pref.name;
+      document.getElementById('ww-word-text').textContent = player.topic; // 選ばれたジャンルのお題
       
+      // 学習情報
+      document.getElementById('ww-word-pref-name').textContent = player.pref.name;
       document.getElementById('ww-word-capital').textContent = player.pref.capital;
       document.getElementById('ww-word-food').textContent = player.pref.food;
       document.getElementById('ww-word-tourism').textContent = player.pref.tourism;
@@ -805,7 +942,7 @@
     function showWWWord(e) {
       e.preventDefault();
       wordLayer.classList.remove('opacity-0', 'pointer-events-none');
-      highlightMap(wwState.players[wwState.currentIdx].pref.id, true, true);
+      highlightMap(wwState.players[wwState.currentIdx].pref.id, 'normal', true);
     }
     function hideWWWord(e) {
       e.preventDefault();
@@ -876,7 +1013,7 @@
       wwState.players.forEach(p => {
         if (p.id === voter.id) return; // 自分には投票できない
         const btn = document.createElement('button');
-        btn.className = "py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-700 text-left hover:bg-emerald-50 hover:border-emerald-500 transition-colors shadow-sm cursor-pointer ww-vote-btn shrink-0";
+        btn.className = "py-4 px-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-700 text-left hover:bg-purple-50 hover:border-purple-500 transition-colors shadow-sm cursor-pointer ww-vote-btn shrink-0";
         btn.textContent = p.name;
         btn.onclick = () => {
           document.querySelectorAll('.ww-vote-btn').forEach(b => b.classList.remove('bg-slate-800', 'text-white', 'border-slate-800'));
@@ -922,11 +1059,17 @@
       list.innerHTML = '';
       wwState.players.forEach(p => {
         const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b-2 border-slate-50 last:border-0 shrink-0";
+        li.className = "flex flex-col py-3 border-b-2 border-slate-50 last:border-0 shrink-0";
         const roleHtml = p.role === 'wolf' 
           ? `<span class="bg-rose-100 text-rose-600 text-[10px] font-black px-2 py-1 rounded-lg ml-2">ウルフ</span>` 
           : `<span class="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-1 rounded-lg ml-2">市民</span>`;
-        li.innerHTML = `<div><span class="font-bold text-slate-800">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-slate-400 ml-1">(${wwVoteState.votes[p.id]}票)</span></div><div class="font-black text-purple-600">${p.pref.name}</div>`;
+        li.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <div><span class="font-bold text-slate-800">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-slate-400 ml-1">(${wwVoteState.votes[p.id]}票)</span></div>
+            <div class="font-black text-purple-600">${p.topic}</div>
+          </div>
+          <div class="text-[10px] text-slate-400 text-right">(${p.pref.name})</div>
+        `;
         list.appendChild(li);
       });
 
@@ -940,8 +1083,15 @@
 
     // 初期起動
     window.addEventListener('DOMContentLoaded', () => {
-      // D3.jsを利用したSVGマップの描画を開始
-      drawSvgMap();
+      // ローディングカバーを隠す
+      const cover = document.getElementById('loading-cover');
+      if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
+      
+      document.fonts.ready.then(() => {
+        setTimeout(calculatePrefCenters, 100);
+        resetMapScale();
+        window.addEventListener('resize', resetMapScale);
+      });
     });
   </script>
 </body>
