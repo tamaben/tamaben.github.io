@@ -897,6 +897,30 @@
       { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球国（りゅうきゅう）', hardRead: '南風原（はえばる）', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。', area: 2200 }
     ];
 
+    // 地方名データ
+    const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
+
+    // ワードウルフ用の質問・ヒントデータ
+    const WW_QUESTIONS = {
+      name: [
+        { q: "その都道府県は、雪がたくさん降る？", hint: "日本海側の気候や豪雪地帯の特徴を考えてみよう。" },
+        { q: "その都道府県の形は、何かに似ている？", hint: "シルエットや動物、道具などの見え方を話し合おう。" },
+        { q: "その都道府県は、海に面している？", hint: "内陸県か沿岸県か、位置関係を探ってみよう。" }
+      ],
+      capital: [
+        { q: "その県庁所在地の名前に、漢字は何文字使われている？", hint: "文字数から絞り込んでみよう。" },
+        { q: "その県庁所在地は、政令指定都市？", hint: "都市の規模や人口規模をヒントにしよう。" }
+      ],
+      food: [
+        { q: "その名物は、主食（お米や麺類など）？それともデザート？", hint: "食べ物のジャンルを絞り込もう。" },
+        { q: "その食べ物は、温かい？それとも冷たい？", hint: "調理法や食べ方のイメージを話そう。" }
+      ],
+      tourism: [
+        { q: "その観光地は自然（山・海）？それとも歴史的建物（お城・寺）？", hint: "スポットのタイプを明確にしよう。" },
+        { q: "その観光地は、世界遺産に登録されている？", hint: "歴史的価値や登録有無をヒントにしよう。" }
+      ]
+    };
+
     // 隣接境界データ
     const BORDERS = {
       hokkaido: [], aomori: ['iwate', 'akita'], iwate: ['aomori', 'akita', 'miyagi'],
@@ -2524,6 +2548,35 @@
     // ================= パーティーゲーム =================
     let partyState = { gameType: 'ww', players: [], currentIdx: 0, timer: 180, interval: null, topicGenre: 'name' };
     let wwVoteState = { voterIndex: 0, votes: {}, votedTarget: null };
+
+    // 人数設定から名前入力画面への遷移処理
+    function goToPartyNames() {
+      const pc = parseInt(document.getElementById('party-player-count').value);
+      const container = document.getElementById('party-names-container');
+      container.innerHTML = '';
+      
+      for (let i = 1; i <= pc; i++) {
+        const div = document.createElement('div');
+        div.className = "flex flex-col gap-1 shrink-0 mb-1";
+        div.innerHTML = `
+          <label class="text-[10px] font-bold text-subtext">プレイヤー ${i}</label>
+          <input type="text" class="party-name-input bg-base border border-border rounded-xl font-bold text-text p-3 outline-none" placeholder="プレイヤー ${i}" value="プレイヤー ${i}">
+        `;
+        container.appendChild(div);
+      }
+      
+      switchView('party-names');
+    }
+
+    // NGワード推理戦用のワード生成処理
+    function generateNGWords(pref) {
+      return [
+        pref.name,
+        pref.capital,
+        pref.food.split('・')[0],
+        pref.tourism.split('・')[0]
+      ].filter(Boolean);
+    }
 
     function switchPartyConfig(type) {
       partyState.gameType = type;
