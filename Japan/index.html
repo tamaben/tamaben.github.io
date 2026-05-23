@@ -96,10 +96,16 @@
     
     /* 【1】 通常モード */
     #map-container.mode-normal li:not(.p-eveMapLine) { color: #e7e5e4 !important; opacity: 1 !important; }
+    
+    /* 「覚えた！」チェックされた都道府県のベースカラーを薄緑に（優先度高） */
+    #map-container.mode-normal li.is-learned:not(.p-eveMapLine) {
+      color: #c2d6c2 !important; /* sage-200 */
+    }
+
     #map-container.mode-normal li.is-open { 
-      color: #7aa37a !important; /* sage-400 */
+      color: #5e855e !important; /* sage-500 */
       z-index: 10; 
-      filter: drop-shadow(0px 3px 8px rgba(122, 163, 122, 0.4)) !important; 
+      filter: drop-shadow(0px 3px 8px rgba(94, 133, 94, 0.4)) !important; 
     }
     
     /* 【2】 シルエットモード */
@@ -126,13 +132,10 @@
   </style>
 </head>
 
-<!-- Tailwind動的クラスのセーフリスト -->
-<div class="hidden hover:border-sage-400 hover:border-dustyblue-400 hover:border-dustyyellow-400 hover:border-dustyorange-400 hover:border-dustyrose-400 hover:border-dustypurple-400 hover:text-sage-500 hover:text-dustyblue-500 hover:text-dustyyellow-500 hover:text-dustyorange-500 hover:text-dustyrose-500 hover:text-dustypurple-500 bg-sage-500 bg-dustyblue-500 bg-dustyyellow-500 bg-dustyorange-500 bg-dustyrose-500 bg-dustypurple-500 text-sage-500 text-dustyblue-500 text-dustyyellow-500 text-dustyorange-500 text-dustyrose-500 text-dustypurple-500 text-sage-600 text-dustyblue-600 text-dustyyellow-600 text-dustyorange-600 text-dustyrose-600 text-dustypurple-600 bg-sage-50 bg-dustyblue-50 bg-dustyyellow-50 bg-dustyorange-50 bg-dustyrose-50 bg-dustypurple-50 border-sage-500 border-dustyblue-500 border-dustyyellow-500 border-dustyorange-500 border-dustyrose-500 border-dustypurple-500"></div>
-
 <body class="bg-base text-text h-[100dvh] overflow-hidden flex flex-col p-2 md:p-6 gap-2 md:gap-4 selection:bg-sage-100">
 
   <!-- ヘッダー -->
-  <header class="flex justify-between items-center px-4 py-2 shrink-0">
+  <header class="flex justify-between items-center px-4 py-1 shrink-0">
     <div class="flex items-center gap-2 text-sage-500 font-black text-xl tracking-tight">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       GEO LEARNING
@@ -146,7 +149,7 @@
   <div class="flex flex-col lg:flex-row flex-grow gap-3 md:gap-4 overflow-hidden min-h-0 max-w-6xl mx-auto w-full">
     
     <!-- ================= マップエリア (左側) ================= -->
-    <div class="w-full lg:w-1/2 h-[35vh] lg:h-full bg-surface rounded-3xl border border-border relative overflow-hidden shrink-0 shadow-sm flex items-center justify-center" id="map-wrapper">
+    <div class="w-full lg:w-1/2 h-[35vh] lg:h-full bg-surface rounded-3xl border border-border relative overflow-hidden shrink-0 shadow-sm flex items-center justify-center cursor-pointer" id="map-wrapper">
       <div id="map-transform">
         <ul id="map-container" class="mode-normal">
           <li class="p-eveMapLine"></li>
@@ -180,12 +183,35 @@
       
       <!-- 【1】 トップメニュー (横スクロールスワイプ) -->
       <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden bg-base/50">
+        
+        <!-- 【改善】学習進捗ダッシュボード -->
+        <div class="px-5 pt-3 pb-1 shrink-0 select-none">
+          <div class="bg-surface border border-border rounded-2xl p-3 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="bg-sage-100 text-sage-600 p-2 rounded-xl">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div>
+                <div class="text-[10px] font-bold text-subtext leading-none">日本地図制覇率</div>
+                <div class="text-xs font-black text-text mt-1"><span id="top-progress-count">0</span> / 47 都道府県</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-black text-sage-600" id="top-progress-percent">0%</div>
+              <div class="w-20 bg-border h-1.5 rounded-full overflow-hidden mt-1">
+                <div id="top-progress-bar" class="bg-sage-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <p class="text-[9px] font-bold text-subtext text-center mt-1.5">地図上の都道府県を直接タップして調べることもできます！</p>
+        </div>
+
         <!-- カルーセル本体 -->
         <div id="top-carousel" class="flex-grow flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full scroll-smooth">
           
           <!-- ページ1: 1人で学ぶ・遊ぶ -->
           <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
-            <h2 class="text-xl font-black text-text mb-2 text-center mt-2">1人で学ぶ・遊ぶ</h2>
+            <h2 class="text-lg font-black text-text mb-1 text-center">1人で学ぶ・遊ぶ</h2>
             
             <div class="grid grid-cols-2 gap-3 pb-8">
               <!-- 学習辞書 -->
@@ -210,21 +236,21 @@
               </button>
               
               <!-- ご当地クイズ -->
-              <button onclick="startQuiz('local', 'name')" class="flex flex-col items-center p-4 bg-dustyorange-50/70 border border-dustyorange-200 rounded-3xl active:scale-95 transition-all hover:border-dustyorange-400 hover:bg-dustyorange-50 shadow-sm group">
+              <button onclick="startQuiz('local')" class="flex flex-col items-center p-4 bg-dustyorange-50/70 border border-dustyorange-200 rounded-3xl active:scale-95 transition-all hover:border-dustyorange-400 hover:bg-dustyorange-50 shadow-sm group">
                 <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyorange-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a5 5 0 1 0 5 5c0 2.2-2 3-2 3v2H9v-2s-2-.8-2-3a5 5 0 1 0 5-5Z"/></svg></div>
                 <span class="font-black text-sm text-text">ご当地クイズ</span>
                 <span class="text-[9px] font-bold text-subtext mt-1 text-center">名物や観光地から</span>
               </button>
 
               <!-- 旧国名クイズ -->
-              <button onclick="startQuiz('oldprov', 'name')" class="flex flex-col items-center p-4 bg-dustypurple-50/70 border border-dustypurple-200 rounded-3xl active:scale-95 transition-all hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
+              <button onclick="startQuiz('oldprov')" class="flex flex-col items-center p-4 bg-dustypurple-50/70 border border-dustypurple-200 rounded-3xl active:scale-95 transition-all hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
                 <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-2xl mb-2 group-hover:bg-dustypurple-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
                 <span class="font-black text-sm text-text">旧国名クイズ</span>
                 <span class="text-[9px] font-bold text-subtext mt-1 text-center">昔の国名から推理</span>
               </button>
 
               <!-- 難読地名クイズ -->
-              <button onclick="startQuiz('hardread', 'name')" class="flex flex-col items-center p-4 bg-dustyrose-50/70 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
+              <button onclick="startQuiz('hardread')" class="flex flex-col items-center p-4 bg-dustyrose-50/70 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
                 <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyrose-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
                 <span class="font-black text-sm text-text">難読地名クイズ</span>
                 <span class="text-[9px] font-bold text-subtext mt-1 text-center">読めない地名はどこ</span>
@@ -273,7 +299,15 @@
             <div class="bg-sage-700/50 px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest" id="study-region"></div>
             <button onclick="closeStudyDetail()" class="text-surface hover:bg-sage-600 p-2 rounded-full active:scale-90 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
           </div>
-          <div class="text-2xl font-black mb-1 shrink-0 text-surface" id="study-name"></div>
+          
+          <div class="flex justify-between items-end mb-1 shrink-0">
+            <div class="text-2xl font-black text-surface" id="study-name"></div>
+            <!-- 【改善】「覚えた！」チェックボックスの追加 -->
+            <label class="flex items-center gap-1.5 cursor-pointer bg-sage-600/60 hover:bg-sage-700/60 transition-colors px-3 py-1.5 rounded-full text-[10px] font-black select-none border border-sage-400/30">
+              <input type="checkbox" id="chk-learned" class="w-3.5 h-3.5 accent-sage-500 rounded cursor-pointer" onchange="toggleLearnedFromDetail()">
+              <span>覚えた！</span>
+            </label>
+          </div>
           <div class="text-xs font-bold text-sage-100 mb-4 shrink-0">県庁所在地: <span id="study-capital" class="text-surface"></span></div>
           
           <div class="overflow-y-auto no-scrollbar pb-6 flex flex-col gap-2">
@@ -307,7 +341,10 @@
 
       <!-- 【3】 テスト設定 -->
       <div id="view-test-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-black mb-6 text-text text-center mt-2">テストの設定</h2>
+        <h2 class="text-lg font-black mb-1 text-text text-center mt-2">テストの設定</h2>
+        <!-- 【改善】自己ベスト表示 -->
+        <p class="text-[10px] font-bold text-subtext text-center mb-6">自己ベスト: <span id="highscore-test" class="font-black text-dustyblue-600">0</span> / 47問</p>
+        
         <div class="flex flex-col gap-2 mb-auto">
           <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyblue-400 transition-colors active:scale-95">
             <input type="radio" name="test-format" value="map2name" class="w-5 h-5 accent-dustyblue-500" checked>
@@ -335,7 +372,10 @@
 
       <!-- 【3.5】 シルエット設定 -->
       <div id="view-sil-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
-        <h2 class="text-lg font-black mb-6 text-text text-center mt-2">シルエットクイズの設定</h2>
+        <h2 class="text-lg font-black mb-1 text-text text-center mt-2">シルエットクイズの設定</h2>
+        <!-- 【改善】自己ベスト表示 -->
+        <p class="text-[10px] font-bold text-subtext text-center mb-6">自己ベスト: <span id="highscore-sil" class="font-black text-dustyyellow-600">0</span> / 47問</p>
+
         <div class="flex flex-col gap-2 mb-auto">
           <label class="flex items-center p-4 bg-base border border-border rounded-2xl cursor-pointer hover:border-dustyyellow-400 transition-colors active:scale-95">
             <input type="radio" name="sil-format" value="map2name" class="w-5 h-5 accent-dustyyellow-500" checked>
@@ -546,7 +586,7 @@
       { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前国（うぜん）', hardRead: '左沢（あてらざわ）', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。' },
       { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代国・磐城国', hardRead: '桑折（こおり）', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。' },
       { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。' },
-      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
+      { id: 'tochigi', name: '栃木県', capital: '宇普及市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
       { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。' },
       { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。' },
       { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。' },
@@ -558,7 +598,7 @@
       { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。' },
       { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。' },
       { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（しなの）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。' },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがはら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがハら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
       { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。' },
       { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。' },
       { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。' },
@@ -599,7 +639,7 @@
         { q: "冬は雪がよく降る地域ですか？", hint: "日本海側は世界有数の豪雪地帯です。" },
         { q: "隣接している県は多いですか？", hint: "最も多くの県と接しているのは長野県（8県）です。" },
         { q: "島（離島）はある県ですか？", hint: "長崎県や鹿児島県などは特に島の数が多いです。" },
-        { q: "高い山はある地形ですか？", hint: "日本アルプスがある県は標高3000m級の山々が連なります。" },
+        { q: "高い山はある地形ですか？", hint: "日本アルプスがある県は標高3000m級の山々が連なりま。" },
         { q: "名前（漢字）に山、川、島など自然を表す字が入っていますか？", hint: "都道府県名の多くは、その土地の地形や自然環境が由来です。" },
         { q: "その県には政令指定都市がありますか？", hint: "政令指定都市は全国に20都市あります。" }
       ],
@@ -646,6 +686,15 @@
     let baseScale = 1;
     let prefCenters = {};
 
+    // 改善: 白地図直接クリック検出用の隠しCanvas
+    const hitCanvas = document.createElement('canvas');
+    hitCanvas.width = 2000;
+    hitCanvas.height = 2000;
+    const hitCtx = hitCanvas.getContext('2d', { willReadFrequently: true });
+
+    let currentDetailPref = null; // 現在詳細を見ている県
+    let currentDetailBackView = 'study';
+
     // トップ画面のカルーセルとドットの連動
     const carousel = document.getElementById('top-carousel');
     const dots = [document.getElementById('dot-0'), document.getElementById('dot-1')];
@@ -673,6 +722,7 @@
       if (viewId === 'top') {
         btnBack.classList.add('hidden');
         resetMapState();
+        updateUIFromStorage();
       } else {
         btnBack.classList.remove('hidden');
       }
@@ -695,7 +745,6 @@
       const vh = mapWrapper.clientHeight;
       const mapSize = 2000; 
       
-      // 0.9 から 0.75 に変更して全体が余裕をもって収まるようにする
       baseScale = Math.min(vw, vh) / mapSize * 0.75;
       const tx = vw / 2 - (mapSize / 2) * baseScale;
       const ty = vh / 2 - (mapSize / 2) * baseScale;
@@ -733,7 +782,6 @@
           
           const imgData = ctx.getImageData(0, 0, size, size).data;
           let minX = size, minY = size, maxX = 0, maxY = 0, found = false;
-          // ピクセル間引きで高速化
           for (let y = 0; y < size; y+=8) {
             for (let x = 0; x < size; x+=8) {
               if (imgData[(y * size + x) * 4 + 3] > 10) { 
@@ -754,6 +802,65 @@
       });
     }
 
+    // 改善: 地図判定用の裏 Canvas を一括描画して当たり判定システムを構築
+    function generateHitMap() {
+      hitCtx.clearRect(0, 0, 2000, 2000);
+      hitCtx.font = "2000px map";
+      hitCtx.textBaseline = 'top';
+      hitCtx.textAlign = 'left';
+
+      PREFECTURES.forEach((p, index) => {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (!el) return;
+        let content = window.getComputedStyle(el, '::before').content;
+        if (content && content !== 'none') {
+          content = content.replace(/^["']|["']$/g, '');
+          if (content.length > 1 && content.startsWith('\\')) {
+            content = String.fromCharCode(parseInt(content.substring(1), 16));
+          }
+          // redチャンネルに都道府県インデックス (1-based) を埋め込んで描画する
+          hitCtx.fillStyle = `rgb(${index + 1}, 0, 0)`;
+          hitCtx.fillText(content, 0, 0);
+        }
+      });
+    }
+
+    // 改善: 地図直接クリックによる都道府県の判定と連動処理
+    mapWrapper.addEventListener('click', (e) => {
+      // ローディング中は無視する
+      const cover = document.getElementById('loading-cover');
+      if (cover && !cover.classList.contains('pointer-events-none')) return;
+
+      const rect = mapTransform.getBoundingClientRect();
+      const x = Math.round(((e.clientX - rect.left) / rect.width) * 2000);
+      const y = Math.round(((e.clientY - rect.top) / rect.height) * 2000);
+
+      if (x >= 0 && x < 2000 && y >= 0 && y < 2000) {
+        const pixel = hitCtx.getImageData(x, y, 1, 1).data;
+        const redValue = pixel[0]; // 1-based index
+        const alpha = pixel[3];
+        
+        // 描画が存在し、且つ範囲内であればクリック成功
+        if (alpha > 50 && redValue > 0 && redValue <= PREFECTURES.length) {
+          const clickedPref = PREFECTURES[redValue - 1];
+          onMapPrefecturesClicked(clickedPref);
+        }
+      }
+    });
+
+    // 改善: マップクリック時、適切な辞書シートを即座に開く
+    function onMapPrefecturesClicked(pref) {
+      const activeView = Array.from(document.querySelectorAll('.app-view')).find(el => !el.classList.contains('hidden'));
+      if (!activeView) return;
+
+      if (activeView.id === 'view-top') {
+        switchView('study');
+        showStudyDetail(pref, 'study');
+      } else if (activeView.id === 'view-study' || activeView.id === 'view-review-mistakes') {
+        showStudyDetail(pref, currentDetailBackView || 'study');
+      }
+    }
+
     function highlightMap(prefId, focusMode = 'normal', zoom = false) {
       document.querySelectorAll('#map-container li').forEach(el => el.classList.remove('is-open'));
       mapContainer.className = `mode-${focusMode}`;
@@ -766,7 +873,7 @@
           const vw = mapWrapper.clientWidth;
           const vh = mapWrapper.clientHeight;
           const mapSize = 2000;
-          const targetScale = baseScale * 4.0; // 4.5 -> 4.0 に少し引いて見やすく
+          const targetScale = baseScale * 4.0; 
           const tx = vw / 2 - (prefCenters[prefId].px * mapSize) * targetScale;
           const ty = vh / 2 - (prefCenters[prefId].py * mapSize) * targetScale;
           mapTransform.style.transformOrigin = `0 0`;
@@ -778,6 +885,91 @@
         resetMapScale();
       }
     }
+
+    // ================= 改善: LocalStorageを用いた状態セーブとUI同期 =================
+    function getLearnedPrefs() {
+      try {
+        const data = localStorage.getItem('geo_learned_prefs');
+        return data ? JSON.parse(data) : [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function toggleLearned(prefId, forceState) {
+      let list = getLearnedPrefs();
+      const index = list.indexOf(prefId);
+      if (forceState !== undefined) {
+        if (forceState && index === -1) list.push(prefId);
+        else if (!forceState && index !== -1) list.splice(index, 1);
+      } else {
+        if (index === -1) {
+          list.push(prefId);
+        } else {
+          list.splice(index, 1);
+        }
+      }
+      localStorage.setItem('geo_learned_prefs', JSON.stringify(list));
+      updateUIFromStorage();
+    }
+
+    function isLearned(prefId) {
+      return getLearnedPrefs().includes(prefId);
+    }
+
+    function updateUIFromStorage() {
+      const list = getLearnedPrefs();
+      
+      // 白地図上の「覚えた！」クラスの付与/剥奪
+      PREFECTURES.forEach(p => {
+        const el = document.querySelector(`.p-eveMapPref--${p.id}`);
+        if (el) {
+          if (list.includes(p.id)) {
+            el.classList.add('is-learned');
+          } else {
+            el.classList.remove('is-learned');
+          }
+        }
+      });
+
+      // トップ進捗ダッシュボードの更新
+      const count = list.length;
+      const percent = Math.round((count / 47) * 100);
+      
+      const countEl = document.getElementById('top-progress-count');
+      const percentEl = document.getElementById('top-progress-percent');
+      const barEl = document.getElementById('top-progress-bar');
+      
+      if (countEl) countEl.textContent = count;
+      if (percentEl) percentEl.textContent = `${percent}%`;
+      if (barEl) barEl.style.width = `${percent}%`;
+
+      // 設定画面のハイスコア表示
+      const scoreTest = localStorage.getItem('geo_highscore_test') || 0;
+      const scoreSil = localStorage.getItem('geo_highscore_sil') || 0;
+      
+      const hsTestEl = document.getElementById('highscore-test');
+      const hsSilEl = document.getElementById('highscore-sil');
+      
+      if (hsTestEl) hsTestEl.textContent = scoreTest;
+      if (hsSilEl) hsSilEl.textContent = scoreSil;
+    }
+
+    function saveHighScore(mode, score) {
+      const currentHigh = parseInt(localStorage.getItem(`geo_highscore_${mode}`) || 0);
+      if (score > currentHigh) {
+        localStorage.setItem(`geo_highscore_${mode}`, score);
+        return true; // 新規ハイスコア記録
+      }
+      return false;
+    }
+
+    function toggleLearnedFromDetail() {
+      if (!currentDetailPref) return;
+      const chk = document.getElementById('chk-learned');
+      toggleLearned(currentDetailPref.id, chk.checked);
+    }
+
 
     // ================= 学習モード =================
     function initStudyMode() {
@@ -806,6 +998,7 @@
     }
 
     function showStudyDetail(pref, backView = 'study') {
+      currentDetailPref = pref;
       currentDetailBackView = backView;
       highlightMap(pref.id, 'normal', true);
       document.getElementById('study-region').textContent = pref.region;
@@ -817,6 +1010,9 @@
       document.getElementById('study-tourism').textContent = pref.tourism;
       document.getElementById('study-trivia').textContent = pref.trivia;
       
+      // チェックボックス状態反映
+      document.getElementById('chk-learned').checked = isLearned(pref.id);
+      
       const detail = document.getElementById('study-detail');
       detail.classList.remove('translate-y-full');
       detail.classList.add('translate-y-0');
@@ -827,6 +1023,7 @@
       detail.classList.remove('translate-y-0');
       detail.classList.add('translate-y-full');
       highlightMap(null, 'normal', false);
+      currentDetailPref = null;
     }
 
     // ================= クイズ・テスト共通処理 =================
@@ -974,7 +1171,7 @@
         const btn = document.createElement('button');
         btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
         btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
-        btn.onclick = () => checkAnswer(opt, correctAns);
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
         container.appendChild(btn);
       });
     }
@@ -996,7 +1193,7 @@
           hintBox.className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border border-${colorClass}-100`;
           hintBox.querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-600`;
         }
-        if (qState.timer <= 0) checkAnswer(null, null); 
+        if (qState.timer <= 0) checkAnswer(null, null, null); 
       }, 1000);
     }
 
@@ -1028,21 +1225,63 @@
       }
     }
 
-    function checkAnswer(ans, correctAns) {
+    // 改善: 直感的で分かりやすい正誤フィードバックとウェイト演出
+    function checkAnswer(ans, correctAns, clickedBtn) {
       clearInterval(qState.interval);
-      if (ans === correctAns) {
+      
+      const buttons = document.querySelectorAll('#quiz-options button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none'; // 重複選択を防止
+      });
+
+      const isCorrect = (ans === correctAns);
+
+      // 色表示による解答フィードバック
+      buttons.forEach(btn => {
+        const textSpan = btn.querySelector('span');
+        if (!textSpan) return;
+        const btnText = textSpan.textContent;
+
+        if (btnText === correctAns) {
+          // 正解ボタンをグリーン表示
+          btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-sage-600";
+          btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ 正解</span>`;
+        } else if (btn === clickedBtn && !isCorrect) {
+          // 不正解の選択ボタンをレッド表示
+          btn.className = "py-4 px-4 bg-dustyrose-50 border-2 border-dustyrose-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-dustyrose-600";
+          btn.innerHTML = `<span class="text-dustyrose-600">${btnText}</span><span class="text-dustyrose-600 font-bold">✗ 不正解</span>`;
+        }
+      });
+
+      if (isCorrect) {
         qState.score++;
       } else {
         qState.mistakes.push(qState.currentPref);
       }
-      qState.currentQ++;
-      nextQuestion();
+
+      // 1秒間のウェイト演出後に次画面へ
+      setTimeout(() => {
+        qState.currentQ++;
+        nextQuestion();
+      }, 1000);
     }
 
     function showQuizResult() {
       highlightMap(null, 'normal', false);
       document.getElementById('result-score').textContent = qState.score;
       document.getElementById('result-max').textContent = `/${qState.totalQ}`;
+      
+      // ハイスコア保存
+      const isNewHighScore = saveHighScore(qState.mode, qState.score);
+      const resLabel = document.getElementById('result-label');
+      if (isNewHighScore) {
+        resLabel.textContent = "🌟 NEW HIGH SCORE 🌟";
+        resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
+      } else {
+        resLabel.textContent = "SCORE";
+        resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
+      }
       
       const retryBtn = document.getElementById('btn-retry-mistakes');
       const reviewBtn = document.getElementById('btn-review-mistakes');
@@ -1135,10 +1374,15 @@
       if (partyState.gameType === 'ww') {
         const wc = parseInt(document.getElementById('party-wolf-count').value);
         partyState.topicGenre = document.getElementById('party-topic-genre').value;
-        const region = REGIONS[Math.floor(Math.random() * REGIONS.length)];
+        
+        // 改善: 都道府県数の少ない特定地方（北海道など）でウルフ用別県が不足しないよう安全処理
+        let selectableRegions = REGIONS.filter(r => PREFECTURES.filter(p => p.region === r).length >= 2);
+        if (selectableRegions.length === 0) selectableRegions = REGIONS; // フェールセーフ
+
+        const region = selectableRegions[Math.floor(Math.random() * selectableRegions.length)];
         const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
         const prefA = prefsInRegion[0];
-        const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p=>p.id!==prefA.id);
+        const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p => p.id !== prefA.id);
 
         let roles = Array(wc).fill('wolf').concat(Array(pc - wc).fill('citizen'));
         roles = roles.sort(() => Math.random() - 0.5);
@@ -1405,12 +1649,14 @@
       const cover = document.getElementById('loading-cover');
       
       document.fonts.ready.then(() => {
-        // 重心計算を間引きで高速化
+        // 重心計算と直接タップ用ヒットマップ判定用Canvasの生成
         setTimeout(() => {
           calculatePrefCenters();
+          generateHitMap();
+          updateUIFromStorage();
           resetMapScale();
           if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
-        }, 100);
+        }, 150);
         window.addEventListener('resize', resetMapScale);
       });
     });
