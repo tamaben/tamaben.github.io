@@ -97,9 +97,15 @@
     /* 【1】 通常モード */
     #map-container.mode-normal li:not(.p-eveMapLine) { color: #e7e5e4 !important; opacity: 1 !important; }
     
-    /* 「覚えた！」チェックされた都道府県のベースカラーを薄緑に（優先度高） */
+    /* 「覚えた！」チェックされた都道府県のベースカラーを薄緑に */
     #map-container.mode-normal li.is-learned:not(.p-eveMapLine) {
       color: #c2d6c2 !important; /* sage-200 */
+    }
+
+    /* ルートパズルの経路用カラー */
+    #map-container.mode-normal li.is-route-path:not(.p-eveMapLine) {
+      color: #7da1c4 !important; /* dustyblue-400 */
+      z-index: 5;
     }
 
     #map-container.mode-normal li.is-open { 
@@ -129,10 +135,33 @@
     .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.34, 1.15, 0.64, 1) forwards; }
+
+    /* 間違えた時のバイブレーションシェイク */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake { animation: shake 0.35s ease-in-out; }
   </style>
 </head>
 
-<body class="bg-base text-text h-[100dvh] overflow-hidden flex flex-col p-2 md:p-6 gap-2 md:gap-4 selection:bg-sage-100">
+<body class="bg-base text-text h-[100dvh] overflow-hidden flex flex-col p-2 md:p-6 gap-2 md:gap-4 selection:bg-sage-100 relative">
+
+  <!-- 演出用紙吹雪Canvas -->
+  <canvas id="confetti-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-40"></canvas>
+
+  <!-- レベルアップポップアップ -->
+  <div id="popup-level-up" class="fixed inset-x-4 top-10 md:inset-x-auto md:right-10 md:w-80 bg-surface border-2 border-dustypurple-400 p-5 rounded-3xl shadow-[0_15px_50px_rgba(145,112,169,0.3)] z-50 transition-all duration-500 transform -translate-y-48 opacity-0 pointer-events-none flex items-center gap-4">
+    <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-2xl text-2xl animate-bounce">
+      👑
+    </div>
+    <div>
+      <p class="text-[10px] font-bold text-dustypurple-500 tracking-widest leading-none mb-1">LEVEL UP!</p>
+      <p class="text-base font-black text-text leading-tight">レベル <span id="popup-level-num">2</span> に上がりました！</p>
+      <p class="text-[9px] font-bold text-subtext mt-1">この調子で日本地図を制覇しましょう！</p>
+    </div>
+  </div>
 
   <!-- ヘッダー -->
   <header class="flex justify-between items-center px-4 py-1 shrink-0">
@@ -140,9 +169,16 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       GEO LEARNING
     </div>
-    <button id="btn-back" class="hidden bg-surface shadow-sm border border-border hover:bg-base text-subtext font-bold px-4 py-2 rounded-full text-xs transition-transform active:scale-95">
-      トップに戻る
-    </button>
+    <div class="flex items-center gap-2">
+      <!-- 改善: 音声ON/OFF切り替えボタン -->
+      <button id="btn-sound-toggle" onclick="toggleMute()" class="bg-surface shadow-sm border border-border hover:bg-base text-subtext font-bold p-2.5 rounded-full transition-transform active:scale-95 flex items-center justify-center" title="サウンドの切り替え">
+        <svg id="icon-unmuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <svg id="icon-muted" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
+      </button>
+      <button id="btn-back" class="hidden bg-surface shadow-sm border border-border hover:bg-base text-subtext font-bold px-4 py-2.5 rounded-full text-xs transition-transform active:scale-95">
+        トップに戻る
+      </button>
+    </div>
   </header>
 
   <!-- メインレイアウト -->
@@ -184,34 +220,67 @@
       <!-- 【1】 トップメニュー (横スクロールスワイプ) -->
       <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden bg-base/50">
         
-        <!-- 【改善】学習進捗ダッシュボード -->
-        <div class="px-5 pt-3 pb-1 shrink-0 select-none">
-          <div class="bg-surface border border-border rounded-2xl p-3 flex items-center justify-between shadow-sm">
+        <!-- 【改善】学習進捗＆レベルダッシュボード -->
+        <div class="px-5 pt-3 pb-1 shrink-0 select-none flex flex-col gap-1.5">
+          
+          <!-- レベル・XP表示バー -->
+          <div class="bg-surface border border-border rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-2">
-              <div class="bg-sage-100 text-sage-600 p-2 rounded-xl">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div class="bg-dustypurple-100 text-dustypurple-600 px-2.5 py-1 rounded-xl text-xs font-black">
+                Lv.<span id="top-level">1</span>
               </div>
               <div>
-                <div class="text-[10px] font-bold text-subtext leading-none">日本地図制覇率</div>
-                <div class="text-xs font-black text-text mt-1"><span id="top-progress-count">0</span> / 47 都道府県</div>
+                <div class="text-[9px] font-bold text-subtext leading-none">獲得経験値 (XP)</div>
+                <div class="text-[10px] font-bold text-text mt-1"><span id="top-xp-current">0</span> / <span id="top-xp-next">200</span> XP</div>
               </div>
             </div>
-            <div class="text-right">
-              <div class="text-xs font-black text-sage-600" id="top-progress-percent">0%</div>
-              <div class="w-20 bg-border h-1.5 rounded-full overflow-hidden mt-1">
+            <div class="w-28 bg-border h-1.5 rounded-full overflow-hidden">
+              <div id="top-xp-bar" class="bg-dustypurple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 地図制覇率表示バー -->
+          <div class="bg-surface border border-border rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="bg-sage-100 text-sage-600 p-1.5 rounded-lg">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div>
+                <div class="text-[9px] font-bold text-subtext leading-none">日本地図制覇率</div>
+                <div class="text-[10px] font-bold text-text mt-1"><span id="top-progress-count">0</span> / 47 都道府県</div>
+              </div>
+            </div>
+            <div class="text-right flex items-center gap-3">
+              <span class="text-xs font-black text-sage-600" id="top-progress-percent">0%</span>
+              <div class="w-16 bg-border h-1.5 rounded-full overflow-hidden">
                 <div id="top-progress-bar" class="bg-sage-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
             </div>
           </div>
-          <p class="text-[9px] font-bold text-subtext text-center mt-1.5">地図上の都道府県を直接タップして調べることもできます！</p>
+          <p class="text-[9px] font-bold text-subtext text-center mt-0.5">地図上の都道府県を直接タップして調べることもできます！</p>
         </div>
 
-        <!-- カルーセル本体 -->
+        <!-- カルーセル本体 (4ページに拡張) -->
         <div id="top-carousel" class="flex-grow flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full scroll-smooth">
           
-          <!-- ページ1: 1人で学ぶ・遊ぶ -->
-          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
-            <h2 class="text-lg font-black text-text mb-1 text-center">1人で学ぶ・遊ぶ</h2>
+          <!-- ページ1: 1人で学ぶ（基本＆クイズ） -->
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-2.5 overflow-y-auto no-scrollbar pb-16">
+            
+            <!-- アクティブリコール：弱点克服特訓バナー -->
+            <button id="btn-weakness-train" onclick="startWeaknessQuiz()" class="w-full p-3.5 bg-dustyrose-50 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all hover:border-dustyrose-400 hover:bg-dustyrose-100/50 flex items-center justify-between shadow-sm select-none">
+              <div class="flex items-center gap-3 text-left">
+                <div class="bg-dustyrose-100 text-dustyrose-600 p-2.5 rounded-2xl">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.886H3.894l4.948 3.596L6.93 18.368 12 14.772l5.07 3.596-1.912-5.886 4.948-3.596h-6.194L12 3z"/></svg>
+                </div>
+                <div>
+                  <div class="font-black text-sm text-text">弱点克服特訓</div>
+                  <div class="text-[9px] font-bold text-subtext mt-0.5" id="weakness-banner-desc">苦手な県を判定して特訓クイズを作成します</div>
+                </div>
+              </div>
+              <div class="bg-dustyrose-500 text-surface text-[10px] font-black px-3 py-1 rounded-full shrink-0" id="weakness-badge-count">0</div>
+            </button>
+
+            <h2 class="text-sm font-black text-subtext text-center select-none">1人で学ぶ・基本（1 / 4）</h2>
             
             <div class="grid grid-cols-2 gap-3 pb-8">
               <!-- 学習辞書 -->
@@ -241,6 +310,41 @@
                 <span class="font-black text-sm text-text">ご当地クイズ</span>
                 <span class="text-[9px] font-bold text-subtext mt-1 text-center">名物や観光地から</span>
               </button>
+            </div>
+          </div>
+
+          <!-- ページ2: 1人用のミニゲーム＆パズル -->
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-2.5 overflow-y-auto no-scrollbar pb-16">
+            <h2 class="text-sm font-black text-subtext text-center select-none">1人で楽しむミニゲーム＆パズル（2 / 4）</h2>
+            
+            <div class="grid grid-cols-2 gap-3 pb-8">
+              <!-- 県庁スプリンター (タイムアタック) -->
+              <button onclick="startSprintGame()" class="flex flex-col items-center p-4 bg-dustypurple-50 border border-dustypurple-200 rounded-3xl active:scale-95 transition-all hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
+                <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-2xl mb-2 group-hover:bg-dustypurple-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <span class="font-black text-xs text-text text-center">県庁スプリンター</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">30秒の高速タイムアタック</span>
+              </button>
+
+              <!-- お隣り県はどこ？ (隣接判定) -->
+              <button onclick="startQuiz('border')" class="flex flex-col items-center p-4 bg-sage-50 border border-sage-200 rounded-3xl active:scale-95 transition-all hover:border-sage-400 hover:bg-sage-50 shadow-sm group">
+                <div class="bg-sage-100 text-sage-600 p-3 rounded-2xl mb-2 group-hover:bg-sage-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <span class="font-black text-xs text-text text-center">お隣り県はどれ？</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">境界線が接する県を当てる</span>
+              </button>
+
+              <!-- 面積くらべ (大きさ比較) -->
+              <button onclick="startQuiz('size')" class="flex flex-col items-center p-4 bg-dustyblue-50 border border-dustyblue-200 rounded-3xl active:scale-95 transition-all hover:border-dustyblue-400 hover:bg-dustyblue-50 shadow-sm group">
+                <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyblue-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+                <span class="font-black text-xs text-text text-center">面積くらべ</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">どっちの県がデカい？</span>
+              </button>
+
+              <!-- 境界線ルートコネクト (パズル) -->
+              <button onclick="startRouteGame()" class="flex flex-col items-center p-4 bg-dustyorange-50 border border-dustyorange-200 rounded-3xl active:scale-95 transition-all hover:border-dustyorange-400 hover:bg-dustyorange-50 shadow-sm group">
+                <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyorange-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M15 9h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4"/></svg></div>
+                <span class="font-black text-xs text-text text-center">ルートコネクト</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">地図を叩いて最短経路探索</span>
+              </button>
 
               <!-- 旧国名クイズ -->
               <button onclick="startQuiz('oldprov')" class="flex flex-col items-center p-4 bg-dustypurple-50/70 border border-dustypurple-200 rounded-3xl active:scale-95 transition-all hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
@@ -258,36 +362,105 @@
             </div>
           </div>
 
-          <!-- ページ2: みんなで遊ぶ -->
-          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
-            <h2 class="text-xl font-black text-text mb-4 text-center mt-2">みんなで遊ぶ (マルチプレイ)</h2>
+          <!-- 【新規追加】 ページ3: 定期テスト・実戦特訓（教育現場向け） -->
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-2.5 overflow-y-auto no-scrollbar pb-16">
+            <h2 class="text-sm font-black text-subtext text-center select-none">定期テスト頻出・ガチ特訓（3 / 4）</h2>
             
-            <button onclick="switchPartyConfig('ww')" class="flex items-center p-5 bg-dustypurple-50/70 border border-dustypurple-200 rounded-3xl active:scale-95 transition-all text-left hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
-              <div class="bg-dustypurple-100 text-dustypurple-600 p-4 rounded-2xl mr-4 shrink-0 group-hover:bg-dustypurple-200 transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div class="grid grid-cols-2 gap-3 pb-8">
+              <!-- 雨温図マスター -->
+              <button onclick="startQuiz('uonzu')" class="flex flex-col items-center p-4 bg-dustyblue-50 border border-dustyblue-200 rounded-3xl active:scale-95 transition-all hover:border-dustyblue-400 hover:bg-dustyblue-50 shadow-sm group">
+                <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyblue-200 transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-8"/></svg>
+                </div>
+                <span class="font-black text-xs text-text text-center">雨温図マスター</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">気候グラフを完全攻略</span>
+              </button>
+
+              <!-- 自然地形パズル -->
+              <button onclick="startQuiz('topo')" class="flex flex-col items-center p-4 bg-sage-50 border border-sage-200 rounded-3xl active:scale-95 transition-all hover:border-sage-400 hover:bg-sage-50 shadow-sm group">
+                <div class="bg-sage-100 text-sage-600 p-3 rounded-2xl mb-2 group-hover:bg-sage-200 transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2z"/></svg>
+                </div>
+                <span class="font-black text-xs text-text text-center">自然地形パズル</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">重要山脈・河川・平野を暗記</span>
+              </button>
+
+              <!-- 統計グラフ分析 -->
+              <button onclick="startQuiz('industry')" class="flex flex-col items-center p-4 bg-dustyorange-50 border border-dustyorange-200 rounded-3xl active:scale-95 transition-all hover:border-dustyorange-400 hover:bg-dustyorange-50 shadow-sm group">
+                <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyorange-200 transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                </div>
+                <span class="font-black text-xs text-text text-center">統計グラフ分析</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">出荷シェアグラフを読み解く</span>
+              </button>
+
+              <!-- 地図記号・縮尺特訓 -->
+              <button onclick="startQuiz('mapscale')" class="flex flex-col items-center p-4 bg-dustyrose-50 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
+                <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyrose-200 transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24"/></svg>
+                </div>
+                <span class="font-black text-xs text-text text-center">地図記号・縮尺特訓</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">定期テスト最初の設問対策</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ページ4: みんなで遊ぶ（マルチプレイ） -->
+          <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
+            <h2 class="text-sm font-black text-subtext text-center select-none">みんなで遊ぶ・マルチプレイ（4 / 4）</h2>
+            
+            <!-- 地理ワードウルフ -->
+            <button onclick="switchPartyConfig('ww')" class="flex items-center p-4 bg-dustypurple-50/70 border border-dustypurple-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
+              <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustypurple-200 transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               </div>
               <div>
-                <div class="font-black text-base text-text">地理ワードウルフ</div>
-                <div class="text-[10px] font-bold text-subtext mt-1">1人だけ違う県を配られた人を探せ！</div>
+                <div class="font-black text-sm text-text">地理ワードウルフ (3人〜)</div>
+                <div class="text-[9px] font-bold text-subtext mt-0.5">1人だけ違うお題を配られたウルフを探せ！</div>
               </div>
             </button>
 
-            <button onclick="switchPartyConfig('ng')" class="flex items-center p-5 bg-dustyrose-50/70 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all text-left hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
-              <div class="bg-dustyrose-100 text-dustyrose-600 p-4 rounded-2xl mr-4 shrink-0 group-hover:bg-dustyrose-200 transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>
+            <!-- 地理NGワード推理戦 -->
+            <button onclick="switchPartyConfig('ng')" class="flex items-center p-4 bg-dustyrose-50/70 border border-dustyrose-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
+              <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyrose-200 transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>
               </div>
               <div>
-                <div class="font-black text-base text-text">地理NGワード</div>
-                <div class="text-[10px] font-bold text-subtext mt-1">自分のNGワードを言わずに県を語れ！</div>
+                <div class="font-black text-sm text-text">地理NGワード推理戦 (2人〜)</div>
+                <div class="text-[9px] font-bold text-subtext mt-0.5">自分だけ見えないお題を周りのヒントで当てる！</div>
+              </div>
+            </button>
+
+            <!-- 私は誰でしょう？ 地理連想ヒントゲーム (2人〜) -->
+            <button onclick="switchPartyConfig('association')" class="flex items-center p-4 bg-sage-50/70 border border-sage-200 rounded-2xl active:scale-95 transition-all text-left hover:border-sage-400 hover:bg-sage-50 shadow-sm group">
+              <div class="bg-sage-100 text-sage-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-sage-200 transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div>
+                <div class="font-black text-sm text-text">私は誰でしょう？地理連想 (2人〜)</div>
+                <div class="text-[9px] font-bold text-subtext mt-0.5">親が読み上げる4つのヒントから素早く推理！</div>
+              </div>
+            </button>
+
+            <!-- 地理ハラハラ爆弾 (2人〜) -->
+            <button onclick="switchPartyConfig('bomb')" class="flex items-center p-4 bg-dustyyellow-50/70 border border-dustyyellow-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyyellow-400 hover:bg-dustyyellow-50 shadow-sm group">
+              <div class="bg-dustyyellow-100 text-dustyyellow-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyyellow-200 transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+              </div>
+              <div>
+                <div class="font-black text-sm text-text">地理ハラハラ爆弾 (2人〜)</div>
+                <div class="text-[9px] font-bold text-subtext mt-0.5">お題に合う都道府県を地図からタップして即パス！</div>
               </div>
             </button>
           </div>
         </div>
 
-        <!-- ページネーション (ドット) -->
+        <!-- ページネーション (4ドットに拡張) -->
         <div class="absolute bottom-0 left-0 w-full flex justify-center gap-3 p-4 bg-gradient-to-t from-base via-base to-transparent pointer-events-none z-10">
           <div id="dot-0" class="w-2.5 h-2.5 rounded-full bg-sage-500 transition-colors shadow-sm"></div>
           <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-border transition-colors shadow-sm"></div>
+          <div id="dot-2" class="w-2.5 h-2.5 rounded-full bg-border transition-colors shadow-sm"></div>
+          <div id="dot-3" class="w-2.5 h-2.5 rounded-full bg-border transition-colors shadow-sm"></div>
         </div>
       </div>
 
@@ -302,7 +475,6 @@
           
           <div class="flex justify-between items-end mb-1 shrink-0">
             <div class="text-2xl font-black text-surface" id="study-name"></div>
-            <!-- 【改善】「覚えた！」チェックボックスの追加 -->
             <label class="flex items-center gap-1.5 cursor-pointer bg-sage-600/60 hover:bg-sage-700/60 transition-colors px-3 py-1.5 rounded-full text-[10px] font-black select-none border border-sage-400/30">
               <input type="checkbox" id="chk-learned" class="w-3.5 h-3.5 accent-sage-500 rounded cursor-pointer" onchange="toggleLearnedFromDetail()">
               <span>覚えた！</span>
@@ -342,7 +514,6 @@
       <!-- 【3】 テスト設定 -->
       <div id="view-test-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
         <h2 class="text-lg font-black mb-1 text-text text-center mt-2">テストの設定</h2>
-        <!-- 【改善】自己ベスト表示 -->
         <p class="text-[10px] font-bold text-subtext text-center mb-6">自己ベスト: <span id="highscore-test" class="font-black text-dustyblue-600">0</span> / 47問</p>
         
         <div class="flex flex-col gap-2 mb-auto">
@@ -373,7 +544,6 @@
       <!-- 【3.5】 シルエット設定 -->
       <div id="view-sil-config" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col no-scrollbar bg-surface">
         <h2 class="text-lg font-black mb-1 text-text text-center mt-2">シルエットクイズの設定</h2>
-        <!-- 【改善】自己ベスト表示 -->
         <p class="text-[10px] font-bold text-subtext text-center mb-6">自己ベスト: <span id="highscore-sil" class="font-black text-dustyyellow-600">0</span> / 47問</p>
 
         <div class="flex flex-col gap-2 mb-auto">
@@ -387,7 +557,7 @@
           </label>
         </div>
         <div class="p-4 bg-dustyyellow-50 rounded-2xl mb-6 text-xs text-dustyyellow-600 font-bold leading-relaxed shrink-0 text-center border border-dustyyellow-100">
-          対象の都道府県は濃い色で表示されます。<br>周りの県もうっすら見えるので、<br>位置関係もヒントにして当てましょう！
+          対象 of 都道府県は濃い色で表示されます。<br>周りの県もうっすら見えるので、<br>位置関係もヒントにして当てましょう！
         </div>
         <button onclick="startQuiz('sil')" class="w-full py-4 mt-auto bg-dustyyellow-500 text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">クイズ開始 (全47問)</button>
       </div>
@@ -406,7 +576,15 @@
         <div class="relative z-10 flex-grow flex flex-col h-full">
           <div class="flex justify-between items-end mb-4 shrink-0 border-b-2 border-base pb-2">
             <p id="quiz-header-mode" class="text-[11px] font-black tracking-widest text-subtext"></p>
-            <p class="text-sm font-black text-subtext">Q <span id="quiz-q-count" class="text-text text-xl">1</span> / <span id="quiz-total-count">47</span></p>
+            <div class="flex items-center gap-2">
+              <!-- 連勝ストリーク表示バッジ -->
+              <div id="quiz-streak-wrap" class="hidden items-center gap-1 text-dustyorange-500 font-black shrink-0 animate-bounce">
+                <span>🔥</span>
+                <span id="quiz-streak-count" class="text-sm">0</span>
+                <span class="text-[9px] font-bold text-subtext ml-0.5">連勝！</span>
+              </div>
+              <p class="text-sm font-black text-subtext shrink-0">Q <span id="quiz-q-count" class="text-text text-xl">1</span> / <span id="quiz-total-count">47</span></p>
+            </div>
           </div>
           
           <p id="quiz-question-text" class="text-xl font-black mb-4 text-text shrink-0 min-h-[4rem] leading-snug"></p>
@@ -466,7 +644,7 @@
           <div class="bg-base p-4 rounded-2xl flex justify-between items-center border border-border">
             <label class="text-sm font-bold text-text">プレイヤー人数</label>
             <select id="party-player-count" class="bg-surface border border-border rounded-xl font-black text-text p-2 text-right outline-none">
-              <option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option>
+              <option value="2">2人</option><option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option>
               <option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>
             </select>
           </div>
@@ -501,12 +679,12 @@
       <!-- 【8】 パーティー お題確認 -->
       <div id="view-party-check" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-center items-center text-center bg-surface">
         <h2 class="text-xl font-black mb-1"><span id="party-player-name" class=""></span> さんの番</h2>
-        <p class="text-subtext font-bold mb-8 text-xs">周りに見られないように確認してください</p>
+        <p class="text-subtext font-bold mb-8 text-xs" id="party-check-sub-desc">周りに見られないように確認してください</p>
         
         <div class="relative w-full mb-8 flex-grow flex flex-col justify-center">
           <button id="btn-party-show" class="w-full py-16 text-surface text-lg font-black rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            長押しして確認する
+            <span id="btn-party-show-text">長押しして確認する</span>
           </button>
           
           <!-- 長押し中表示 -->
@@ -514,7 +692,7 @@
             <p class="text-[10px] font-bold mb-1 shrink-0 mt-2" id="party-word-label">あなたのお題</p>
             <p class="text-2xl font-black mb-6 shrink-0" id="party-word-text"></p>
             
-            <div class="text-left bg-base p-4 rounded-2xl text-text text-[10px] w-full mb-2 shrink-0 shadow-sm border border-border">
+            <div id="party-reference-panel" class="text-left bg-base p-4 rounded-2xl text-text text-[10px] w-full mb-2 shrink-0 shadow-sm border border-border">
               <p class="font-black text-center mb-3 text-text border-b-2 border-surface pb-2 flex items-center justify-center">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-dustyyellow-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 参考データ：<span id="party-word-pref-name" class="text-sm ml-1"></span>
@@ -572,103 +750,290 @@
         <button onclick="switchView('top')" class="w-full py-4 bg-text text-surface font-black rounded-2xl active:scale-95 transition-transform mt-auto shrink-0 text-sm shadow-sm">トップに戻る</button>
       </div>
 
+      <!-- 一人用境界線ルートコネクト 画面 -->
+      <div id="view-pref-route" class="app-view hidden absolute inset-0 p-5 md:p-6 flex flex-col overflow-hidden bg-surface select-none">
+        <div class="flex justify-between items-center border-b border-border pb-2.5 mb-3 shrink-0">
+          <span class="text-xs font-black text-dustyorange-600 tracking-widest">ROUTE CONNECT</span>
+          <span class="text-xs font-bold text-subtext">手数: <span id="route-step-count" class="text-text font-black text-sm">0</span>手</span>
+        </div>
+        
+        <p class="text-base font-black leading-snug text-text shrink-0">
+          「<span id="route-start-name" class="text-dustyblue-600 text-lg font-black">東京</span>」から、目標の「<span id="route-target-name" class="text-dustyrose-600 text-lg font-black">京都</span>」まで<br>隣り合う県を直接タップしてつなぎましょう！
+        </p>
+        
+        <!-- 現在位置と目的地の状態表示 -->
+        <div class="my-auto bg-base p-4 rounded-2xl flex justify-around items-center border border-border shrink-0 gap-2">
+          <div class="text-center">
+            <p class="text-[9px] font-bold text-subtext leading-none mb-1">現在の位置</p>
+            <p class="text-base font-black text-dustyblue-600" id="route-current-name">東京</p>
+          </div>
+          <div class="text-subtext">▶</div>
+          <div class="text-center">
+            <p class="text-[9px] font-bold text-subtext leading-none mb-1">目標</p>
+            <p class="text-base font-black text-dustyrose-600" id="route-goal-name">京都</p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-dustyblue-50 border border-dustyblue-100 rounded-2xl text-[10px] text-dustyblue-600 font-bold leading-relaxed shrink-0 mb-4 text-center">
+          地図を直接タップして、隣り合う県を選択しながら<br>目標の県まで一筆書きで進みます。
+        </div>
+
+        <button onclick="switchView('top')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">ギブアップして戻る</button>
+      </div>
+
+      <!-- 私は誰でしょう？地理連想ゲーム（親機表示画面） -->
+      <div id="view-party-association" class="app-view hidden absolute inset-0 p-5 flex flex-col bg-surface overflow-hidden">
+        <h2 class="text-lg font-black text-text text-center border-b border-border pb-2 shrink-0">私は誰でしょう？連想ゲーム</h2>
+        <p class="text-[10px] font-bold text-subtext mt-1 text-center shrink-0">親（出題者）は画面を読み上げてヒントを出します</p>
+
+        <div class="bg-dustypurple-50 border border-dustypurple-100 p-3 rounded-2xl mt-3 text-center shrink-0 select-none">
+          <p class="text-[9px] font-bold text-dustypurple-500 mb-0.5">今回の正解（親だけが見る）</p>
+          <p class="text-xl font-black text-dustypurple-600" id="assoc-secret-pref-name">山梨県</p>
+        </div>
+
+        <div class="flex flex-col gap-2 my-auto overflow-y-auto no-scrollbar py-2 shrink-0">
+          <div id="assoc-hint-4" class="p-3 bg-base border border-border rounded-xl transition-all opacity-100 flex flex-col gap-1">
+            <p class="text-[9px] font-bold text-subtext flex justify-between"><span>第1ヒント（難しい / 100点）</span><span class="text-sage-600">公開中</span></p>
+            <p class="text-xs font-bold text-text" id="assoc-text-4"></p>
+          </div>
+          <div id="assoc-hint-3" class="p-3 bg-base border border-border rounded-xl transition-all opacity-40 flex flex-col gap-1">
+            <p class="text-[9px] font-bold text-subtext flex justify-between"><span>第2ヒント（ふつう / 70点）</span><span id="assoc-state-3" class="text-subtext">未公開</span></p>
+            <p class="text-xs font-bold text-text" id="assoc-text-3"></p>
+          </div>
+          <div id="assoc-hint-2" class="p-3 bg-base border border-border rounded-xl transition-all opacity-40 flex flex-col gap-1">
+            <p class="text-[9px] font-bold text-subtext flex justify-between"><span>第3ヒント（かんたん / 50点）</span><span id="assoc-state-2" class="text-subtext">未公開</span></p>
+            <p class="text-xs font-bold text-text" id="assoc-text-2"></p>
+          </div>
+          <div id="assoc-hint-1" class="p-3 bg-base border border-border rounded-xl transition-all opacity-40 flex flex-col gap-1">
+            <p class="text-[9px] font-bold text-subtext flex justify-between"><span>最終ヒント（サービス / 30点）</span><span id="assoc-state-1" class="text-subtext">未公開</span></p>
+            <p class="text-xs font-bold text-text" id="assoc-text-1"></p>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-auto shrink-0 select-none">
+          <button id="btn-assoc-next-hint" onclick="revealNextHint()" class="flex-1 py-4 bg-border text-subtext font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm">次のヒントを公開</button>
+          <button onclick="finishAssocGame(true)" class="flex-1 py-4 bg-sage-500 text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm">正解が出た！</button>
+          <button onclick="finishAssocGame(false)" class="py-4 px-4 bg-dustyrose-500 text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm">全員ギブアップ</button>
+        </div>
+      </div>
+
+      <!-- 地理ハラハラ爆弾（対戦アクション画面） -->
+      <div id="view-party-bomb" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-between items-center text-center bg-surface select-none">
+        <div class="w-full border-b border-border pb-2.5 shrink-0 flex justify-between items-center">
+          <span class="text-xs font-black text-dustyrose-600 tracking-widest">GEOGRAPHIC BOMB</span>
+          <span class="text-xs font-black text-text" id="bomb-active-player">PLAYER 1 の番</span>
+        </div>
+
+        <div class="my-auto w-full flex flex-col items-center">
+          <!-- 爆弾爆発タイマー -->
+          <div class="w-16 h-16 bg-dustyrose-100 rounded-full flex items-center justify-center border-2 border-dustyrose-500 animate-pulse mb-3">
+            <span class="text-2xl font-black text-dustyrose-600 tabular-nums" id="bomb-timer-num">15</span>
+          </div>
+          
+          <p class="text-[10px] font-bold text-subtext leading-none mb-1">お題カテゴリ</p>
+          <h3 class="text-xl font-black text-text mb-4" id="bomb-category-title">名前に「山」がつく都道府県</h3>
+
+          <div class="bg-base p-4 border border-border rounded-2xl text-[10px] text-subtext leading-relaxed w-full">
+            白地図上の条件に合う県をタップして即パスしてください！<br>
+            一度タップされた都道府県は赤く染まり、再使用できません。
+          </div>
+        </div>
+
+        <button onclick="stopBombGame()" class="w-full py-4 mt-auto bg-text text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm shrink-0">ゲームを終了する</button>
+      </div>
+
     </div>
   </div>
 
   <script>
     // ================= データ定義 =================
     const PREFECTURES = [
-      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。' },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。' },
-      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中国（りくちゅう）', hardRead: '不来方（こずかた）', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。' },
-      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前国（りくぜん）', hardRead: '愛子（あやし）', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。' },
-      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後国（うご）', hardRead: '生保内（おぼない）', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。' },
-      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前国（うぜん）', hardRead: '左沢（あてらざわ）', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。' },
-      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代国・磐城国', hardRead: '桑折（こおり）', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。' },
-      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。' },
-      { id: 'tochigi', name: '栃木県', capital: '宇普及市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。' },
-      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。' },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。' },
-      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。' },
-      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。' },
-      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。' },
-      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。' },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。' },
-      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。' },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。' },
-      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。' },
-      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（しなの）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。' },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがハら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。' },
-      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。' },
-      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。' },
-      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。' },
-      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。' },
-      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。' },
-      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（ほうてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。' },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。' },
-      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。' },
-      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。' },
-      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。' },
-      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', oldProv: '出雲国・石見国・隠岐国', hardRead: '温泉津（ゆのつ）', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。' },
-      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', oldProv: '備前国・備中国・美作国', hardRead: '邑久（おく）', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。' },
-      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', oldProv: '安芸国・備後国', hardRead: '向洋（むかいなだ）', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。' },
-      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', oldProv: '長門国・周防国', hardRead: '特牛（こっとい）', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。' },
-      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', oldProv: '阿波国（あわ）', hardRead: '祖谷（いや）', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。' },
-      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', oldProv: '讃岐国（さぬき）', hardRead: '観音寺（かんおんじ）', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。' },
-      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', oldProv: '伊予国（いよ）', hardRead: '忽那（くつな）', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。' },
-      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', oldProv: '土佐国（とさ）', hardRead: '宿毛（すくも）', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。' },
-      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。' },
-      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。' },
-      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。' },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。' },
-      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。' },
-      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。' },
-      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。' },
-      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球国（りゅうきゅう）', hardRead: '南風原（はえばる）', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。' }
+      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。', area: 83400 },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。', area: 9600 },
+      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中国（りくちゅう）', hardRead: '不来方（こずかた）', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。', area: 15200 },
+      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前国（りくぜん）', hardRead: '愛子（あやし）', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。', area: 7200 },
+      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後国（うご）', hardRead: '生保内（おぼない）', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。', area: 11600 },
+      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前国（うぜん）', hardRead: '左沢（あてらざわ）', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。', area: 9300 },
+      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代国・磐城国', hardRead: '桑折（こおり）', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。', area: 13700 },
+      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。', area: 6000 },
+      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。', area: 6400 },
+      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。', area: 6300 },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越 of 蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。', area: 3700 },
+      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。', area: 5100 },
+      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。', area: 2100 },
+      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。', area: 2400 },
+      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。', area: 12500 },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
+      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。', area: 4100 },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。', area: 4100 },
+      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。', area: 4400 },
+      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（しなの）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。', area: 13500 },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがはら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。', area: 10600 },
+      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。', area: 7700 },
+      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。', area: 5100 },
+      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。', area: 5700 },
+      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。', area: 4000 },
+      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。', area: 4600 },
+      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（ほうてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。', area: 1900 },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。', area: 8400 },
+      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。', area: 3600 },
+      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。', area: 4700 },
+      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。', area: 3500 },
+      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', oldProv: '出雲国・石見国・隠岐国', hardRead: '温泉津（ゆのつ）', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。', area: 6700 },
+      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', oldProv: '備前国・備中国・美作国', hardRead: '邑久（おく）', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。', area: 7100 },
+      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', oldProv: '安芸国・備後国', hardRead: '向洋（むかいなだ）', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。', area: 8400 },
+      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', oldProv: '長門国・周防国', hardRead: '特牛（こっとい）', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。', area: 6100 },
+      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', oldProv: '阿波国（あわ）', hardRead: '祖谷（いや）', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。', area: 4100 },
+      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', oldProv: '讃岐国（さぬき）', hardRead: '観音寺（かんおんじ）', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。', area: 1800 },
+      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', oldProv: '伊予国（いよ）', hardRead: '忽那（くつな）', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。', area: 5600 },
+      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', oldProv: '土佐国（とさ）', hardRead: '宿毛（すくも）', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。', area: 7100 },
+      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。', area: 4900 },
+      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。', area: 2400 },
+      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。', area: 4100 },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
+      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。', area: 6300 },
+      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。', area: 7700 },
+      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。', area: 9100 },
+      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球国（りゅうきゅう）', hardRead: '南風原（はえばる）', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。', area: 2200 }
     ];
 
-    const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
-    
-    // パーティーゲーム用の質問集
-    const WW_QUESTIONS = {
-      name: [
-        { q: "海に面していますか？", hint: "日本には海に面していない内陸県が8つあります。" },
-        { q: "新幹線は通っていますか？", hint: "四国地方には新幹線が通っていません。" },
-        { q: "人口は全国平均より多い方？", hint: "都道府県の平均人口は約260万人です。" },
-        { q: "面積は大きい方ですか？小さい方ですか？", hint: "最大は北海道、最小は香川県です。" },
-        { q: "冬は雪がよく降る地域ですか？", hint: "日本海側は世界有数の豪雪地帯です。" },
-        { q: "隣接している県は多いですか？", hint: "最も多くの県と接しているのは長野県（8県）です。" },
-        { q: "島（離島）はある県ですか？", hint: "長崎県や鹿児島県などは特に島の数が多いです。" },
-        { q: "高い山はある地形ですか？", hint: "日本アルプスがある県は標高3000m級の山々が連なりま。" },
-        { q: "名前（漢字）に山、川、島など自然を表す字が入っていますか？", hint: "都道府県名の多くは、その土地の地形や自然環境が由来です。" },
-        { q: "その県には政令指定都市がありますか？", hint: "政令指定都市は全国に20都市あります。" }
-      ],
-      capital: [
-        { q: "県庁所在地の名前は、県名と同じですか？", hint: "県名と県庁所在地名が違う県は全国に18あります。" },
-        { q: "その都市は海に面していますか？", hint: "多くの県庁所在地は港町ですが、内陸の都市もあります。" },
-        { q: "その都市に大きなお城（城跡）はありますか？", hint: "江戸時代、多くの県庁所在地は「城下町」として栄えました。" },
-        { q: "人口は100万人を超えている大都市ですか？", hint: "人口100万人を超える都市は、全国に12都市しかありません。" },
-        { q: "その都市を代表する有名な駅や空港はありますか？", hint: "新幹線のターミナル駅や拠点空港が存在します。" }
-      ],
-      food: [
-        { q: "その名産品は海産物（魚介類）ですか？", hint: "太平洋側と日本海側で獲れる魚が異なります。" },
-        { q: "それは農作物（野菜や果物）ですか？", hint: "果物や野菜は気候（気温、日照時間、降水量）に大きく左右されます。" },
-        { q: "その料理はお肉（牛・豚・鶏など）を使っていますか？", hint: "ブランド牛や地鶏などは、その土地の気候や飼料を活かして育てられています。" },
-        { q: "それは麺類（うどん、そば、ラーメンなど）ですか？", hint: "水が綺麗な地域はそば、小麦の生産が盛んな地域はうどんが発展しました。" },
-        { q: "それはお菓子やデザートですか？", hint: "昔、貿易港があった場所では独自の洋菓子文化が根付きました。" }
-      ],
-      tourism: [
-        { q: "そこは歴史的な建造物（お城や神社仏閣など）ですか？", hint: "京都や奈良だけでなく、各地に歴史的建造物が残っています。" },
-        { q: "そこは自然を楽しむスポット（山、湖、海など）ですか？", hint: "日本は国土の約7割が森林であり、独特の自然景観が豊富です。" },
-        { q: "そこは世界遺産、または国宝ですか？", hint: "日本には文化遺産や自然遺産など、世界的に認められたスポットが多数あります。" },
-        { q: "そこはテーマパークや近代的な施設ですか？", hint: "大都市圏や広大な土地を持つ地域には、巨大なテーマパークが作られやすいです。" },
-        { q: "そこは温泉街ですか？", hint: "日本は活火山が多く、源泉数は世界トップクラスです。" }
-      ]
+    // 隣接境界データ
+    const BORDERS = {
+      hokkaido: [], aomori: ['iwate', 'akita'], iwate: ['aomori', 'akita', 'miyagi'],
+      miyagi: ['iwate', 'akita', 'yamagata', 'fukushima'], akita: ['aomori', 'iwate', 'miyagi', 'yamagata'],
+      yamagata: ['akita', 'miyagi', 'fukushima', 'niigata'], fukushima: ['miyagi', 'yamagata', 'ibaraki', 'tochigi', 'gumma', 'niigata'],
+      ibaraki: ['fukushima', 'tochigi', 'saitama', 'chiba'], tochigi: ['fukushima', 'ibaraki', 'gumma', 'saitama'],
+      gumma: ['fukushima', 'tochigi', 'saitama', 'niigata', 'nagano'], saitama: ['ibaraki', 'tochigi', 'gumma', 'chiba', 'tokyo', 'yamanashi', 'nagano'],
+      chiba: ['ibaraki', 'saitama', 'tokyo'], tokyo: ['saitama', 'chiba', 'kanagawa', 'yamanashi'], kanagawa: ['tokyo', 'yamanashi', 'shizuoka'],
+      niigata: ['yamagata', 'fukushima', 'gumma', 'nagano', 'toyama'], toyama: ['niigata', 'nagano', 'gifu', 'ishikawa'],
+      ishikawa: ['toyama', 'gifu', 'fukui'], fukui: ['ishikawa', 'gifu', 'shiga', 'kyoto'], yamanashi: ['saitama', 'tokyo', 'kanagawa', 'nagano', 'shizuoka'],
+      nagano: ['gumma', 'saitama', 'niigata', 'toyama', 'yamanashi', 'gifu', 'shizuoka', 'aichi'], gifu: ['toyama', 'ishikawa', 'fukui', 'nagano', 'aichi', 'mie', 'shiga'],
+      shizuoka: ['kanagawa', 'yamanashi', 'nagano', 'aichi'], aichi: ['nagano', 'gifu', 'shizuoka', 'mie'], mie: ['gifu', 'aichi', 'shiga', 'kyoto', 'nara', 'wakayama'],
+      shiga: ['fukui', 'gifu', 'mie', 'kyoto'], kyoto: ['fukui', 'mie', 'shiga', 'osaka', 'hyogo', 'nara'], osaka: ['kyoto', 'hyogo', 'nara', 'wakayama'],
+      hyogo: ['kyoto', 'osaka', 'tottori', 'okayama'], nara: ['mie', 'kyoto', 'osaka', 'wakayama'], wakayama: ['mie', 'osaka', 'nara'],
+      tottori: ['hyogo', 'shimane', 'okayama', 'hiroshima'], shimane: ['tottori', 'hiroshima', 'yamaguchi'], okayama: ['hyogo', 'tottori', 'hiroshima'],
+      hiroshima: ['tottori', 'shimane', 'okayama', 'yamaguchi'], yamaguchi: ['shimane', 'hiroshima'], tokushima: ['kagawa', 'ehime', 'kochi'],
+      kagawa: ['tokushima', 'ehime'], ehime: ['tokushima', 'kagawa', 'kochi'], kochi: ['tokushima', 'ehime'],
+      fukuoka: ['saga', 'oita', 'kumamoto'], saga: ['fukuoka', 'nagasaki'], nagasaki: ['saga'], kumamoto: ['fukuoka', 'oita', 'miyazaki', 'kagoshima'],
+      oita: ['fukuoka', 'kumamoto', 'miyazaki'], miyazaki: ['kumamoto', 'oita', 'kagoshima'], kagoshima: ['kumamoto', 'miyazaki'], okinawa: []
     };
+
+    // ================= 【新規】実戦的教育データ定義 =================
+
+    const CLIMATES = [
+      { id: 'japan_sea', name: '日本海側の気候', key: 'niigata', desc: '北西の季節風の影響で冬の降水量（雪）が多く、夏は乾燥し晴天が多い。' },
+      { id: 'pacific', name: '太平洋側の気候', key: 'tokyo', desc: '夏の季節風（梅雨・台風）で雨が多く、冬は乾燥した晴天が続く。' },
+      { id: 'seto', name: '瀬戸内の気候', key: 'kagawa', desc: '中国山地と四国山地に挟まれ、季節風が遮られるため年間を通して温和で雨が少ない。' },
+      { id: 'highland', name: '中央高地の気候', key: 'nagano', desc: '標高が高く、年間を通して降水量が少なく、夏と冬、昼と夜の寒暖差が非常に激しい。' },
+      { id: 'hokkaido', name: '北海道の気候', key: 'hokkaido', desc: '冬が長く年間平均気温が低く冷涼。梅雨（つゆ）の影響をほとんど受けない。' },
+      { id: 'okinawa', name: '南西諸島の気候', key: 'okinawa', desc: '年間を通して温暖（平均気温20℃以上）で、台風等の影響により極めて降水量が多い。' }
+    ];
+
+    const TOPO_QUESTIONS = [
+      { q: "長野県から新潟県を流れ日本海に注ぐ、全長367kmの日本屈指の最長河川は？", a: "信濃川", key: "niigata" },
+      { q: "関東平野を流れ、利根坂東太郎とも呼ばれる日本で最も流域面積が広い河川は？", a: "利根川", key: "saitama" },
+      { q: "「日本三急流」の一つに数えられ、山形県を縦断して流れる米づくりに不可欠な河川は？", a: "最上川", key: "yamagata" },
+      { q: "別名「北アルプス」とも呼ばれる、富山・岐阜・長野・新潟にまたがる険しい山脈は？", a: "飛騨山脈", key: "nagano" },
+      { q: "別名「南アルプス」とも呼ばれる、山梨・長野・静岡にまたがる最高峰の連なる山脈は？", a: "赤石山脈", key: "yamanashi" },
+      { q: "別名「中央アルプス」とも呼ばれる、長野県を南北に走る木曽駒ヶ岳を擁する山脈は？", a: "木曽山脈", key: "nagano" },
+      { q: "世界最大級のカルデラ（火山活動による窪地）を持ち、煙を上げる熊本県の有名な活火山は？", a: "阿蘇山", key: "kumamoto" },
+      { q: "新潟県下流に広がり、信濃川がもたらす肥沃な土壌を利用して一大米作地帯を形成する平野は？", a: "越後平野", key: "niigata" },
+      { q: "石狩川の下流に広がり、泥炭地を長年改良して一大稲作地帯に生まれ変わった北海道の平野は？", a: "石狩平野", key: "hokkaido" },
+      { q: "高知県南部、黒潮の流れる温暖な気候を利用してナスやピーマンの「促成栽培」を行う平野は？", a: "高知平野", key: "kochi" },
+      { q: "宮崎県東部、温暖な気候を活かして冬の間にピーマンやカボチャを栽培して出荷する平野は？", a: "宮崎平野", key: "miyazaki" }
+    ];
+
+    const STAT_QUESTIONS = [
+      {
+        title: "【農作物・収穫量割合】",
+        q: "このグラフが示す日本の最重要穀物（主食）はどれ？",
+        shares: [
+          { name: "新潟", percent: 8.1, color: "bg-sage-500" },
+          { name: "北海道", percent: 7.8, color: "bg-dustyblue-500" },
+          { name: "秋田", percent: 5.3, color: "bg-dustypurple-500" },
+          { name: "その他", percent: 78.8, color: "bg-border" }
+        ],
+        a: "米 (稲作)",
+        opts: ["米 (稲作)", "小麦", "じゃがいも", "キャベツ"]
+      },
+      {
+        title: "【農作物・収穫量割合】",
+        q: "このグラフが示す、北海道が圧倒的トップを誇る主要作物はどれ？",
+        shares: [
+          { name: "北海道", percent: 38.0, color: "bg-dustyblue-500" },
+          { name: "佐賀", percent: 8.0, color: "bg-sage-500" },
+          { name: "福岡", percent: 7.5, color: "bg-dustypurple-500" },
+          { name: "その他", percent: 46.5, color: "bg-border" }
+        ],
+        a: "小麦",
+        opts: ["米 (稲作)", "小麦", "茶 (お茶)", "みかん"]
+      },
+      {
+        title: "【くだもの・収穫量割合】",
+        q: "温暖で雨の少ない傾斜地栽培が適している、この果物はどれ？",
+        shares: [
+          { name: "和歌山", percent: 21.0, color: "bg-dustyorange-500" },
+          { name: "愛媛", percent: 14.0, color: "bg-dustyyellow-500" },
+          { name: "静岡", percent: 8.0, color: "bg-sage-500" },
+          { name: "その他", percent: 57.0, color: "bg-border" }
+        ],
+        a: "みかん",
+        opts: ["みかん", "りんご", "ぶどう", "さくらんぼ"]
+      },
+      {
+        title: "【くだもの・収穫量割合】",
+        q: "比較的冷涼な気候が栽培に適している、この代表的な果物はどれ？",
+        shares: [
+          { name: "青森", percent: 58.0, color: "bg-dustyrose-500" },
+          { name: "長野", percent: 20.0, color: "bg-sage-500" },
+          { name: "岩手", percent: 4.0, color: "bg-dustypurple-500" },
+          { name: "その他", percent: 18.0, color: "bg-border" }
+        ],
+        a: "りんご",
+        opts: ["みかん", "りんご", "もも", "ぶどう"]
+      },
+      {
+        title: "【工芸作物・収穫量割合】",
+        q: "この静岡・鹿児島がしのぎを削る伝統的な嗜好品作物はどれ？",
+        shares: [
+          { name: "静岡", percent: 38.0, color: "bg-sage-600" },
+          { name: "鹿児島", percent: 34.0, color: "bg-dustypurple-500" },
+          { name: "三重", percent: 6.0, color: "bg-dustyrose-500" },
+          { name: "その他", percent: 22.0, color: "bg-border" }
+        ],
+        a: "茶 (お茶)",
+        opts: ["茶 (お茶)", "さとうきび", "てんさい", "落花生"]
+      },
+      {
+        title: "【養殖・生産量割合】",
+        q: "広島湾などの波の静かな入り江で養殖が盛んな、この水産物はどれ？",
+        shares: [
+          { name: "広島", percent: 61.0, color: "bg-dustyrose-600" },
+          { name: "宮城", percent: 10.0, color: "bg-dustyblue-500" },
+          { name: "岡山", percent: 8.0, color: "bg-sage-500" },
+          { name: "その他", percent: 21.0, color: "bg-border" }
+        ],
+        a: "かき (牡蠣)",
+        opts: ["かき (牡蠣)", "ほたて貝", "のり (海苔)", "うなぎ"]
+      }
+    ];
+
+    const MAPSCALE_QUESTIONS = [
+      { type: 'symbol', symbolId: 'fire', q: "この地図記号が表す建物・施設はどれ？", a: "消防署", opts: ["消防署", "警察署 (交番)", "郵便局", "市役所"] },
+      { type: 'symbol', symbolId: 'orchard', q: "この地図記号が表す土地利用はどれ？", a: "果樹園", opts: ["果樹園", "畑", "茶畑", "針葉樹林"] },
+      { type: 'symbol', symbolId: 'library', q: "この地図記号が表す施設はどれ？", a: "図書館", opts: ["図書館", "博物館", "学校", "官公庁"] },
+      { type: 'symbol', symbolId: 'police', q: "この地図記号が表す施設はどれ？", a: "警察署 (交番)", opts: ["警察署 (交番)", "消防署", "裁判所", "税務署"] },
+      { type: 'symbol', symbolId: 'spring', q: "温泉マークとしても知られる、この地図記号が表すものはどれ？", a: "温泉", opts: ["温泉", "噴火口", "発電所", "史跡・名勝"] },
+      { type: 'math', q: "縮尺 <span class='text-dustyrose-600 font-black'>1:25,000</span> の地形図上で、定規で測ると <span class='text-dustyrose-600 font-black'>4cm</span> でした。実際の距離はどれ？", a: "1km", opts: ["1km", "100m", "2.5km", "10km"] },
+      { type: 'math', q: "縮尺 <span class='text-dustyrose-600 font-black'>1:50,000</span> の地形図上で、定規で測ると <span class='text-dustyrose-600 font-black'>6cm</span> でした。実際の距離はどれ？", a: "3km", opts: ["3km", "300m", "5km", "12km"] },
+      { type: 'math', q: "実際の距離が <span class='text-dustyrose-600 font-black'>2km</span> の区間は、縮尺 <span class='text-dustyrose-600 font-black'>1:50,000</span> の地形図上では何cmになる？", a: "4cm", opts: ["4cm", "1cm", "10cm", "25cm"] },
+      { type: 'math', q: "実際の距離が <span class='text-dustyrose-600 font-black'>2km</span> の区間は、縮尺 <span class='text-dustyrose-600 font-black'>1:25,000</span> の地形図上では何cmになる？", a: "8cm", opts: ["8cm", "4cm", "2.5cm", "12.5cm"] },
+      { type: 'math', q: "縮尺 <span class='text-dustyrose-600 font-black'>1:25,000</span> の地形図上で、定規で測ると <span class='text-dustyrose-600 font-black'>10cm</span> でした。実際の距離はどれ？", a: "2.5km", opts: ["2.5km", "250m", "1km", "5km"] }
+    ];
 
     // ================= 状態管理 (統合) =================
     let qState = {
-      mode: '', // 'test', 'sil', 'local', 'oldprov', 'hardread'
+      mode: '', // 'test', 'sil', 'local', 'oldprov', 'hardread', 'border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'
       format: '',
       currentQ: 1,
       totalQ: 47,
@@ -677,7 +1042,8 @@
       interval: null,
       remaining: [],
       currentPref: null,
-      mistakes: []
+      mistakes: [],
+      streak: 0
     };
 
     const mapWrapper = document.getElementById('map-wrapper');
@@ -686,18 +1052,18 @@
     let baseScale = 1;
     let prefCenters = {};
 
-    // 改善: 白地図直接クリック検出用の隠しCanvas
+    // 判定用 Canvas
     const hitCanvas = document.createElement('canvas');
     hitCanvas.width = 2000;
     hitCanvas.height = 2000;
     const hitCtx = hitCanvas.getContext('2d', { willReadFrequently: true });
 
-    let currentDetailPref = null; // 現在詳細を見ている県
+    let currentDetailPref = null; 
     let currentDetailBackView = 'study';
 
-    // トップ画面のカルーセルとドットの連動
+    // カルーセル連動 (4ドット化)
     const carousel = document.getElementById('top-carousel');
-    const dots = [document.getElementById('dot-0'), document.getElementById('dot-1')];
+    const dots = [document.getElementById('dot-0'), document.getElementById('dot-1'), document.getElementById('dot-2'), document.getElementById('dot-3')];
     
     if (carousel) {
       carousel.addEventListener('scroll', () => {
@@ -735,7 +1101,10 @@
 
     document.getElementById('btn-back').addEventListener('click', () => {
       clearInterval(qState.interval);
-      if(typeof partyState !== 'undefined') clearInterval(partyState.interval);
+      if(typeof partyState !== 'undefined') {
+        clearInterval(partyState.interval);
+        if(partyState.bombInterval) clearInterval(partyState.bombInterval);
+      }
       switchView('top');
     });
 
@@ -755,11 +1124,14 @@
 
     function resetMapState() {
       mapContainer.className = 'mode-normal';
-      document.querySelectorAll('#map-container li').forEach(el => el.classList.remove('is-open'));
+      document.querySelectorAll('#map-container li').forEach(el => {
+        el.classList.remove('is-open', 'is-route-path');
+        el.style.removeProperty('color'); // bomb時の赤色をクリア
+      });
       resetMapScale();
     }
 
-    // フォントから実際のピクセル重心を計算
+    // 重心計算
     function calculatePrefCenters() {
       const fontSize = 2000, offset = 400, size = fontSize + offset * 2;
       const canvas = document.createElement('canvas');
@@ -802,7 +1174,6 @@
       });
     }
 
-    // 改善: 地図判定用の裏 Canvas を一括描画して当たり判定システムを構築
     function generateHitMap() {
       hitCtx.clearRect(0, 0, 2000, 2000);
       hitCtx.font = "2000px map";
@@ -818,16 +1189,14 @@
           if (content.length > 1 && content.startsWith('\\')) {
             content = String.fromCharCode(parseInt(content.substring(1), 16));
           }
-          // redチャンネルに都道府県インデックス (1-based) を埋め込んで描画する
           hitCtx.fillStyle = `rgb(${index + 1}, 0, 0)`;
           hitCtx.fillText(content, 0, 0);
         }
       });
     }
 
-    // 改善: 地図直接クリックによる都道府県の判定と連動処理
+    // 地図直接クリックによるアクションルーティング
     mapWrapper.addEventListener('click', (e) => {
-      // ローディング中は無視する
       const cover = document.getElementById('loading-cover');
       if (cover && !cover.classList.contains('pointer-events-none')) return;
 
@@ -837,10 +1206,9 @@
 
       if (x >= 0 && x < 2000 && y >= 0 && y < 2000) {
         const pixel = hitCtx.getImageData(x, y, 1, 1).data;
-        const redValue = pixel[0]; // 1-based index
+        const redValue = pixel[0]; 
         const alpha = pixel[3];
         
-        // 描画が存在し、且つ範囲内であればクリック成功
         if (alpha > 50 && redValue > 0 && redValue <= PREFECTURES.length) {
           const clickedPref = PREFECTURES[redValue - 1];
           onMapPrefecturesClicked(clickedPref);
@@ -848,10 +1216,19 @@
       }
     });
 
-    // 改善: マップクリック時、適切な辞書シートを即座に開く
     function onMapPrefecturesClicked(pref) {
       const activeView = Array.from(document.querySelectorAll('.app-view')).find(el => !el.classList.contains('hidden'));
       if (!activeView) return;
+
+      if (activeView.id === 'view-pref-route') {
+        handleRouteClick(pref);
+        return;
+      }
+
+      if (activeView.id === 'view-party-bomb') {
+        handleBombClick(pref);
+        return;
+      }
 
       if (activeView.id === 'view-top') {
         switchView('study');
@@ -886,7 +1263,283 @@
       }
     }
 
-    // ================= 改善: LocalStorageを用いた状態セーブとUI同期 =================
+    // 複数ハイライト用
+    function highlightMapMulti(prefIds, focusMode = 'normal') {
+      document.querySelectorAll('#map-container li').forEach(el => el.classList.remove('is-open'));
+      mapContainer.className = `mode-${focusMode}`;
+      prefIds.forEach(id => {
+        const targetEl = document.querySelector(`.p-eveMapPref--${id}`);
+        if (targetEl) targetEl.classList.add('is-open');
+      });
+      resetMapScale();
+    }
+
+    // ================= サウンド＆エフェクト＆セーブ =================
+    const SoundManager = {
+      ctx: null,
+      muted: false,
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      playCorrect() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(523.25, now); 
+        osc.frequency.setValueAtTime(659.25, now + 0.1); 
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        
+        osc.start(now);
+        osc.stop(now + 0.35);
+      },
+      playIncorrect() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(220, now); 
+        osc.frequency.linearRampToValueAtTime(110, now + 0.25); 
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        
+        osc.start(now);
+        osc.stop(now + 0.3);
+      },
+      playLevelUp() {
+        if (this.muted) return;
+        this.init();
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; 
+        const now = this.ctx.currentTime;
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.1, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.3);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.35);
+        });
+      }
+    };
+
+    function toggleMute() {
+      SoundManager.muted = !SoundManager.muted;
+      localStorage.setItem('geo_sound_muted', SoundManager.muted ? '1' : '0');
+      
+      const iconUnmuted = document.getElementById('icon-unmuted');
+      const iconMuted = document.getElementById('icon-muted');
+      
+      if (SoundManager.muted) {
+        iconUnmuted.classList.add('hidden');
+        iconMuted.classList.remove('hidden');
+      } else {
+        iconUnmuted.classList.remove('hidden');
+        iconMuted.classList.add('hidden');
+        SoundManager.init(); 
+      }
+    }
+
+    const Confetti = {
+      canvas: null,
+      ctx: null,
+      particles: [],
+      active: false,
+      init() {
+        this.canvas = document.getElementById('confetti-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        window.addEventListener('resize', () => this.resize());
+        this.resize();
+      },
+      resize() {
+        if (this.canvas) {
+          this.canvas.width = window.innerWidth;
+          this.canvas.height = window.innerHeight;
+        }
+      },
+      start() {
+        this.active = true;
+        this.particles = [];
+        for (let i = 0; i < 70; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height - this.canvas.height,
+            r: Math.random() * 5 + 4,
+            d: Math.random() * this.canvas.height,
+            color: `hsl(${Math.random() * 360}, 85%, 65%)`,
+            tilt: Math.random() * 10 - 5,
+            tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+            tiltAngle: 0
+          });
+        }
+        this.animate();
+      },
+      animate() {
+        if (!this.active) return;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let finished = true;
+        this.particles.forEach(p => {
+          p.tiltAngle += p.tiltAngleIncremental;
+          p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+          p.x += Math.sin(p.tiltAngle);
+          p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+          if (p.y < this.canvas.height) finished = false;
+
+          this.ctx.beginPath();
+          this.ctx.lineWidth = p.r;
+          this.ctx.strokeStyle = p.color;
+          this.ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          this.ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          this.ctx.stroke();
+        });
+
+        if (finished) {
+          this.active = false;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        } else {
+          requestAnimationFrame(() => this.animate());
+        }
+      }
+    };
+
+    function getPlayerStats() {
+      try {
+        const data = localStorage.getItem('geo_player_stats');
+        return data ? JSON.parse(data) : { level: 1, xp: 0 };
+      } catch(e) {
+        return { level: 1, xp: 0 };
+      }
+    }
+
+    function addXP(amount) {
+      const stats = getPlayerStats();
+      stats.xp += amount;
+      
+      let xpToNext = stats.level * 200;
+      let leveledUp = false;
+      while (stats.xp >= xpToNext) {
+        stats.xp -= xpToNext;
+        stats.level++;
+        leveledUp = true;
+        xpToNext = stats.level * 200;
+      }
+      
+      localStorage.setItem('geo_player_stats', JSON.stringify(stats));
+      
+      if (leveledUp) {
+        triggerLevelUp(stats.level);
+      }
+      
+      updateUIFromStorage();
+    }
+
+    function triggerLevelUp(newLevel) {
+      SoundManager.playLevelUp();
+      Confetti.start();
+      
+      const popup = document.getElementById('popup-level-up');
+      document.getElementById('popup-level-num').textContent = newLevel;
+      
+      popup.classList.remove('-translate-y-48', 'opacity-0', 'pointer-events-none');
+      popup.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        popup.classList.remove('translate-y-0', 'opacity-100');
+        popup.classList.add('-translate-y-48', 'opacity-0', 'pointer-events-none');
+      }, 4000);
+    }
+
+    function getWrongCounts() {
+      try {
+        const data = localStorage.getItem('geo_wrong_counts');
+        return data ? JSON.parse(data) : {};
+      } catch(e) {
+        return {};
+      }
+    }
+
+    function updateWrongCount(prefId, change) {
+      const counts = getWrongCounts();
+      counts[prefId] = Math.max(0, (counts[prefId] || 0) + change);
+      localStorage.setItem('geo_wrong_counts', JSON.stringify(counts));
+      updateWeaknessUI();
+    }
+
+    function updateWeaknessUI() {
+      const counts = getWrongCounts();
+      let totalWeakCount = 0;
+      for (const [prefId, val] of Object.entries(counts)) {
+        if (val > 0) totalWeakCount++;
+      }
+      
+      const badge = document.getElementById('weakness-badge-count');
+      const desc = document.getElementById('weakness-banner-desc');
+      
+      if (badge) badge.textContent = totalWeakCount;
+      if (totalWeakCount > 0) {
+        if (desc) desc.textContent = `現在、ニガテに登録された都道府県が ${totalWeakCount} 箇所あります`;
+      } else {
+        if (desc) desc.textContent = "苦手な県はありません！素晴らしい地図制覇です！";
+        if (badge) badge.textContent = "完璧";
+      }
+    }
+
+    // 弱点克服特訓テスト開始
+    function startWeaknessQuiz() {
+      const counts = getWrongCounts();
+      let weakPrefs = [];
+      for (const [prefId, val] of Object.entries(counts)) {
+        if (val > 0) {
+          const pObj = PREFECTURES.find(x => x.id === prefId);
+          if (pObj) weakPrefs.push({ pref: pObj, weight: val });
+        }
+      }
+      
+      if (weakPrefs.length === 0) {
+        SoundManager.playCorrect();
+        Confetti.start();
+        alert("素晴らしい！現在、苦手な都道府県はありません。全問正解を目指して「総合テスト」や「シルエット」に挑戦してみましょう！");
+        return;
+      }
+      
+      weakPrefs.sort((a, b) => b.weight - a.weight);
+      
+      qState.mode = 'test';
+      qState.format = 'map2name'; 
+      qState.score = 0;
+      qState.currentQ = 1;
+      qState.mistakes = [];
+      qState.streak = 0;
+      
+      qState.remaining = weakPrefs.slice(0, 12).map(item => item.pref).sort(() => Math.random() - 0.5);
+      qState.totalQ = qState.remaining.length;
+      
+      switchView('quiz-play');
+      document.getElementById('quiz-total-count').textContent = qState.totalQ;
+      nextQuestion();
+    }
+
+    // その他のデータ
     function getLearnedPrefs() {
       try {
         const data = localStorage.getItem('geo_learned_prefs');
@@ -920,7 +1573,6 @@
     function updateUIFromStorage() {
       const list = getLearnedPrefs();
       
-      // 白地図上の「覚えた！」クラスの付与/剥奪
       PREFECTURES.forEach(p => {
         const el = document.querySelector(`.p-eveMapPref--${p.id}`);
         if (el) {
@@ -932,7 +1584,6 @@
         }
       });
 
-      // トップ進捗ダッシュボードの更新
       const count = list.length;
       const percent = Math.round((count / 47) * 100);
       
@@ -944,7 +1595,15 @@
       if (percentEl) percentEl.textContent = `${percent}%`;
       if (barEl) barEl.style.width = `${percent}%`;
 
-      // 設定画面のハイスコア表示
+      const stats = getPlayerStats();
+      const nextXp = stats.level * 200;
+      const xpPercent = Math.min(100, Math.round((stats.xp / nextXp) * 100));
+
+      document.getElementById('top-level').textContent = stats.level;
+      document.getElementById('top-xp-current').textContent = stats.xp;
+      document.getElementById('top-xp-next').textContent = nextXp;
+      document.getElementById('top-xp-bar').style.width = `${xpPercent}%`;
+
       const scoreTest = localStorage.getItem('geo_highscore_test') || 0;
       const scoreSil = localStorage.getItem('geo_highscore_sil') || 0;
       
@@ -953,13 +1612,15 @@
       
       if (hsTestEl) hsTestEl.textContent = scoreTest;
       if (hsSilEl) hsSilEl.textContent = scoreSil;
+
+      updateWeaknessUI();
     }
 
     function saveHighScore(mode, score) {
       const currentHigh = parseInt(localStorage.getItem(`geo_highscore_${mode}`) || 0);
       if (score > currentHigh) {
         localStorage.setItem(`geo_highscore_${mode}`, score);
-        return true; // 新規ハイスコア記録
+        return true; 
       }
       return false;
     }
@@ -967,7 +1628,15 @@
     function toggleLearnedFromDetail() {
       if (!currentDetailPref) return;
       const chk = document.getElementById('chk-learned');
+      const alreadyLearned = isLearned(currentDetailPref.id);
+
       toggleLearned(currentDetailPref.id, chk.checked);
+
+      if (!alreadyLearned && chk.checked) {
+        addXP(30);
+        Confetti.start(); 
+        SoundManager.playCorrect();
+      }
     }
 
 
@@ -1010,7 +1679,6 @@
       document.getElementById('study-tourism').textContent = pref.tourism;
       document.getElementById('study-trivia').textContent = pref.trivia;
       
-      // チェックボックス状態反映
       document.getElementById('chk-learned').checked = isLearned(pref.id);
       
       const detail = document.getElementById('study-detail');
@@ -1026,7 +1694,94 @@
       currentDetailPref = null;
     }
 
-    // ================= クイズ・テスト共通処理 =================
+    // ================= 【改善】雨温図 描画 SVG ビルダー =================
+    function generateClimatogramSVG(climateId) {
+      let temps, precs;
+      if (climateId === 'japan_sea') {
+        temps = [3.0, 3.5, 6.8, 12.5, 17.8, 21.8, 25.8, 27.2, 23.1, 17.2, 11.1, 5.8];
+        precs = [190, 120, 110, 100, 90, 120, 190, 140, 160, 160, 210, 240];
+      } else if (climateId === 'pacific') {
+        temps = [5.2, 5.7, 8.7, 13.9, 18.2, 21.4, 25.0, 26.4, 22.8, 17.5, 12.1, 7.5];
+        precs = [50, 60, 120, 130, 140, 170, 150, 170, 210, 200, 90, 50];
+      } else if (climateId === 'seto') {
+        temps = [5.8, 6.1, 9.3, 14.5, 19.1, 22.9, 26.9, 28.0, 24.3, 18.7, 13.1, 8.1];
+        precs = [40, 50, 80, 80, 90, 120, 100, 90, 130, 90, 60, 45];
+      } else if (climateId === 'highland') {
+        temps = [-1.5, -0.5, 3.5, 10.5, 16.0, 20.0, 24.0, 25.0, 20.5, 14.0, 7.5, 1.5];
+        precs = [50, 55, 70, 80, 90, 110, 130, 110, 130, 90, 60, 50];
+      } else if (climateId === 'hokkaido') {
+        temps = [-3.6, -3.1, 0.6, 7.1, 12.4, 16.7, 20.5, 22.3, 18.1, 11.8, 4.9, -1.0];
+        precs = [110, 90, 80, 60, 60, 50, 80, 125, 135, 110, 115, 110];
+      } else if (climateId === 'okinawa') {
+        temps = [17.0, 17.1, 19.1, 21.7, 24.4, 27.2, 29.1, 29.0, 27.9, 25.5, 22.3, 18.7];
+        precs = [110, 120, 160, 160, 230, 250, 190, 240, 200, 160, 120, 100];
+      }
+      
+      let svg = `<svg viewBox="0 0 240 140" class="w-full h-32 bg-white rounded-2xl p-3 border border-border">`;
+      // グリッド
+      svg += `<line x1="20" y1="20" x2="220" y2="20" stroke="#f3f4f6" stroke-width="1"/>`;
+      svg += `<line x1="20" y1="70" x2="220" y2="70" stroke="#e5e7eb" stroke-width="1"/>`; 
+      svg += `<line x1="20" y1="120" x2="220" y2="120" stroke="#d1d5db" stroke-width="1"/>`; 
+      
+      // 棒グラフ（降水量）
+      for (let i = 0; i < 12; i++) {
+        const x = 25 + i * 16;
+        const h = (precs[i] / 300) * 100; // 最大スケール300mm
+        const y = 120 - h;
+        svg += `<rect x="${x}" y="${y}" width="9" height="${h}" fill="#93c5fd" opacity="0.8"/>`;
+      }
+      
+      // 折れ線グラフ（気温）
+      let linePath = "";
+      for (let i = 0; i < 12; i++) {
+        const x = 29.5 + i * 16;
+        // 気温スケール -10℃〜35℃ -> y座標120から20
+        const y = 120 - ((temps[i] + 10) / 45) * 100;
+        if (i === 0) linePath += `M ${x} ${y}`;
+        else linePath += ` L ${x} ${y}`;
+        svg += `<circle cx="${x}" cy="${y}" r="2" fill="#ef4444"/>`;
+      }
+      svg += `<path d="${linePath}" fill="none" stroke="#ef4444" stroke-width="2"/>`;
+      
+      // ラベル
+      svg += `<text x="5" y="15" font-size="6" fill="#ef4444" font-weight="bold">℃</text>`;
+      svg += `<text x="225" y="15" font-size="6" fill="#3b82f6" font-weight="bold">mm</text>`;
+      svg += `<text x="5" y="125" font-size="6" fill="#9ca3af">1月</text>`;
+      svg += `<text x="215" y="125" font-size="6" fill="#9ca3af">12月</text>`;
+      svg += `</svg>`;
+      return svg;
+    }
+
+    // 改善: 円/帯統計データの積み上げグラフビルダー
+    function generateShareBarHTML(shares) {
+      let html = `<div class="w-full flex h-8 rounded-2xl overflow-hidden border border-border select-none mt-3 shadow-inner">`;
+      shares.forEach(s => {
+        html += `<div class="${s.color} h-full flex items-center justify-center text-[9px] font-black text-white" style="width: ${s.percent}%" title="${s.name}: ${s.percent}%">
+          ${s.percent >= 9 ? s.name + '(' + s.percent + '%)' : ''}
+        </div>`;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    // 改善: 地図記号 SVG ジェネレータ
+    function generateSymbolSVG(symbolId) {
+      let innerSVG = "";
+      if (symbolId === 'fire') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#be5f6e" stroke-width="3" stroke-linecap="round"><path d="M12 2v20M12 12L4 4M12 12l8-8"/></svg>`;
+      } else if (symbolId === 'orchard') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#be5f6e" stroke="none"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+      } else if (symbolId === 'library') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#be5f6e" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M7 16V8h4v8M17 16V8h-4v8M11 12h2"/></svg>`;
+      } else if (symbolId === 'police') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#be5f6e" stroke-width="3" stroke-linecap="round"><path d="M4 4l16 16M20 4L4 20"/></svg>`;
+      } else if (symbolId === 'spring') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#be5f6e" stroke-width="2.5" stroke-linecap="round"><path d="M4 18c4 2 10 2 14 0M10 13c0-3 2-3 2-6M6 14c0-3 2-3 2-6M14 14c0-3 2-3 2-6"/></svg>`;
+      }
+      return `<div class="my-4 flex justify-center"><div class="p-4 bg-white rounded-3xl border border-border inline-block shadow-sm">${innerSVG}</div></div>`;
+    }
+
+    // クイズテスト共通処理
     function startQuiz(mode) {
       qState.mode = mode;
       
@@ -1040,9 +1795,23 @@
       
       qState.score = 0;
       qState.currentQ = 1;
-      qState.totalQ = 47;
+      
+      // 隣接、面積、教育頻出系は10問、その他基本クイズは47問
+      const examModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
+      qState.totalQ = examModes.includes(mode) ? 10 : 47; 
+      
       qState.mistakes = [];
+      qState.streak = 0;
       qState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      
+      // 各実戦問題の特別初期化
+      if (mode === 'topo') {
+        qState.remainingTopo = [...TOPO_QUESTIONS].sort(() => Math.random() - 0.5);
+      } else if (mode === 'industry') {
+        qState.remainingStat = [...STAT_QUESTIONS].sort(() => Math.random() - 0.5);
+      } else if (mode === 'mapscale') {
+        qState.remainingMapscale = [...MAPSCALE_QUESTIONS].sort(() => Math.random() - 0.5);
+      }
       
       switchView('quiz-play');
       document.getElementById('quiz-total-count').textContent = qState.totalQ;
@@ -1056,6 +1825,7 @@
       qState.mistakes = [];
       qState.score = 0;
       qState.currentQ = 1;
+      qState.streak = 0;
       
       switchView('quiz-play');
       document.getElementById('quiz-total-count').textContent = qState.totalQ;
@@ -1066,6 +1836,17 @@
       if (qState.currentQ > qState.totalQ) {
         showQuizResult();
         return;
+      }
+
+      const streakWrap = document.getElementById('quiz-streak-wrap');
+      const streakCount = document.getElementById('quiz-streak-count');
+      if (qState.streak >= 3) {
+        streakWrap.classList.remove('hidden');
+        streakWrap.classList.add('flex');
+        streakCount.textContent = qState.streak;
+      } else {
+        streakWrap.classList.add('hidden');
+        streakWrap.classList.remove('flex');
       }
 
       qState.currentPref = qState.remaining.pop();
@@ -1137,6 +1918,126 @@
         highlightMap(null, 'normal', false);
         qText = `<span class="text-[12px] font-bold text-dustyrose-600 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-dustyrose-600">都道府県</span>は？`;
         correctAns = p.name; optType = 'name';
+
+      } else if (qState.mode === 'border') {
+        headerText = "お隣り県はどれ？";
+        colorClass = 'sage';
+        const validNeighbors = BORDERS[p.id];
+        if (!validNeighbors || validNeighbors.length === 0) {
+          qState.currentQ--;
+          nextQuestion();
+          return;
+        }
+        qText = `「${p.name}」に<span class="text-sage-600 font-bold">隣接（境界線が接する）している県</span>はどれ？`;
+        const randId = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
+        const correctPrefObj = PREFECTURES.find(x => x.id === randId);
+        correctAns = correctPrefObj.name;
+        optType = 'name';
+        highlightMap(p.id, 'normal', true);
+
+      } else if (qState.mode === 'size') {
+        headerText = "面積くらべ";
+        colorClass = 'dustyblue';
+        let secondP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        while (secondP.id === p.id) {
+          secondP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        }
+        qText = `「${p.name}」と「${secondP.name}」、<span class="text-dustyblue-600 font-bold">面積が広いほう</span>はどっち？`;
+        correctAns = (p.area > secondP.area) ? p.name : secondP.name;
+        optType = 'custom_size';
+        highlightMapMulti([p.id, secondP.id], 'normal');
+        
+        generateTwoOptions(p.name, secondP.name, correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+
+      } else if (qState.mode === 'uonzu') {
+        // 【新規】雨温図マスター
+        headerText = "雨温図マスター";
+        colorClass = 'dustyblue';
+        const targetClimate = CLIMATES[Math.floor(Math.random() * CLIMATES.length)];
+        qText = `<span class="text-xs text-subtext block">【気候区分】</span>この雨温図（気温・降水量グラフ）に当てはまる都道府県はどれ？<div class="mt-2">${generateClimatogramSVG(targetClimate.id)}</div>`;
+        const correctPrefObj = PREFECTURES.find(x => x.id === targetClimate.key);
+        correctAns = correctPrefObj.name;
+        optType = 'name';
+        hint = targetClimate.desc;
+        highlightMap(correctPrefObj.id, 'normal', false);
+
+      } else if (qState.mode === 'topo') {
+        // 【新規】自然地形パズル
+        headerText = "自然地形パズル";
+        colorClass = 'sage';
+        const topoQ = qState.remainingTopo.pop();
+        if (!topoQ) {
+          showQuizResult();
+          return;
+        }
+        qText = `<span class="text-xs text-subtext block">【日本の地形】</span>${topoQ.q}`;
+        correctAns = topoQ.a;
+        
+        // シャッフル用オプション
+        const fakeAnswers = ["利根川", "信濃川", "最上川", "飛騨山脈", "赤石山脈", "木曽山脈", "阿蘇山", "越後平野", "石狩平野", "庄内平野", "高知平野", "宮崎平野"];
+        const optsSet = new Set([correctAns]);
+        while (optsSet.size < 4) {
+          optsSet.add(fakeAnswers[Math.floor(Math.random() * fakeAnswers.length)]);
+        }
+        const shuffledOpts = Array.from(optsSet).sort(() => Math.random() - 0.5);
+
+        const highlightPref = PREFECTURES.find(x => x.id === topoQ.key);
+        highlightMap(highlightPref.id, 'normal', true);
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = highlightPref.name + "に位置・関連しています";
+
+        generateCustomOptions(shuffledOpts, correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+
+      } else if (qState.mode === 'industry') {
+        // 【新規】統計グラフ分析
+        headerText = "統計グラフ分析";
+        colorClass = 'dustyorange';
+        const statQ = qState.remainingStat.pop();
+        if (!statQ) {
+          showQuizResult();
+          return;
+        }
+        qText = `<span class="text-xs text-subtext block">${statQ.title}</span>${statQ.q}<div class="mt-1">${generateShareBarHTML(statQ.shares)}</div>`;
+        correctAns = statQ.a;
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = "日本の統計資料（帯グラフ分析）に基づき解答しましょう。";
+
+        generateCustomOptions(statQ.opts.sort(() => Math.random() - 0.5), correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+
+      } else if (qState.mode === 'mapscale') {
+        // 【新規】地図記号・縮尺特訓
+        headerText = "地図記号・縮尺特訓";
+        colorClass = 'dustyrose';
+        const msQ = qState.remainingMapscale.pop();
+        if (!msQ) {
+          showQuizResult();
+          return;
+        }
+        
+        if (msQ.type === 'symbol') {
+          qText = `<span class="text-xs text-subtext block">【地図記号】</span>${msQ.q}${generateSymbolSVG(msQ.symbolId)}`;
+        } else {
+          qText = `<span class="text-xs text-subtext block">【縮尺計算】</span>${msQ.q}`;
+        }
+        correctAns = msQ.a;
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = "中学校の地理分野の基本問題です。ケアレスミスに注意！";
+
+        generateCustomOptions(msQ.opts.sort(() => Math.random() - 0.5), correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
       }
 
       const hMode = document.getElementById('quiz-header-mode');
@@ -1153,6 +2054,32 @@
 
       generateOptions(correctAns, optType, colorClass);
       startQuizTimer(colorClass);
+    }
+
+    // 2択用オプション生成 (面積判定)
+    function generateTwoOptions(optA, optB, correctAns, colorClass) {
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      [optA, optB].forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
+        btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    // カスタム定義用オプション生成（隣接地形・統計データ等）
+    function generateCustomOptions(shuffledOpts, correctAns, colorClass) {
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
+        btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
+        container.appendChild(btn);
+      });
     }
 
     function generateOptions(correctAns, optType, colorClass) {
@@ -1225,46 +2152,68 @@
       }
     }
 
-    // 改善: 直感的で分かりやすい正誤フィードバックとウェイト演出
     function checkAnswer(ans, correctAns, clickedBtn) {
       clearInterval(qState.interval);
       
       const buttons = document.querySelectorAll('#quiz-options button');
       buttons.forEach(btn => {
         btn.disabled = true;
-        btn.style.pointerEvents = 'none'; // 重複選択を防止
+        btn.style.pointerEvents = 'none'; 
       });
 
       const isCorrect = (ans === correctAns);
 
-      // 色表示による解答フィードバック
       buttons.forEach(btn => {
         const textSpan = btn.querySelector('span');
         if (!textSpan) return;
         const btnText = textSpan.textContent;
 
         if (btnText === correctAns) {
-          // 正解ボタンをグリーン表示
           btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-sage-600";
           btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ 正解</span>`;
         } else if (btn === clickedBtn && !isCorrect) {
-          // 不正解の選択ボタンをレッド表示
           btn.className = "py-4 px-4 bg-dustyrose-50 border-2 border-dustyrose-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-dustyrose-600";
           btn.innerHTML = `<span class="text-dustyrose-600">${btnText}</span><span class="text-dustyrose-600 font-bold">✗ 不正解</span>`;
         }
       });
 
       if (isCorrect) {
+        qState.streak++;
         qState.score++;
+        
+        SoundManager.playCorrect();
+        addXP(10); 
+        
+        if (qState.streak > 0 && qState.streak % 5 === 0) {
+          SoundManager.playLevelUp();
+          Confetti.start();
+          addXP(20); 
+        }
+
+        // 間隔反復(弱点克服)への紐づけ
+        if (qState.currentPref) {
+          updateWrongCount(qState.currentPref.id, -1);
+        }
       } else {
-        qState.mistakes.push(qState.currentPref);
+        qState.streak = 0; 
+        if (qState.currentPref) {
+          qState.mistakes.push(qState.currentPref);
+          updateWrongCount(qState.currentPref.id, 1);
+        }
+        
+        SoundManager.playIncorrect();
+        
+        const playArea = document.getElementById('view-quiz-play');
+        if (playArea) {
+          playArea.classList.add('animate-shake');
+          setTimeout(() => playArea.classList.remove('animate-shake'), 400);
+        }
       }
 
-      // 1秒間のウェイト演出後に次画面へ
       setTimeout(() => {
         qState.currentQ++;
         nextQuestion();
-      }, 1000);
+      }, 1100);
     }
 
     function showQuizResult() {
@@ -1272,12 +2221,15 @@
       document.getElementById('result-score').textContent = qState.score;
       document.getElementById('result-max').textContent = `/${qState.totalQ}`;
       
-      // ハイスコア保存
+      addXP(50);
+
       const isNewHighScore = saveHighScore(qState.mode, qState.score);
       const resLabel = document.getElementById('result-label');
       if (isNewHighScore) {
         resLabel.textContent = "🌟 NEW HIGH SCORE 🌟";
         resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
+        Confetti.start();
+        SoundManager.playLevelUp();
       } else {
         resLabel.textContent = "SCORE";
         resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
@@ -1286,7 +2238,9 @@
       const retryBtn = document.getElementById('btn-retry-mistakes');
       const reviewBtn = document.getElementById('btn-review-mistakes');
       
-      if (qState.mistakes && qState.mistakes.length > 0) {
+      // 隣接、面積、お絵かき等は復習モードに対応せず簡易完走処理
+      const dynamicErrorModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
+      if (qState.mistakes && qState.mistakes.length > 0 && !dynamicErrorModes.includes(qState.mode)) {
         retryBtn.classList.remove('hidden');
         reviewBtn.classList.remove('hidden');
       } else {
@@ -1312,58 +2266,296 @@
       switchView('review-mistakes');
     }
 
+    // ================= 県庁スプリンター =================
+    let sprintState = {
+      score: 0,
+      timer: 30,
+      interval: null,
+      currentPref: null
+    };
+
+    function startSprintGame() {
+      sprintState.score = 0;
+      sprintState.timer = 30;
+      qState.streak = 0;
+      
+      switchView('quiz-play');
+      
+      document.getElementById('quiz-header-mode').textContent = "県庁スプリンター";
+      document.getElementById('quiz-header-mode').className = "text-[11px] font-black text-dustypurple-600 tracking-widest mb-1";
+      document.getElementById('quiz-total-count').textContent = "∞";
+      
+      nextSprintQuestion();
+      startSprintTimer();
+    }
+
+    function startSprintTimer() {
+      clearInterval(qState.interval);
+      updateSprintTimerUI();
+      
+      qState.interval = setInterval(() => {
+        sprintState.timer--;
+        updateSprintTimerUI();
+        if (sprintState.timer <= 0) {
+          clearInterval(qState.interval);
+          finishSprintGame();
+        }
+      }, 1000);
+    }
+
+    function updateSprintTimerUI() {
+      const timerBar = document.getElementById('quiz-timer-bar');
+      const timerText = document.getElementById('quiz-timer-text');
+      
+      if (timerBar) {
+        const progress = Math.min(100, (sprintState.timer / 30) * 100);
+        timerBar.style.width = `${progress}%`;
+        timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear ${sprintState.timer <= 10 ? 'bg-dustyrose-500' : 'bg-dustypurple-500'}`;
+      }
+      if (timerText) {
+        timerText.textContent = sprintState.timer;
+        timerText.className = `text-xl font-black w-8 text-right ${sprintState.timer <= 10 ? 'text-dustyrose-500' : 'text-subtext'}`;
+      }
+    }
+
+    function nextSprintQuestion() {
+      document.getElementById('quiz-q-count').textContent = sprintState.score + 1;
+      
+      sprintState.currentPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+      const p = sprintState.currentPref;
+      
+      document.getElementById('quiz-question-text').innerHTML = `「${p.name}」の<span class="text-dustypurple-600">県庁所在地</span>は？`;
+      document.getElementById('quiz-hint-space').classList.add('hidden');
+      document.getElementById('quiz-hint').classList.add('hidden');
+
+      highlightMap(p.id, 'normal', true);
+
+      const opts = new Set([p.capital]);
+      while (opts.size < 3) {
+        opts.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital);
+      }
+      const shuffledOpts = Array.from(opts).sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm hover:border-dustypurple-400 hover:bg-dustypurple-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group";
+        btn.innerHTML = `<span class="text-text group-hover:text-dustypurple-600 transition-colors">${opt}</span><span>❯</span>`;
+        btn.onclick = () => checkSprintAnswer(opt, p.capital, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkSprintAnswer(ans, correctAns, clickedBtn) {
+      const buttons = document.querySelectorAll('#quiz-options button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
+      });
+
+      const isCorrect = (ans === correctAns);
+
+      buttons.forEach(btn => {
+        const textSpan = btn.querySelector('span');
+        if (!textSpan) return;
+        const btnText = textSpan.textContent;
+
+        if (btnText === correctAns) {
+          btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-between text-sage-600";
+          btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ +3秒</span>`;
+        } else if (btn === clickedBtn && !isCorrect) {
+          btn.className = "py-4 px-4 bg-dustyrose-50 border-2 border-dustyrose-500 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-between text-dustyrose-600";
+          btn.innerHTML = `<span class="text-dustyrose-600">${btnText}</span><span class="text-dustyrose-600 font-bold">✗ -5秒</span>`;
+        }
+      });
+
+      if (isCorrect) {
+        sprintState.score++;
+        sprintState.timer = Math.min(30, sprintState.timer + 3); 
+        SoundManager.playCorrect();
+        addXP(5);
+      } else {
+        sprintState.timer = Math.max(0, sprintState.timer - 5);
+        SoundManager.playIncorrect();
+        
+        const playArea = document.getElementById('view-quiz-play');
+        if (playArea) {
+          playArea.classList.add('animate-shake');
+          setTimeout(() => playArea.classList.remove('animate-shake'), 400);
+        }
+      }
+
+      setTimeout(() => {
+        if (sprintState.timer > 0) {
+          nextSprintQuestion();
+        } else {
+          finishSprintGame();
+        }
+      }, 1000);
+    }
+
+    function finishSprintGame() {
+      clearInterval(qState.interval);
+      highlightMap(null, 'normal', false);
+      
+      document.getElementById('result-score').textContent = sprintState.score;
+      document.getElementById('result-max').textContent = "問正解";
+      
+      const isNewHigh = saveHighScore('sprint', sprintState.score);
+      const resLabel = document.getElementById('result-label');
+      if (isNewHigh) {
+        resLabel.textContent = "🌟 NEW HIGH SCORE 🌟";
+        resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
+        Confetti.start();
+        SoundManager.playLevelUp();
+      } else {
+        resLabel.textContent = "スプリンタースコア";
+        resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
+      }
+
+      document.getElementById('btn-review-mistakes').classList.add('hidden');
+      document.getElementById('btn-retry-mistakes').classList.add('hidden');
+      switchView('quiz-result');
+    }
+
+
+    // ================= 境界線ルートコネクト =================
+    let routeState = {
+      start: null,
+      target: null,
+      current: null,
+      path: [],
+      steps: 0
+    };
+
+    function startRouteGame() {
+      resetMapState();
+      
+      const routes = [
+        { start: 'tokyo', target: 'osaka' },
+        { start: 'chiba', target: 'hiroshima' },
+        { start: 'kanagawa', target: 'fukushima' },
+        { start: 'aichi', target: 'kyoto' },
+        { start: 'fukuoka', target: 'kagoshima' },
+        { start: 'miyagi', target: 'niigata' }
+      ];
+      const sel = routes[Math.floor(Math.random() * routes.length)];
+      
+      const startPrefObj = PREFECTURES.find(x => x.id === sel.start);
+      const targetPrefObj = PREFECTURES.find(x => x.id === sel.target);
+
+      routeState = {
+        start: startPrefObj,
+        target: targetPrefObj,
+        current: startPrefObj,
+        path: [startPrefObj.id],
+        steps: 0
+      };
+
+      document.getElementById('route-step-count').textContent = "0";
+      document.getElementById('route-start-name').textContent = startPrefObj.name;
+      document.getElementById('route-target-name').textContent = targetPrefObj.name;
+      document.getElementById('route-current-name').textContent = startPrefObj.name;
+      document.getElementById('route-goal-name').textContent = targetPrefObj.name;
+
+      switchView('pref-route');
+      updateRouteMapUI();
+    }
+
+    function updateRouteMapUI() {
+      document.querySelectorAll('#map-container li').forEach(el => {
+        el.classList.remove('is-open', 'is-route-path');
+      });
+
+      routeState.path.forEach(id => {
+        const el = document.querySelector(`.p-eveMapPref--${id}`);
+        if (el) el.classList.add('is-route-path');
+      });
+
+      const currentEl = document.querySelector(`.p-eveMapPref--${routeState.current.id}`);
+      if (currentEl) {
+        currentEl.classList.remove('is-route-path');
+        currentEl.classList.add('is-open');
+      }
+      
+      const targetEl = document.querySelector(`.p-eveMapPref--${routeState.target.id}`);
+      if (targetEl && routeState.current.id !== routeState.target.id) {
+        targetEl.classList.add('is-open');
+      }
+
+      resetMapScale();
+    }
+
+    function handleRouteClick(pref) {
+      if (pref.id === routeState.current.id) return;
+
+      const adjacentList = BORDERS[routeState.current.id] || [];
+      if (adjacentList.includes(pref.id)) {
+        routeState.current = pref;
+        routeState.path.push(pref.id);
+        routeState.steps++;
+        document.getElementById('route-step-count').textContent = routeState.steps;
+        document.getElementById('route-current-name').textContent = pref.name;
+        
+        SoundManager.playCorrect();
+        updateRouteMapUI();
+
+        if (pref.id === routeState.target.id) {
+          setTimeout(() => {
+            SoundManager.playLevelUp();
+            Confetti.start();
+            addXP(100); 
+            alert(`🎉 ルートコネクトクリア！\nおめでとうございます！ ${routeState.steps}手 で目的地に到達しました！`);
+            switchView('top');
+          }, 300);
+        }
+      } else {
+        SoundManager.playIncorrect();
+        const routePanel = document.getElementById('view-pref-route');
+        if (routePanel) {
+          routePanel.classList.add('animate-shake');
+          setTimeout(() => routePanel.classList.remove('animate-shake'), 400);
+        }
+      }
+    }
+
+
     // ================= パーティーゲーム =================
     let partyState = { gameType: 'ww', players: [], currentIdx: 0, timer: 180, interval: null, topicGenre: 'name' };
     let wwVoteState = { voterIndex: 0, votes: {}, votedTarget: null };
 
     function switchPartyConfig(type) {
       partyState.gameType = type;
+      const pcSelect = document.getElementById('party-player-count');
+      pcSelect.innerHTML = `<option value="2">2人</option><option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>`;
+
       if (type === 'ww') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
         document.getElementById('party-title').textContent = "地理ワードウルフ";
         document.getElementById('party-wolf-count-wrap').classList.remove('hidden');
         document.getElementById('party-topic-wrap').classList.remove('hidden');
-        document.getElementById('party-rule-text').innerHTML = "全員に「お題」が配られます。一人だけ違うお題（同地方の別県のもの）を配られたウルフを探し出してください！";
-      } else {
+        document.getElementById('party-rule-text').innerHTML = "全員にお題が配られますが、一人だけ異なるお題を配られたウルフがいます。誰がお題の違う「ウルフ」か話し合いで暴きましょう！(推奨3人〜)";
+      } else if (type === 'ng') {
         document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
-        document.getElementById('party-title').textContent = "地理NGワード";
+        document.getElementById('party-title').textContent = "地理NGワード推理戦";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "全員に同じ都道府県のお題と、別々の「NGワード」が配られます。自分のNGワードを言わないように、その県について語り合ってください！";
+        document.getElementById('party-rule-text').innerHTML = "自分のNGワード（実は隠された都道府県）が自分だけ見えない状態で始まります。他のプレイヤーは画面を見てヒントを出します。自分のおでこに貼られたワードを当てるゲームです！(2人〜)";
+      } else if (type === 'association') {
+        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-sage-600"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+        document.getElementById('party-title').textContent = "私は誰でしょう？地理連想";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "出題者（親）が画面の指示に従って都道府県のヒントを1つずつ読み上げます。他のプレイヤーは最も少ないヒント数で正解を当てることを目指します。(2人〜)";
+      } else if (type === 'bomb') {
+        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyyellow-600"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/></svg>`;
+        document.getElementById('party-title').textContent = "地理ハラハラ爆弾";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "15秒のカウントダウンが起動！お題に合う都道府県を地図からタップして次の人に即パス！爆発させた人が負けです。地理力と早押しの極限バトル！(2人〜)";
       }
       switchView('party-config');
-    }
-
-    document.getElementById('party-player-count').addEventListener('change', (e) => {
-      const pc = parseInt(e.target.value);
-      const wcSelect = document.getElementById('party-wolf-count');
-      if (pc >= 6) {
-        if (wcSelect.options.length === 1) wcSelect.add(new Option('2人', '2'));
-      } else {
-        if (wcSelect.options.length > 1) { wcSelect.value = '1'; wcSelect.remove(1); }
-      }
-    });
-
-    function goToPartyNames() {
-      const pc = parseInt(document.getElementById('party-player-count').value);
-      const container = document.getElementById('party-names-container');
-      container.innerHTML = '';
-      for(let i=0; i<pc; i++){
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = "w-full p-4 bg-base border border-border rounded-2xl font-bold text-text focus:outline-none focus:border-dustypurple-400 focus:bg-surface transition-colors party-name-input shrink-0";
-        input.placeholder = `プレイヤー ${i+1}`;
-        container.appendChild(input);
-      }
-      switchView('party-names');
-    }
-
-    function generateNGWords(pref) {
-      const words = [];
-      words.push(pref.capital.replace('市', ''));
-      pref.food.split('・').forEach(w => words.push(w));
-      pref.tourism.split('・').forEach(w => words.push(w));
-      return Array.from(new Set(words)).filter(w => w.length > 1).sort(() => Math.random() - 0.5);
     }
 
     function startPartyGame() {
@@ -1375,9 +2567,8 @@
         const wc = parseInt(document.getElementById('party-wolf-count').value);
         partyState.topicGenre = document.getElementById('party-topic-genre').value;
         
-        // 改善: 都道府県数の少ない特定地方（北海道など）でウルフ用別県が不足しないよう安全処理
         let selectableRegions = REGIONS.filter(r => PREFECTURES.filter(p => p.region === r).length >= 2);
-        if (selectableRegions.length === 0) selectableRegions = REGIONS; // フェールセーフ
+        if (selectableRegions.length === 0) selectableRegions = REGIONS; 
 
         const region = selectableRegions[Math.floor(Math.random() * selectableRegions.length)];
         const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
@@ -1392,8 +2583,12 @@
           pref: r === 'wolf' ? prefB : prefA,
           topic: r === 'wolf' ? prefB[partyState.topicGenre] : prefA[partyState.topicGenre]
         }));
-      } else {
-        partyState.topicGenre = 'name';
+
+        partyState.currentIdx = 0;
+        switchView('party-check');
+        setupPartyCheckUI();
+
+      } else if (partyState.gameType === 'ng') {
         const pref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
         const ngWords = generateNGWords(pref);
         
@@ -1403,44 +2598,42 @@
           topic: pref.name,
           ngWord: ngWords[i % ngWords.length]
         }));
-      }
 
-      partyState.currentIdx = 0;
-      switchView('party-check');
-      setupPartyCheckUI();
+        partyState.currentIdx = 0;
+        switchView('party-check');
+        setupPartyCheckUI();
+
+      } else if (partyState.gameType === 'association') {
+        partyState.players = names.map((name, i) => ({ id: i + 1, name: name }));
+        startAssocRound();
+
+      } else if (partyState.gameType === 'bomb') {
+        partyState.players = names.map((name, i) => ({ id: i + 1, name: name }));
+        startBombRound();
+      }
     }
 
-    function setupPartyCheckUI() {
-      const player = partyState.players[partyState.currentIdx];
-      
-      const themeColor = partyState.gameType === 'ww' ? 'dustypurple' : 'dustyrose';
-      document.getElementById('party-player-name').textContent = player.name;
-      document.getElementById('party-player-name').className = `text-${themeColor}-600 text-2xl`;
+    function setupNGCheckUI(player, themeColor) {
+      document.getElementById('party-check-sub-desc').innerHTML = `<span class="text-dustyrose-600 font-bold">${player.name}さん以外の人</span>が、画面を隠しながらお題を確認してください！`;
       
       const btnShow = document.getElementById('btn-party-show');
       btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
+      document.getElementById('btn-party-show-text').textContent = "他メンバーが長押ししてお題を確認する";
 
       const layer = document.getElementById('party-word-layer');
       layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
 
-      if (partyState.gameType === 'ww') {
-        document.getElementById('party-word-label').textContent = "あなたのお題";
-        document.getElementById('party-word-text').textContent = player.topic;
-        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-6 shrink-0`;
-        const existingSub = document.getElementById('ng-sub-label');
-        if(existingSub) existingSub.remove();
-      } else {
-        document.getElementById('party-word-label').textContent = "あなたのNGワード";
-        document.getElementById('party-word-text').textContent = player.ngWord;
-        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-2 shrink-0`;
-        const existingSub = document.getElementById('ng-sub-label');
-        if(existingSub) existingSub.remove();
-        const sub = document.createElement('div');
-        sub.id = "ng-sub-label";
-        sub.className = "text-sm font-bold text-subtext mb-4";
-        sub.textContent = `(お題: ${player.pref.name})`;
-        document.getElementById('party-word-text').after(sub);
-      }
+      document.getElementById('party-word-label').textContent = `${player.name} さんのNGワード (おでこに貼るワード)`;
+      document.getElementById('party-word-text').textContent = player.ngWord;
+      document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-2 shrink-0`;
+      
+      const existingSub = document.getElementById('ng-sub-label');
+      if(existingSub) existingSub.remove();
+      const sub = document.createElement('div');
+      sub.id = "ng-sub-label";
+      sub.className = "text-sm font-bold text-subtext mb-4 text-center";
+      sub.innerHTML = `(秘密のヒント: ${player.pref.name}地方・${player.pref.capital})`;
+      document.getElementById('party-word-text').after(sub);
 
       document.getElementById('party-word-pref-name').textContent = player.pref.name;
       document.getElementById('party-word-capital').textContent = player.pref.capital;
@@ -1452,6 +2645,43 @@
       layer.classList.add('opacity-0', 'pointer-events-none');
       highlightMap(null, 'normal', false);
     }
+
+    function setupPartyCheckUI() {
+      const player = partyState.players[partyState.currentIdx];
+      const themeColor = partyState.gameType === 'ww' ? 'dustypurple' : 'dustyrose';
+
+      if (partyState.gameType === 'ng') {
+        setupNGCheckUI(player, themeColor);
+      } else {
+        document.getElementById('party-check-sub-desc').textContent = "周りに見られないように確認してください";
+        document.getElementById('btn-party-show-text').textContent = "長押しして確認する";
+        
+        document.getElementById('party-player-name').textContent = player.name;
+        document.getElementById('party-player-name').className = `text-${themeColor}-600 text-2xl`;
+        
+        const btnShow = document.getElementById('btn-party-show');
+        btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
+
+        const layer = document.getElementById('party-word-layer');
+        layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
+
+        document.getElementById('party-word-label').textContent = "あなたのお題";
+        document.getElementById('party-word-text').textContent = player.topic;
+        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-6 shrink-0`;
+        const existingSub = document.getElementById('ng-sub-label');
+        if(existingSub) existingSub.remove();
+
+        document.getElementById('party-word-pref-name').textContent = player.pref.name;
+        document.getElementById('party-word-capital').textContent = player.pref.capital;
+        document.getElementById('party-word-food').textContent = player.pref.food;
+        document.getElementById('party-word-tourism').textContent = player.pref.tourism;
+document.getElementById('party-word-trivia').innerHTML = player.pref.trivia;
+        
+        document.getElementById('btn-party-next').classList.add('opacity-0', 'pointer-events-none');
+        layer.classList.add('opacity-0', 'pointer-events-none');
+        highlightMap(null, 'normal', false);
+      }
+    };
 
     const btnPartyShow = document.getElementById('btn-party-show');
     const partyWordLayer = document.getElementById('party-word-layer');
@@ -1492,7 +2722,7 @@
       
       const desc = document.getElementById('party-discuss-desc');
       if(partyState.gameType === 'ng') {
-        desc.innerHTML = `NGワードを言わないように<br><span class="text-dustyrose-600 text-base mt-1 inline-block">「${partyState.players[0].pref.name}」</span><br>について語りましょう`;
+        desc.innerHTML = `NGワードを言わないように（言わせるように誘導しながら）<br><span class="text-dustyrose-600 text-base mt-1 inline-block">「お互いの隠されたお題」</span><br>について語りましょう`;
       } else {
         desc.textContent = "誰が違うお題を持っているか探り合いましょう";
       }
@@ -1629,7 +2859,7 @@
           msg.innerHTML = `<span class="text-dustyrose-600">ウルフの勝利！</span><br><span class="text-sm font-bold text-subtext mt-2 block">ウルフが逃げ切りました。</span>`;
         }
       } else {
-        document.getElementById('party-result-label').textContent = "それぞれのNGワード";
+        document.getElementById('party-result-label').textContent = "それぞれの隠されたNGワード";
         partyState.players.forEach(p => {
           const li = document.createElement('li');
           li.className = "flex justify-between items-center py-3 border-b border-border last:border-0 shrink-0";
@@ -1640,19 +2870,235 @@
           list.appendChild(li);
         });
         msg.className = "text-xl font-black text-text mb-4 shrink-0";
-        msg.innerHTML = `お題: <span class="text-dustyrose-600">${partyState.players[0].pref.name}</span><br><span class="text-xs font-medium text-subtext mt-2 block">NGワードを言ってしまった人は負け！</span>`;
+        msg.innerHTML = `お題: <span class="text-dustyrose-600">${partyState.players[0].pref.name}</span><br><span class="text-xs font-medium text-subtext mt-2 block">ヒントから自分のNGワード（おでこに貼られたお題）を推理できたプレイヤーの勝ちです！</span>`;
       }
     }
 
-    // 初期起動
+    // ================= 【新規】私は誰でしょう？地理連想ゲーム実行部 =================
+    let assocState = {
+      secretPref: null,
+      hints: [],
+      currentHintIdx: 0,
+      score: 100
+    };
+
+    function startAssocRound() {
+      assocState.secretPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+      const p = assocState.secretPref;
+
+      assocState.hints = [
+        { id: 4, text: `【豆知識】${p.trivia}`, score: 100 },
+        { id: 3, text: `【観光名所】${p.tourism}`, score: 70 },
+        { id: 2, text: `【名物料理】${p.food}`, score: 50 },
+        { id: 1, text: `【県庁所在地】${p.capital}`, score: 30 }
+      ];
+
+      assocState.currentHintIdx = 0; 
+      assocState.score = 100;
+
+      document.getElementById('assoc-secret-pref-name').textContent = p.name;
+      document.getElementById('assoc-text-4').textContent = assocState.hints[0].text;
+      document.getElementById('assoc-text-3').textContent = assocState.hints[1].text;
+      document.getElementById('assoc-text-2').textContent = assocState.hints[2].text;
+      document.getElementById('assoc-text-1').textContent = assocState.hints[3].text;
+
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`assoc-hint-${i}`).className = "p-3 bg-base border border-border rounded-xl transition-all opacity-30 flex flex-col gap-1";
+        document.getElementById(`assoc-state-${i}`).textContent = "非公開";
+        document.getElementById(`assoc-state-${i}`).className = "text-subtext";
+      }
+      document.getElementById('btn-assoc-next-hint').disabled = false;
+      document.getElementById('btn-assoc-next-hint').className = "flex-1 py-4 bg-dustypurple-500 text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm";
+
+      switchView('party-association');
+      highlightMap(p.id, 'normal', false); 
+    }
+
+    function revealNextHint() {
+      if (assocState.currentHintIdx < 3) {
+        assocState.currentHintIdx++;
+        const hint = assocState.hints[assocState.currentHintIdx];
+        assocState.score = hint.score;
+
+        const hintEl = document.getElementById(`assoc-hint-${hint.id}`);
+        hintEl.className = "p-3 bg-surface border-2 border-dustypurple-400 rounded-xl transition-all opacity-100 flex flex-col gap-1 shadow-md";
+        
+        const stateEl = document.getElementById(`assoc-state-${hint.id}`);
+        stateEl.textContent = "公開中！";
+        stateEl.className = "text-dustypurple-600 font-bold";
+
+        SoundManager.playCorrect();
+
+        if (assocState.currentHintIdx === 3) {
+          const btn = document.getElementById('btn-assoc-next-hint');
+          btn.disabled = true;
+          btn.className = "flex-1 py-4 bg-border text-subtext font-black rounded-2xl cursor-not-allowed text-xs";
+        }
+      }
+    }
+
+    function finishAssocGame(hasWinner) {
+      switchView('party-result');
+      const list = document.getElementById('party-result-list');
+      list.innerHTML = '';
+      const msg = document.getElementById('party-win-message');
+
+      document.getElementById('party-result-label').textContent = "正解データ";
+      list.innerHTML = `
+        <div class="p-4 bg-surface rounded-2xl border border-border text-left">
+          <p class="text-xl font-black text-dustypurple-600 mb-2">${assocState.secretPref.name}</p>
+          <p class="text-xs font-bold text-subtext mb-1">所在地: ${assocState.secretPref.capital}</p>
+          <p class="text-xs font-bold text-subtext mb-1">名産: ${assocState.secretPref.food}</p>
+          <p class="text-xs font-medium text-text mt-2">${assocState.secretPref.trivia}</p>
+        </div>
+      `;
+
+      if (hasWinner) {
+        SoundManager.playLevelUp();
+        Confetti.start();
+        msg.innerHTML = `正解おめでとうございます！<br><span class="text-sm font-bold text-subtext mt-2 block">獲得ポイント: <span class="text-dustypurple-600 font-black text-xl">${assocState.score}</span> 点</span>`;
+      } else {
+        SoundManager.playIncorrect();
+        msg.innerHTML = `全員ギブアップ！<br><span class="text-sm font-bold text-subtext mt-2 block">正解は ${assocState.secretPref.name} でした。</span>`;
+      }
+    }
+
+    // ================= 【新規】地理ハラハラ爆弾実行部 =================
+    let bombState = {
+      timer: 15,
+      category: "",
+      correctPrefs: [], 
+      usedPrefs: [],    
+      currentPlayerIdx: 0
+    };
+
+    const BOMB_CATEGORIES = [
+      { title: "「山」が名前につく都道府県", check: (p) => p.name.includes("山") },
+      { title: "「島」が名前につく都道府県", check: (p) => p.name.includes("島") },
+      { title: "海に面していない都道府県（内陸県）", check: (p) => BORDERS[p.id].length > 0 && ['tochigi', 'gumma', 'saitama', 'yamanashi', 'nagano', 'gifu', 'shiga', 'nara'].includes(p.id) },
+      { title: "東北地方（6県）の都道府県", check: (p) => p.region === "東北" },
+      { title: "近畿地方（7府県）の都道府県", check: (p) => p.region === "近畿" },
+      { title: "九州・沖縄地方（8県）の都道府県", check: (p) => p.region === "九州・沖縄" }
+    ];
+
+    function startBombRound() {
+      const cat = BOMB_CATEGORIES[Math.floor(Math.random() * BOMB_CATEGORIES.length)];
+      
+      bombState = {
+        timer: 15,
+        category: cat.title,
+        correctPrefs: PREFECTURES.filter(p => cat.check(p)).map(p => p.id),
+        usedPrefs: [],
+        currentPlayerIdx: 0
+      };
+
+      document.getElementById('bomb-category-title').textContent = bombState.category;
+      
+      resetMapState();
+      switchView('party-bomb');
+      updateBombPlayerUI();
+      
+      startBombTimer();
+    }
+
+    function updateBombPlayerUI() {
+      const p = partyState.players[bombState.currentPlayerIdx];
+      const el = document.getElementById('bomb-active-player');
+      el.textContent = `${p.name} さんの番！`;
+      el.className = "text-xs font-black text-dustyrose-500 animate-pulse";
+    }
+
+    function startBombTimer() {
+      clearInterval(partyState.bombInterval);
+      document.getElementById('bomb-timer-num').textContent = bombState.timer;
+
+      partyState.bombInterval = setInterval(() => {
+        bombState.timer--;
+        document.getElementById('bomb-timer-num').textContent = bombState.timer;
+
+        if (bombState.timer <= 3) {
+          SoundManager.playIncorrect(); 
+        }
+
+        if (bombState.timer <= 0) {
+          clearInterval(partyState.bombInterval);
+          explodeBomb();
+        }
+      }, 1000);
+    }
+
+    function handleBombClick(pref) {
+      if (bombState.correctPrefs.includes(pref.id) && !bombState.usedPrefs.includes(pref.id)) {
+        bombState.usedPrefs.push(pref.id);
+        
+        const el = document.querySelector(`.p-eveMapPref--${pref.id}`);
+        if (el) {
+          el.classList.add('is-open'); 
+          el.style.setProperty('color', '#be5f6e', 'important'); 
+        }
+
+        SoundManager.playCorrect();
+
+        bombState.timer = 12; 
+        bombState.currentPlayerIdx = (bombState.currentPlayerIdx + 1) % partyState.players.length;
+        
+        updateBombPlayerUI();
+        startBombTimer();
+      } else {
+        SoundManager.playIncorrect();
+        const playWrapper = document.getElementById('view-party-bomb');
+        if (playWrapper) {
+          playWrapper.classList.add('animate-shake');
+          setTimeout(() => playWrapper.classList.remove('animate-shake'), 400);
+        }
+      }
+    }
+
+    function explodeBomb() {
+      SoundManager.playIncorrect();
+      switchView('party-result');
+      
+      const loser = partyState.players[bombState.currentPlayerIdx];
+      const msg = document.getElementById('party-win-message');
+      msg.innerHTML = `💥 ドカーン！！！ 💥<br><span class="text-sm font-bold text-dustyrose-600 mt-2 block">${loser.name} さんの手元で爆発しました！</span>`;
+
+      document.getElementById('party-result-label').textContent = "正解の都道府県一覧（今回使われた県）";
+      
+      const list = document.getElementById('party-result-list');
+      list.innerHTML = '';
+      
+      bombState.correctPrefs.forEach(id => {
+        const pObj = PREFECTURES.find(x => x.id === id);
+        const wasUsed = bombState.usedPrefs.includes(id);
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center py-2 border-b border-border last:border-0";
+        li.innerHTML = `
+          <span class="font-bold text-text">${pObj.name}</span>
+          <span class="text-[10px] font-black ${wasUsed ? 'text-sage-600' : 'text-subtext'}">${wasUsed ? '解かれた！' : '未解答'}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function stopBombGame() {
+      clearInterval(partyState.bombInterval);
+      switchView('top');
+    }
+
+    // ================= 初期起動処理 =================
     window.addEventListener('DOMContentLoaded', () => {
       const cover = document.getElementById('loading-cover');
       
+      const savedMute = localStorage.getItem('geo_sound_muted');
+      if (savedMute === '1') {
+        toggleMute(); 
+      }
+
       document.fonts.ready.then(() => {
-        // 重心計算と直接タップ用ヒットマップ判定用Canvasの生成
         setTimeout(() => {
           calculatePrefCenters();
           generateHitMap();
+          Confetti.init(); 
           updateUIFromStorage();
           resetMapScale();
           if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
