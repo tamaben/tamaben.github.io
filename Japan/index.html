@@ -3054,6 +3054,1296 @@
       return qTypes[Math.floor(Math.random() * qTypes.length)];
     }
 
+    function initStudyMode() {
+      highlightMap(null, 'normal', false);
+      const container = document.getElementById('study-list-container');
+      if (container.innerHTML !== '') return;
+
+      REGIONS.forEach(region => {
+        const title = document.createElement('div');
+        title.className = "text-[11px] font-bold text-subtext mt-5 mb-2 pl-3 border-l-4 border-dustyblue-500 rounded-full";
+        title.textContent = region;
+        container.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = "grid grid-cols-2 lg:grid-cols-3 gap-2";
+
+        PREFECTURES.filter(p => p.region === region).forEach(p => {
+          const btn = document.createElement('button');
+          btn.className = "bg-surface border border-border py-3 rounded-2xl text-sm font-bold text-text hover:bg-dustyblue-50 hover:border-dustyblue-400 hover:text-dustyblue-600 transition-colors shadow-sm active:scale-95";
+          btn.textContent = p.name;
+          btn.onclick = () => showStudyDetail(p, 'study');
+          grid.appendChild(btn);
+        });
+        container.appendChild(grid);
+      });
+    }
+
+    function showStudyDetail(pref, backView = 'study') {
+      currentDetailPref = pref;
+      currentDetailBackView = backView;
+      highlightMap(pref.id, 'normal', true);
+      document.getElementById('study-region').textContent = pref.region;
+      document.getElementById('study-name').textContent = pref.name;
+      document.getElementById('study-capital').textContent = pref.capital;
+      document.getElementById('study-oldprov').textContent = pref.oldProv;
+      document.getElementById('study-hardread').textContent = pref.hardRead;
+      document.getElementById('study-food').textContent = pref.food;
+      document.getElementById('study-tourism').textContent = pref.tourism;
+      document.getElementById('study-trivia').textContent = pref.trivia;
+      
+      document.getElementById('chk-learned').checked = isLearned(pref.id);
+      
+      const detail = document.getElementById('study-detail');
+      detail.classList.remove('translate-y-full');
+      detail.classList.add('translate-y-0');
+    }
+
+    function closeStudyDetail() {
+      const detail = document.getElementById('study-detail');
+      detail.classList.remove('translate-y-0');
+      detail.classList.add('translate-y-full');
+      highlightMap(null, 'normal', false);
+      currentDetailPref = null;
+    }
+
+    function generateClimatogramSVG(climateId) {
+      let temps, precs;
+      if (climateId === 'japan_sea') {
+        temps = [3.0, 3.5, 6.8, 12.5, 17.8, 21.8, 25.8, 27.2, 23.1, 17.2, 11.1, 5.8];
+        precs = [190, 120, 110, 100, 90, 120, 190, 140, 160, 160, 210, 240];
+      } else if (climateId === 'pacific') {
+        temps = [5.2, 5.7, 8.7, 13.9, 18.2, 21.4, 25.0, 26.4, 22.8, 17.5, 12.1, 7.5];
+        precs = [50, 60, 120, 130, 140, 170, 150, 170, 210, 200, 90, 50];
+      } else if (climateId === 'seto') {
+        temps = [5.8, 6.1, 9.3, 14.5, 19.1, 22.9, 26.9, 28.0, 24.3, 18.7, 13.1, 8.1];
+        precs = [40, 50, 80, 80, 90, 120, 100, 90, 130, 90, 60, 45];
+      } else if (climateId === 'highland') {
+        temps = [-1.5, -0.5, 3.5, 10.5, 16.0, 20.0, 24.0, 25.0, 20.5, 14.0, 7.5, 1.5];
+        precs = [50, 55, 70, 80, 90, 110, 130, 110, 130, 90, 60, 50];
+      } else if (climateId === 'hokkaido') {
+        temps = [-3.6, -3.1, 0.6, 7.1, 12.4, 16.7, 20.5, 22.3, 18.1, 11.8, 4.9, -1.0];
+        precs = [110, 90, 80, 60, 60, 50, 80, 125, 135, 110, 115, 110];
+      } else if (climateId === 'okinawa') {
+        temps = [17.0, 17.1, 19.1, 21.7, 24.4, 27.2, 29.1, 29.0, 27.9, 25.5, 22.3, 18.7];
+        precs = [110, 120, 160, 160, 230, 250, 190, 240, 200, 160, 120, 100];
+      }
+      
+      let svg = `<svg viewBox="0 0 240 140" class="w-full h-32 bg-white rounded-2xl p-3 border border-border">`;
+      svg += `<line x1="20" y1="20" x2="220" y2="20" stroke="#f1f5f9" stroke-width="1"/>`;
+      svg += `<line x1="20" y1="70" x2="220" y2="70" stroke="#e2e8f0" stroke-width="1"/>`; 
+      svg += `<line x1="20" y1="120" x2="220" y2="120" stroke="#cbd5e1" stroke-width="1"/>`; 
+      
+      for (let i = 0; i < 12; i++) {
+        const x = 25 + i * 16;
+        const h = (precs[i] / 300) * 100; 
+        const y = 120 - h;
+        svg += `<rect x="${x}" y="${y}" width="9" height="${h}" fill="#38bdf8" opacity="0.8"/>`;
+      }
+      
+      let linePath = "";
+      for (let i = 0; i < 12; i++) {
+        const x = 29.5 + i * 16;
+        const y = 120 - ((temps[i] + 10) / 45) * 100;
+        if (i === 0) linePath += `M ${x} ${y}`;
+        else linePath += ` L ${x} ${y}`;
+        svg += `<circle cx="${x}" cy="${y}" r="2" fill="#ef4444"/>`;
+      }
+      svg += `<path d="${linePath}" fill="none" stroke="#f43f5e" stroke-width="2"/>`;
+      svg += `<text x="5" y="15" font-size="6" fill="#f43f5e" font-weight="bold">℃</text>`;
+      svg += `<text x="225" y="15" font-size="6" fill="#0ea5e9" font-weight="bold">mm</text>`;
+      svg += `<text x="5" y="125" font-size="6" fill="#94a3b8">1月</text>`;
+      svg += `<text x="215" y="125" font-size="6" fill="#94a3b8">12月</text>`;
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function generateShareBarHTML(shares) {
+      let html = `<div class="w-full flex h-8 rounded-2xl overflow-hidden border border-border select-none mt-3 shadow-inner">`;
+      shares.forEach(s => {
+        html += `<div class="${s.color} h-full flex items-center justify-center text-[9px] font-black text-white" style="width: ${s.percent}%" title="${s.name}: ${s.percent}%">
+          ${s.percent >= 9 ? s.name + '(' + s.percent + '%)' : ''}
+        </div>`;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    function generateSymbolSVG(symbolId) {
+      let innerSVG = "";
+      if (symbolId === 'fire') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"><path d="M12 2v20M12 12L4 4M12 12l8-8"/></svg>`;
+      } else if (symbolId === 'orchard') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#f43f5e" stroke="none"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+      } else if (symbolId === 'library') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M7 16V8h4v8M17 16V8h-4v8M11 12h2"/></svg>`;
+      } else if (symbolId === 'police') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"><path d="M4 4l16 16M20 4L4 20"/></svg>`;
+      } else if (symbolId === 'spring') {
+        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><path d="M4 18c4 2 10 2 14 0M10 13c0-3 2-3 2-6M6 14c0-3 2-3 2-6M14 14c0-3 2-3 2-6"/></svg>`;
+      }
+      return `<div class="my-4 flex justify-center"><div class="p-4 bg-white rounded-3xl border border-border inline-block shadow-sm">${innerSVG}</div></div>`;
+    }
+
+    function startQuiz(mode) {
+      qState.mode = mode;
+      if(mode === 'test') {
+        const fObj = document.querySelector('input[name="test-format"]:checked');
+        if(fObj) qState.format = fObj.value;
+      } else if (mode === 'sil') {
+        const fObj = document.querySelector('input[name="sil-format"]:checked');
+        if(fObj) qState.format = fObj.value;
+      }
+      qState.score = 0;
+      qState.currentQ = 1;
+      const examModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
+      qState.totalQ = examModes.includes(mode) ? 10 : 47; 
+      qState.mistakes = [];
+      qState.streak = 0;
+      qState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
+      
+      if (mode === 'topo') {
+        qState.remainingTopo = [...TOPO_QUESTIONS].sort(() => Math.random() - 0.5);
+      } else if (mode === 'industry') {
+        qState.remainingStat = [...STAT_QUESTIONS].sort(() => Math.random() - 0.5);
+      } else if (mode === 'mapscale') {
+        qState.remainingMapscale = [...MAPSCALE_QUESTIONS].sort(() => Math.random() - 0.5);
+      }
+      switchView('quiz-play');
+      document.getElementById('quiz-total-count').textContent = qState.totalQ;
+      nextQuestion();
+    }
+
+    function startRetry() {
+      qState.remaining = [...qState.mistakes].sort(() => Math.random() - 0.5);
+      qState.totalQ = qState.remaining.length;
+      qState.mistakes = [];
+      qState.score = 0;
+      qState.currentQ = 1;
+      qState.streak = 0;
+      switchView('quiz-play');
+      document.getElementById('quiz-total-count').textContent = qState.totalQ;
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      if (qState.currentQ > qState.totalQ) {
+        showQuizResult();
+        return;
+      }
+      const streakWrap = document.getElementById('quiz-streak-wrap');
+      const streakCount = document.getElementById('quiz-streak-count');
+      if (qState.streak >= 3) {
+        streakWrap.classList.remove('hidden');
+        streakWrap.classList.add('flex');
+        streakCount.textContent = qState.streak;
+      } else {
+        streakWrap.classList.add('hidden');
+        streakWrap.classList.remove('flex');
+      }
+
+      qState.currentPref = qState.remaining.pop();
+      const p = qState.currentPref;
+      let qText = '', correctAns = '', hint = p.region + '地方';
+      let optType = 'name'; 
+      let colorClass = 'sage';
+      let headerText = 'TEST MODE';
+
+      if (qState.mode === 'test') {
+        headerText = "総合テスト";
+        colorClass = 'dustyblue';
+        if (qState.format === 'map2name') {
+          qText = 'この<span class="text-dustyblue-600">都道府県名</span>は？';
+          correctAns = p.name; optType = 'name';
+          highlightMap(p.id, 'normal', true);
+        } else if (qState.format === 'map2capital') {
+          qText = 'この県の<span class="text-dustyblue-600">県庁所在地</span>は？';
+          correctAns = p.capital; optType = 'capital';
+          highlightMap(p.id, 'normal', true);
+        } else if (qState.format === 'name2capital') {
+          qText = `${p.name}の<span class="text-dustyblue-600">県庁所在地</span>は？`;
+          correctAns = p.capital; optType = 'capital';
+          highlightMap(null, 'normal', false);
+        } else if (qState.format === 'capital2name') {
+          qText = `県庁所在地が「${p.capital}」の<span class="text-dustyblue-600">都道府県名</span>は？`;
+          correctAns = p.name; optType = 'name';
+          highlightMap(null, 'normal', false);
+        } else if (qState.format === 'name2region') {
+          qText = `${p.name}は何<span class="text-dustyblue-600">地方</span>？`;
+          correctAns = p.region; optType = 'region';
+          hint = "名物: " + p.food.split('・')[0]; 
+          highlightMap(null, 'normal', false);
+        }
+      } else if (qState.mode === 'sil') {
+        headerText = "シルエットクイズ";
+        colorClass = 'dustyyellow';
+        highlightMap(p.id, 'silhouette', true);
+        if (qState.format === 'map2capital') {
+          qText = 'この<span class="text-dustyyellow-600 font-bold">都道府県</span>の<span class="text-dustyyellow-600 font-bold">県庁所在地</span>は？';
+          correctAns = p.capital; optType = 'capital';
+        } else {
+          qText = 'この<span class="text-dustyyellow-600 font-bold">都道府県</span>は？';
+          correctAns = p.name; optType = 'name';
+        }
+      } else if (qState.mode === 'local') {
+        headerText = "ご当地クイズ";
+        colorClass = 'dustyorange';
+        highlightMap(null, 'normal', false);
+        const isFood = Math.random() > 0.5;
+        const topicText = isFood ? p.food.split('・')[0] : p.tourism.split('・')[0];
+        const typeLabel = isFood ? '名物・特産' : '観光地・名所';
+        qText = `<span class="text-[12px] font-bold text-dustyorange-600 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-dustyorange-600">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+      } else if (qState.mode === 'oldprov') {
+        headerText = "旧国名クイズ";
+        colorClass = 'dustypurple';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-dustypurple-600 block mb-1">【令制国】</span>「${p.oldProv}」があった<span class="text-dustypurple-600">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+      } else if (qState.mode === 'hardread') {
+        headerText = "難読地名クイズ";
+        colorClass = 'dustyrose';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-dustyrose-600 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-dustyrose-600">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+      } else if (qState.mode === 'border') {
+        headerText = "お隣り県はどれ？";
+        colorClass = 'sage';
+        const validNeighbors = BORDERS[p.id];
+        if (!validNeighbors || validNeighbors.length === 0) {
+          qState.currentQ--;
+          nextQuestion();
+          return;
+        }
+        qText = `「${p.name}」に<span class="text-sage-600 font-bold">隣接している県</span>はどれ？`;
+        const randId = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
+        const correctPrefObj = PREFECTURES.find(x => x.id === randId);
+        correctAns = correctPrefObj.name;
+        optType = 'name';
+        highlightMap(p.id, 'normal', true);
+      } else if (qState.mode === 'size') {
+        headerText = "面積くらべ";
+        colorClass = 'dustyblue';
+        let secondP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        while (secondP.id === p.id) {
+          secondP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        }
+        qText = `「${p.name}」と「${secondP.name}」、<span class="text-dustyblue-600 font-bold">面積が広いほう</span>はどっち？`;
+        correctAns = (p.area > secondP.area) ? p.name : secondP.name;
+        optType = 'custom_size';
+        highlightMapMulti([p.id, secondP.id], 'normal');
+        
+        generateTwoOptions(p.name, secondP.name, correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+      } else if (qState.mode === 'uonzu') {
+        headerText = "雨温図マスター";
+        colorClass = 'dustyblue';
+        const targetClimate = CLIMATES[Math.floor(Math.random() * CLIMATES.length)];
+        qText = `<span class="text-xs text-subtext block">【気候区分】</span>この雨温図に当てはまる都道府県はどれ？<div class="mt-2">${generateClimatogramSVG(targetClimate.id)}</div>`;
+        const correctPrefObj = PREFECTURES.find(x => x.id === targetClimate.key);
+        correctAns = correctPrefObj.name;
+        optType = 'name';
+        hint = targetClimate.desc;
+        highlightMap(correctPrefObj.id, 'normal', false);
+      } else if (qState.mode === 'topo') {
+        headerText = "自然地形パズル";
+        colorClass = 'sage';
+        const topoQ = qState.remainingTopo.pop();
+        if (!topoQ) {
+          showQuizResult();
+          return;
+        }
+        qText = `<span class="text-xs text-subtext block">【日本の地形】</span>${topoQ.q}`;
+        correctAns = topoQ.a;
+        
+        const fakeAnswers = ["利根川", "信濃川", "最上川", "飛騨山脈", "赤石山脈", "木曽山脈", "阿蘇山", "越後平野", "石狩平野", "庄内平野", "高知平野", "宮崎平野"];
+        const optsSet = new Set([correctAns]);
+        while (optsSet.size < 4) {
+          optsSet.add(fakeAnswers[Math.floor(Math.random() * fakeAnswers.length)]);
+        }
+        const shuffledOpts = Array.from(optsSet).sort(() => Math.random() - 0.5);
+
+        const highlightPref = PREFECTURES.find(x => x.id === topoQ.key);
+        highlightMap(highlightPref.id, 'normal', true);
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = highlightPref.name + "に位置・関連しています";
+
+        generateCustomOptions(shuffledOpts, correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+      } else if (qState.mode === 'industry') {
+        headerText = "統計グラフ分析";
+        colorClass = 'dustyorange';
+        const statQ = qState.remainingStat.pop();
+        if (!statQ) {
+          showQuizResult();
+          return;
+        }
+        qText = `<span class="text-xs text-subtext block">${statQ.title}</span>${statQ.q}<div class="mt-1">${generateShareBarHTML(statQ.shares)}</div>`;
+        correctAns = statQ.a;
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = "日本の統計資料（帯グラフ分析）に基づき解答しましょう。";
+
+        generateCustomOptions(statQ.opts.sort(() => Math.random() - 0.5), correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+      } else if (qState.mode === 'mapscale') {
+        headerText = "地図記号・縮尺特訓";
+        colorClass = 'dustyrose';
+        const msQ = qState.remainingMapscale.pop();
+        if (!msQ) {
+          showQuizResult();
+          return;
+        }
+        if (msQ.type === 'symbol') {
+          qText = `<span class="text-xs text-subtext block">【地図記号】</span>${msQ.q}${generateSymbolSVG(msQ.symbolId)}`;
+        } else {
+          qText = `<span class="text-xs text-subtext block">【縮尺計算】</span>${msQ.q}`;
+        }
+        correctAns = msQ.a;
+
+        document.getElementById('quiz-q-count').textContent = qState.currentQ;
+        document.getElementById('quiz-question-text').innerHTML = qText;
+        document.getElementById('quiz-hint-text').textContent = "重要地理分野の計算・記号問題です。ケアレスミスに注意！";
+
+        generateCustomOptions(msQ.opts.sort(() => Math.random() - 0.5), correctAns, colorClass);
+        startQuizTimer(colorClass);
+        return;
+      }
+
+      const hMode = document.getElementById('quiz-header-mode');
+      hMode.className = `text-[11px] font-bold text-${colorClass}-600 tracking-widest mb-1`;
+      if(qState.mistakes.length > 0 && qState.remaining.length + qState.mistakes.length < qState.totalQ) {
+        hMode.textContent = headerText + " (復習)";
+      } else {
+        hMode.textContent = headerText;
+      }
+      
+      document.getElementById('quiz-q-count').textContent = qState.currentQ;
+      document.getElementById('quiz-question-text').innerHTML = qText;
+      document.getElementById('quiz-hint-text').textContent = hint;
+
+      generateOptions(correctAns, optType, colorClass);
+      startQuizTimer(colorClass);
+    }
+
+    function generateTwoOptions(optA, optB, correctAns, colorClass) {
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      [optA, optB].forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
+        btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function generateCustomOptions(shuffledOpts, correctAns, colorClass) {
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
+        btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function generateOptions(correctAns, optType, colorClass) {
+      const optionsSet = new Set([correctAns]);
+      while (optionsSet.size < 4) {
+        const randP = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        if (optType === 'region') optionsSet.add(randP.region);
+        else if (optType === 'name') optionsSet.add(randP.name);
+        else optionsSet.add(randP.capital);
+      }
+      const options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm lg:text-base hover:border-${colorClass}-400 hover:bg-${colorClass}-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group`;
+        btn.innerHTML = `<span class="text-text group-hover:text-${colorClass}-600 transition-colors">${opt}</span><span class="text-border group-hover:text-${colorClass}-400 transition-colors">❯</span>`;
+        btn.onclick = () => checkAnswer(opt, correctAns, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function startQuizTimer(colorClass) {
+      document.getElementById('quiz-hint').classList.add('hidden');
+      document.getElementById('quiz-hint-space').classList.remove('hidden');
+      qState.timer = 15;
+      updateQuizTimerUI(colorClass);
+
+      clearInterval(qState.interval);
+      qState.interval = setInterval(() => {
+        qState.timer--;
+        updateQuizTimerUI(colorClass);
+        if (qState.timer <= 5) {
+          document.getElementById('quiz-hint').classList.remove('hidden');
+          document.getElementById('quiz-hint-space').classList.add('hidden');
+          const hintBox = document.getElementById('quiz-hint');
+          hintBox.className = `mb-4 p-4 bg-${colorClass}-50 rounded-2xl shrink-0 animate-fade-in border border-${colorClass}-100`;
+          hintBox.querySelector('svg').className.baseVal = `mr-1.5 text-${colorClass}-600`;
+        }
+        if (qState.timer <= 0) checkAnswer(null, null, null); 
+      }, 1000);
+    }
+
+    function updateQuizTimerUI(colorClass) {
+      const timerBar = document.getElementById('quiz-timer-bar');
+      const timerText = document.getElementById('quiz-timer-text');
+      if(qState.timer === 15) {
+        if(timerBar) {
+          timerBar.style.transition = 'none';
+          timerBar.style.width = '100%';
+          void timerBar.offsetWidth; 
+          timerBar.style.transition = 'width 1s linear, background-color 0.3s ease';
+        }
+      } else {
+        if(timerBar) {
+          const progress = (qState.timer / 15) * 100;
+          timerBar.style.width = `${progress}%`;
+        }
+      }
+      if(timerText) timerText.textContent = qState.timer;
+      if(timerBar) {
+        timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear ${qState.timer <= 5 ? 'bg-dustyrose-500' : 'bg-' + colorClass + '-500'}`;
+      }
+      if(timerText) {
+        timerText.className = `text-xl font-black w-8 text-right ${qState.timer <= 5 ? 'text-dustyrose-500' : 'text-subtext'}`;
+      }
+    }
+
+    function checkAnswer(ans, correctAns, clickedBtn) {
+      clearInterval(qState.interval);
+      const buttons = document.querySelectorAll('#quiz-options button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none'; 
+      });
+      const isCorrect = (ans === correctAns);
+      buttons.forEach(btn => {
+        const textSpan = btn.querySelector('span');
+        if (!textSpan) return;
+        const btnText = textSpan.textContent;
+        if (btnText === correctAns) {
+          btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-sage-600";
+          btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ 正解</span>`;
+        } else if (btn === clickedBtn && !isCorrect) {
+          btn.className = "py-4 px-4 bg-dustyrose-50 border-2 border-dustyrose-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-dustyrose-600";
+          btn.innerHTML = `<span class="text-dustyrose-600">${btnText}</span><span class="text-dustyrose-600 font-bold">✗ 不正解</span>`;
+        }
+      });
+
+      if (isCorrect) {
+        qState.streak++;
+        qState.score++;
+        SoundManager.playCorrect();
+        addXP(10); 
+        if (qState.streak > 0 && qState.streak % 5 === 0) {
+          SoundManager.playLevelUp();
+          Confetti.start();
+          addXP(20); 
+        }
+        if (qState.currentPref) {
+          updateWrongCount(qState.currentPref.id, -1);
+        }
+      } else {
+        qState.streak = 0; 
+        if (qState.currentPref) {
+          qState.mistakes.push(qState.currentPref);
+          updateWrongCount(qState.currentPref.id, 1);
+        }
+        SoundManager.playIncorrect();
+        const playArea = document.getElementById('view-quiz-play');
+        if (playArea) {
+          playArea.classList.add('animate-shake');
+          setTimeout(() => playArea.classList.remove('animate-shake'), 400);
+        }
+      }
+      setTimeout(() => {
+        qState.currentQ++;
+        nextQuestion();
+      }, 1100);
+    }
+
+    function showQuizResult() {
+      highlightMap(null, 'normal', false);
+      document.getElementById('result-score').textContent = qState.score;
+      document.getElementById('result-max').textContent = `/${qState.totalQ}`;
+      addXP(50);
+      const isNewHighScore = saveHighScore(qState.mode, qState.score);
+      const resLabel = document.getElementById('result-label');
+      if (isNewHighScore) {
+        resLabel.textContent = "NEW HIGH SCORE";
+        resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
+        Confetti.start();
+        SoundManager.playLevelUp();
+      } else {
+        resLabel.textContent = "SCORE";
+        resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
+      }
+      const retryBtn = document.getElementById('btn-retry-mistakes');
+      const reviewBtn = document.getElementById('btn-review-mistakes');
+      const dynamicErrorModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
+      if (qState.mistakes && qState.mistakes.length > 0 && !dynamicErrorModes.includes(qState.mode)) {
+        retryBtn.classList.remove('hidden');
+        reviewBtn.classList.remove('hidden');
+      } else {
+        retryBtn.classList.add('hidden');
+        reviewBtn.classList.add('hidden');
+      }
+      switchView('quiz-result');
+    }
+
+    function showReviewMistakes() {
+      const container = document.getElementById('review-list-container');
+      container.innerHTML = '';
+      qState.mistakes.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = "bg-surface border border-border py-4 rounded-2xl text-sm font-bold text-text hover:bg-dustyblue-50 hover:border-dustyblue-400 hover:text-dustyblue-600 transition-colors shadow-sm active:scale-95";
+        btn.textContent = p.name;
+        btn.onclick = () => showStudyDetail(p, 'review-mistakes');
+        container.appendChild(btn);
+      });
+      switchView('review-mistakes');
+    }
+
+    function startSprintGame() {
+      sprintState.score = 0;
+      sprintState.timer = 30;
+      qState.streak = 0;
+      switchView('quiz-play');
+      document.getElementById('quiz-header-mode').textContent = "県庁スプリンター";
+      document.getElementById('quiz-header-mode').className = "text-[11px] font-black text-dustypurple-600 tracking-widest mb-1";
+      document.getElementById('quiz-total-count').textContent = "∞";
+      nextSprintQuestion();
+      startSprintTimer();
+    }
+
+    function startSprintTimer() {
+      clearInterval(qState.interval);
+      updateSprintTimerUI();
+      qState.interval = setInterval(() => {
+        sprintState.timer--;
+        updateSprintTimerUI();
+        if (sprintState.timer <= 0) {
+          clearInterval(qState.interval);
+          finishSprintGame();
+        }
+      }, 1000);
+    }
+
+    function updateSprintTimerUI() {
+      const timerBar = document.getElementById('quiz-timer-bar');
+      const timerText = document.getElementById('quiz-timer-text');
+      if (timerBar) {
+        const progress = Math.min(100, (sprintState.timer / 30) * 100);
+        timerBar.style.width = `${progress}%`;
+        timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear ${sprintState.timer <= 10 ? 'bg-dustyrose-500' : 'bg-dustypurple-500'}`;
+      }
+      if (timerText) {
+        timerText.textContent = sprintState.timer;
+        timerText.className = `text-xl font-black w-8 text-right ${sprintState.timer <= 10 ? 'text-dustyrose-500' : 'text-subtext'}`;
+      }
+    }
+
+    function nextSprintQuestion() {
+      document.getElementById('quiz-q-count').textContent = sprintState.score + 1;
+      sprintState.currentPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+      const p = sprintState.currentPref;
+      document.getElementById('quiz-question-text').innerHTML = `「${p.name}」の<span class="text-dustypurple-600">県庁所在地</span>は？`;
+      document.getElementById('quiz-hint-space').classList.add('hidden');
+      document.getElementById('quiz-hint').classList.add('hidden');
+      highlightMap(p.id, 'normal', true);
+
+      const opts = new Set([p.capital]);
+      while (opts.size < 3) {
+        opts.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital);
+      }
+      const shuffledOpts = Array.from(opts).sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      shuffledOpts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "py-4 px-4 bg-surface border-2 border-border rounded-2xl font-bold text-sm hover:border-dustypurple-400 hover:bg-dustypurple-50 transition-colors shadow-sm active:scale-95 flex items-center justify-between group";
+        btn.innerHTML = `<span class="text-text group-hover:text-dustypurple-600 transition-colors">${opt}</span><span>❯</span>`;
+        btn.onclick = () => checkSprintAnswer(opt, p.capital, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkSprintAnswer(ans, correctAns, clickedBtn) {
+      const buttons = document.querySelectorAll('#quiz-options button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
+      });
+      const isCorrect = (ans === correctAns);
+      buttons.forEach(btn => {
+        const textSpan = btn.querySelector('span');
+        if (!textSpan) return;
+        const btnText = textSpan.textContent;
+        if (btnText === correctAns) {
+          btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-between text-sage-600";
+          btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ +3秒</span>`;
+        } else if (btn === clickedBtn && !isCorrect) {
+          btn.className = "py-4 px-4 bg-dustyrose-50 border-2 border-dustyrose-500 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-between text-dustyrose-600";
+          btn.innerHTML = `<span class="text-dustyrose-600">${btnText}</span><span class="text-dustyrose-600 font-bold">✗ -5秒</span>`;
+        }
+      });
+
+      if (isCorrect) {
+        sprintState.score++;
+        sprintState.timer = Math.min(30, sprintState.timer + 3); 
+        SoundManager.playCorrect();
+        addXP(5);
+      } else {
+        sprintState.timer = Math.max(0, sprintState.timer - 5);
+        SoundManager.playIncorrect();
+        const playArea = document.getElementById('view-quiz-play');
+        if (playArea) {
+          playArea.classList.add('animate-shake');
+          setTimeout(() => playArea.classList.remove('animate-shake'), 400);
+        }
+      }
+      setTimeout(() => {
+        if (sprintState.timer > 0) {
+          nextSprintQuestion();
+        } else {
+          finishSprintGame();
+        }
+      }, 1000);
+    }
+
+    function finishSprintGame() {
+      clearInterval(qState.interval);
+      highlightMap(null, 'normal', false);
+      document.getElementById('result-score').textContent = sprintState.score;
+      document.getElementById('result-max').textContent = "問正解";
+      const isNewHigh = saveHighScore('sprint', sprintState.score);
+      const resLabel = document.getElementById('result-label');
+      if (isNewHigh) {
+        resLabel.textContent = "NEW HIGH SCORE";
+        resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
+        Confetti.start();
+        SoundManager.playLevelUp();
+      } else {
+        resLabel.textContent = "スプリンタースコア";
+        resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
+      }
+      document.getElementById('btn-review-mistakes').classList.add('hidden');
+      document.getElementById('btn-retry-mistakes').classList.add('hidden');
+      switchView('quiz-result');
+    }
+
+    function startRouteGame() {
+      resetMapState();
+      const routes = [
+        { start: 'tokyo', target: 'osaka' },
+        { start: 'chiba', target: 'hiroshima' },
+        { start: 'kanagawa', target: 'fukushima' },
+        { start: 'aichi', target: 'kyoto' },
+        { start: 'fukuoka', target: 'kagoshima' },
+        { start: 'miyagi', target: 'niigata' }
+      ];
+      const sel = routes[Math.floor(Math.random() * routes.length)];
+      const startPrefObj = PREFECTURES.find(x => x.id === sel.start);
+      const targetPrefObj = PREFECTURES.find(x => x.id === sel.target);
+      routeState = {
+        start: startPrefObj,
+        target: targetPrefObj,
+        current: startPrefObj,
+        path: [startPrefObj.id],
+        steps: 0
+      };
+      document.getElementById('route-step-count').textContent = "0";
+      document.getElementById('route-start-name').textContent = startPrefObj.name;
+      document.getElementById('route-target-name').textContent = targetPrefObj.name;
+      document.getElementById('route-current-name').textContent = startPrefObj.name;
+      document.getElementById('route-goal-name').textContent = targetPrefObj.name;
+      switchView('pref-route');
+      updateRouteMapUI();
+    }
+
+    function updateRouteMapUI() {
+      document.querySelectorAll('#map-container li').forEach(el => {
+        el.classList.remove('is-open', 'is-route-path');
+      });
+      routeState.path.forEach(id => {
+        const el = document.querySelector(`.p-eveMapPref--${id}`);
+        if (el) el.classList.add('is-route-path');
+      });
+      const currentEl = document.querySelector(`.p-eveMapPref--${routeState.current.id}`);
+      if (currentEl) {
+        currentEl.classList.remove('is-route-path');
+        currentEl.classList.add('is-open');
+      }
+      const targetEl = document.querySelector(`.p-eveMapPref--${routeState.target.id}`);
+      if (targetEl && routeState.current.id !== routeState.target.id) {
+        targetEl.classList.add('is-open');
+      }
+      resetMapScale();
+    }
+
+    function handleRouteClick(pref) {
+      if (pref.id === routeState.current.id) return;
+      const adjacentList = BORDERS[routeState.current.id] || [];
+      if (adjacentList.includes(pref.id)) {
+        routeState.current = pref;
+        routeState.path.push(pref.id);
+        routeState.steps++;
+        document.getElementById('route-step-count').textContent = routeState.steps;
+        document.getElementById('route-current-name').textContent = pref.name;
+        SoundManager.playCorrect();
+        updateRouteMapUI();
+        if (pref.id === routeState.target.id) {
+          setTimeout(() => {
+            SoundManager.playLevelUp();
+            Confetti.start();
+            addXP(100); 
+            alert(`ルートコネクトクリア！\n${routeState.steps}手で目的地に到達しました！`);
+            switchView('top');
+          }, 300);
+        }
+      } else {
+        SoundManager.playIncorrect();
+        const routePanel = document.getElementById('view-pref-route');
+        if (routePanel) {
+          routePanel.classList.add('animate-shake');
+          setTimeout(() => routePanel.classList.remove('animate-shake'), 400);
+        }
+      }
+    }
+
+    function goToPartyNames() {
+      const pc = parseInt(document.getElementById('party-player-count').value);
+      const container = document.getElementById('party-names-container');
+      container.innerHTML = '';
+      for (let i = 1; i <= pc; i++) {
+        const div = document.createElement('div');
+        div.className = "flex flex-col gap-1 shrink-0 mb-1";
+        div.innerHTML = `
+          <label class="text-[10px] font-bold text-subtext">プレイヤー ${i}</label>
+          <input type="text" class="party-name-input bg-base border border-border rounded-xl font-bold text-text p-3 outline-none" placeholder="プレイヤー ${i}" value="プレイヤー ${i}">
+        `;
+        container.appendChild(div);
+      }
+      switchView('party-names');
+    }
+
+    function generateNGWords(pref) {
+      return [
+        pref.name,
+        pref.capital,
+        pref.food.split('・')[0],
+        pref.tourism.split('・')[0]
+      ].filter(Boolean);
+    }
+
+    function switchPartyConfig(type) {
+      partyState.gameType = type;
+      const pcSelect = document.getElementById('party-player-count');
+      pcSelect.innerHTML = `<option value="1">1人 (ソロ挑戦)</option><option value="2">2人</option><option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>`;
+
+      if (type === 'hide_seek') {
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-sage-600"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+        document.getElementById('party-title').textContent = "地図でかくれんぼ！";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れたマスコットを、ヒントを頼りに探し出す子供向けの協力・対戦探索ゲームです。";
+      } else if (type === 'loc_hunter') {
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyblue-600"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+        document.getElementById('party-title').textContent = "ロケーションハンター";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "旧国名、難読地名、詳細雑学などを含む高度なロケーション調査データを読み解き、地図上をピンポイントで射抜く本格推理ゲームです。（大人・教養向け）";
+      } else if (type === 'unification') {
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyorange-600"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M19 19l-4-4M5 5l4 4"/></svg>`;
+        document.getElementById('party-title').textContent = "天下統一の道";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "戦国大名となって日本全土を奪い合うシミュレーションゲームです。自領と接する未支配地や他国の領地に攻め込み、クイズに正解すれば領土を自分のもの（大名色）に塗り替えられます！";
+      } else if (type === 'ww') {
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
+        document.getElementById('party-title').textContent = "地理ワードウルフ";
+        document.getElementById('party-wolf-count-wrap').classList.remove('hidden');
+        document.getElementById('party-topic-wrap').classList.remove('hidden');
+        document.getElementById('party-rule-text').innerHTML = "全員にお題が配られますが、一人だけ異なるお題を配られたウルフがいます。誰がお題の違う「ウルフ」か話し合いで暴きましょう！(推奨3人〜)";
+      } else if (type === 'ng') {
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
+        document.getElementById('party-title').textContent = "地理NGワード推理戦";
+        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
+        document.getElementById('party-topic-wrap').classList.add('hidden');
+        document.getElementById('party-rule-text').innerHTML = "自分のNGワード（実は隠された都道府県）が自分だけ見えない状態で始まります。他のプレイヤーは画面を見てヒントを出します。自分のおでこに貼られたワードを当てるゲームです！(2人〜)";
+      }
+      switchView('party-config');
+    }
+
+    function startPartyGame() {
+      const pc = parseInt(document.getElementById('party-player-count').value);
+      const inputs = document.querySelectorAll('.party-name-input');
+      const names = Array.from(inputs).map((inp, i) => inp.value || `プレイヤー ${i+1}`);
+      
+      if (partyState.gameType === 'hide_seek') {
+        startHSGame(names);
+      } else if (partyState.gameType === 'loc_hunter') {
+        startLHGame(names);
+      } else if (partyState.gameType === 'unification') {
+        startUnificationGame(names);
+      } else if (partyState.gameType === 'ww') {
+        const wc = parseInt(document.getElementById('party-wolf-count').value);
+        partyState.topicGenre = document.getElementById('party-topic-genre').value;
+        let selectableRegions = REGIONS.filter(r => PREFECTURES.filter(p => p.region === r).length >= 2);
+        if (selectableRegions.length === 0) selectableRegions = REGIONS; 
+        const region = selectableRegions[Math.floor(Math.random() * selectableRegions.length)];
+        const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
+        const prefA = prefsInRegion[0];
+        const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p => p.id !== prefA.id);
+
+        let roles = Array(wc).fill('wolf').concat(Array(pc - wc).fill('citizen'));
+        roles = roles.sort(() => Math.random() - 0.5);
+        partyState.players = roles.map((r, i) => ({
+          id: i + 1, name: names[i], role: r,
+          pref: r === 'wolf' ? prefB : prefA,
+          topic: r === 'wolf' ? prefB[partyState.topicGenre] : prefA[partyState.topicGenre]
+        }));
+        partyState.currentIdx = 0;
+        switchView('party-check');
+        setupPartyCheckUI();
+      } else if (partyState.gameType === 'ng') {
+        const pref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+        const ngWords = generateNGWords(pref);
+        partyState.players = names.map((name, i) => ({
+          id: i + 1, name: name, role: 'citizen',
+          pref: pref,
+          topic: pref.name,
+          ngWord: ngWords[i % ngWords.length]
+        }));
+        partyState.currentIdx = 0;
+        switchView('party-check');
+        setupPartyCheckUI();
+      }
+    }
+
+    function setupNGCheckUI(player, themeColor) {
+      document.getElementById('party-check-sub-desc').innerHTML = `<span class="text-dustyrose-600 font-bold">${player.name}さん以外の人</span>が、画面を隠しながらお題を確認してください！`;
+      const btnShow = document.getElementById('btn-party-show');
+      btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
+      document.getElementById('btn-party-show-text').textContent = "他メンバーが長押ししてお題を確認する";
+
+      const layer = document.getElementById('party-word-layer');
+      layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
+
+      document.getElementById('party-word-label').textContent = `${player.name} さんのNGワード`;
+      document.getElementById('party-word-text').textContent = player.ngWord;
+      document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-2 shrink-0`;
+      
+      const existingSub = document.getElementById('ng-sub-label');
+      if(existingSub) existingSub.remove();
+      const sub = document.createElement('div');
+      sub.id = "ng-sub-label";
+      sub.className = "text-sm font-bold text-subtext mb-4 text-center";
+      sub.innerHTML = `(秘密のヒント: ${player.pref.name}地方・${player.pref.capital})`;
+      document.getElementById('party-word-text').after(sub);
+
+      document.getElementById('party-word-pref-name').textContent = player.pref.name;
+      document.getElementById('party-word-capital').textContent = player.pref.capital;
+      document.getElementById('party-word-food').textContent = player.pref.food;
+      document.getElementById('party-word-tourism').textContent = player.pref.tourism;
+      document.getElementById('party-word-trivia').innerHTML = player.pref.trivia;
+      
+      document.getElementById('btn-party-next').classList.add('opacity-0', 'pointer-events-none');
+      layer.classList.add('opacity-0', 'pointer-events-none');
+      highlightMap(null, 'normal', false);
+    }
+
+    function setupPartyCheckUI() {
+      const player = partyState.players[partyState.currentIdx];
+      const themeColor = partyState.gameType === 'ww' ? 'dustypurple' : 'dustyrose';
+      if (partyState.gameType === 'ng') {
+        setupNGCheckUI(player, themeColor);
+      } else {
+        document.getElementById('party-check-sub-desc').textContent = "周りに見られないように確認してください";
+        document.getElementById('btn-party-show-text').textContent = "長押しして確認する";
+        document.getElementById('party-player-name').textContent = player.name;
+        document.getElementById('party-player-name').className = `text-${themeColor}-600 text-2xl`;
+        const btnShow = document.getElementById('btn-party-show');
+        btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
+
+        const layer = document.getElementById('party-word-layer');
+        layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
+
+        document.getElementById('party-word-label').textContent = "あなたのお題";
+        document.getElementById('party-word-text').textContent = player.topic;
+        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-6 shrink-0`;
+        const existingSub = document.getElementById('ng-sub-label');
+        if(existingSub) existingSub.remove();
+
+        document.getElementById('party-word-pref-name').textContent = player.pref.name;
+        document.getElementById('party-word-capital').textContent = player.pref.capital;
+        document.getElementById('party-word-food').textContent = player.pref.food;
+        document.getElementById('party-word-tourism').textContent = player.pref.tourism;
+        document.getElementById('party-word-trivia').innerHTML = player.pref.trivia;
+        document.getElementById('btn-party-next').classList.add('opacity-0', 'pointer-events-none');
+        layer.classList.add('opacity-0', 'pointer-events-none');
+        highlightMap(null, 'normal', false);
+      }
+    }
+
+    const btnPartyShow = document.getElementById('btn-party-show');
+    const partyWordLayer = document.getElementById('party-word-layer');
+    const btnPartyNext = document.getElementById('btn-party-next');
+    if (btnPartyShow) {
+      btnPartyShow.addEventListener('contextmenu', e => e.preventDefault());
+      btnPartyShow.addEventListener('mousedown', showPartyWord);
+      btnPartyShow.addEventListener('touchstart', showPartyWord, {passive: false});
+      btnPartyShow.addEventListener('mouseup', hidePartyWord);
+      btnPartyShow.addEventListener('mouseleave', hidePartyWord);
+      btnPartyShow.addEventListener('touchend', hidePartyWord);
+      btnPartyShow.addEventListener('touchcancel', hidePartyWord);
+    }
+
+    function showPartyWord(e) {
+      e.preventDefault();
+      partyWordLayer.classList.remove('opacity-0', 'pointer-events-none');
+      highlightMap(partyState.players[partyState.currentIdx].pref.id, 'normal', true);
+    }
+    function hidePartyWord(e) {
+      e.preventDefault();
+      partyWordLayer.classList.add('opacity-0', 'pointer-events-none');
+      highlightMap(null, 'normal', false);
+      btnPartyNext.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function nextPartyPlayer() {
+      partyState.currentIdx++;
+      if (partyState.currentIdx >= partyState.players.length) startPartyDiscuss();
+      else setupPartyCheckUI();
+    }
+
+    function startPartyDiscuss() {
+      switchView('party-discuss');
+      changeWWQuestion();
+      partyState.timer = 180;
+      updatePartyTimerUI();
+      const desc = document.getElementById('party-discuss-desc');
+      if(partyState.gameType === 'ng') {
+        desc.innerHTML = `NGワードを言わないようにしながら<br><span class="text-dustyrose-600 text-base mt-1 inline-block">「お互いのお題」</span>について語りましょう`;
+      } else {
+        desc.textContent = "誰が違うお題を持っているか探り合いましょう";
+      }
+      clearInterval(partyState.interval);
+      partyState.interval = setInterval(() => {
+        partyState.timer--;
+        updatePartyTimerUI();
+        if (partyState.timer <= 0) endPartyDiscuss();
+      }, 1000);
+    }
+
+    function updatePartyTimerUI() {
+      const m = Math.floor(partyState.timer / 60);
+      const s = ('0' + (partyState.timer % 60)).slice(-2);
+      document.getElementById('party-timer-text').textContent = `${m}:${s}`;
+      const bar = document.getElementById('party-timer-bar');
+      const progress = (partyState.timer / 180) * 100;
+      bar.style.width = `${progress}%`;
+      if (partyState.timer <= 10) {
+        bar.classList.replace('bg-dustypurple-500', 'bg-dustyrose-500');
+        document.getElementById('party-timer-text').classList.add('text-dustyrose-500');
+        document.getElementById('party-timer-text').classList.remove('text-text');
+      } else {
+        bar.classList.replace('bg-dustyrose-500', 'bg-dustypurple-500');
+        document.getElementById('party-timer-text').classList.remove('text-dustyrose-500');
+        document.getElementById('party-timer-text').classList.add('text-text');
+      }
+    }
+
+    function changeWWQuestion() {
+      const genre = partyState.topicGenre || 'name';
+      const questions = WW_QUESTIONS[genre] || WW_QUESTIONS['name'];
+      const q = questions[Math.floor(Math.random() * questions.length)];
+      const container = document.getElementById('party-question-container');
+      container.innerHTML = `
+        <p class="text-sm font-bold text-text leading-snug mb-3 w-full">「${q.q}」</p>
+        <p class="text-[10px] font-bold text-subtext bg-surface border border-border px-3 py-2 rounded-xl text-left leading-relaxed w-full shadow-sm">
+          ${q.hint}
+        </p>
+      `;
+    }
+
+    function endPartyDiscuss() {
+      clearInterval(partyState.interval);
+      if (partyState.gameType === 'ww') startPartyVote();
+      else finishPartyGame();
+    }
+
+    function startPartyVote() {
+      wwVoteState.voterIndex = 0;
+      wwVoteState.votes = {};
+      partyState.players.forEach(p => wwVoteState.votes[p.id] = 0);
+      showPartyVoteScreen();
+    }
+
+    function showPartyVoteScreen() {
+      switchView('party-vote');
+      const voter = partyState.players[wwVoteState.voterIndex];
+      document.getElementById('party-vote-title').textContent = `${voter.name} さんの投票`;
+      const container = document.getElementById('party-vote-container');
+      container.innerHTML = '';
+      wwVoteState.votedTarget = null;
+      const btnNextVote = document.getElementById('btn-party-vote-next');
+      btnNextVote.classList.add('opacity-50', 'pointer-events-none');
+      partyState.players.forEach(p => {
+        if (p.id === voter.id) return; 
+        const btn = document.createElement('button');
+        btn.className = "py-4 px-4 bg-surface border border-border rounded-2xl font-bold text-text text-left hover:bg-dustypurple-50 hover:border-dustypurple-400 transition-colors shadow-sm active:scale-95 party-vote-btn shrink-0";
+        btn.textContent = p.name;
+        btn.onclick = () => {
+          document.querySelectorAll('.party-vote-btn').forEach(b => b.classList.remove('bg-text', 'text-surface', 'border-text'));
+          btn.classList.add('bg-text', 'text-surface', 'border-text');
+          wwVoteState.votedTarget = p.id;
+          btnNextVote.classList.remove('opacity-50', 'pointer-events-none');
+        };
+        container.appendChild(btn);
+      });
+
+      btnNextVote.onclick = () => {
+        wwVoteState.votes[wwVoteState.votedTarget]++;
+        wwVoteState.voterIndex++;
+        if (wwVoteState.voterIndex < partyState.players.length) showPartyVoteScreen();
+        else finishPartyGame();
+      };
+    }
+
+    function finishPartyGame() {
+      switchView('party-result');
+      const list = document.getElementById('party-result-list');
+      list.innerHTML = '';
+      const msg = document.getElementById('party-win-message');
+
+      if (partyState.gameType === 'ww') {
+        let maxVotes = -1;
+        let executedPlayers = [];
+        for (const [pId, count] of Object.entries(wwVoteState.votes)) {
+          if (count > maxVotes) { maxVotes = count; executedPlayers = [parseInt(pId)]; } 
+          else if (count === maxVotes) { executedPlayers.push(parseInt(pId)); }
+        }
+        let wolfKilled = false;
+        executedPlayers.forEach(pId => {
+          const p = partyState.players.find(x => x.id === pId);
+          if (p && p.role === 'wolf') wolfKilled = true;
+        });
+
+        document.getElementById('party-result-label').textContent = "それぞれの役職とお題";
+        partyState.players.forEach(p => {
+          const li = document.createElement('li');
+          li.className = "flex flex-col py-3 border-b border-border last:border-0 shrink-0";
+          const roleHtml = p.role === 'wolf' 
+            ? `<span class="bg-dustyrose-100 text-dustyrose-600 text-[10px] font-black px-2 py-1 rounded-lg ml-2">ウルフ</span>` 
+            : `<span class="bg-surface text-subtext text-[10px] font-black px-2 py-1 rounded-lg ml-2">市民</span>`;
+          li.innerHTML = `
+            <div class="flex justify-between items-center mb-1">
+              <div><span class="font-bold text-text">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-subtext ml-1">(${wwVoteState.votes[p.id]}票)</span></div>
+              <div class="font-black text-dustypurple-600">${p.topic}</div>
+            </div>
+            <div class="text-[10px] text-subtext text-right">(${p.pref.name})</div>
+          `;
+          list.appendChild(li);
+        });
+
+        if (wolfKilled) {
+          msg.innerHTML = `市民の勝利！<br><span class="text-sm font-bold text-subtext mt-2 block">見事ウルフを特定しました！</span>`;
+        } else {
+          msg.innerHTML = `<span class="text-dustyrose-600 font-black">ウルフの勝利！</span><br><span class="text-sm font-bold text-subtext mt-2 block">ウルフが逃げ切りました。</span>`;
+        }
+      } else {
+        document.getElementById('party-result-label').textContent = "それぞれの隠されたNGワード";
+        partyState.players.forEach(p => {
+          const li = document.createElement('li');
+          li.className = "flex justify-between items-center py-3 border-b border-border last:border-0 shrink-0";
+          li.innerHTML = `
+            <div class="font-bold text-text">${p.name}</div>
+            <div class="font-black text-dustyrose-600 text-lg">${p.ngWord}</div>
+          `;
+          list.appendChild(li);
+        });
+        msg.className = "text-xl font-black text-text mb-4 shrink-0";
+        msg.innerHTML = `お題: <span class="text-dustyrose-600">${partyState.players[0].pref.name}</span><br><span class="text-xs font-medium text-subtext mt-2 block">推理できたプレイヤーの勝ちです！</span>`;
+      }
+    }
+
+    function startAssocRound() {
+      assocState.secretPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+      const p = assocState.secretPref;
+      assocState.hints = [
+        { id: 4, text: `【豆知識】${p.trivia}`, score: 100 },
+        { id: 3, text: `【観光名所】${p.tourism}`, score: 70 },
+        { id: 2, text: `【名物料理】${p.food}`, score: 50 },
+        { id: 1, text: `【県庁所在地】${p.capital}`, score: 30 }
+      ];
+      assocState.currentHintIdx = 0; 
+      assocState.score = 100;
+
+      document.getElementById('assoc-secret-pref-name').textContent = p.name;
+      document.getElementById('assoc-text-4').textContent = assocState.hints[0].text;
+      document.getElementById('assoc-text-3').textContent = assocState.hints[1].text;
+      document.getElementById('assoc-text-2').textContent = assocState.hints[2].text;
+      document.getElementById('assoc-text-1').textContent = assocState.hints[3].text;
+
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`assoc-hint-${i}`).className = "p-3 bg-base border border-border rounded-xl transition-all opacity-30 flex flex-col gap-1";
+        document.getElementById(`assoc-state-${i}`).textContent = "非公開";
+        document.getElementById(`assoc-state-${i}`).className = "text-subtext";
+      }
+      document.getElementById('btn-assoc-next-hint').disabled = false;
+      document.getElementById('btn-assoc-next-hint').className = "flex-1 py-4 bg-dustypurple-500 text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm";
+      switchView('party-association');
+      highlightMap(p.id, 'normal', false); 
+    }
+
+    function revealNextHint() {
+      if (assocState.currentHintIdx < 3) {
+        assocState.currentHintIdx++;
+        const hint = assocState.hints[assocState.currentHintIdx];
+        assocState.score = hint.score;
+        const hintEl = document.getElementById(`assoc-hint-${hint.id}`);
+        hintEl.className = "p-3 bg-surface border-2 border-dustypurple-400 rounded-xl transition-all opacity-100 flex flex-col gap-1 shadow-md";
+        const stateEl = document.getElementById(`assoc-state-${hint.id}`);
+        stateEl.textContent = "公開中！";
+        stateEl.className = "text-dustypurple-600 font-bold";
+        SoundManager.playCorrect();
+        if (assocState.currentHintIdx === 3) {
+          const btn = document.getElementById('btn-assoc-next-hint');
+          btn.disabled = true;
+          btn.className = "flex-1 py-4 bg-border text-subtext font-black rounded-2xl cursor-not-allowed text-xs";
+        }
+      }
+    }
+
+    function finishAssocGame(hasWinner) {
+      switchView('party-result');
+      const list = document.getElementById('party-result-list');
+      list.innerHTML = '';
+      const msg = document.getElementById('party-win-message');
+      document.getElementById('party-result-label').textContent = "正解データ";
+      list.innerHTML = `
+        <div class="p-4 bg-surface rounded-2xl border border-border text-left">
+          <p class="text-xl font-black text-dustypurple-600 mb-2">${assocState.secretPref.name}</p>
+          <p class="text-xs font-bold text-subtext mb-1">所在地: ${assocState.secretPref.capital}</p>
+          <p class="text-xs font-bold text-subtext mb-1">名産: ${assocState.secretPref.food}</p>
+          <p class="text-xs font-medium text-text mt-2">${assocState.secretPref.trivia}</p>
+        </div>
+      `;
+      if (hasWinner) {
+        SoundManager.playLevelUp();
+        Confetti.start();
+        msg.innerHTML = `正解おめでとうございます！<br><span class="text-sm font-bold text-subtext mt-2 block">獲得ポイント: <span class="text-dustypurple-600 font-black text-xl">${assocState.score}</span> 点</span>`;
+      } else {
+        SoundManager.playIncorrect();
+        msg.innerHTML = `全員ギブアップ！<br><span class="text-sm font-bold text-subtext mt-2 block">正解は ${assocState.secretPref.name} でした。</span>`;
+      }
+    }
+
+    function startBombRound() {
+      const cat = BOMB_CATEGORIES[Math.floor(Math.random() * BOMB_CATEGORIES.length)];
+      bombState = {
+        timer: 15,
+        category: cat.title,
+        correctPrefs: PREFECTURES.filter(p => cat.check(p)).map(p => p.id),
+        usedPrefs: [],
+        currentPlayerIdx: 0
+      };
+      document.getElementById('bomb-category-title').textContent = bombState.category;
+      resetMapState();
+      switchView('party-bomb');
+      updateBombPlayerUI();
+      startBombTimer();
+    }
+
+    function updateBombPlayerUI() {
+      const p = partyState.players[bombState.currentPlayerIdx];
+      const el = document.getElementById('bomb-active-player');
+      el.textContent = `${p.name} さんの番！`;
+      el.className = "text-xs font-black text-dustyrose-500 animate-pulse";
+    }
+
+    function startBombTimer() {
+      clearInterval(partyState.bombInterval);
+      document.getElementById('bomb-timer-num').textContent = bombState.timer;
+      partyState.bombInterval = setInterval(() => {
+        bombState.timer--;
+        document.getElementById('bomb-timer-num').textContent = bombState.timer;
+        if (bombState.timer <= 3) {
+          SoundManager.playIncorrect(); 
+        }
+        if (bombState.timer <= 0) {
+          clearInterval(partyState.bombInterval);
+          explodeBomb();
+        }
+      }, 1000);
+    }
+
+    function handleBombClick(pref) {
+      if (bombState.correctPrefs.includes(pref.id) && !bombState.usedPrefs.includes(pref.id)) {
+        bombState.usedPrefs.push(pref.id);
+        const el = document.querySelector(`.p-eveMapPref--${pref.id}`);
+        if (el) {
+          el.classList.add('is-open'); 
+          el.style.setProperty('color', '#f43f5e', 'important'); 
+        }
+        SoundManager.playCorrect();
+        bombState.timer = 12; 
+        bombState.currentPlayerIdx = (bombState.currentPlayerIdx + 1) % partyState.players.length;
+        updateBombPlayerUI();
+        startBombTimer();
+      } else {
+        SoundManager.playIncorrect();
+        const playWrapper = document.getElementById('view-party-bomb');
+        if (playWrapper) {
+          playWrapper.classList.add('animate-shake');
+          setTimeout(() => playWrapper.classList.remove('animate-shake'), 400);
+        }
+      }
+    }
+
+    function explodeBomb() {
+      SoundManager.playIncorrect();
+      switchView('party-result');
+      const loser = partyState.players[bombState.currentPlayerIdx];
+      const msg = document.getElementById('party-win-message');
+      msg.innerHTML = `💥 ドカーン！！！ 💥<br><span class="text-sm font-bold text-dustyrose-600 mt-2 block">${loser.name} さんの手元で爆発しました！</span>`;
+      document.getElementById('party-result-label').textContent = "正解の都道府県一覧（今回使われた県）";
+      const list = document.getElementById('party-result-list');
+      list.innerHTML = '';
+      bombState.correctPrefs.forEach(id => {
+        const pObj = PREFECTURES.find(x => x.id === id);
+        const wasUsed = bombState.usedPrefs.includes(id);
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center py-2 border-b border-border last:border-0";
+        li.innerHTML = `
+          <span class="font-bold text-text">${pObj.name}</span>
+          <span class="text-[10px] font-black ${wasUsed ? 'text-sage-600' : 'text-subtext'}">${wasUsed ? '正解済み' : '未解答'}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function stopBombGame() {
+      clearInterval(partyState.bombInterval);
+      switchView('top');
+    }
+    
     function showDeliveryQuiz(pref) {
       const qData = makePrefectureQuestion(pref);
       const overlay = document.getElementById('del-quiz-overlay');
