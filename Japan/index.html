@@ -157,8 +157,8 @@
 
   <!-- レベルアップポップアップ -->
   <div id="popup-level-up" class="fixed inset-x-4 top-10 md:inset-x-auto md:right-10 md:w-80 bg-surface border-2 border-dustypurple-400 p-5 rounded-3xl shadow-[0_20px_50px_rgba(147,51,234,0.25)] z-50 transition-all duration-500 transform -translate-y-48 opacity-0 pointer-events-none flex items-center gap-4">
-    <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-2xl text-2xl animate-bounce">
-      👑
+    <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-2xl flex items-center justify-center shrink-0 animate-bounce">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2z"/></svg>
     </div>
     <div>
       <p class="text-[10px] font-bold text-dustypurple-500 tracking-widest leading-none mb-1">LEVEL UP!</p>
@@ -256,7 +256,7 @@
           <!-- 地図制覇率表示バー -->
           <div class="bg-surface border border-border rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-2">
-              <div class="bg-sage-100 text-sage-600 p-1.5 rounded-lg">
+              <div class="bg-sage-100 text-sage-600 p-1.5 rounded-lg flex items-center justify-center">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div>
@@ -283,7 +283,7 @@
             <!-- アクティブリコール：弱点克服特訓バナー -->
             <button id="btn-weakness-train" onclick="startWeaknessQuiz()" class="w-full p-3.5 bg-dustyrose-50 border border-dustyrose-200 rounded-3xl active:scale-95 transition-all hover:border-dustyrose-400 hover:bg-dustyrose-100/50 flex items-center justify-between shadow-sm select-none">
               <div class="flex items-center gap-3 text-left">
-                <div class="bg-dustyrose-100 text-dustyrose-600 p-2.5 rounded-2xl">
+                <div class="bg-dustyrose-100 text-dustyrose-600 p-2.5 rounded-2xl flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.886H3.894l4.948 3.596L6.93 18.368 12 14.772l5.07 3.596-1.912-5.886 4.948-3.596h-6.194L12 3z"/></svg>
                 </div>
                 <div>
@@ -360,7 +360,7 @@
                 <span class="text-[9px] font-bold text-subtext mt-1 text-center">地図を叩いて最短経路探索</span>
               </button>
 
-              <!-- 特産品デリバリー 【新・教養ゲーム】 -->
+              <!-- 特産品デリバリー -->
               <button onclick="startDeliveryGame()" class="flex flex-col items-center p-4 bg-sage-50 border border-sage-200 rounded-3xl active:scale-95 transition-all hover:border-sage-400 hover:bg-sage-50 shadow-sm group">
                 <div class="bg-sage-100 text-sage-600 p-3 rounded-2xl mb-2 group-hover:bg-sage-200 transition-colors">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
@@ -425,21 +425,21 @@
           <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-3 overflow-y-auto no-scrollbar pb-16">
             <h2 class="text-sm font-black text-subtext text-center select-none">みんなで遊ぶ・マルチプレイ（4 / 4）</h2>
             
-            <!-- 【新・子供向けゲーム】 地図でかくれんぼ！ (1-4人) -->
+            <!-- 地図でかくれんぼ！ (1-4人) -->
             <button onclick="switchPartyConfig('hide_seek')" class="flex items-center p-4 bg-sage-50/90 border border-sage-200 rounded-2xl active:scale-95 transition-all text-left hover:border-sage-400 hover:bg-sage-50 shadow-sm group">
-              <div class="bg-sage-100 text-sage-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-sage-200 transition-colors">
-                🔍
+              <div class="bg-sage-100 text-sage-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-sage-200 transition-colors flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </div>
               <div>
                 <div class="font-black text-sm text-text">地図でかくれんぼ！ (1-4人)</div>
-                <div class="text-[9px] font-bold text-subtext mt-0.5">モグちゃんが日本地図のどこかに隠れた！ヒントで探し出そう！</div>
+                <div class="text-[9px] font-bold text-subtext mt-0.5">日本地図のどこかに隠れたマスコットをヒントで探し出そう！</div>
               </div>
             </button>
 
-            <!-- 【新・大人向けゲーム】 ロケーションハンター (1-4人) -->
+            <!-- ロケーションハンター (1-4人) -->
             <button onclick="switchPartyConfig('loc_hunter')" class="flex items-center p-4 bg-dustyblue-50/90 border border-dustyblue-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyblue-400 hover:bg-dustyblue-50 shadow-sm group">
-              <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyblue-200 transition-colors">
-                🎯
+              <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyblue-200 transition-colors flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
               </div>
               <div>
                 <div class="font-black text-sm text-text">ロケーションハンター (1-4人)</div>
@@ -447,10 +447,10 @@
               </div>
             </button>
 
-            <!-- 【新・複数人/教養ゲーム】 天下統一の道 (1-4人) -->
+            <!-- 天下統一の道 (1-4人) -->
             <button onclick="switchPartyConfig('unification')" class="flex items-center p-4 bg-dustyorange-50/90 border border-dustyorange-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyorange-400 hover:bg-dustyorange-50 shadow-sm group">
-              <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyorange-200 transition-colors">
-                ⚔️
+              <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyorange-200 transition-colors flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M19 19l-4-4M5 5l4 4"/></svg>
               </div>
               <div>
                 <div class="font-black text-sm text-text">天下統一の道 (1-4人)</div>
@@ -460,7 +460,7 @@
 
             <!-- 地理ワードウルフ -->
             <button onclick="switchPartyConfig('ww')" class="flex items-center p-4 bg-dustypurple-50/70 border border-dustypurple-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustypurple-400 hover:bg-dustypurple-50 shadow-sm group">
-              <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustypurple-200 transition-colors">
+              <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustypurple-200 transition-colors flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               </div>
               <div>
@@ -471,7 +471,7 @@
 
             <!-- 地理NGワード推理戦 -->
             <button onclick="switchPartyConfig('ng')" class="flex items-center p-4 bg-dustyrose-50/70 border border-dustyrose-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyrose-400 hover:bg-dustyrose-50 shadow-sm group">
-              <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyrose-200 transition-colors">
+              <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-xl mr-4 shrink-0 group-hover:bg-dustyrose-200 transition-colors flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>
               </div>
               <div>
@@ -606,7 +606,7 @@
             <div class="flex items-center gap-2">
               <!-- 連勝ストリーク表示バッジ -->
               <div id="quiz-streak-wrap" class="hidden items-center gap-1 text-dustyorange-500 font-black shrink-0 animate-bounce">
-                <span>🔥</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyorange-500"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                 <span id="quiz-streak-count" class="text-sm">0</span>
                 <span class="text-[9px] font-bold text-subtext ml-0.5">連勝！</span>
               </div>
@@ -663,7 +663,7 @@
       <!-- 【6】 パーティーゲーム共通設定 -->
       <div id="view-party-config" class="app-view hidden absolute inset-0 p-5 md:p-6 overflow-y-auto flex flex-col no-scrollbar bg-surface">
         <h2 class="text-lg font-black mb-6 text-text text-center flex justify-center items-center mt-2">
-          <span id="party-icon" class="mr-2"></span>
+          <span id="party-icon" class="mr-2 flex items-center justify-center"></span>
           <span id="party-title"></span>
         </h2>
         
@@ -848,7 +848,10 @@
       <!-- 地理ハラハラ爆弾（対戦アクション画面） -->
       <div id="view-party-bomb" class="app-view hidden absolute inset-0 p-5 flex flex-col justify-between items-center text-center bg-surface select-none">
         <div class="w-full border-b border-border pb-2.5 shrink-0 flex justify-between items-center">
-          <span class="text-xs font-black text-dustyrose-600 tracking-widest">GEOGRAPHIC BOMB</span>
+          <span class="text-xs font-black text-dustyrose-600 tracking-widest flex items-center gap-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-500"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/></svg>
+            GEOGRAPHIC BOMB
+          </span>
           <span class="text-xs font-black text-text" id="bomb-active-player">PLAYER 1 の番</span>
         </div>
 
@@ -872,7 +875,7 @@
 
       <!-- ================= 新ゲーム個別画面 ================= -->
 
-      <!-- 【新】地図でかくれんぼ！ プレイ画面 -->
+      <!-- 地図でかくれんぼ！ プレイ画面 -->
       <div id="view-game-hide-seek" class="app-view hidden absolute inset-0 p-5 flex flex-col bg-surface overflow-hidden">
         <div class="flex justify-between items-center border-b border-border pb-2 shrink-0">
           <span class="text-xs font-black text-sage-600 tracking-widest">MAP HIDE & SEEK</span>
@@ -880,9 +883,11 @@
         </div>
         
         <div class="bg-sage-50 border border-sage-100 p-4 rounded-3xl my-auto shrink-0 flex items-start gap-3">
-          <div class="text-3xl animate-bounce">🦫</div>
+          <div class="text-sage-600 animate-bounce shrink-0">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5z"/><path d="M17 14h.01"/><path d="M7 14h.01"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          </div>
           <div class="flex-grow">
-            <p class="text-[10px] font-bold text-sage-600">モグちゃんのヒント</p>
+            <p class="text-[10px] font-bold text-sage-600">ヒント</p>
             <div id="hs-hints-container" class="text-xs font-bold text-text leading-relaxed mt-1 flex flex-col gap-1"></div>
           </div>
         </div>
@@ -900,7 +905,7 @@
         <button onclick="switchView('top')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">ゲームを終了する</button>
       </div>
 
-      <!-- 【新】ロケーションハンター プレイ画面 -->
+      <!-- ロケーションハンター プレイ画面 -->
       <div id="view-game-loc-hunter" class="app-view hidden absolute inset-0 p-5 flex flex-col bg-surface overflow-hidden">
         <div class="flex justify-between items-center border-b border-border pb-2 shrink-0">
           <span class="text-xs font-black text-dustyblue-600 tracking-widest">LOCATION HUNTER</span>
@@ -908,7 +913,10 @@
         </div>
 
         <div class="bg-base border border-border p-4 rounded-3xl my-auto shrink-0 flex flex-col gap-2">
-          <p class="text-[10px] font-black text-dustyblue-600 tracking-wider">🔒 謎のロケーション調査データ</p>
+          <p class="text-[10px] font-black text-dustyblue-600 tracking-wider flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ロケーション調査データ
+          </p>
           <div id="lh-clues-container" class="text-xs font-bold text-text leading-relaxed flex flex-col gap-1.5"></div>
         </div>
 
@@ -924,7 +932,7 @@
         <button onclick="switchView('top')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">ゲームを終了する</button>
       </div>
 
-      <!-- 【新】特産品デリバリー プレイ画面 -->
+      <!-- 特産品デリバリー プレイ画面 -->
       <div id="view-game-delivery" class="app-view hidden absolute inset-0 p-5 flex flex-col bg-surface overflow-hidden select-none">
         <div class="flex justify-between items-center border-b border-border pb-2 shrink-0">
           <span class="text-xs font-black text-sage-600 tracking-widest">SPECIALTY DELIVERY</span>
@@ -937,7 +945,9 @@
               <p class="text-[9px] font-bold text-subtext leading-none mb-1">積み荷（産地）</p>
               <p class="text-sm font-black text-sage-600" id="del-cargo-info">青森りんご</p>
             </div>
-            <div class="text-subtext text-lg">🚚</div>
+            <div class="text-subtext shrink-0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
             <div class="text-center">
               <p class="text-[9px] font-bold text-subtext leading-none mb-1">目標市場（目的地）</p>
               <p class="text-sm font-black text-dustyrose-600" id="del-target-name">福岡県</p>
@@ -966,20 +976,23 @@
         <button onclick="switchView('top')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">リタイアして戻る</button>
       </div>
 
-      <!-- 【新】天下統一の道 プレイ画面 -->
+      <!-- 天下統一の道 プレイ画面 -->
       <div id="view-game-unification" class="app-view hidden absolute inset-0 p-5 flex flex-col bg-surface overflow-hidden">
         <div class="flex justify-between items-center border-b border-border pb-2 shrink-0">
           <span class="text-xs font-black text-dustyorange-600 tracking-widest">ROAD TO UNIFICATION</span>
           <span class="text-xs font-bold text-subtext">ラウンド: <span id="uni-round" class="font-black text-text">1</span>/8</span>
         </div>
 
-        <!-- 勢力勢力盤 -->
+        <!-- 勢力盤 -->
         <div class="my-auto bg-base p-4 border border-border rounded-3xl shrink-0">
-          <p class="text-[10px] font-black text-subtext mb-2.5 tracking-wider text-center">🛡️ 各大名の領国数（順位）</p>
+          <p class="text-[10px] font-black text-subtext mb-2.5 tracking-wider text-center flex items-center justify-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-subtext"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            各大名の領国数（順位）
+          </p>
           <ul id="uni-leaderboard" class="flex flex-col gap-1.5 text-xs font-bold"></ul>
         </div>
 
-        <!-- 侵攻侵略クイズ -->
+        <!-- 侵略クイズ -->
         <div id="uni-quiz-overlay" class="p-4 bg-surface border border-border rounded-3xl mb-4 hidden animate-fade-in flex flex-col gap-2 shrink-0 shadow-md">
           <p class="text-[10px] font-black text-dustyorange-600" id="uni-quiz-title">愛知県への侵攻戦！</p>
           <p class="text-xs font-bold text-text mb-2" id="uni-quiz-question">お題...</p>
@@ -1001,7 +1014,7 @@
     // ================= データ定義 =================
     const PREFECTURES = [
       { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。', area: 83400 },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。', area: 9600 },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸武国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。', area: 9600 },
       { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中国（りくちゅう）', hardRead: '不来方（こずかた）', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。', area: 15200 },
       { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前国（りくぜん）', hardRead: '愛子（あやし）', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。', area: 7200 },
       { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後国（うご）', hardRead: '生保内（おぼない）', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。', area: 11600 },
@@ -1010,12 +1023,12 @@
       { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。', area: 6000 },
       { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。', area: 6400 },
       { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。', area: 6300 },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越 の 蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。', area: 3700 },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。', area: 3700 },
       { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。', area: 5100 },
       { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。', area: 2100 },
       { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。', area: 2400 },
       { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。', area: 12500 },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中心（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
       { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。', area: 4100 },
       { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。', area: 4100 },
       { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。', area: 4400 },
@@ -1042,7 +1055,7 @@
       { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。', area: 4900 },
       { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。', area: 2400 },
       { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。', area: 4100 },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級 of カルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
       { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。', area: 6300 },
       { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。', area: 7700 },
       { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。', area: 9100 },
@@ -1073,9 +1086,9 @@
       ]
     };
 
-    // 隣接境界データ
+    // 隣接境界データ（北海道・青森間、沖縄・鹿児島間をルート接続）
     const BORDERS = {
-      hokkaido: [], aomori: ['iwate', 'akita'], iwate: ['aomori', 'akita', 'miyagi'],
+      hokkaido: ['aomori'], aomori: ['iwate', 'akita', 'hokkaido'], iwate: ['aomori', 'akita', 'miyagi'],
       miyagi: ['iwate', 'akita', 'yamagata', 'fukushima'], akita: ['aomori', 'iwate', 'miyagi', 'yamagata'],
       yamagata: ['akita', 'miyagi', 'fukushima', 'niigata'], fukushima: ['miyagi', 'yamagata', 'ibaraki', 'tochigi', 'gumma', 'niigata'],
       ibaraki: ['fukushima', 'tochigi', 'saitama', 'chiba'], tochigi: ['fukushima', 'ibaraki', 'gumma', 'saitama'],
@@ -1091,7 +1104,7 @@
       hiroshima: ['tottori', 'shimane', 'okayama', 'yamaguchi'], yamaguchi: ['shimane', 'hiroshima'], tokushima: ['kagawa', 'ehime', 'kochi'],
       kagawa: ['tokushima', 'ehime'], ehime: ['tokushima', 'kagawa', 'kochi'], kochi: ['tokushima', 'ehime'],
       fukuoka: ['saga', 'oita', 'kumamoto'], saga: ['fukuoka', 'nagasaki'], nagasaki: ['saga'], kumamoto: ['fukuoka', 'oita', 'miyazaki', 'kagoshima'],
-      oita: ['fukuoka', 'kumamoto', 'miyazaki'], miyazaki: ['kumamoto', 'oita', 'kagoshima'], kagoshima: ['kumamoto', 'miyazaki'], okinawa: []
+      oita: ['fukuoka', 'kumamoto', 'miyazaki'], miyazaki: ['kumamoto', 'oita', 'kagoshima'], kagoshima: ['kumamoto', 'miyazaki', 'okinawa'], okinawa: ['kagoshima']
     };
 
     // 産業やその他の教育データ
@@ -2544,7 +2557,7 @@
       const isNewHighScore = saveHighScore(qState.mode, qState.score);
       const resLabel = document.getElementById('result-label');
       if (isNewHighScore) {
-        resLabel.textContent = "🌟 NEW HIGH SCORE 🌟";
+        resLabel.textContent = "NEW HIGH SCORE";
         resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
         Confetti.start();
         SoundManager.playLevelUp();
@@ -2722,7 +2735,7 @@
       const isNewHigh = saveHighScore('sprint', sprintState.score);
       const resLabel = document.getElementById('result-label');
       if (isNewHigh) {
-        resLabel.textContent = "🌟 NEW HIGH SCORE 🌟";
+        resLabel.textContent = "NEW HIGH SCORE";
         resLabel.className = "text-dustyorange-500 font-black mb-1 tracking-widest text-xs animate-pulse";
         Confetti.start();
         SoundManager.playLevelUp();
@@ -2823,7 +2836,7 @@
             SoundManager.playLevelUp();
             Confetti.start();
             addXP(100); 
-            alert(`🎉 ルートコネクトクリア！\n${routeState.steps}手で目的地に到達しました！`);
+            alert(`ルートコネクトクリア！\n${routeState.steps}手で目的地に到達しました！`);
             switchView('top');
           }, 300);
         }
@@ -2838,1054 +2851,206 @@
     }
 
 
-    // ================= パーティーゲーム & 新ゲーム設定 =================
-    let partyState = { gameType: 'ww', players: [], currentIdx: 0, timer: 180, interval: null, topicGenre: 'name' };
-    let wwVoteState = { voterIndex: 0, votes: {}, votedTarget: null };
-
-    function goToPartyNames() {
-      const pc = parseInt(document.getElementById('party-player-count').value);
-      const container = document.getElementById('party-names-container');
-      container.innerHTML = '';
-      
-      for (let i = 1; i <= pc; i++) {
-        const div = document.createElement('div');
-        div.className = "flex flex-col gap-1 shrink-0 mb-1";
-        div.innerHTML = `
-          <label class="text-[10px] font-bold text-subtext">プレイヤー ${i}</label>
-          <input type="text" class="party-name-input bg-base border border-border rounded-xl font-bold text-text p-3 outline-none" placeholder="プレイヤー ${i}" value="プレイヤー ${i}">
-        `;
-        container.appendChild(div);
-      }
-      switchView('party-names');
-    }
-
-    function generateNGWords(pref) {
-      return [
-        pref.name,
-        pref.capital,
-        pref.food.split('・')[0],
-        pref.tourism.split('・')[0]
-      ].filter(Boolean);
-    }
-
-    function switchPartyConfig(type) {
-      partyState.gameType = type;
-      const pcSelect = document.getElementById('party-player-count');
-      pcSelect.innerHTML = `<option value="1">1人 (ソロ挑戦)</option><option value="2">2人</option><option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>`;
-
-      if (type === 'hide_seek') {
-        document.getElementById('party-icon').textContent = "🔍";
-        document.getElementById('party-title').textContent = "地図でかくれんぼ！";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れた「モグちゃん」をヒントを頼りに探し出す、子供から遊べる対戦・協力探索ゲームです。間違えるとヒントが増え、次の人の番になります。";
-      } else if (type === 'loc_hunter') {
-        document.getElementById('party-icon').textContent = "🎯";
-        document.getElementById('party-title').textContent = "ロケーションハンター";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "旧国名、難読地名、詳細雑学などを含む高度なロケーション調査データを読み解き、地図上をピンポイントで射抜く本格推理ゲームです。（大人・教養向け）";
-      } else if (type === 'unification') {
-        document.getElementById('party-icon').textContent = "⚔️";
-        document.getElementById('party-title').textContent = "天下統一の道";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "戦国大名となって日本全土を奪い合うシミュレーションゲームです。自領と接する未支配地や他国の領地に攻め込み、クイズに正解すれば領土を自分のもの（大名色）に塗り替えられます！";
-      } else if (type === 'ww') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
-        document.getElementById('party-title').textContent = "地理ワードウルフ";
-        document.getElementById('party-wolf-count-wrap').classList.remove('hidden');
-        document.getElementById('party-topic-wrap').classList.remove('hidden');
-        document.getElementById('party-rule-text').innerHTML = "全員にお題が配られますが、一人だけ異なるお題を配られたウルフがいます。誰がお題の違う「ウルフ」か話し合いで暴きましょう！(推奨3人〜)";
-      } else if (type === 'ng') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
-        document.getElementById('party-title').textContent = "地理NGワード推理戦";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "自分のNGワード（実は隠された都道府県）が自分だけ見えない状態で始まります。他のプレイヤーは画面を見てヒントを出します。自分のおでこに貼られたワードを当てるゲームです！(2人〜)";
-      } else if (type === 'association') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-sage-600"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-        document.getElementById('party-title').textContent = "私は誰でしょう？地理連想";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "出題者（親）が画面の指示に従って都道府県のヒントを1つずつ読み上げます。他のプレイヤーは最も少ないヒント数で正解を当てることを目指します。(2人〜)";
-      } else if (type === 'bomb') {
-        document.getElementById('party-icon').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyyellow-600"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/></svg>`;
-        document.getElementById('party-title').textContent = "地理ハラハラ爆弾";
-        document.getElementById('party-wolf-count-wrap').classList.add('hidden');
-        document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "15秒のカウントダウンが起動！お題に合う都道府県を地図からタップして次の人に即パス！爆発させた人が負けです。地理力と早押しの極限バトル！(2人〜)";
-      }
-      switchView('party-config');
-    }
-
-    function startPartyGame() {
-      const pc = parseInt(document.getElementById('party-player-count').value);
-      const inputs = document.querySelectorAll('.party-name-input');
-      const names = Array.from(inputs).map((inp, i) => inp.value || `プレイヤー ${i+1}`);
-      
-      if (partyState.gameType === 'hide_seek') {
-        startHSGame(names);
-      } else if (partyState.gameType === 'loc_hunter') {
-        startLHGame(names);
-      } else if (partyState.gameType === 'unification') {
-        startUnificationGame(names);
-      } else if (partyState.gameType === 'ww') {
-        const wc = parseInt(document.getElementById('party-wolf-count').value);
-        partyState.topicGenre = document.getElementById('party-topic-genre').value;
-        
-        let selectableRegions = REGIONS.filter(r => PREFECTURES.filter(p => p.region === r).length >= 2);
-        if (selectableRegions.length === 0) selectableRegions = REGIONS; 
-
-        const region = selectableRegions[Math.floor(Math.random() * selectableRegions.length)];
-        const prefsInRegion = PREFECTURES.filter(p => p.region === region).sort(() => Math.random() - 0.5);
-        const prefA = prefsInRegion[0];
-        const prefB = prefsInRegion.length > 1 ? prefsInRegion[1] : PREFECTURES.find(p => p.id !== prefA.id);
-
-        let roles = Array(wc).fill('wolf').concat(Array(pc - wc).fill('citizen'));
-        roles = roles.sort(() => Math.random() - 0.5);
-        
-        partyState.players = roles.map((r, i) => ({
-          id: i + 1, name: names[i], role: r,
-          pref: r === 'wolf' ? prefB : prefA,
-          topic: r === 'wolf' ? prefB[partyState.topicGenre] : prefA[partyState.topicGenre]
-        }));
-
-        partyState.currentIdx = 0;
-        switchView('party-check');
-        setupPartyCheckUI();
-      } else if (partyState.gameType === 'ng') {
-        const pref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-        const ngWords = generateNGWords(pref);
-        
-        partyState.players = names.map((name, i) => ({
-          id: i + 1, name: name, role: 'citizen',
-          pref: pref,
-          topic: pref.name,
-          ngWord: ngWords[i % ngWords.length]
-        }));
-
-        partyState.currentIdx = 0;
-        switchView('party-check');
-        setupPartyCheckUI();
-      } else if (partyState.gameType === 'association') {
-        partyState.players = names.map((name, i) => ({ id: i + 1, name: name }));
-        startAssocRound();
-      } else if (partyState.gameType === 'bomb') {
-        partyState.players = names.map((name, i) => ({ id: i + 1, name: name }));
-        startBombRound();
-      }
-    }
-
-    function setupNGCheckUI(player, themeColor) {
-      document.getElementById('party-check-sub-desc').innerHTML = `<span class="text-dustyrose-600 font-bold">${player.name}さん以外の人</span>が、画面を隠しながらお題を確認してください！`;
-      
-      const btnShow = document.getElementById('btn-party-show');
-      btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
-      document.getElementById('btn-party-show-text').textContent = "他メンバーが長押ししてお題を確認する";
-
-      const layer = document.getElementById('party-word-layer');
-      layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
-
-      document.getElementById('party-word-label').textContent = `${player.name} さんのNGワード (おでこに貼るワード)`;
-      document.getElementById('party-word-text').textContent = player.ngWord;
-      document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-2 shrink-0`;
-      
-      const existingSub = document.getElementById('ng-sub-label');
-      if(existingSub) existingSub.remove();
-      const sub = document.createElement('div');
-      sub.id = "ng-sub-label";
-      sub.className = "text-sm font-bold text-subtext mb-4 text-center";
-      sub.innerHTML = `(秘密のヒント: ${player.pref.name}地方・${player.pref.capital})`;
-      document.getElementById('party-word-text').after(sub);
-
-      document.getElementById('party-word-pref-name').textContent = player.pref.name;
-      document.getElementById('party-word-capital').textContent = player.pref.capital;
-      document.getElementById('party-word-food').textContent = player.pref.food;
-      document.getElementById('party-word-tourism').textContent = player.pref.tourism;
-      document.getElementById('party-word-trivia').innerHTML = player.pref.trivia;
-      
-      document.getElementById('btn-party-next').classList.add('opacity-0', 'pointer-events-none');
-      layer.classList.add('opacity-0', 'pointer-events-none');
-      highlightMap(null, 'normal', false);
-    }
-
-    function setupPartyCheckUI() {
-      const player = partyState.players[partyState.currentIdx];
-      const themeColor = partyState.gameType === 'ww' ? 'dustypurple' : 'dustyrose';
-
-      if (partyState.gameType === 'ng') {
-        setupNGCheckUI(player, themeColor);
-      } else {
-        document.getElementById('party-check-sub-desc').textContent = "周りに見られないように確認してください";
-        document.getElementById('btn-party-show-text').textContent = "長押しして確認する";
-        
-        document.getElementById('party-player-name').textContent = player.name;
-        document.getElementById('party-player-name').className = `text-${themeColor}-600 text-2xl`;
-        
-        const btnShow = document.getElementById('btn-party-show');
-        btnShow.className = `w-full py-16 bg-${themeColor}-500 text-surface text-lg font-bold rounded-[2rem] active:scale-95 transition-transform touch-none select-none relative z-10 shadow-sm border border-${themeColor}-600`;
-
-        const layer = document.getElementById('party-word-layer');
-        layer.className = `absolute inset-0 bg-surface border-2 border-${themeColor}-400 rounded-[2rem] flex flex-col items-center justify-start p-5 opacity-0 pointer-events-none transition-opacity duration-200 z-20 overflow-y-auto no-scrollbar shadow-sm`;
-
-        document.getElementById('party-word-label').textContent = "あなたのお題";
-        document.getElementById('party-word-text').textContent = player.topic;
-        document.getElementById('party-word-text').className = `text-3xl font-black text-${themeColor}-600 mb-6 shrink-0`;
-        const existingSub = document.getElementById('ng-sub-label');
-        if(existingSub) existingSub.remove();
-
-        document.getElementById('party-word-pref-name').textContent = player.pref.name;
-        document.getElementById('party-word-capital').textContent = player.pref.capital;
-        document.getElementById('party-word-food').textContent = player.pref.food;
-        document.getElementById('party-word-tourism').textContent = player.pref.tourism;
-        document.getElementById('party-word-trivia').innerHTML = player.pref.trivia;
-        
-        document.getElementById('btn-party-next').classList.add('opacity-0', 'pointer-events-none');
-        layer.classList.add('opacity-0', 'pointer-events-none');
-        highlightMap(null, 'normal', false);
-      }
-    }
-
-    const btnPartyShow = document.getElementById('btn-party-show');
-    const partyWordLayer = document.getElementById('party-word-layer');
-    const btnPartyNext = document.getElementById('btn-party-next');
-
-    btnPartyShow.addEventListener('contextmenu', e => e.preventDefault());
-
-    function showPartyWord(e) {
-      e.preventDefault();
-      partyWordLayer.classList.remove('opacity-0', 'pointer-events-none');
-      highlightMap(partyState.players[partyState.currentIdx].pref.id, 'normal', true);
-    }
-    function hidePartyWord(e) {
-      e.preventDefault();
-      partyWordLayer.classList.add('opacity-0', 'pointer-events-none');
-      highlightMap(null, 'normal', false);
-      btnPartyNext.classList.remove('opacity-0', 'pointer-events-none');
-    }
-
-    btnPartyShow.addEventListener('mousedown', showPartyWord);
-    btnPartyShow.addEventListener('touchstart', showPartyWord, {passive: false});
-    btnPartyShow.addEventListener('mouseup', hidePartyWord);
-    btnPartyShow.addEventListener('mouseleave', hidePartyWord);
-    btnPartyShow.addEventListener('touchend', hidePartyWord);
-    btnPartyShow.addEventListener('touchcancel', hidePartyWord);
-
-    function nextPartyPlayer() {
-      partyState.currentIdx++;
-      if (partyState.currentIdx >= partyState.players.length) startPartyDiscuss();
-      else setupPartyCheckUI();
-    }
-
-    function startPartyDiscuss() {
-      switchView('party-discuss');
-      changeWWQuestion();
-      partyState.timer = 180;
-      updatePartyTimerUI();
-      
-      const desc = document.getElementById('party-discuss-desc');
-      if(partyState.gameType === 'ng') {
-        desc.innerHTML = `NGワードを言わないように（言わせるように誘導しながら）<br><span class="text-dustyrose-600 text-base mt-1 inline-block">「お互いの隠されたお題」</span><br>について語りましょう`;
-      } else {
-        desc.textContent = "誰が違うお題を持っているか探り合いましょう";
-      }
-
-      clearInterval(partyState.interval);
-      partyState.interval = setInterval(() => {
-        partyState.timer--;
-        updatePartyTimerUI();
-        if (partyState.timer <= 0) endPartyDiscuss();
-      }, 1000);
-    }
-
-    function updatePartyTimerUI() {
-      const m = Math.floor(partyState.timer / 60);
-      const s = ('0' + (partyState.timer % 60)).slice(-2);
-      document.getElementById('party-timer-text').textContent = `${m}:${s}`;
-      
-      const bar = document.getElementById('party-timer-bar');
-      const progress = (partyState.timer / 180) * 100;
-      bar.style.width = `${progress}%`;
-      
-      if (partyState.timer <= 10) {
-        bar.classList.replace('bg-dustypurple-500', 'bg-dustyrose-500');
-        document.getElementById('party-timer-text').classList.add('text-dustyrose-500');
-        document.getElementById('party-timer-text').classList.remove('text-text');
-      } else {
-        bar.classList.replace('bg-dustyrose-500', 'bg-dustypurple-500');
-        document.getElementById('party-timer-text').classList.remove('text-dustyrose-500');
-        document.getElementById('party-timer-text').classList.add('text-text');
-      }
-    }
-
-    function changeWWQuestion() {
-      const genre = partyState.topicGenre || 'name';
-      const questions = WW_QUESTIONS[genre] || WW_QUESTIONS['name'];
-      const q = questions[Math.floor(Math.random() * questions.length)];
-      
-      const container = document.getElementById('party-question-container');
-      container.innerHTML = `
-        <p class="text-sm font-bold text-text leading-snug mb-3 w-full">「${q.q}」</p>
-        <p class="text-[10px] font-bold text-subtext bg-surface border border-border px-3 py-2 rounded-xl text-left leading-relaxed w-full shadow-sm">
-          ${q.hint}
-        </p>
-      `;
-    }
-
-    function endPartyDiscuss() {
-      clearInterval(partyState.interval);
-      if (partyState.gameType === 'ww') startPartyVote();
-      else finishPartyGame();
-    }
-
-    function startPartyVote() {
-      wwVoteState.voterIndex = 0;
-      wwVoteState.votes = {};
-      partyState.players.forEach(p => wwVoteState.votes[p.id] = 0);
-      showPartyVoteScreen();
-    }
-
-    function showPartyVoteScreen() {
-      switchView('party-vote');
-      const voter = partyState.players[wwVoteState.voterIndex];
-      
-      document.getElementById('party-vote-title').textContent = `${voter.name} さんの投票`;
-      const container = document.getElementById('party-vote-container');
-      container.innerHTML = '';
-      
-      wwVoteState.votedTarget = null;
-      const btnNextVote = document.getElementById('btn-party-vote-next');
-      btnNextVote.classList.add('opacity-50', 'pointer-events-none');
-      
-      partyState.players.forEach(p => {
-        if (p.id === voter.id) return; 
-        const btn = document.createElement('button');
-        btn.className = "py-4 px-4 bg-surface border border-border rounded-2xl font-bold text-text text-left hover:bg-dustypurple-50 hover:border-dustypurple-400 transition-colors shadow-sm active:scale-95 party-vote-btn shrink-0";
-        btn.textContent = p.name;
-        btn.onclick = () => {
-          document.querySelectorAll('.party-vote-btn').forEach(b => b.classList.remove('bg-text', 'text-surface', 'border-text'));
-          btn.classList.add('bg-text', 'text-surface', 'border-text');
-          wwVoteState.votedTarget = p.id;
-          btnNextVote.classList.remove('opacity-50', 'pointer-events-none');
-        };
-        container.appendChild(btn);
-      });
-
-      btnNextVote.onclick = () => {
-        wwVoteState.votes[wwVoteState.votedTarget]++;
-        wwVoteState.voterIndex++;
-        if (wwVoteState.voterIndex < partyState.players.length) showPartyVoteScreen();
-        else finishPartyGame();
-      };
-    }
-
-    function finishPartyGame() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-
-      if (partyState.gameType === 'ww') {
-        let maxVotes = -1;
-        let executedPlayers = [];
-        for (const [pId, count] of Object.entries(wwVoteState.votes)) {
-          if (count > maxVotes) { maxVotes = count; executedPlayers = [parseInt(pId)]; } 
-          else if (count === maxVotes) { executedPlayers.push(parseInt(pId)); }
-        }
-
-        let wolfKilled = false;
-        executedPlayers.forEach(pId => {
-          const p = partyState.players.find(x => x.id === pId);
-          if (p && p.role === 'wolf') wolfKilled = true;
-        });
-
-        document.getElementById('party-result-label').textContent = "それぞれの役職とお題";
-        partyState.players.forEach(p => {
-          const li = document.createElement('li');
-          li.className = "flex flex-col py-3 border-b border-border last:border-0 shrink-0";
-          const roleHtml = p.role === 'wolf' 
-            ? `<span class="bg-dustyrose-100 text-dustyrose-600 text-[10px] font-black px-2 py-1 rounded-lg ml-2">ウルフ</span>` 
-            : `<span class="bg-surface text-subtext text-[10px] font-black px-2 py-1 rounded-lg ml-2">市民</span>`;
-          li.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-              <div><span class="font-bold text-text">${p.name}</span>${roleHtml} <span class="text-[10px] font-bold text-subtext ml-1">(${wwVoteState.votes[p.id]}票)</span></div>
-              <div class="font-black text-dustypurple-600">${p.topic}</div>
-            </div>
-            <div class="text-[10px] text-subtext text-right">(${p.pref.name})</div>
-          `;
-          list.appendChild(li);
-        });
-
-        if (wolfKilled) {
-          msg.innerHTML = `市民の勝利！<br><span class="text-sm font-bold text-subtext mt-2 block">見事ウルフを特定しました！</span>`;
-        } else {
-          msg.innerHTML = `<span class="text-dustyrose-600 font-black">ウルフの勝利！</span><br><span class="text-sm font-bold text-subtext mt-2 block">ウルフが逃げ切りました。</span>`;
-        }
-      } else {
-        document.getElementById('party-result-label').textContent = "それぞれの隠されたNGワード";
-        partyState.players.forEach(p => {
-          const li = document.createElement('li');
-          li.className = "flex justify-between items-center py-3 border-b border-border last:border-0 shrink-0";
-          li.innerHTML = `
-            <div class="font-bold text-text">${p.name}</div>
-            <div class="font-black text-dustyrose-600 text-lg">${p.ngWord}</div>
-          `;
-          list.appendChild(li);
-        });
-        msg.className = "text-xl font-black text-text mb-4 shrink-0";
-        msg.innerHTML = `お題: <span class="text-dustyrose-600">${partyState.players[0].pref.name}</span><br><span class="text-xs font-medium text-subtext mt-2 block">ヒントから自分のNGワード（おでこに貼られたお題）を推理できたプレイヤーの勝ちです！</span>`;
-      }
-    }
-
-    // ================= 私は誰でしょう？地理連想ゲーム =================
-    let assocState = { secretPref: null, hints: [], currentHintIdx: 0, score: 100 };
-
-    function startAssocRound() {
-      assocState.secretPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      const p = assocState.secretPref;
-
-      assocState.hints = [
-        { id: 4, text: `【豆知識】${p.trivia}`, score: 100 },
-        { id: 3, text: `【観光名所】${p.tourism}`, score: 70 },
-        { id: 2, text: `【名物料理】${p.food}`, score: 50 },
-        { id: 1, text: `【県庁所在地】${p.capital}`, score: 30 }
-      ];
-
-      assocState.currentHintIdx = 0; 
-      assocState.score = 100;
-
-      document.getElementById('assoc-secret-pref-name').textContent = p.name;
-      document.getElementById('assoc-text-4').textContent = assocState.hints[0].text;
-      document.getElementById('assoc-text-3').textContent = assocState.hints[1].text;
-      document.getElementById('assoc-text-2').textContent = assocState.hints[2].text;
-      document.getElementById('assoc-text-1').textContent = assocState.hints[3].text;
-
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`assoc-hint-${i}`).className = "p-3 bg-base border border-border rounded-xl transition-all opacity-30 flex flex-col gap-1";
-        document.getElementById(`assoc-state-${i}`).textContent = "非公開";
-        document.getElementById(`assoc-state-${i}`).className = "text-subtext";
-      }
-      document.getElementById('btn-assoc-next-hint').disabled = false;
-      document.getElementById('btn-assoc-next-hint').className = "flex-1 py-4 bg-dustypurple-500 text-surface font-black rounded-2xl active:scale-95 transition-transform text-xs shadow-sm";
-
-      switchView('party-association');
-      highlightMap(p.id, 'normal', false); 
-    }
-
-    function revealNextHint() {
-      if (assocState.currentHintIdx < 3) {
-        assocState.currentHintIdx++;
-        const hint = assocState.hints[assocState.currentHintIdx];
-        assocState.score = hint.score;
-
-        const hintEl = document.getElementById(`assoc-hint-${hint.id}`);
-        hintEl.className = "p-3 bg-surface border-2 border-dustypurple-400 rounded-xl transition-all opacity-100 flex flex-col gap-1 shadow-md";
-        
-        const stateEl = document.getElementById(`assoc-state-${hint.id}`);
-        stateEl.textContent = "公開中！";
-        stateEl.className = "text-dustypurple-600 font-bold";
-
-        SoundManager.playCorrect();
-
-        if (assocState.currentHintIdx === 3) {
-          const btn = document.getElementById('btn-assoc-next-hint');
-          btn.disabled = true;
-          btn.className = "flex-1 py-4 bg-border text-subtext font-black rounded-2xl cursor-not-allowed text-xs";
-        }
-      }
-    }
-
-    function finishAssocGame(hasWinner) {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-
-      document.getElementById('party-result-label').textContent = "正解データ";
-      list.innerHTML = `
-        <div class="p-4 bg-surface rounded-2xl border border-border text-left">
-          <p class="text-xl font-black text-dustypurple-600 mb-2">${assocState.secretPref.name}</p>
-          <p class="text-xs font-bold text-subtext mb-1">所在地: ${assocState.secretPref.capital}</p>
-          <p class="text-xs font-bold text-subtext mb-1">名産: ${assocState.secretPref.food}</p>
-          <p class="text-xs font-medium text-text mt-2">${assocState.secretPref.trivia}</p>
-        </div>
-      `;
-
-      if (hasWinner) {
-        SoundManager.playLevelUp();
-        Confetti.start();
-        msg.innerHTML = `正解おめでとうございます！<br><span class="text-sm font-bold text-subtext mt-2 block">獲得ポイント: <span class="text-dustypurple-600 font-black text-xl">${assocState.score}</span> 点</span>`;
-      } else {
-        SoundManager.playIncorrect();
-        msg.innerHTML = `全員ギブアップ！<br><span class="text-sm font-bold text-subtext mt-2 block">正解は ${assocState.secretPref.name} でした。</span>`;
-      }
-    }
-
-    // ================= 地理ハラハラ爆弾 =================
-    let bombState = { timer: 15, category: "", correctPrefs: [], usedPrefs: [], currentPlayerIdx: 0 };
-
-    const BOMB_CATEGORIES = [
-      { title: "「山」が名前につく都道府県", check: (p) => p.name.includes("山") },
-      { title: "「島」が名前につく都道府県", check: (p) => p.name.includes("島") },
-      { title: "海に面していない都道府県（内陸県）", check: (p) => BORDERS[p.id].length > 0 && ['tochigi', 'gumma', 'saitama', 'yamanashi', 'nagano', 'gifu', 'shiga', 'nara'].includes(p.id) },
-      { title: "東北地方（6県）の都道府県", check: (p) => p.region === "東北" },
-      { title: "近畿地方（7府県）の都道府県", check: (p) => p.region === "近畿" },
-      { title: "九州・沖縄地方（8県）の都道府県", check: (p) => p.region === "九州・沖縄" }
-    ];
-
-    function startBombRound() {
-      const cat = BOMB_CATEGORIES[Math.floor(Math.random() * BOMB_CATEGORIES.length)];
-      
-      bombState = {
-        timer: 15,
-        category: cat.title,
-        correctPrefs: PREFECTURES.filter(p => cat.check(p)).map(p => p.id),
-        usedPrefs: [],
-        currentPlayerIdx: 0
-      };
-
-      document.getElementById('bomb-category-title').textContent = bombState.category;
-      
-      resetMapState();
-      switchView('party-bomb');
-      updateBombPlayerUI();
-      startBombTimer();
-    }
-
-    function updateBombPlayerUI() {
-      const p = partyState.players[bombState.currentPlayerIdx];
-      const el = document.getElementById('bomb-active-player');
-      el.textContent = `${p.name} さんの番！`;
-      el.className = "text-xs font-black text-dustyrose-500 animate-pulse";
-    }
-
-    function startBombTimer() {
-      clearInterval(partyState.bombInterval);
-      document.getElementById('bomb-timer-num').textContent = bombState.timer;
-
-      partyState.bombInterval = setInterval(() => {
-        bombState.timer--;
-        document.getElementById('bomb-timer-num').textContent = bombState.timer;
-
-        if (bombState.timer <= 3) {
-          SoundManager.playIncorrect(); 
-        }
-
-        if (bombState.timer <= 0) {
-          clearInterval(partyState.bombInterval);
-          explodeBomb();
-        }
-      }, 1000);
-    }
-
-    function handleBombClick(pref) {
-      if (bombState.correctPrefs.includes(pref.id) && !bombState.usedPrefs.includes(pref.id)) {
-        bombState.usedPrefs.push(pref.id);
-        
-        const el = document.querySelector(`.p-eveMapPref--${pref.id}`);
-        if (el) {
-          el.classList.add('is-open'); 
-          el.style.setProperty('color', '#f43f5e', 'important'); 
-        }
-
-        SoundManager.playCorrect();
-
-        bombState.timer = 12; 
-        bombState.currentPlayerIdx = (bombState.currentPlayerIdx + 1) % partyState.players.length;
-        
-        updateBombPlayerUI();
-        startBombTimer();
-      } else {
-        SoundManager.playIncorrect();
-        const playWrapper = document.getElementById('view-party-bomb');
-        if (playWrapper) {
-          playWrapper.classList.add('animate-shake');
-          setTimeout(() => playWrapper.classList.remove('animate-shake'), 400);
-        }
-      }
-    }
-
-    function explodeBomb() {
-      SoundManager.playIncorrect();
-      switchView('party-result');
-      
-      const loser = partyState.players[bombState.currentPlayerIdx];
-      const msg = document.getElementById('party-win-message');
-      msg.innerHTML = `💥 ドカーン！！！ 💥<br><span class="text-sm font-bold text-dustyrose-600 mt-2 block">${loser.name} さんの手元で爆発しました！</span>`;
-
-      document.getElementById('party-result-label').textContent = "正解の都道府県一覧（今回使われた県）";
-      
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      
-      bombState.correctPrefs.forEach(id => {
-        const pObj = PREFECTURES.find(x => x.id === id);
-        const wasUsed = bombState.usedPrefs.includes(id);
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-2 border-b border-border last:border-0";
-        li.innerHTML = `
-          <span class="font-bold text-text">${pObj.name}</span>
-          <span class="text-[10px] font-black ${wasUsed ? 'text-sage-600' : 'text-subtext'}">${wasUsed ? '正解済み' : '未解答'}</span>
-        `;
-        list.appendChild(li);
-      });
-    }
-
-    function stopBombGame() {
-      clearInterval(partyState.bombInterval);
-      switchView('top');
-    }
-
-    // ========================================================
-    // ================== 新学習ゲーム制御 ==================
-    // ========================================================
-
-    // 【1】 地図でかくれんぼ！ (Hide & Seek)
-    let hideSeekState = {
-      round: 1,
-      maxRounds: 5,
-      currentPlayerIdx: 0,
-      secretPref: null,
-      hintsRevealed: 1,
-      players: [],
-      scores: {},
-      clickedPrefs: []
-    };
-
-    function startHSGame(playerNames) {
-      hideSeekState.round = 1;
-      hideSeekState.maxRounds = 5;
-      hideSeekState.currentPlayerIdx = 0;
-      hideSeekState.players = playerNames;
-      hideSeekState.scores = {};
-      playerNames.forEach(name => hideSeekState.scores[name] = 0);
-
-      resetMapState();
-      switchView('game-hide-seek');
-      document.getElementById('hs-max-rounds').textContent = hideSeekState.maxRounds;
-      setupHSRound();
-    }
-
-    function setupHSRound() {
-      hideSeekState.secretPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      hideSeekState.hintsRevealed = 1;
-      hideSeekState.clickedPrefs = [];
-      
-      document.getElementById('hs-round-num').textContent = hideSeekState.round;
-      document.getElementById('hs-result-overlay').classList.add('hidden');
-      
-      resetMapState();
-      updateHSUI();
-    }
-
-    function updateHSUI() {
-      const activePlayer = hideSeekState.players[hideSeekState.currentPlayerIdx];
-      document.getElementById('hs-active-player').textContent = activePlayer;
-
-      const p = hideSeekState.secretPref;
-      const hintsContainer = document.getElementById('hs-hints-container');
-      hintsContainer.innerHTML = '';
-
-      const h1 = document.createElement('p');
-      h1.innerHTML = `📌 僕は <span class="text-sage-600 font-black">${p.region}地方</span> にいるよ！`;
-      hintsContainer.appendChild(h1);
-
-      if (hideSeekState.hintsRevealed >= 2) {
-        const h2 = document.createElement('p');
-        h2.innerHTML = `🍎 ここの名物グルメは「<span class="text-sage-600 font-black">${p.food.split('・')[0]}</span>」だよ！`;
-        hintsContainer.appendChild(h2);
-      }
-      if (hideSeekState.hintsRevealed >= 3) {
-        const h3 = document.createElement('p');
-        h3.innerHTML = `🏛️ 県庁所在地は「<span class="text-sage-600 font-black">${p.capital}</span>」だよ！`;
-        hintsContainer.appendChild(h3);
-      }
-
-      // 過去にタップされた間違った県を暗色(シルエットトーン)にする
-      document.querySelectorAll('#map-container li').forEach(el => {
-        el.classList.remove('is-open');
-      });
-      hideSeekState.clickedPrefs.forEach(id => {
-        const el = document.querySelector(`.p-eveMapPref--${id}`);
-        if (el) el.classList.add('is-open'); 
-      });
-    }
-
-    function handleHSClick(pref) {
-      if (document.getElementById('hs-result-overlay').classList.contains('hidden') === false) return; // 決着済み
-
-      if (pref.id === hideSeekState.secretPref.id) {
-        // 正解！
-        SoundManager.playCorrect();
-        Confetti.start();
-        
-        const activePlayer = hideSeekState.players[hideSeekState.currentPlayerIdx];
-        hideSeekState.scores[activePlayer]++;
-
-        highlightMap(pref.id, 'normal', true);
-
-        const overlay = document.getElementById('hs-result-overlay');
-        const text = document.getElementById('hs-result-text');
-        overlay.classList.remove('hidden');
-        text.innerHTML = `🎉 見つけた！正解は <span class="text-sage-600 font-black text-base">${pref.name}</span> でした！<br>${activePlayer} さんに 1ポイント！`;
-        
-        addXP(30);
-      } else {
-        // 不正解
-        SoundManager.playIncorrect();
-        
-        if (!hideSeekState.clickedPrefs.includes(pref.id)) {
-          hideSeekState.clickedPrefs.push(pref.id);
-        }
-
-        const hsPanel = document.getElementById('view-game-hide-seek');
-        if (hsPanel) {
-          hsPanel.classList.add('animate-shake');
-          setTimeout(() => hsPanel.classList.remove('animate-shake'), 400);
-        }
-
-        // 次のプレイヤーの番に移行してヒントを増やす
-        hideSeekState.hintsRevealed = Math.min(3, hideSeekState.hintsRevealed + 1);
-        hideSeekState.currentPlayerIdx = (hideSeekState.currentPlayerIdx + 1) % hideSeekState.players.length;
-        
-        updateHSUI();
-      }
-    }
-
-    function nextHSRound() {
-      hideSeekState.round++;
-      if (hideSeekState.round > hideSeekState.maxRounds) {
-        // ゲーム終了、結果発表
-        switchView('party-result');
-        const list = document.getElementById('party-result-list');
-        list.innerHTML = '';
-        const msg = document.getElementById('party-win-message');
-        msg.textContent = "探索ゲーム終了！最終結果";
-
-        document.getElementById('party-result-label').textContent = "各プレイヤーの獲得モグ数";
-        
-        // 得点順ソート
-        const sorted = Object.entries(hideSeekState.scores).sort((a,b)=>b[1]-a[1]);
-        sorted.forEach(([name, score]) => {
-          const li = document.createElement('li');
-          li.className = "flex justify-between items-center py-2.5 border-b border-border last:border-0";
-          li.innerHTML = `<span class="font-bold text-text">${name}</span> <span class="text-sage-600 font-black text-sm">${score} 回発見</span>`;
-          list.appendChild(li);
-        });
-      } else {
-        setupHSRound();
-      }
-    }
-
-
-    // 【2】 日本列島ロケーションハンター (Location Hunter)
-    let locHunterState = {
-      round: 1,
-      maxRounds: 3,
-      players: [],
-      scores: {},
-      currentPlayerIdx: 0,
-      secretPref: null,
-      guesses: {}, // { playerName: prefId }
-      selectedPref: null
-    };
-
-    function startLHGame(playerNames) {
-      locHunterState.round = 1;
-      locHunterState.maxRounds = 3;
-      locHunterState.players = playerNames;
-      locHunterState.scores = {};
-      playerNames.forEach(name => locHunterState.scores[name] = 0);
-
-      switchView('game-loc-hunter');
-      setupLHRound();
-    }
-
-    function setupLHRound() {
-      locHunterState.secretPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      locHunterState.guesses = {};
-      locHunterState.currentPlayerIdx = 0;
-      locHunterState.selectedPref = null;
-
-      document.getElementById('lh-round-num').textContent = locHunterState.round;
-      
-      resetMapState();
-      updateLHRoundUI();
-    }
-
-    function updateLHRoundUI() {
-      const activePlayer = locHunterState.players[locHunterState.currentPlayerIdx];
-      document.getElementById('lh-active-player').textContent = activePlayer;
-      
-      locHunterState.selectedPref = null;
-      document.querySelectorAll('#map-container li').forEach(el => el.classList.remove('is-open'));
-
-      const p = locHunterState.secretPref;
-      const cluesContainer = document.getElementById('lh-clues-container');
-      cluesContainer.innerHTML = `
-        <div class="bg-surface/50 p-2 rounded-lg border border-border">
-          <span class="text-subtext text-[10px]">データ1 / 地方区分</span>
-          <p class="text-text font-black">${p.region}地方に属する</p>
-        </div>
-        <div class="bg-surface/50 p-2 rounded-lg border border-border">
-          <span class="text-subtext text-[10px]">データ2 / 歴史（令制国）</span>
-          <p class="text-text font-black">${p.oldProv}</p>
-        </div>
-        <div class="bg-surface/50 p-2 rounded-lg border border-border">
-          <span class="text-subtext text-[10px]">データ3 / 難読地名</span>
-          <p class="text-text font-black">${p.hardRead}</p>
-        </div>
-        <div class="bg-surface/50 p-2 rounded-lg border border-border">
-          <span class="text-subtext text-[10px]">データ4 / 特徴</span>
-          <p class="text-text leading-tight text-[11px]">${p.trivia}</p>
-        </div>
-      `;
-    }
-
-    function handleLHClick(pref) {
-      locHunterState.selectedPref = pref;
-      highlightMap(pref.id, 'normal', false);
-    }
-
-    function confirmLHSelection() {
-      if (!locHunterState.selectedPref) {
-        alert("地図上のどこか1カ所をタップして、ロケーションを特定してください！");
-        return;
-      }
-
-      const activePlayer = locHunterState.players[locHunterState.currentPlayerIdx];
-      locHunterState.guesses[activePlayer] = locHunterState.selectedPref.id;
-
-      SoundManager.playCorrect();
-
-      locHunterState.currentPlayerIdx++;
-      if (locHunterState.currentPlayerIdx < locHunterState.players.length) {
-        alert("選択を記録しました。次のプレイヤーに画面を渡してください！");
-        updateLHRoundUI();
-      } else {
-        // 全員解答完了、スコア集計と結果発表
-        revealLHResult();
-      }
-    }
-
-    function getBorderDistance(startId, targetId) {
-      if (startId === targetId) return 0;
-      let queue = [[startId, 0]];
-      let visited = new Set([startId]);
-      while (queue.length > 0) {
-        let [curr, dist] = queue.shift();
-        const neighbors = BORDERS[curr] || [];
-        for (let n of neighbors) {
-          if (n === targetId) return dist + 1;
-          if (!visited.has(n)) {
-            visited.add(n);
-            queue.push([n, dist + 1]);
-          }
-        }
-      }
-      return 10; // 島嶼部など未接続時のフォールバック
-    }
-
-    function revealLHResult() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-      
-      const secret = locHunterState.secretPref;
-      msg.innerHTML = `正解は <span class="text-dustyblue-600 font-black">${secret.name}</span> (県庁所在地: ${secret.capital}) でした！`;
-
-      document.getElementById('party-result-label').textContent = "各プレイヤーの予想と判定スコア";
-
-      // 地図上で正解をハイライト
-      highlightMap(secret.id, 'normal', true);
-
-      locHunterState.players.forEach(name => {
-        const guessId = locHunterState.guesses[name];
-        const guessPref = PREFECTURES.find(x => x.id === guessId);
-        const distance = getBorderDistance(guessId, secret.id);
-        
-        let score = 0;
-        let distText = "";
-        if (distance === 0) { score = 1000; distText = "ピンポイント直撃！"; }
-        else if (distance === 1) { score = 700; distText = "隣接県 (1県離れ)"; }
-        else if (distance === 2) { score = 400; distText = "ニアピン (2県離れ)"; }
-        else if (distance === 3) { score = 200; distText = "やや遠い (3県離れ)"; }
-        else { score = 100; distText = `${distance}県分離脱`; }
-
-        locHunterState.scores[name] += score;
-
-        const li = document.createElement('li');
-        li.className = "flex flex-col py-2.5 border-b border-border last:border-0";
-        li.innerHTML = `
-          <div class="flex justify-between items-center mb-1">
-            <span class="font-bold text-text">${name} さんの予想: ${guessPref ? guessPref.name : '未選択'}</span>
-            <span class="text-dustyblue-600 font-black tabular-nums">+${score} 点</span>
-          </div>
-          <div class="text-[10px] text-subtext">精度: ${distText} / 累計合計: ${locHunterState.scores[name]} 点</div>
-        `;
-        list.appendChild(li);
-      });
-
-      const nextBtn = document.querySelector('#view-party-result button');
-      nextBtn.textContent = locHunterState.round < locHunterState.maxRounds ? "次のロケーションへ" : "ゲーム結果発表へ";
-      nextBtn.onclick = () => {
-        locHunterState.round++;
-        if (locHunterState.round > locHunterState.maxRounds) {
-          showLHFinalLeaderboard();
-        } else {
-          switchView('game-loc-hunter');
-          setupLHRound();
-        }
-      };
-    }
-
-    function showLHFinalLeaderboard() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-      msg.textContent = "ハンター対戦終了！最終スコア";
-
-      document.getElementById('party-result-label').textContent = "ロケーション探索ポイントランキング";
-
-      const sorted = Object.entries(locHunterState.scores).sort((a,b)=>b[1]-a[1]);
-      sorted.forEach(([name, val], index) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
-        li.innerHTML = `
-          <span class="font-bold text-text">${index + 1}位: ${name}</span>
-          <span class="text-dustyblue-600 font-black text-sm tabular-nums">${val} 点</span>
-        `;
-        list.appendChild(li);
-      });
-
-      const nextBtn = document.querySelector('#view-party-result button');
-      nextBtn.textContent = "トップに戻る";
-      nextBtn.onclick = () => switchView('top');
-    }
-
-
-    // 【3】 特産品デリバリー (Specialty Delivery)
-    let deliveryState = {
-      startPref: null,
-      targetPref: null,
-      currentPref: null,
-      cargoName: "",
-      cargoValue: 10000,
-      steps: 0,
-      pendingMovePref: null
-    };
-
-    function startDeliveryGame() {
-      // 出発県と目的地の決定 (お互いに離れた県をチョイス)
-      const shuffled = [...PREFECTURES].sort(() => Math.random() - 0.5);
-      deliveryState.startPref = shuffled[0];
-      deliveryState.currentPref = shuffled[0];
-      
-      // 離れた目的地を探索
-      let bestTarget = shuffled[1];
-      let maxDist = 0;
-      for (let i = 1; i < 15; i++) {
-        const dist = getBorderDistance(shuffled[0].id, shuffled[i].id);
-        if (dist > maxDist && dist < 10) { 
-          maxDist = dist;
-          bestTarget = shuffled[i];
-        }
-      }
-      deliveryState.targetPref = bestTarget;
-      deliveryState.cargoName = `${deliveryState.startPref.name}の名産 (${deliveryState.startPref.food.split('・')[0]})`;
-      deliveryState.cargoValue = 10000;
-      deliveryState.steps = 0;
-      deliveryState.pendingMovePref = null;
-
-      resetMapState();
-      switchView('game-delivery');
-      
-      document.getElementById('del-quiz-overlay').classList.add('hidden');
-      document.getElementById('del-cargo-info').textContent = deliveryState.cargoName;
-      document.getElementById('del-target-name').textContent = deliveryState.targetPref.name;
-      
-      updateDeliveryUI();
-    }
-
-    function updateDeliveryUI() {
-      document.getElementById('del-steps').textContent = deliveryState.steps;
-      document.getElementById('del-cargo-value').textContent = deliveryState.cargoValue.toLocaleString() + " 円";
-      document.getElementById('del-current-name').textContent = deliveryState.currentPref.name;
-
-      // 現在位置と目的地を地図でハイライト
-      document.querySelectorAll('#map-container li').forEach(el => {
-        el.classList.remove('is-open', 'is-route-path');
-      });
-      
-      const currentEl = document.querySelector(`.p-eveMapPref--${deliveryState.currentPref.id}`);
-      if (currentEl) currentEl.classList.add('is-open'); 
-
-      const targetEl = document.querySelector(`.p-eveMapPref--${deliveryState.targetPref.id}`);
-      if (targetEl) targetEl.classList.add('is-route-path');
-
-      resetMapScale();
-    }
-
-    function handleDeliveryClick(pref) {
-      if (document.getElementById('del-quiz-overlay').classList.contains('hidden') === false) return; // 回答待ち中はロック
-      if (pref.id === deliveryState.currentPref.id) return;
-
-      const adjacentList = BORDERS[deliveryState.currentPref.id] || [];
-      if (adjacentList.includes(pref.id)) {
-        // 進入クイズ生成
-        deliveryState.pendingMovePref = pref;
-        showDeliveryQuiz(pref);
-      } else {
-        SoundManager.playIncorrect();
-        alert("隣り合っている隣接都道府県にのみ移動・配送できます！");
-      }
-    }
-
+    // ================= 10種類以上の簡単なテスト・日常クイズ生成ロジック =================
     function makePrefectureQuestion(pref) {
-      const qTypes = [
-        {
-          q: `「${pref.name}」の県庁所在地はどこ？`,
-          a: pref.capital,
-          getOpts: () => {
-            let set = new Set([pref.capital]);
-            while(set.size < 4) {
-              set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital);
-            }
-            return Array.from(set);
+      const qTypes = [];
+
+      // 1. 県庁所在地
+      qTypes.push({
+        q: `「${pref.name}」の県庁所在地はどこ？`,
+        a: pref.capital,
+        getOpts: () => {
+          let set = new Set([pref.capital]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital);
           }
-        },
-        {
-          q: `「${pref.name}」はどの地方区分に属している？`,
-          a: pref.region,
-          getOpts: () => REGIONS
-        },
-        {
-          q: `名物料理として「${pref.food.split('・')[0]}」が非常に有名な都道府県はどこ？`,
-          a: pref.name,
-          getOpts: () => {
-            let set = new Set([pref.name]);
-            while(set.size < 4) {
-              set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-            }
-            return Array.from(set);
-          }
-        },
-        {
-          q: `かつて「${pref.oldProv}」と呼ばれた地域にあたる都道府県はどこ？`,
-          a: pref.name,
-          getOpts: () => {
-            let set = new Set([pref.name]);
-            while(set.size < 4) {
-              set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-            }
-            return Array.from(set);
-          }
+          return Array.from(set);
         }
-      ];
-      // ランダムに設問を取得
+      });
+
+      // 2. 地方区分
+      qTypes.push({
+        q: `「${pref.name}」はどの地方区分に属している？`,
+        a: pref.region,
+        getOpts: () => REGIONS
+      });
+
+      // 3. 名物グルメ
+      const foodItem = pref.food.split('・')[0];
+      qTypes.push({
+        q: `名産・ご当地グルメとして「${foodItem}」が有名な都道府県はどこ？`,
+        a: pref.name,
+        getOpts: () => {
+          let set = new Set([pref.name]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 4. 令制国
+      qTypes.push({
+        q: `かつて「${pref.oldProv}」と呼ばれた旧国名にあたる都道府県はどこ？`,
+        a: pref.name,
+        getOpts: () => {
+          let set = new Set([pref.name]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 5. 難読地名
+      qTypes.push({
+        q: `難読地名として知られる「${pref.hardRead}」がある都道府県はどこ？`,
+        a: pref.name,
+        getOpts: () => {
+          let set = new Set([pref.name]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 6. 観光地
+      const tourItem = pref.tourism.split('・')[0];
+      qTypes.push({
+        q: `観光名所として「${tourItem}」がある都道府県はどこ？`,
+        a: pref.name,
+        getOpts: () => {
+          let set = new Set([pref.name]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 7. 特徴・トリビア
+      qTypes.push({
+        q: `「${pref.name}」に関する地理的特徴として正しいものはどれ？`,
+        a: pref.trivia,
+        getOpts: () => {
+          let set = new Set([pref.trivia]);
+          while(set.size < 4) {
+            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].trivia);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 8. 隣接する県の数
+      const adjCount = BORDERS[pref.id] ? BORDERS[pref.id].length : 0;
+      qTypes.push({
+        q: `「${pref.name}」に接（隣接）している都道府県の数はいくつ？`,
+        a: `${adjCount}つ`,
+        getOpts: () => {
+          let set = new Set([`${adjCount}つ`]);
+          while(set.size < 4) {
+            const randVal = Math.floor(Math.random() * 8) + 1;
+            set.add(`${randVal}つ`);
+          }
+          return Array.from(set);
+        }
+      });
+
+      // 9. 面積の広さ（大・中・小の分類）
+      let areaRank = "中規模（3,000〜10,000 ㎢）";
+      if (pref.area > 10000) areaRank = "極めて大規模（10,000 ㎢以上）";
+      else if (pref.area < 3000) areaRank = "小規模（3,000 ㎢未満）";
+      qTypes.push({
+        q: `「${pref.name}」の面積（約 ${pref.area} ㎢）の規模分類として正しいものはどれ？`,
+        a: areaRank,
+        getOpts: () => ["極めて大規模（10,000 ㎢以上）", "中規模（3,000〜10,000 ㎢）", "小規模（3,000 ㎢未満）"]
+      });
+
+      // 10. 特定の日本一（米・茶・果物・地形）
+      let mostFamousFeature = "その他";
+      if (pref.id === 'shizuoka') mostFamousFeature = "お茶の生産量が日本一";
+      else if (pref.id === 'yamanashi') mostFamousFeature = "ぶどう・桃の生産量が日本一";
+      else if (pref.id === 'aomori') mostFamousFeature = "りんごの生産量が日本一";
+      else if (pref.id === 'niigata') mostFamousFeature = "米（コシヒカリ）の生産が日本屈指";
+      else if (pref.id === 'ehime') mostFamousFeature = "みかんの生産量が全国トップクラス";
+      else if (pref.id === 'hokkaido') mostFamousFeature = "日本で最も面積が広い";
+      else if (pref.id === 'kagawa') mostFamousFeature = "日本で最も面積が狭い";
+      else if (pref.id === 'kumamoto') mostFamousFeature = "世界最大級のカルデラ（阿蘇山）がある";
+      else if (pref.id === 'shiga') mostFamousFeature = "日本最大の湖「琵琶湖」がある";
+      else if (pref.id === 'tokyo') mostFamousFeature = "日本の首都であり、人口が最も多い";
+
+      if (mostFamousFeature !== "その他") {
+        qTypes.push({
+          q: `「${pref.name}」の大きな特徴として正しいものはどれ？`,
+          a: mostFamousFeature,
+          getOpts: () => {
+            const list = [
+              "お茶の生産量が日本一",
+              "ぶどう・桃の生産量が日本一",
+              "りんごの生産量が日本一",
+              "米（コシヒカリ）の生産が日本屈指",
+              "みかんの生産量が全国トップクラス",
+              "日本で最も面積が広い",
+              "日本で最も面積が狭い",
+              "世界最大級 of カルデラ（阿蘇山）がある",
+              "日本最大の湖「琵琶湖」がある",
+              "日本の首都であり、人口が最も多い"
+            ];
+            let set = new Set([mostFamousFeature]);
+            while(set.size < 4) {
+              set.add(list[Math.floor(Math.random() * list.length)]);
+            }
+            return Array.from(set);
+          }
+        });
+      } else {
+        // 10番目の代用：一般的な地方名確認
+        qTypes.push({
+          q: `「${pref.name}」がある地方区分はどれ？`,
+          a: `${pref.region}地方`,
+          getOpts: () => REGIONS.map(r => `${r}地方`)
+        });
+      }
+
+      // 11. 気候の特徴
+      let climateDesc = "一般的な日本の気候";
+      if (['niigata', 'akita', 'yamagata', 'toyama', 'ishikawa', 'fukui'].includes(pref.id)) {
+        climateDesc = "冬に雪（降水量）が多く、夏は乾燥して晴れる「日本海側の気候」";
+      } else if (['tokyo', 'kanagawa', 'chiba', 'ibaraki', 'miyagi', 'shizuoka'].includes(pref.id)) {
+        climateDesc = "夏に雨が多く、冬は晴れて乾燥する「太平洋側の気候」";
+      } else if (['k} else if (['kagawa', 'ehime', 'hiroshima', 'okayama'].includes(pref.id)) {
+        climateDesc = "山地に挟まれ、年間を通して雨が少なく温暖な「瀬戸内の気候」";
+      } else if (['nagano', 'yamanashi', 'gifu'].includes(pref.id)) {
+        climateDesc = "標高が高く、年間降水量が少なめで寒暖差が激しい「中央高地の気候」";
+      } else if (pref.id === 'hokkaido') {
+        climateDesc = "梅雨がなく、冬が長くて年間を通して冷涼な「北海道の気候」";
+      } else if (pref.id === 'okinawa') {
+        climateDesc = "年間を通して暖かく、台風の影響を受けやすい「南西諸島の気候」";
+      }
+
+      if (climateDesc !== "一般的な日本の気候") {
+        qTypes.push({
+          q: `「${pref.name}」で見られる、気候区分や特徴に合致するものはどれ？`,
+          a: climateDesc,
+          getOpts: () => {
+            const cList = [
+              "冬に雪（降水量）が多く、夏は乾燥して晴れる「日本海側の気候」",
+              "夏に雨が多く、冬は晴れて乾燥する「太平洋側の気候」",
+              "山地に挟まれ、年間を通して雨が少なく温暖な「瀬戸内の気候」",
+              "標高が高く、年間降水量が少なめで寒暖差が激しい「中央高地の気候」",
+              "梅雨がなく、冬が長くて年間を通して冷涼な「北海道の気候」",
+              "年間を通して暖かく、台風の影響を受けやすい「南西諸島の気候」"
+            ];
+            let set = new Set([climateDesc]);
+            while(set.size < 4) {
+              set.add(cList[Math.floor(Math.random() * cList.length)]);
+            }
+            return Array.from(set);
+          }
+        });
+      }
+
       return qTypes[Math.floor(Math.random() * qTypes.length)];
     }
 
@@ -3929,7 +3094,6 @@
       updateDeliveryUI();
 
       if (pref.id === deliveryState.targetPref.id) {
-        // デリバリー完了！
         setTimeout(() => {
           SoundManager.playLevelUp();
           Confetti.start();
@@ -3937,7 +3101,7 @@
           const xpEarned = Math.round(deliveryState.cargoValue / 50);
           addXP(xpEarned);
 
-          alert(`🎉 配送完了！\n${deliveryState.steps}手で無事に市場へ届けました！\n最終売却額: ${deliveryState.cargoValue.toLocaleString()}円\nボーナス経験値: ${xpEarned}XP を獲得！`);
+          alert(`配送完了！\n${deliveryState.steps}手で無事に市場へ届けました！\n最終売却額: ${deliveryState.cargoValue.toLocaleString()}円\nボーナス経験値: ${xpEarned}XP を獲得！`);
           switchView('top');
         }, 300);
       }
@@ -3946,7 +3110,7 @@
 
     // 【4】 天下統一の道 (Road to Unification)
     let unificationState = {
-      players: [], // { name, colorHex, territories: [] }
+      players: [], 
       currentPlayerIdx: 0,
       round: 1,
       maxRounds: 8,
@@ -3954,20 +3118,18 @@
     };
 
     const CLAN_COLORS = [
-      { name: "織田家", hex: "#f43f5e" }, // 赤
-      { name: "武田家", hex: "#0ea5e9" }, // 青
-      { name: "上杉家", hex: "#22c55e" }, // 緑
-      { name: "毛利家", hex: "#f97316" }  // 橙
+      { name: "織田家", hex: "#f43f5e" }, 
+      { name: "武田家", hex: "#0ea5e9" }, 
+      { name: "上杉家", hex: "#22c55e" }, 
+      { name: "毛利家", hex: "#f97316" }  
     ];
 
     function startUnificationGame(playerNames) {
-      // 1〜4家の大名のセットアップ
       unificationState.round = 1;
       unificationState.maxRounds = 8;
       unificationState.currentPlayerIdx = 0;
       unificationState.pendingTargetPref = null;
 
-      // 領地の均等分配
       const numPlayers = playerNames.length;
       unificationState.players = playerNames.map((name, i) => ({
         name: name,
@@ -3976,7 +3138,6 @@
         territories: []
       }));
 
-      // 開始領国の付与 (ランダムで離れた位置に大名の本拠地を設置)
       const startingPoints = ['tokyo', 'osaka', 'miyagi', 'fukuoka', 'hokkaido', 'aichi', 'hiroshima', 'kochi'];
       const shuffledPoints = startingPoints.sort(() => Math.random() - 0.5);
       
@@ -4003,14 +3164,13 @@
     }
 
     function updateUnificationUI() {
-      // リーダーボード更新
       const board = document.getElementById('uni-leaderboard');
       board.innerHTML = '';
 
       unificationState.players.forEach(p => {
         const li = document.createElement('li');
         li.className = "flex justify-between items-center py-1.5 px-3 rounded-xl";
-        li.style.backgroundColor = p.colorHex + "15"; // 透明度の高い背景色
+        li.style.backgroundColor = p.colorHex + "15"; 
         li.style.borderLeft = `4px solid ${p.colorHex}`;
         li.innerHTML = `
           <span class="text-text">${p.name} (${p.clan})</span>
@@ -4021,7 +3181,6 @@
     }
 
     function updateUnificationMap() {
-      // 地図描画、全県を走査して各大名のカラーに染め上げる
       document.querySelectorAll('#map-container li').forEach(el => {
         el.classList.remove('is-open', 'is-route-path');
         el.style.removeProperty('color');
@@ -4039,17 +3198,15 @@
     }
 
     function handleUnificationClick(pref) {
-      if (document.getElementById('uni-quiz-overlay').classList.contains('hidden') === false) return; // 回答ロック中
+      if (document.getElementById('uni-quiz-overlay').classList.contains('hidden') === false) return; 
 
       const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
       
-      // 既に自分が支配している県はタップ不可
       if (activePlayer.territories.includes(pref.id)) {
         alert("その都道府県は既にあなたの支配下にあります。他国を選択してください！");
         return;
       }
 
-      // 境界が接している自領地が1つでもあるかチェック（侵略可能判定）
       let isAdjacentToMyTerritory = false;
       activePlayer.territories.forEach(myPrefId => {
         const adj = BORDERS[myPrefId] || [];
@@ -4063,7 +3220,6 @@
         return;
       }
 
-      // 侵略チェッククイズ
       unificationState.pendingTargetPref = pref;
       showUnificationQuiz(pref);
     }
@@ -4099,7 +3255,6 @@
         SoundManager.playCorrect();
         alert(`侵略大成功！ ${pref.name} を征服し、我が支配国としました。`);
         
-        // 他の大名が持っている場合は剥奪
         unificationState.players.forEach(p => {
           const index = p.territories.indexOf(pref.id);
           if (index !== -1) {
@@ -4114,7 +3269,6 @@
         alert(`侵攻失敗！敵国の防衛ラインを崩すことはできませんでした。`);
       }
 
-      // ターン終了判定
       unificationState.currentPlayerIdx++;
       if (unificationState.currentPlayerIdx >= unificationState.players.length) {
         unificationState.currentPlayerIdx = 0;
@@ -4133,11 +3287,10 @@
       const list = document.getElementById('party-result-list');
       list.innerHTML = '';
       const msg = document.getElementById('party-win-message');
-      msg.textContent = "戦国サバイバル天下統一戦、決着！";
+      msg.textContent = "サバイバル天下統一戦、決着！";
 
       document.getElementById('party-result-label').textContent = "各大名家の最終支配国数";
 
-      // 最終結果発表ソート
       const sorted = [...unificationState.players].sort((a,b)=>b.territories.length - a.territories.length);
       sorted.forEach((p, index) => {
         const li = document.createElement('li');
