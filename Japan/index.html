@@ -925,9 +925,16 @@
           地図から正解だと思う県をタップし、下の「決定」を押してください！
         </div>
 
-        <div class="flex gap-2 shrink-0 mb-4 select-none">
-          <button id="btn-lh-confirm" onclick="confirmLHSelection()" class="flex-grow py-4 bg-dustyblue-600 text-surface font-black rounded-2xl active:scale-95 transition-transform text-sm shadow-sm">この場所に決定！</button>
-        </div>
+        <!-- 新設した正解発表用カードUI -->
+<div id="lh-result-overlay" class="p-4 bg-slate-100 rounded-2xl mb-4 hidden border border-border animate-fade-in text-center shrink-0">
+  <p id="lh-result-text" class="text-sm font-black text-text"></p>
+  <button onclick="nextLHRound()" class="mt-3 px-6 py-2.5 bg-dustyblue-500 text-surface font-black rounded-xl text-xs active:scale-95 transition-transform">次のラウンドへ</button>
+</div>
+
+<!-- ラッパーを設けて切り替え制御 -->
+<div class="flex gap-2 shrink-0 mb-4 select-none" id="lh-confirm-wrap">
+  <button id="btn-lh-confirm" onclick="confirmLHSelection()" class="flex-grow py-4 bg-dustyblue-600 text-surface font-black rounded-2xl active:scale-95 transition-transform text-sm shadow-sm">この場所に決定！</button>
+</div>
 
         <button onclick="switchView('top')" class="w-full py-4 mt-auto bg-text text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">ゲームを終了する</button>
       </div>
@@ -3490,31 +3497,43 @@
         }
 
         function confirmLHSelection() {
-          if (!lhState.selectedPref) {
-            alert("地図上から対象の都道府県を選択してください。");
-            return;
-          }
-          
-          const isCorrect = (lhState.selectedPref.id === lhState.targetPref.id);
-          if (isCorrect) {
-            SoundManager.playCorrect();
-            lhState.players[lhState.currentPlayerIdx].score += 20;
-            alert(`正解！ロケーションを特定しました。(+20点)`);
-          } else {
-            SoundManager.playIncorrect();
-            alert(`ハズレ！正解は 「${lhState.targetPref.name}」 でした。`);
-          }
-          
-          lhState.currentPlayerIdx = (lhState.currentPlayerIdx + 1) % lhState.players.length;
-          lhState.rounds++;
-          
-          if (lhState.rounds > lhState.maxRounds) {
-            finishLHGame();
-          } else {
-            lhState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-            setupLHRound();
-          }
-        }
+  if (!lhState.selectedPref) {
+    alert("地図上から対象の都道府県を選択してください。");
+    return;
+  }
+  const isCorrect = (lhState.selectedPref.id === lhState.targetPref.id);
+  const resultOverlay = document.getElementById('lh-result-overlay');
+  const resultText = document.getElementById('lh-result-text');
+  
+  // 操作ボタンを非表示にし、結果用UIを表示
+  document.getElementById('lh-confirm-wrap').classList.add('hidden');
+  resultOverlay.classList.remove('hidden');
+  
+  if (isCorrect) {
+    SoundManager.playCorrect();
+    lhState.players[lhState.currentPlayerIdx].score += 20;
+    resultText.innerHTML = `<span class="text-sage-600 font-black">◎ 正解！ロケーションを特定しました。</span><br><span class="text-xs text-subtext">お見事！正確な場所を特定しました。(+20点)</span>`;
+    highlightMap(lhState.targetPref.id, 'normal', true);
+  } else {
+    SoundManager.playIncorrect();
+    resultText.innerHTML = `<span class="text-dustyrose-600 font-black">✗ 不正解！</span><br><span class="text-xs text-subtext">正解は 「${lhState.targetPref.name}」 でした。</span>`;
+    highlightMap(lhState.targetPref.id, 'normal', true);
+  }
+}
+
+// 新設：結果画面のボタンを押した時に次のラウンドへ進む処理
+function nextLHRound() {
+  document.getElementById('lh-result-overlay').classList.add('hidden');
+  lhState.currentPlayerIdx = (lhState.currentPlayerIdx + 1) % lhState.players.length;
+  lhState.rounds++;
+  
+  if (lhState.rounds > lhState.maxRounds) {
+    finishLHGame();
+  } else {
+    lhState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+    setupLHRound();
+  }
+}
 
         function finishLHGame() {
           switchView('party-result');
