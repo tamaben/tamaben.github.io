@@ -1232,107 +1232,46 @@
     ];
 
     // ================= 状態管理 (統合) =================
-    let qState = {
-      mode: '', // 'test', 'sil', 'local', 'oldprov', 'hardread', 'border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'
-      format: '',
-      currentQ: 1,
-      totalQ: 47,
-      score: 0,
-      timer: 15,
-      interval: null,
-      remaining: [],
-      currentPref: null,
-      mistakes: [],
-      streak: 0,
-      remainingTopo: [],
-      remainingStat: [],
-      remainingMapscale: []
-    };
+    // 重複をすべて削除し、必要なステート変数を一度だけ定義
+let qState = {
+  mode: '',
+  format: '',
+  currentQ: 1,
+  totalQ: 47,
+  score: 0,
+  timer: 15,
+  interval: null,
+  remaining: [],
+  currentPref: null,
+  mistakes: [],
+  streak: 0,
+  remainingTopo: [],
+  remainingStat: [],
+  remainingMapscale: []
+};
 
-    let sprintState = {
-      score: 0,
-      timer: 30,
-      currentPref: null
-    };
+let sprintState = { score: 0, timer: 30, currentPref: null };
+let routeState = { start: null, target: null, current: null, path: [], steps: 0 };
+let partyState = { gameType: '', topicGenre: 'name', players: [], currentIdx: 0, timer: 180, interval: null, bombInterval: null };
+let wwVoteState = { voterIndex: 0, votes: {}, votedTarget: null };
+let assocState = { secretPref: null, hints: [], currentHintIdx: 0, score: 100 };
+let bombState = { timer: 15, category: '', correctPrefs: [], usedPrefs: [], currentPlayerIdx: 0 };
+let hsState = { targetPref: null, rounds: 1, maxRounds: 5, score: 0, currentPlayerIdx: 0, players: [] };
+let lhState = { targetPref: null, rounds: 1, maxRounds: 3, players: [], currentPlayerIdx: 0, selectedPref: null, score: 0 };
+let deliveryState = { startPref: null, targetPref: null, currentPref: null, cargoValue: 10000, steps: 0 };
 
-    let routeState = {
-      start: null,
-      target: null,
-      current: null,
-      path: [],
-      steps: 0
-    };
+const mapWrapper = document.getElementById('map-wrapper');
+const mapTransform = document.getElementById('map-transform');
+const mapContainer = document.getElementById('map-container');
+let baseScale = 1;
+let prefCenters = {};
+let transformState = { scale: 1, translateX: 0, translateY: 0 };
 
-    let partyState = {
-      gameType: '', // 'hide_seek', 'loc_hunter', 'unification', 'ww', 'ng'
-      topicGenre: 'name',
-      players: [],
-      currentIdx: 0,
-      timer: 180,
-      interval: null,
-      bombInterval: null
-    };
-
-    let wwVoteState = {
-      voterIndex: 0,
-      votes: {},
-      votedTarget: null
-    };
-
-    let assocState = {
-      secretPref: null,
-      hints: [],
-      currentHintIdx: 0,
-      score: 100
-    };
-
-    let bombState = {
-      timer: 15,
-      category: '',
-      correctPrefs: [],
-      usedPrefs: [],
-      currentPlayerIdx: 0
-    };
-
-    let hsState = {
-      targetPref: null,
-      rounds: 1,
-      maxRounds: 5,
-      score: 0,
-      currentPlayerIdx: 0,
-      players: []
-    };
-
-    let lhState = {
-      targetPref: null,
-      rounds: 1,
-      maxRounds: 3,
-      players: [],
-      currentPlayerIdx: 0,
-      selectedPref: null,
-      score: 0
-    };
-
-    let deliveryState = {
-      startPref: null,
-      targetPref: null,
-      currentPref: null,
-      cargoValue: 10000,
-      steps: 0
-    };
-
-    const mapWrapper = document.getElementById('map-wrapper');
-    const mapTransform = document.getElementById('map-transform');
-    const mapContainer = document.getElementById('map-container');
-    let baseScale = 1;
-    let prefCenters = {};
-
-    // 手動パン・ズーム状態
-    let transformState = {
-      scale: 1,       // baseScale に対する相対倍率
-      translateX: 0,  // 横スクロール移動量
-      translateY: 0   // 縦スクロール移動量
-    };
+let isPointerDown = false;
+let pointerCache = [];
+let prevDiff = -1;
+let startTranslateX = 0, startTranslateY = 0;
+let startPointerX = 0, startPointerY = 0;
 
     // 判定用 Canvas
     const hitCanvas = document.createElement('canvas');
