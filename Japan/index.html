@@ -3425,37 +3425,10 @@
         }
 
         function setupLHRound() {
-          document.getElementById('lh-round-num').textContent = lhState.rounds;
-          const player = lhState.players[lhState.currentPlayerIdx];
-          document.getElementById('lh-active-player').textContent = player.name;
-          
-          const container = document.getElementById('lh-clues-container');
-          container.innerHTML = '';
-          
-          const p = lhState.targetPref;
-          const clues = [
-            `旧令制国名: ${p.oldProv}`,
-            `難読な地名: ${p.hardRead}`,
-            `観光スポット: ${p.tourism}`,
-            `詳細データ: ${p.trivia}`
-          ];
-          
-          clues.forEach(clue => {
-            const div = document.createElement('div');
-            div.className = "border-b border-border pb-1.5 last:border-0";
-            div.textContent = clue;
-            container.appendChild(div);
-          });
-          
-          lhState.selectedPref = null;
-          resetMapState();
-
-          // 決定ボタンを再表示し、結果表示カードを非表示にする
-          document.getElementById('lh-confirm-wrap').classList.remove('hidden');
-          document.getElementById('lh-result-overlay').classList.add('hidden');
-
-          switchView('game-loc-hunter');
-        }
+  // 決定ボタンを再表示し、正解バナーを隠す
+  document.getElementById('lh-confirm-wrap').classList.remove('hidden');
+  document.getElementById('lh-result-overlay').classList.add('hidden');
+}
 
         function handleLHClick(pref) {
           lhState.selectedPref = pref;
@@ -3883,14 +3856,16 @@
   // 万が一フォントロードがブロック・遅延した場合、500ms後に強制的に地図を描画して表示するセーフティ
   const timeoutId = setTimeout(initApp, 500);
 
-  document.fonts.ready.then(() => {
-    clearTimeout(timeoutId);
-    initApp();
-  }).catch((err) => {
-    console.warn("フォントロードのプロミスが拒否されました。代替描画を開始します:", err);
-    clearTimeout(timeoutId);
-    initApp();
-  });
+  // 500ms後に強制起動するタイマーを併用し、フォント読み込みが遅れても必ず地図を初期化して表示する
+const timeoutId = setTimeout(initApp, 500);
+
+document.fonts.ready.then(() => {
+  clearTimeout(timeoutId);
+  initApp();
+}).catch((err) => {
+  clearTimeout(timeoutId);
+  initApp();
+});
 
   window.addEventListener('resize', resetMapScale);
 });
