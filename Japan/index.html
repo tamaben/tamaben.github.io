@@ -3844,25 +3844,56 @@
         // ================== 初期ロード処理 ==================
         // ========================================================
         window.addEventListener('DOMContentLoaded', () => {
-          const cover = document.getElementById('loading-cover');
-          
-          const savedMute = localStorage.getItem('geo_sound_muted');
-          if (savedMute === '1') {
-            toggleMute(); 
-          }
+  const cover = document.getElementById('loading-cover');
+  
+  const savedMute = localStorage.getItem('geo_sound_muted');
+  if (savedMute === '1') {
+    toggleMute(); 
+  }
 
-          document.fonts.ready.then(() => {
-            setTimeout(() => {
-              calculatePrefCenters();
-              generateHitMap();
-              Confetti.init(); 
-              updateUIFromStorage();
-              resetMapScale();
-              if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
-            }, 150);
-            window.addEventListener('resize', resetMapScale);
-          });
-        });
+  let initialized = false;
+  const initApp = () => {
+    if (initialized) return;
+    initialized = true;
+    
+    // 個別の処理が失敗してもロード画面の解除を妨げないようにエラーハンドリングを追加
+    try {
+      calculatePrefCenters();
+    } catch (err) {
+      console.warn("重心の計算処理に失敗しました。デフォルト値を使用します:", err);
+    }
+    try {
+      generateHitMap();
+    } catch (err) {
+      console.warn("ヒットマップの生成に失敗しました:", err);
+    }
+    try {
+      Confetti.init(); 
+    } catch (err) {
+      console.warn("Confettiの初期化に失敗しました:", err);
+    }
+    
+    updateUIFromStorage();
+    resetMapScale();
+    if (cover) {
+      cover.classList.add('opacity-0', 'pointer-events-none');
+    }
+  };
+
+  // 万が一フォントロードがブロック・遅延した場合、500ms後に強制的に地図を描画して表示するセーフティ
+  const timeoutId = setTimeout(initApp, 500);
+
+  document.fonts.ready.then(() => {
+    clearTimeout(timeoutId);
+    initApp();
+  }).catch((err) => {
+    console.warn("フォントロードのプロミスが拒否されました。代替描画を開始します:", err);
+    clearTimeout(timeoutId);
+    initApp();
+  });
+
+  window.addEventListener('resize', resetMapScale);
+});
   </script>
 </body>
 </html>
