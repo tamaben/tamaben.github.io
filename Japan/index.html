@@ -171,7 +171,7 @@
   <!-- ヘッダー -->
   <header class="flex justify-between items-center px-4 py-1 shrink-0 bg-surface border border-border rounded-2xl shadow-sm">
     <div class="flex items-center gap-3">
-      <!-- logo.pngの表示とサイトのサイズに合わせた自動サイズ調整対応 -->
+      <!-- logo.pngの表示とサイズ自動調整対応 -->
       <img src="logo.png" alt="GEO LEARNING Logo" class="h-10 md:h-12 w-auto object-contain" id="app-logo">
       <div class="hidden sm:flex flex-col">
         <span class="font-black text-lg tracking-tight text-dustyblue-600">GEO LEARNING</span>
@@ -179,7 +179,6 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- 音声ON/OFF切り替え -->
       <button id="btn-sound-toggle" onclick="toggleMute()" class="bg-base border border-border hover:bg-slate-200 text-subtext font-bold p-2.5 rounded-full transition-transform active:scale-95 flex items-center justify-center" title="サウンドの切り替え">
         <svg id="icon-unmuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         <svg id="icon-muted" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-500"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
@@ -310,11 +309,7 @@
               </button>
               
               <!-- 総合テスト -->
-              <button onclick="switchView('test-config')" class="flex flex-col items-center p-4 bg-dustyblue-50/70 border border-dustyblue-200 rounded-3xl active:scale-95 transition-all hover:border-dustyblue-400 hover:bg-dustyblue-50 shadow-sm group">
-                <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyblue-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
-                <span class="font-black text-sm text-text">総合テスト</span>
-                <span class="text-[9px] font-bold text-subtext mt-1 text-center">様々な形式で出題</span>
-              </button>
+              <button onclick="switchView('test-config')" class="flex flex-col items-center p-4 bg-dustyblue-50/70 border border-dustyblue-200 rounded-3xl active:scale-95 transition-all hover:border-dustyblue-400 hover:bg-dustyblue-50 shadow-sm group font-bold"><div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-2xl mb-2 group-hover:bg-dustyblue-200 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div><span class="font-black text-sm text-text">総合テスト</span><span class="text-[9px] font-bold text-subtext mt-1 text-center">様々な形式で出題</span></button>
               
               <!-- シルエットクイズ -->
               <button onclick="switchView('sil-config')" class="flex flex-col items-center p-4 bg-dustyyellow-50/70 border border-dustyyellow-200 rounded-3xl active:scale-95 transition-all hover:border-dustyyellow-400 hover:bg-dustyyellow-50 shadow-sm group">
@@ -1033,19 +1028,19 @@
       { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。', area: 2100 },
       { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。', area: 2400 },
       { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。', area: 12500 },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越 intellectual 国（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
       { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。', area: 4100 },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化信の発掘地で、メガネのフレーム生産も盛んです。', area: 4100 },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。', area: 4100 },
       { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。', area: 4400 },
       { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（しなの）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。', area: 13500 },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがはら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。', area: 10600 },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみが原）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。', area: 10600 },
       { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。', area: 7700 },
       { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。', area: 5100 },
       { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。', area: 5700 },
       { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。', area: 4000 },
       { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。', area: 4600 },
       { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（ほうてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。', area: 1900 },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、物理的に甲子園球場があります。', area: 8400 },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・but 陸', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。', area: 8400 },
       { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。', area: 3600 },
       { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。', area: 4700 },
       { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。', area: 3500 },
@@ -1224,7 +1219,7 @@
       { title: "名前に「山」がつく都道府県", check: p => p.name.includes("山") },
       { title: "「関東」地方に属する都県", check: p => p.region === "関東" },
       { title: "「近畿」地方に属する府県", check: p => p.region === "近畿" },
-      { title: "内陸県（海に面していない県）", check: p => !['hokkaido', 'aomori', 'iwate', 'miyagi', 'akita', 'yamagata', 'fukushima', 'ibaraki', 'chiba', 'tokyo', 'kanagawa', 'niigata', 'toyama', 'ishikawa', 'fukui', 'shizuoka', 'aichi', 'mie', 'kyoto', 'osaka', 'hyogo', 'wakayama', 'tottori', 'shimane', 'okayama', 'hiroshima', 'yamaguchi', 'tokushima', 'kagawa', 'ehime', 'kochi', 'fukuoka', 'saga', 'nagasaki', 'kumamoto', 'oita', 'miyazaki', 'kagoshima', 'okinawa'].includes(p.id) },
+      { title: "内陸県（海に面していない県）", check: p => !['hokkaido', 'aomori', 'iwate', 'miyagi', 'akita', 'yamagata', 'fukushima', 'ibaraki', 'chiba', 'tokyo', 'kanagawa', 'niigata', 'toyama', 'ishikawa', 'fukui', 'shizuoka', 'aichi', 'mie', 'shiga', 'kyoto', 'osaka', 'hyogo', 'wakayama', 'tottori', 'shimane', 'okayama', 'hiroshima', 'yamaguchi', 'tokushima', 'kagawa', 'ehime', 'kochi', 'fukuoka', 'saga', 'nagasaki', 'kumamoto', 'oita', 'miyazaki', 'kagoshima', 'okinawa'].includes(p.id) },
       { title: "名前に「川」がつく都道府県", check: p => p.name.includes("川") },
       { title: "名前に「島」がつく都道府県", check: p => p.name.includes("島") },
       { title: "「東北」地方に属する県", check: p => p.region === "東北" },
@@ -1232,46 +1227,107 @@
     ];
 
     // ================= 状態管理 (統合) =================
-    // 重複をすべて削除し、必要なステート変数を一度だけ定義
-let qState = {
-  mode: '',
-  format: '',
-  currentQ: 1,
-  totalQ: 47,
-  score: 0,
-  timer: 15,
-  interval: null,
-  remaining: [],
-  currentPref: null,
-  mistakes: [],
-  streak: 0,
-  remainingTopo: [],
-  remainingStat: [],
-  remainingMapscale: []
-};
+    let qState = {
+      mode: '', // 'test', 'sil', 'local', 'oldprov', 'hardread', 'border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'
+      format: '',
+      currentQ: 1,
+      totalQ: 47,
+      score: 0,
+      timer: 15,
+      interval: null,
+      remaining: [],
+      currentPref: null,
+      mistakes: [],
+      streak: 0,
+      remainingTopo: [],
+      remainingStat: [],
+      remainingMapscale: []
+    };
 
-let sprintState = { score: 0, timer: 30, currentPref: null };
-let routeState = { start: null, target: null, current: null, path: [], steps: 0 };
-let partyState = { gameType: '', topicGenre: 'name', players: [], currentIdx: 0, timer: 180, interval: null, bombInterval: null };
-let wwVoteState = { voterIndex: 0, votes: {}, votedTarget: null };
-let assocState = { secretPref: null, hints: [], currentHintIdx: 0, score: 100 };
-let bombState = { timer: 15, category: '', correctPrefs: [], usedPrefs: [], currentPlayerIdx: 0 };
-let hsState = { targetPref: null, rounds: 1, maxRounds: 5, score: 0, currentPlayerIdx: 0, players: [] };
-let lhState = { targetPref: null, rounds: 1, maxRounds: 3, players: [], currentPlayerIdx: 0, selectedPref: null, score: 0 };
-let deliveryState = { startPref: null, targetPref: null, currentPref: null, cargoValue: 10000, steps: 0 };
+    let sprintState = {
+      score: 0,
+      timer: 30,
+      currentPref: null
+    };
 
-const mapWrapper = document.getElementById('map-wrapper');
-const mapTransform = document.getElementById('map-transform');
-const mapContainer = document.getElementById('map-container');
-let baseScale = 1;
-let prefCenters = {};
-let transformState = { scale: 1, translateX: 0, translateY: 0 };
+    let routeState = {
+      start: null,
+      target: null,
+      current: null,
+      path: [],
+      steps: 0
+    };
 
-let isPointerDown = false;
-let pointerCache = [];
-let prevDiff = -1;
-let startTranslateX = 0, startTranslateY = 0;
-let startPointerX = 0, startPointerY = 0;
+    let partyState = {
+      gameType: '', // 'hide_seek', 'loc_hunter', 'unification', 'ww', 'ng'
+      topicGenre: 'name',
+      players: [],
+      currentIdx: 0,
+      timer: 180,
+      interval: null,
+      bombInterval: null
+    };
+
+    let wwVoteState = {
+      voterIndex: 0,
+      votes: {},
+      votedTarget: null
+    };
+
+    let assocState = {
+      secretPref: null,
+      hints: [],
+      currentHintIdx: 0,
+      score: 100
+    };
+
+    let bombState = {
+      timer: 15,
+      category: '',
+      correctPrefs: [],
+      usedPrefs: [],
+      currentPlayerIdx: 0
+    };
+
+    let hsState = {
+      targetPref: null,
+      rounds: 1,
+      maxRounds: 5,
+      score: 0,
+      currentPlayerIdx: 0,
+      players: []
+    };
+
+    let lhState = {
+      targetPref: null,
+      rounds: 1,
+      maxRounds: 3,
+      players: [],
+      currentPlayerIdx: 0,
+      selectedPref: null,
+      score: 0
+    };
+
+    let deliveryState = {
+      startPref: null,
+      targetPref: null,
+      currentPref: null,
+      cargoValue: 10000,
+      steps: 0
+    };
+
+    const mapWrapper = document.getElementById('map-wrapper');
+    const mapTransform = document.getElementById('map-transform');
+    const mapContainer = document.getElementById('map-container');
+    let baseScale = 1;
+    let prefCenters = {};
+
+    // 手動パン・ズーム状態
+    let transformState = {
+      scale: 1,       // baseScale に対する相対倍率
+      translateX: 0,  // 横スクロール移動量
+      translateY: 0   // 縦スクロール移動量
+    };
 
     // 判定用 Canvas
     const hitCanvas = document.createElement('canvas');
@@ -2126,10 +2182,8 @@ let startPointerX = 0, startPointerY = 0;
       return `<div class="my-4 flex justify-center"><div class="p-4 bg-white rounded-3xl border border-border inline-block shadow-sm">${innerSVG}</div></div>`;
     }
 
-    // ================= クイズテスト共通処理 =================
     function startQuiz(mode) {
       qState.mode = mode;
-      
       if(mode === 'test') {
         const fObj = document.querySelector('input[name="test-format"]:checked');
         if(fObj) qState.format = fObj.value;
@@ -2137,13 +2191,10 @@ let startPointerX = 0, startPointerY = 0;
         const fObj = document.querySelector('input[name="sil-format"]:checked');
         if(fObj) qState.format = fObj.value;
       }
-      
       qState.score = 0;
       qState.currentQ = 1;
-      
       const examModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
       qState.totalQ = examModes.includes(mode) ? 10 : 47; 
-      
       qState.mistakes = [];
       qState.streak = 0;
       qState.remaining = [...PREFECTURES].sort(() => Math.random() - 0.5);
@@ -2155,10 +2206,8 @@ let startPointerX = 0, startPointerY = 0;
       } else if (mode === 'mapscale') {
         qState.remainingMapscale = [...MAPSCALE_QUESTIONS].sort(() => Math.random() - 0.5);
       }
-      
       switchView('quiz-play');
       document.getElementById('quiz-total-count').textContent = qState.totalQ;
-      
       nextQuestion();
     }
 
@@ -2169,7 +2218,6 @@ let startPointerX = 0, startPointerY = 0;
       qState.score = 0;
       qState.currentQ = 1;
       qState.streak = 0;
-      
       switchView('quiz-play');
       document.getElementById('quiz-total-count').textContent = qState.totalQ;
       nextQuestion();
@@ -2180,7 +2228,6 @@ let startPointerX = 0, startPointerY = 0;
         showQuizResult();
         return;
       }
-
       const streakWrap = document.getElementById('quiz-streak-wrap');
       const streakCount = document.getElementById('quiz-streak-count');
       if (qState.streak >= 3) {
@@ -2194,7 +2241,6 @@ let startPointerX = 0, startPointerY = 0;
 
       qState.currentPref = qState.remaining.pop();
       const p = qState.currentPref;
-      
       let qText = '', correctAns = '', hint = p.region + '地方';
       let optType = 'name'; 
       let colorClass = 'sage';
@@ -2225,7 +2271,6 @@ let startPointerX = 0, startPointerY = 0;
           hint = "名物: " + p.food.split('・')[0]; 
           highlightMap(null, 'normal', false);
         }
-
       } else if (qState.mode === 'sil') {
         headerText = "シルエットクイズ";
         colorClass = 'dustyyellow';
@@ -2237,7 +2282,6 @@ let startPointerX = 0, startPointerY = 0;
           qText = 'この<span class="text-dustyyellow-600 font-bold">都道府県</span>は？';
           correctAns = p.name; optType = 'name';
         }
-
       } else if (qState.mode === 'local') {
         headerText = "ご当地クイズ";
         colorClass = 'dustyorange';
@@ -2247,7 +2291,18 @@ let startPointerX = 0, startPointerY = 0;
         const typeLabel = isFood ? '名物・特産' : '観光地・名所';
         qText = `<span class="text-[12px] font-bold text-dustyorange-600 block mb-1">【${typeLabel}】</span>「${topicText}」で有名な<span class="text-dustyorange-600">都道府県</span>は？`;
         correctAns = p.name; optType = 'name';
-
+      } else if (qState.mode === 'oldprov') {
+        headerText = "旧国名クイズ";
+        colorClass = 'dustypurple';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-dustypurple-600 block mb-1">【令制国】</span>「${p.oldProv}」があった<span class="text-dustypurple-600">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
+      } else if (qState.mode === 'hardread') {
+        headerText = "難読地名クイズ";
+        colorClass = 'dustyrose';
+        highlightMap(null, 'normal', false);
+        qText = `<span class="text-[12px] font-bold text-dustyrose-600 block mb-1">【難読地名】</span>「${p.hardRead}」がある<span class="text-dustyrose-600">都道府県</span>は？`;
+        correctAns = p.name; optType = 'name';
       } else if (qState.mode === 'border') {
         headerText = "お隣り県はどれ？";
         colorClass = 'sage';
@@ -2263,7 +2318,6 @@ let startPointerX = 0, startPointerY = 0;
         correctAns = correctPrefObj.name;
         optType = 'name';
         highlightMap(p.id, 'normal', true);
-
       } else if (qState.mode === 'size') {
         headerText = "面積くらべ";
         colorClass = 'dustyblue';
@@ -2279,7 +2333,6 @@ let startPointerX = 0, startPointerY = 0;
         generateTwoOptions(p.name, secondP.name, correctAns, colorClass);
         startQuizTimer(colorClass);
         return;
-
       } else if (qState.mode === 'uonzu') {
         headerText = "雨温図マスター";
         colorClass = 'dustyblue';
@@ -2290,7 +2343,6 @@ let startPointerX = 0, startPointerY = 0;
         optType = 'name';
         hint = targetClimate.desc;
         highlightMap(correctPrefObj.id, 'normal', false);
-
       } else if (qState.mode === 'topo') {
         headerText = "自然地形パズル";
         colorClass = 'sage';
@@ -2319,7 +2371,6 @@ let startPointerX = 0, startPointerY = 0;
         generateCustomOptions(shuffledOpts, correctAns, colorClass);
         startQuizTimer(colorClass);
         return;
-
       } else if (qState.mode === 'industry') {
         headerText = "統計グラフ分析";
         colorClass = 'dustyorange';
@@ -2338,7 +2389,6 @@ let startPointerX = 0, startPointerY = 0;
         generateCustomOptions(statQ.opts.sort(() => Math.random() - 0.5), correctAns, colorClass);
         startQuizTimer(colorClass);
         return;
-
       } else if (qState.mode === 'mapscale') {
         headerText = "地図記号・縮尺特訓";
         colorClass = 'dustyrose';
@@ -2347,7 +2397,6 @@ let startPointerX = 0, startPointerY = 0;
           showQuizResult();
           return;
         }
-        
         if (msQ.type === 'symbol') {
           qText = `<span class="text-xs text-subtext block">【地図記号】</span>${msQ.q}${generateSymbolSVG(msQ.symbolId)}`;
         } else {
@@ -2449,7 +2498,6 @@ let startPointerX = 0, startPointerY = 0;
     function updateQuizTimerUI(colorClass) {
       const timerBar = document.getElementById('quiz-timer-bar');
       const timerText = document.getElementById('quiz-timer-text');
-      
       if(qState.timer === 15) {
         if(timerBar) {
           timerBar.style.transition = 'none';
@@ -2463,9 +2511,7 @@ let startPointerX = 0, startPointerY = 0;
           timerBar.style.width = `${progress}%`;
         }
       }
-
       if(timerText) timerText.textContent = qState.timer;
-
       if(timerBar) {
         timerBar.className = `h-full rounded-full transition-all duration-1000 ease-linear ${qState.timer <= 5 ? 'bg-dustyrose-500' : 'bg-' + colorClass + '-500'}`;
       }
@@ -2476,20 +2522,16 @@ let startPointerX = 0, startPointerY = 0;
 
     function checkAnswer(ans, correctAns, clickedBtn) {
       clearInterval(qState.interval);
-      
       const buttons = document.querySelectorAll('#quiz-options button');
       buttons.forEach(btn => {
         btn.disabled = true;
         btn.style.pointerEvents = 'none'; 
       });
-
       const isCorrect = (ans === correctAns);
-
       buttons.forEach(btn => {
         const textSpan = btn.querySelector('span');
         if (!textSpan) return;
         const btnText = textSpan.textContent;
-
         if (btnText === correctAns) {
           btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm lg:text-base shadow-sm flex items-center justify-between text-sage-600";
           btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ 正解</span>`;
@@ -2502,16 +2544,13 @@ let startPointerX = 0, startPointerY = 0;
       if (isCorrect) {
         qState.streak++;
         qState.score++;
-        
         SoundManager.playCorrect();
         addXP(10); 
-        
         if (qState.streak > 0 && qState.streak % 5 === 0) {
           SoundManager.playLevelUp();
           Confetti.start();
           addXP(20); 
         }
-
         if (qState.currentPref) {
           updateWrongCount(qState.currentPref.id, -1);
         }
@@ -2521,16 +2560,13 @@ let startPointerX = 0, startPointerY = 0;
           qState.mistakes.push(qState.currentPref);
           updateWrongCount(qState.currentPref.id, 1);
         }
-        
         SoundManager.playIncorrect();
-        
         const playArea = document.getElementById('view-quiz-play');
         if (playArea) {
           playArea.classList.add('animate-shake');
           setTimeout(() => playArea.classList.remove('animate-shake'), 400);
         }
       }
-
       setTimeout(() => {
         qState.currentQ++;
         nextQuestion();
@@ -2541,9 +2577,7 @@ let startPointerX = 0, startPointerY = 0;
       highlightMap(null, 'normal', false);
       document.getElementById('result-score').textContent = qState.score;
       document.getElementById('result-max').textContent = `/${qState.totalQ}`;
-      
       addXP(50);
-
       const isNewHighScore = saveHighScore(qState.mode, qState.score);
       const resLabel = document.getElementById('result-label');
       if (isNewHighScore) {
@@ -2555,10 +2589,8 @@ let startPointerX = 0, startPointerY = 0;
         resLabel.textContent = "SCORE";
         resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
       }
-      
       const retryBtn = document.getElementById('btn-retry-mistakes');
       const reviewBtn = document.getElementById('btn-review-mistakes');
-      
       const dynamicErrorModes = ['border', 'size', 'uonzu', 'topo', 'industry', 'mapscale'];
       if (qState.mistakes && qState.mistakes.length > 0 && !dynamicErrorModes.includes(qState.mode)) {
         retryBtn.classList.remove('hidden');
@@ -2567,14 +2599,12 @@ let startPointerX = 0, startPointerY = 0;
         retryBtn.classList.add('hidden');
         reviewBtn.classList.add('hidden');
       }
-      
       switchView('quiz-result');
     }
 
     function showReviewMistakes() {
       const container = document.getElementById('review-list-container');
       container.innerHTML = '';
-      
       qState.mistakes.forEach(p => {
         const btn = document.createElement('button');
         btn.className = "bg-surface border border-border py-4 rounded-2xl text-sm font-bold text-text hover:bg-dustyblue-50 hover:border-dustyblue-400 hover:text-dustyblue-600 transition-colors shadow-sm active:scale-95";
@@ -2582,22 +2612,17 @@ let startPointerX = 0, startPointerY = 0;
         btn.onclick = () => showStudyDetail(p, 'review-mistakes');
         container.appendChild(btn);
       });
-
       switchView('review-mistakes');
     }
 
-    // ================= 県庁スプリンター =================
     function startSprintGame() {
       sprintState.score = 0;
       sprintState.timer = 30;
       qState.streak = 0;
-      
       switchView('quiz-play');
-      
       document.getElementById('quiz-header-mode').textContent = "県庁スプリンター";
       document.getElementById('quiz-header-mode').className = "text-[11px] font-black text-dustypurple-600 tracking-widest mb-1";
       document.getElementById('quiz-total-count').textContent = "∞";
-      
       nextSprintQuestion();
       startSprintTimer();
     }
@@ -2605,7 +2630,6 @@ let startPointerX = 0, startPointerY = 0;
     function startSprintTimer() {
       clearInterval(qState.interval);
       updateSprintTimerUI();
-      
       qState.interval = setInterval(() => {
         sprintState.timer--;
         updateSprintTimerUI();
@@ -2619,7 +2643,6 @@ let startPointerX = 0, startPointerY = 0;
     function updateSprintTimerUI() {
       const timerBar = document.getElementById('quiz-timer-bar');
       const timerText = document.getElementById('quiz-timer-text');
-      
       if (timerBar) {
         const progress = Math.min(100, (sprintState.timer / 30) * 100);
         timerBar.style.width = `${progress}%`;
@@ -2633,14 +2656,11 @@ let startPointerX = 0, startPointerY = 0;
 
     function nextSprintQuestion() {
       document.getElementById('quiz-q-count').textContent = sprintState.score + 1;
-      
       sprintState.currentPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
       const p = sprintState.currentPref;
-      
       document.getElementById('quiz-question-text').innerHTML = `「${p.name}」の<span class="text-dustypurple-600">県庁所在地</span>は？`;
       document.getElementById('quiz-hint-space').classList.add('hidden');
       document.getElementById('quiz-hint').classList.add('hidden');
-
       highlightMap(p.id, 'normal', true);
 
       const opts = new Set([p.capital]);
@@ -2666,14 +2686,11 @@ let startPointerX = 0, startPointerY = 0;
         btn.disabled = true;
         btn.style.pointerEvents = 'none';
       });
-
       const isCorrect = (ans === correctAns);
-
       buttons.forEach(btn => {
         const textSpan = btn.querySelector('span');
         if (!textSpan) return;
         const btnText = textSpan.textContent;
-
         if (btnText === correctAns) {
           btn.className = "py-4 px-4 bg-sage-50 border-2 border-sage-500 rounded-2xl font-bold text-sm shadow-sm flex items-center justify-between text-sage-600";
           btn.innerHTML = `<span class="text-sage-600">${btnText}</span><span class="text-sage-600 font-bold">✓ +3秒</span>`;
@@ -2691,14 +2708,12 @@ let startPointerX = 0, startPointerY = 0;
       } else {
         sprintState.timer = Math.max(0, sprintState.timer - 5);
         SoundManager.playIncorrect();
-        
         const playArea = document.getElementById('view-quiz-play');
         if (playArea) {
           playArea.classList.add('animate-shake');
           setTimeout(() => playArea.classList.remove('animate-shake'), 400);
         }
       }
-
       setTimeout(() => {
         if (sprintState.timer > 0) {
           nextSprintQuestion();
@@ -2711,10 +2726,8 @@ let startPointerX = 0, startPointerY = 0;
     function finishSprintGame() {
       clearInterval(qState.interval);
       highlightMap(null, 'normal', false);
-      
       document.getElementById('result-score').textContent = sprintState.score;
       document.getElementById('result-max').textContent = "問正解";
-      
       const isNewHigh = saveHighScore('sprint', sprintState.score);
       const resLabel = document.getElementById('result-label');
       if (isNewHigh) {
@@ -2726,16 +2739,13 @@ let startPointerX = 0, startPointerY = 0;
         resLabel.textContent = "スプリンタースコア";
         resLabel.className = "text-subtext font-bold mb-1 tracking-widest text-[10px]";
       }
-
       document.getElementById('btn-review-mistakes').classList.add('hidden');
       document.getElementById('btn-retry-mistakes').classList.add('hidden');
       switchView('quiz-result');
     }
 
-    // ================= 境界線ルートコネクト =================
     function startRouteGame() {
       resetMapState();
-      
       const routes = [
         { start: 'tokyo', target: 'osaka' },
         { start: 'chiba', target: 'hiroshima' },
@@ -2745,10 +2755,8 @@ let startPointerX = 0, startPointerY = 0;
         { start: 'miyagi', target: 'niigata' }
       ];
       const sel = routes[Math.floor(Math.random() * routes.length)];
-      
       const startPrefObj = PREFECTURES.find(x => x.id === sel.start);
       const targetPrefObj = PREFECTURES.find(x => x.id === sel.target);
-
       routeState = {
         start: startPrefObj,
         target: targetPrefObj,
@@ -2756,13 +2764,11 @@ let startPointerX = 0, startPointerY = 0;
         path: [startPrefObj.id],
         steps: 0
       };
-
       document.getElementById('route-step-count').textContent = "0";
       document.getElementById('route-start-name').textContent = startPrefObj.name;
       document.getElementById('route-target-name').textContent = targetPrefObj.name;
       document.getElementById('route-current-name').textContent = startPrefObj.name;
       document.getElementById('route-goal-name').textContent = targetPrefObj.name;
-
       switchView('pref-route');
       updateRouteMapUI();
     }
@@ -2771,29 +2777,24 @@ let startPointerX = 0, startPointerY = 0;
       document.querySelectorAll('#map-container li').forEach(el => {
         el.classList.remove('is-open', 'is-route-path');
       });
-
       routeState.path.forEach(id => {
         const el = document.querySelector(`.p-eveMapPref--${id}`);
         if (el) el.classList.add('is-route-path');
       });
-
       const currentEl = document.querySelector(`.p-eveMapPref--${routeState.current.id}`);
       if (currentEl) {
         currentEl.classList.remove('is-route-path');
         currentEl.classList.add('is-open');
       }
-      
       const targetEl = document.querySelector(`.p-eveMapPref--${routeState.target.id}`);
       if (targetEl && routeState.current.id !== routeState.target.id) {
         targetEl.classList.add('is-open');
       }
-
       resetMapScale();
     }
 
     function handleRouteClick(pref) {
       if (pref.id === routeState.current.id) return;
-
       const adjacentList = BORDERS[routeState.current.id] || [];
       if (adjacentList.includes(pref.id)) {
         routeState.current = pref;
@@ -2801,10 +2802,8 @@ let startPointerX = 0, startPointerY = 0;
         routeState.steps++;
         document.getElementById('route-step-count').textContent = routeState.steps;
         document.getElementById('route-current-name').textContent = pref.name;
-        
         SoundManager.playCorrect();
         updateRouteMapUI();
-
         if (pref.id === routeState.target.id) {
           setTimeout(() => {
             SoundManager.playLevelUp();
@@ -2824,171 +2823,6 @@ let startPointerX = 0, startPointerY = 0;
       }
     }
 
-    // ================= 10種類以上の簡単なテスト・日常クイズ生成ロジック =================
-    function makePrefectureQuestion(pref) {
-      const qTypes = [];
-
-      // 1. 県庁所在地
-      qTypes.push({
-        q: `「${pref.name}」の県庁所在地はどこ？`,
-        a: pref.capital,
-        getOpts: () => {
-          let set = new Set([pref.capital]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].capital);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 2. 地方区分
-      qTypes.push({
-        q: `「${pref.name}」はどの地方区分に属している？`,
-        a: pref.region,
-        getOpts: () => REGIONS
-      });
-
-      // 3. 名物グルメ
-      const foodItem = pref.food.split('・')[0];
-      qTypes.push({
-        q: `名産・ご当地グルメとして「${foodItem}」が有名な都道府県はどこ？`,
-        a: pref.name,
-        getOpts: () => {
-          let set = new Set([pref.name]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 4. 令制国
-      qTypes.push({
-        q: `かつて「${pref.oldProv}」と呼ばれた旧国名にあたる都道府県はどこ？`,
-        a: pref.name,
-        getOpts: () => {
-          let set = new Set([pref.name]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 5. 難読地名
-      qTypes.push({
-        q: `難読地名として知られる「${pref.hardRead}」がある都道府県はどこ？`,
-        a: pref.name,
-        getOpts: () => {
-          let set = new Set([pref.name]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 6. 観光地
-      const tourItem = pref.tourism.split('・')[0];
-      qTypes.push({
-        q: `観光名所として「${tourItem}」がある都道府県はどこ？`,
-        a: pref.name,
-        getOpts: () => {
-          let set = new Set([pref.name]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].name);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 7. 特徴・トリビア
-      qTypes.push({
-        q: `「${pref.name}」に関する地理的特徴として正しいものはどれ？`,
-        a: pref.trivia,
-        getOpts: () => {
-          let set = new Set([pref.trivia]);
-          while(set.size < 4) {
-            set.add(PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)].trivia);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 8. 隣接する県の数
-      const adjCount = BORDERS[pref.id] ? BORDERS[pref.id].length : 0;
-      qTypes.push({
-        q: `「${pref.name}」に接（隣接）している都道府県の数はいくつ？`,
-        a: `${adjCount}つ`,
-        getOpts: () => {
-          let set = new Set([`${adjCount}つ`]);
-          while(set.size < 4) {
-            const randVal = Math.floor(Math.random() * 8) + 1;
-            set.add(`${randVal}つ`);
-          }
-          return Array.from(set);
-        }
-      });
-
-      // 9. 面積の広さ
-      let areaRank = "中規模（3,000〜10,000 ㎢）";
-      if (pref.area > 10000) areaRank = "極めて大規模（10,000 ㎢以上）";
-      else if (pref.area < 3000) areaRank = "小規模（3,000 ㎢未満）";
-      qTypes.push({
-        q: `「${pref.name}」の面積（約 ${pref.area} ㎢）の規模分類として正しいものはどれ？`,
-        a: areaRank,
-        getOpts: () => ["極めて大規模（10,000 ㎢以上）", "中規模（3,000〜10,000 ㎢）", "小規模（3,000 ㎢未満）"]
-      });
-
-      // 10. 特定の日本一
-      let mostFamousFeature = "その他";
-      if (pref.id === 'shizuoka') mostFamousFeature = "お茶の生産量が日本一";
-      else if (pref.id === 'yamanashi') mostFamousFeature = "ぶどう・桃の生産量が日本一";
-      else if (pref.id === 'aomori') mostFamousFeature = "りんごの生産量が日本一";
-      else if (pref.id === 'niigata') mostFamousFeature = "米（コシヒカリ）の生産が日本屈指";
-      else if (pref.id === 'ehime') mostFamousFeature = "みかんの生産量が全国トップクラス";
-      else if (pref.id === 'hokkaido') mostFamousFeature = "日本で最も面積が広い";
-      else if (pref.id === 'kagawa') mostFamousFeature = "日本で最も面積が狭い";
-      else if (pref.id === 'kumamoto') mostFamousFeature = "世界最大級のカルデラ（阿蘇山）がある";
-      else if (pref.id === 'shiga') mostFamousFeature = "日本最大の湖「琵琶湖」がある";
-      else if (pref.id === 'tokyo') mostFamousFeature = "日本の首都であり、人口が最も多い";
-
-      if (mostFamousFeature !== "その他") {
-        qTypes.push({
-          q: `「${pref.name}」の大きな特徴として正しいものはどれ？`,
-          a: mostFamousFeature,
-          getOpts: () => {
-            const list = [
-              "お茶の生産量が日本一",
-              "ぶどう・桃の生産量が日本一",
-              "りんごの生産量が日本一",
-              "米（コシヒカリ）の生産が日本屈指",
-              "みかんの生産量が全国トップクラス",
-              "日本で最も面積が広い",
-              "日本で最も面積が狭い",
-              "世界最大級のカルデラ（阿蘇山）がある",
-              "日本最大の湖「琵琶湖」がある",
-              "日本の首都であり、人口が最も多い"
-            ];
-            let set = new Set([mostFamousFeature]);
-            while(set.size < 4) {
-              set.add(list[Math.floor(Math.random() * list.length)]);
-            }
-            return Array.from(set);
-          }
-        });
-      } else {
-        qTypes.push({
-          q: `「${pref.name}」がある地方区分はどれ？`,
-          a: `${pref.region}地方`,
-          getOpts: () => REGIONS.map(r => `${r}地方`)
-        });
-      }
-
-      return qTypes[Math.floor(Math.random() * qTypes.length)];
-    }
-
-    // ================== パーティーゲームセットアップ ==================
     function goToPartyNames() {
       const pc = parseInt(document.getElementById('party-player-count').value);
       const container = document.getElementById('party-names-container');
@@ -3024,31 +2858,31 @@ let startPointerX = 0, startPointerY = 0;
         document.getElementById('party-title').textContent = "地図でかくれんぼ！";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れたマスコットを、ヒントを頼りに探し出しタップするリアルタイム探索ゲームです。";
+        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れたマスコットを、ヒントを頼りに探し出す子供向けの協力・対戦探索ゲームです。";
       } else if (type === 'loc_hunter') {
         document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyblue-600"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
         document.getElementById('party-title').textContent = "ロケーションハンター";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "出題される日本の詳細な地理歴史データをもとに、そのピンポイントな場所を地図上から見極めるロケーション探索戦です。";
+        document.getElementById('party-rule-text').innerHTML = "旧国名、難読地名、詳細雑学などを含む高度なロケーション調査データを読み解き、地図上をピンポイントで射抜く本格推理ゲームです。（大人・教養向け）";
       } else if (type === 'unification') {
         document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyorange-600"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M19 19l-4-4M5 5l4 4"/></svg>`;
         document.getElementById('party-title').textContent = "天下統一の道";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "自分の領土に隣接する都道府県を攻め、進入用地理クイズに正解して支配国（プレイヤーカラー）を拡大していくボードゲームです。";
+        document.getElementById('party-rule-text').innerHTML = "戦国大名となって日本全土を奪い合うシミュレーションゲームです。自領と接する未支配地や他国の領地に攻め込み、クイズに正解すれば領土を自分のもの（大名色）に塗り替えられます！";
       } else if (type === 'ww') {
-        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustypurple-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
         document.getElementById('party-title').textContent = "地理ワードウルフ";
         document.getElementById('party-wolf-count-wrap').classList.remove('hidden');
         document.getElementById('party-topic-wrap').classList.remove('hidden');
         document.getElementById('party-rule-text').innerHTML = "全員にお題が配られますが、一人だけ異なるお題を配られたウルフがいます。誰がお題の違う「ウルフ」か話し合いで暴きましょう！(推奨3人〜)";
       } else if (type === 'ng') {
-        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
+        document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-dustyrose-600"><path d="m15 9-6 6"/><path d="m9 9 6 6"/><circle cx="12" cy="12" r="10"/></svg>`;
         document.getElementById('party-title').textContent = "地理NGワード推理戦";
         document.getElementById('party-wolf-count-wrap').classList.add('hidden');
         document.getElementById('party-topic-wrap').classList.add('hidden');
-        document.getElementById('party-rule-text').innerHTML = "自分だけ見えないNGワードをおでこに貼られた状態でスタート。他のプレイヤーからの地理的ヒントをもとに自分の言葉を推理して当てましょう。";
+        document.getElementById('party-rule-text').innerHTML = "自分のNGワード（実は隠された都道府県）が自分だけ見えない状態で始まります。他のプレイヤーは画面を見てヒントを出します。自分のおでこに貼られたワードを当てるゲームです！(2人〜)";
       }
       switchView('party-config');
     }
@@ -3087,10 +2921,8 @@ let startPointerX = 0, startPointerY = 0;
       } else if (partyState.gameType === 'ng') {
         const pref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
         const ngWords = generateNGWords(pref);
-        partyState.players = names.map((partyState.players = names.map((name, i) => ({
-          id: i + 1,
-          name: name,
-          role: 'citizen',
+        partyState.players = names.map((name, i) => ({
+          id: i + 1, name: name, role: 'citizen',
           pref: pref,
           topic: pref.name,
           ngWord: ngWords[i % ngWords.length]
@@ -3489,563 +3321,563 @@ let startPointerX = 0, startPointerY = 0;
       switchView('party-result');
       const loser = partyState.players[bombState.currentPlayerIdx];
       const msg = document.getElementById('party-win-message');
-      msg.innerHTML = `💥 ドカーン！！！ 💥<br><span class="text-sm font-bold text-dustyrose-600 mt-2 block">${loser.name} さんの手元で爆発しました！</span>`;
-      document.getElementById('party-result-label').textContent = "正解の都道府県一覧（今回使われた県）";
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      bombState.correctPrefs.forEach(id => {
-        const pObj = PREFECTURES.find(x => x.id === id);
-        const wasUsed = bombState.usedPrefs.includes(id);
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-2 border-b border-border last:border-0";
-        li.innerHTML = `
-          <span class="font-bold text-text">${pObj.name}</span>
-          <span class="text-[10px] font-black ${wasUsed ? 'text-sage-600' : 'text-subtext'}">${wasUsed ? '正解済み' : '未解答'}</span>
-        `;
-        list.appendChild(li);
-      });
-    }
+          msg.innerHTML = `💥 ドカーン！！！ 💥<br><span class="text-sm font-bold text-dustyrose-600 mt-2 block">${loser.name} さんの手元で爆発しました！</span>`;
+          document.getElementById('party-result-label').textContent = "正解の都道府県一覧（今回使われた県）";
+          const list = document.getElementById('party-result-list');
+          list.innerHTML = '';
+          bombState.correctPrefs.forEach(id => {
+            const pObj = PREFECTURES.find(x => x.id === id);
+            const wasUsed = bombState.usedPrefs.includes(id);
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center py-2 border-b border-border last:border-0";
+            li.innerHTML = `
+              <span class="font-bold text-text">${pObj.name}</span>
+              <span class="text-[10px] font-black ${wasUsed ? 'text-sage-600' : 'text-subtext'}">${wasUsed ? '正解済み' : '未解答'}</span>
+            `;
+            list.appendChild(li);
+          });
+        }
 
-    function stopBombGame() {
-      clearInterval(partyState.bombInterval);
-      switchView('top');
-    }
+        function stopBombGame() {
+          clearInterval(partyState.bombInterval);
+          switchView('top');
+        }
 
-    // ================= 地図でかくれんぼ！ =================
-    function startHSGame(playerNames) {
-      hsState = {
-        targetPref: PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)],
-        rounds: 1,
-        maxRounds: 5,
-        score: 0,
-        currentPlayerIdx: 0,
-        players: playerNames.map((name, i) => ({ id: i + 1, name: name, score: 0 }))
-      };
-      document.getElementById('hs-max-rounds').textContent = hsState.maxRounds;
-      document.getElementById('hs-result-overlay').classList.add('hidden');
-      setupHSRound();
-    }
+        // ================= 地図でかくれんぼ！ =================
+        function startHSGame(playerNames) {
+          hsState = {
+            targetPref: PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)],
+            rounds: 1,
+            maxRounds: 5,
+            score: 0,
+            currentPlayerIdx: 0,
+            players: playerNames.map((name, i) => ({ id: i + 1, name: name, score: 0 }))
+          };
+          document.getElementById('hs-max-rounds').textContent = hsState.maxRounds;
+          document.getElementById('hs-result-overlay').classList.add('hidden');
+          setupHSRound();
+        }
 
-    function setupHSRound() {
-      document.getElementById('hs-round-num').textContent = hsState.rounds;
-      const player = hsState.players[hsState.currentPlayerIdx];
-      document.getElementById('hs-active-player').textContent = player.name;
-      
-      const hintsContainer = document.getElementById('hs-hints-container');
-      hintsContainer.innerHTML = '';
-      
-      const p = hsState.targetPref;
-      const hints = [
-        `地方区分: ${p.region}地方`,
-        `名物・特産: ${p.food.split('・')[0]}`,
-        `旧国名: ${p.oldProv}`
-      ];
-      
-      hints.forEach(hintText => {
-        const div = document.createElement('div');
-        div.className = "border-b border-sage-100/50 pb-1 last:border-0";
-        div.textContent = hintText;
-        hintsContainer.appendChild(div);
-      });
-      
-      resetMapState();
-      switchView('game-hide-seek');
-    }
+        function setupHSRound() {
+          document.getElementById('hs-round-num').textContent = hsState.rounds;
+          const player = hsState.players[hsState.currentPlayerIdx];
+          document.getElementById('hs-active-player').textContent = player.name;
+          
+          const hintsContainer = document.getElementById('hs-hints-container');
+          hintsContainer.innerHTML = '';
+          
+          const p = hsState.targetPref;
+          const hints = [
+            `地方区分: ${p.region}地方`,
+            `名物・特産: ${p.food.split('・')[0]}`,
+            `旧国名: ${p.oldProv}`
+          ];
+          
+          hints.forEach(hintText => {
+            const div = document.createElement('div');
+            div.className = "border-b border-sage-100/50 pb-1 last:border-0";
+            div.textContent = hintText;
+            hintsContainer.appendChild(div);
+          });
+          
+          resetMapState();
+          switchView('game-hide-seek');
+        }
 
-    function handleHSClick(pref) {
-      if (!document.getElementById('hs-result-overlay').classList.contains('hidden')) return;
+        function handleHSClick(pref) {
+          if (!document.getElementById('hs-result-overlay').classList.contains('hidden')) return;
 
-      const isCorrect = (pref.id === hsState.targetPref.id);
-      const resultOverlay = document.getElementById('hs-result-overlay');
-      const resultText = document.getElementById('hs-result-text');
-      
-      resultOverlay.classList.remove('hidden');
-      
-      if (isCorrect) {
-        SoundManager.playCorrect();
-        hsState.players[hsState.currentPlayerIdx].score += 10;
-        resultText.innerHTML = `<span class="text-sage-600 font-black">正解！見つかりました！</span><br><span class="text-xs text-subtext">お見事！${pref.name}に隠れていました。(+10点)</span>`;
-        highlightMap(pref.id, 'normal', true);
-      } else {
-        SoundManager.playIncorrect();
-        resultText.innerHTML = `<span class="text-dustyrose-600 font-black">ハズレ！そこにはいませんでした。</span><br><span class="text-xs text-subtext">正解は ${hsState.targetPref.name} でした。</span>`;
-        highlightMap(hsState.targetPref.id, 'normal', true);
-      }
-    }
+          const isCorrect = (pref.id === hsState.targetPref.id);
+          const resultOverlay = document.getElementById('hs-result-overlay');
+          const resultText = document.getElementById('hs-result-text');
+          
+          resultOverlay.classList.remove('hidden');
+          
+          if (isCorrect) {
+            SoundManager.playCorrect();
+            hsState.players[hsState.currentPlayerIdx].score += 10;
+            resultText.innerHTML = `<span class="text-sage-600 font-black">正解！見つかりました！</span><br><span class="text-xs text-subtext">お見事！${pref.name}に隠れていました。(+10点)</span>`;
+            highlightMap(pref.id, 'normal', true);
+          } else {
+            SoundManager.playIncorrect();
+            resultText.innerHTML = `<span class="text-dustyrose-600 font-black">ハズレ！そこにはいませんでした。</span><br><span class="text-xs text-subtext">正解は ${hsState.targetPref.name} でした。</span>`;
+            highlightMap(hsState.targetPref.id, 'normal', true);
+          }
+        }
 
-    function nextHSRound() {
-      document.getElementById('hs-result-overlay').classList.add('hidden');
-      hsState.currentPlayerIdx = (hsState.currentPlayerIdx + 1) % hsState.players.length;
-      hsState.rounds++;
-      
-      if (hsState.rounds > hsState.maxRounds) {
-        finishHSGame();
-      } else {
-        hsState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-        setupHSRound();
-      }
-    }
+        function nextHSRound() {
+          document.getElementById('hs-result-overlay').classList.add('hidden');
+          hsState.currentPlayerIdx = (hsState.currentPlayerIdx + 1) % hsState.players.length;
+          hsState.rounds++;
+          
+          if (hsState.rounds > hsState.maxRounds) {
+            finishHSGame();
+          } else {
+            hsState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+            setupHSRound();
+          }
+        }
 
-    function finishHSGame() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-      msg.textContent = "かくれんぼゲーム終了！";
-      
-      document.getElementById('party-result-label').textContent = "各プレイヤーのスコア";
-      
-      const sorted = [...hsState.players].sort((a, b) => b.score - a.score);
-      sorted.forEach((p, idx) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
-        li.innerHTML = `
-          <span class="font-bold text-text">${idx + 1}位: ${p.name}</span>
-          <span class="font-black text-sage-600">${p.score} 点</span>
-        `;
-        list.appendChild(li);
-      });
-      
-      SoundManager.playLevelUp();
-      Confetti.start();
-    }
-
-    // ================= ロケーションハンター =================
-    function startLHGame(playerNames) {
-      lhState = {
-        targetPref: PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)],
-        rounds: 1,
-        maxRounds: 3,
-        currentPlayerIdx: 0,
-        selectedPref: null,
-        players: playerNames.map((name, i) => ({ id: i + 1, name: name, score: 0 }))
-      };
-      document.getElementById('lh-round-num').textContent = lhState.rounds;
-      setupLHRound();
-    }
-
-    function setupLHRound() {
-      document.getElementById('lh-round-num').textContent = lhState.rounds;
-      const player = lhState.players[lhState.currentPlayerIdx];
-      document.getElementById('lh-active-player').textContent = player.name;
-      
-      const container = document.getElementById('lh-clues-container');
-      container.innerHTML = '';
-      
-      const p = lhState.targetPref;
-      const clues = [
-        `旧令制国名: ${p.oldProv}`,
-        `難読な地名: ${p.hardRead}`,
-        `観光スポット: ${p.tourism}`,
-        `詳細データ: ${p.trivia}`
-      ];
-      
-      clues.forEach(clue => {
-        const div = document.createElement('div');
-        div.className = "border-b border-border pb-1.5 last:border-0";
-        div.textContent = clue;
-        container.appendChild(div);
-      });
-      
-      lhState.selectedPref = null;
-      resetMapState();
-      switchView('game-loc-hunter');
-    }
-
-    function handleLHClick(pref) {
-      lhState.selectedPref = pref;
-      highlightMap(pref.id, 'normal', false);
-    }
-
-    function confirmLHSelection() {
-      if (!lhState.selectedPref) {
-        alert("地図上から対象の都道府県を選択してください。");
-        return;
-      }
-      
-      const isCorrect = (lhState.selectedPref.id === lhState.targetPref.id);
-      if (isCorrect) {
-        SoundManager.playCorrect();
-        lhState.players[lhState.currentPlayerIdx].score += 20;
-        alert(`正解！ロケーションを特定しました。(+20点)`);
-      } else {
-        SoundManager.playIncorrect();
-        alert(`ハズレ！正解は 「${lhState.targetPref.name}」 でした。`);
-      }
-      
-      lhState.currentPlayerIdx = (lhState.currentPlayerIdx + 1) % lhState.players.length;
-      lhState.rounds++;
-      
-      if (lhState.rounds > lhState.maxRounds) {
-        finishLHGame();
-      } else {
-        lhState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-        setupLHRound();
-      }
-    }
-
-    function finishLHGame() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-      msg.textContent = "ロケーションハント完了！";
-      
-      document.getElementById('party-result-label').textContent = "各ハンターの最終スコア";
-      
-      const sorted = [...lhState.players].sort((a, b) => b.score - a.score);
-      sorted.forEach((p, idx) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
-        li.innerHTML = `
-          <span class="font-bold text-text">${idx + 1}位: ${p.name}</span>
-          <span class="font-black text-dustyblue-600">${p.score} 点</span>
-        `;
-        list.appendChild(li);
-      });
-      
-      SoundManager.playLevelUp();
-      Confetti.start();
-    }
-
-    // ================= 特産品デリバリー =================
-    function startDeliveryGame() {
-      resetMapState();
-      const start = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      let target = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      while (start.id === target.id) {
-        target = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
-      }
-      
-      deliveryState = {
-        startPref: start,
-        targetPref: target,
-        currentPref: start,
-        cargoValue: 10000,
-        steps: 0
-      };
-      
-      document.getElementById('del-cargo-info').textContent = start.food.split('・')[0] || "名物特産品";
-      document.getElementById('del-target-name').textContent = target.name;
-      
-      updateDeliveryUI();
-      switchView('game-delivery');
-    }
-
-    function updateDeliveryUI() {
-      document.getElementById('del-steps').textContent = deliveryState.steps;
-      document.getElementById('del-cargo-value').textContent = `${deliveryState.cargoValue.toLocaleString()} 円`;
-      document.getElementById('del-current-name').textContent = deliveryState.currentPref.name;
-      
-      document.querySelectorAll('#map-container li').forEach(el => {
-        el.classList.remove('is-open', 'is-route-path');
-      });
-      
-      const currentEl = document.querySelector(`.p-eveMapPref--${deliveryState.currentPref.id}`);
-      if (currentEl) currentEl.classList.add('is-open');
-      
-      const targetEl = document.querySelector(`.p-eveMapPref--${deliveryState.targetPref.id}`);
-      if (targetEl) targetEl.classList.add('is-route-path');
-      
-      resetMapScale();
-    }
-
-    function handleDeliveryClick(pref) {
-      if (pref.id === deliveryState.currentPref.id) return;
-      
-      const adj = BORDERS[deliveryState.currentPref.id] || [];
-      if (adj.includes(pref.id)) {
-        showDeliveryQuiz(pref);
-      } else {
-        SoundManager.playIncorrect();
-        alert("隣接していない都道府県には移動できません。");
-      }
-    }
-
-    function showDeliveryQuiz(pref) {
-      const qData = makePrefectureQuestion(pref);
-      const overlay = document.getElementById('del-quiz-overlay');
-      overlay.classList.remove('hidden');
-
-      document.getElementById('del-quiz-title').textContent = `${pref.name} への進入チェック！`;
-      document.getElementById('del-quiz-question').textContent = qData.q;
-
-      const optContainer = document.getElementById('del-quiz-options');
-      optContainer.innerHTML = '';
-
-      const opts = qData.getOpts().sort(() => Math.random() - 0.5);
-      opts.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = "py-3 bg-surface border border-border rounded-xl font-bold text-xs hover:border-dustyblue-400 active:scale-95 transition-transform shadow-sm text-text";
-        btn.textContent = opt;
-        btn.onclick = () => checkDeliveryAnswer(opt, qData.a, pref);
-        optContainer.appendChild(btn);
-      });
-    }
-
-    function checkDeliveryAnswer(ans, correct, pref) {
-      document.getElementById('del-quiz-overlay').classList.add('hidden');
-      
-      const isCorrect = (ans === correct);
-      deliveryState.steps++;
-
-      if (isCorrect) {
-        SoundManager.playCorrect();
-        alert(`${pref.name} への進入に成功！鮮度と売却価値をキープしました。`);
-      } else {
-        SoundManager.playIncorrect();
-        deliveryState.cargoValue = Math.max(2000, deliveryState.cargoValue - 2000);
-        alert(`不正解！迂回・遅延ペナルティで積み荷の価値が低下しました。(-2,000円)`);
-      }
-
-      deliveryState.currentPref = pref;
-      updateDeliveryUI();
-
-      if (pref.id === deliveryState.targetPref.id) {
-        setTimeout(() => {
+        function finishHSGame() {
+          switchView('party-result');
+          const list = document.getElementById('party-result-list');
+          list.innerHTML = '';
+          const msg = document.getElementById('party-win-message');
+          msg.textContent = "かくれんぼゲーム終了！";
+          
+          document.getElementById('party-result-label').textContent = "各プレイヤーのスコア";
+          
+          const sorted = [...hsState.players].sort((a, b) => b.score - a.score);
+          sorted.forEach((p, idx) => {
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
+            li.innerHTML = `
+              <span class="font-bold text-text">${idx + 1}位: ${p.name}</span>
+              <span class="font-black text-sage-600">${p.score} 点</span>
+            `;
+            list.appendChild(li);
+          });
+          
           SoundManager.playLevelUp();
           Confetti.start();
-          
-          const xpEarned = Math.round(deliveryState.cargoValue / 50);
-          addXP(xpEarned);
-
-          alert(`配送完了！\n${deliveryState.steps}手で無事に市場へ届けました！\n最終売却額: ${deliveryState.cargoValue.toLocaleString()}円\nボーナス経験値: ${xpEarned}XP を獲得！`);
-          switchView('top');
-        }, 300);
-      }
-    }
-
-
-    // ================= 天下統一の道 =================
-    let unificationState = {
-      players: [], 
-      currentPlayerIdx: 0,
-      round: 1,
-      maxRounds: 8,
-      pendingTargetPref: null
-    };
-
-    const CLAN_COLORS = [
-      { name: "織田家", hex: "#f43f5e" }, 
-      { name: "武田家", hex: "#0ea5e9" }, 
-      { name: "上杉家", hex: "#22c55e" }, 
-      { name: "毛利家", hex: "#f97316" }  
-    ];
-
-    function startUnificationGame(playerNames) {
-      unificationState.round = 1;
-      unificationState.maxRounds = 8;
-      unificationState.currentPlayerIdx = 0;
-      unificationState.pendingTargetPref = null;
-
-      const numPlayers = playerNames.length;
-      unificationState.players = playerNames.map((name, i) => ({
-        name: name,
-        colorHex: CLAN_COLORS[i % CLAN_COLORS.length].hex,
-        clan: CLAN_COLORS[i % CLAN_COLORS.length].name,
-        territories: []
-      }));
-
-      const startingPoints = ['tokyo', 'osaka', 'miyagi', 'fukuoka', 'hokkaido', 'aichi', 'hiroshima', 'kochi'];
-      const shuffledPoints = startingPoints.sort(() => Math.random() - 0.5);
-      
-      unificationState.players.forEach((p, index) => {
-        p.territories.push(shuffledPoints[index]);
-      });
-
-      switchView('game-unification');
-      document.getElementById('uni-quiz-overlay').classList.add('hidden');
-      
-      setupUnificationTurn();
-    }
-
-    function setupUnificationTurn() {
-      document.getElementById('uni-round').textContent = unificationState.round;
-      
-      const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
-      const el = document.getElementById('uni-active-player');
-      el.textContent = `${activePlayer.name} (${activePlayer.clan})`;
-      el.style.color = activePlayer.colorHex;
-
-      updateUnificationUI();
-      updateUnificationMap();
-    }
-
-    function updateUnificationUI() {
-      const board = document.getElementById('uni-leaderboard');
-      board.innerHTML = '';
-
-      unificationState.players.forEach(p => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-1.5 px-3 rounded-xl";
-        li.style.backgroundColor = p.colorHex + "15"; 
-        li.style.borderLeft = `4px solid ${p.colorHex}`;
-        li.innerHTML = `
-          <span class="text-text">${p.name} (${p.clan})</span>
-          <span class="font-black text-sm" style="color: ${p.colorHex}">${p.territories.length} カ国支配</span>
-        `;
-        board.appendChild(li);
-      });
-    }
-
-    function updateUnificationMap() {
-      document.querySelectorAll('#map-container li').forEach(el => {
-        el.classList.remove('is-open', 'is-route-path');
-        el.style.removeProperty('color');
-      });
-
-      unificationState.players.forEach(p => {
-        p.territories.forEach(prefId => {
-          const el = document.querySelector(`.p-eveMapPref--${prefId}`);
-          if (el) {
-            el.style.setProperty('color', p.colorHex, 'important');
-          }
-        });
-      });
-      resetMapScale();
-    }
-
-    function handleUnificationClick(pref) {
-      if (document.getElementById('uni-quiz-overlay').classList.contains('hidden') === false) return; 
-
-      const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
-      
-      if (activePlayer.territories.includes(pref.id)) {
-        alert("その都道府県は既にあなたの支配下にあります。他国を選択してください！");
-        return;
-      }
-
-      let isAdjacentToMyTerritory = false;
-      activePlayer.territories.forEach(myPrefId => {
-        const adj = BORDERS[myPrefId] || [];
-        if (adj.includes(pref.id)) {
-          isAdjacentToMyTerritory = true;
         }
-      });
 
-      if (!isAdjacentToMyTerritory) {
-        alert("あなたの現在の支配国と隣接（境界線が接する）していない地域には攻め込めません！");
-        return;
-      }
+        // ================= ロケーションハンター =================
+        function startLHGame(playerNames) {
+          lhState = {
+            targetPref: PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)],
+            rounds: 1,
+            maxRounds: 3,
+            currentPlayerIdx: 0,
+            selectedPref: null,
+            players: playerNames.map((name, i) => ({ id: i + 1, name: name, score: 0 }))
+          };
+          document.getElementById('lh-round-num').textContent = lhState.rounds;
+          setupLHRound();
+        }
 
-      unificationState.pendingTargetPref = pref;
-      showUnificationQuiz(pref);
-    }
+        function setupLHRound() {
+          document.getElementById('lh-round-num').textContent = lhState.rounds;
+          const player = lhState.players[lhState.currentPlayerIdx];
+          document.getElementById('lh-active-player').textContent = player.name;
+          
+          const container = document.getElementById('lh-clues-container');
+          container.innerHTML = '';
+          
+          const p = lhState.targetPref;
+          const clues = [
+            `旧令制国名: ${p.oldProv}`,
+            `難読な地名: ${p.hardRead}`,
+            `観光スポット: ${p.tourism}`,
+            `詳細データ: ${p.trivia}`
+          ];
+          
+          clues.forEach(clue => {
+            const div = document.createElement('div');
+            div.className = "border-b border-border pb-1.5 last:border-0";
+            div.textContent = clue;
+            container.appendChild(div);
+          });
+          
+          lhState.selectedPref = null;
+          resetMapState();
+          switchView('game-loc-hunter');
+        }
 
-    function showUnificationQuiz(pref) {
-      const qData = makePrefectureQuestion(pref);
-      const overlay = document.getElementById('uni-quiz-overlay');
-      overlay.classList.remove('hidden');
+        function handleLHClick(pref) {
+          lhState.selectedPref = pref;
+          highlightMap(pref.id, 'normal', false);
+        }
 
-      document.getElementById('uni-quiz-title').textContent = `${pref.name} 征服戦！`;
-      document.getElementById('uni-quiz-question').textContent = qData.q;
-
-      const optContainer = document.getElementById('uni-quiz-options');
-      optContainer.innerHTML = '';
-
-      const opts = qData.getOpts().sort(() => Math.random() - 0.5);
-      opts.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = "py-3 bg-surface border border-border rounded-xl font-bold text-xs hover:border-dustyorange-400 active:scale-95 transition-transform shadow-sm text-text";
-        btn.textContent = opt;
-        btn.onclick = () => checkUnificationAnswer(opt, qData.a, pref);
-        optContainer.appendChild(btn);
-      });
-    }
-
-    function checkUnificationAnswer(ans, correct, pref) {
-      document.getElementById('uni-quiz-overlay').classList.add('hidden');
-      
-      const isCorrect = (ans === correct);
-      const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
-
-      if (isCorrect) {
-        SoundManager.playCorrect();
-        alert(`侵略大成功！ ${pref.name} を征服し、我が支配国としました。`);
-        
-        unificationState.players.forEach(p => {
-          const index = p.territories.indexOf(pref.id);
-          if (index !== -1) {
-            p.territories.splice(index, 1);
+        function confirmLHSelection() {
+          if (!lhState.selectedPref) {
+            alert("地図上から対象の都道府県を選択してください。");
+            return;
           }
-        });
+          
+          const isCorrect = (lhState.selectedPref.id === lhState.targetPref.id);
+          if (isCorrect) {
+            SoundManager.playCorrect();
+            lhState.players[lhState.currentPlayerIdx].score += 20;
+            alert(`正解！ロケーションを特定しました。(+20点)`);
+          } else {
+            SoundManager.playIncorrect();
+            alert(`ハズレ！正解は 「${lhState.targetPref.name}」 でした。`);
+          }
+          
+          lhState.currentPlayerIdx = (lhState.currentPlayerIdx + 1) % lhState.players.length;
+          lhState.rounds++;
+          
+          if (lhState.rounds > lhState.maxRounds) {
+            finishLHGame();
+          } else {
+            lhState.targetPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+            setupLHRound();
+          }
+        }
 
-        activePlayer.territories.push(pref.id);
-        addXP(15);
-      } else {
-        SoundManager.playIncorrect();
-        alert(`侵攻失敗！敵国の防衛ラインを崩すことはできませんでした。`);
-      }
+        function finishLHGame() {
+          switchView('party-result');
+          const list = document.getElementById('party-result-list');
+          list.innerHTML = '';
+          const msg = document.getElementById('party-win-message');
+          msg.textContent = "ロケーションハント完了！";
+          
+          document.getElementById('party-result-label').textContent = "各ハンターの最終スコア";
+          
+          const sorted = [...lhState.players].sort((a, b) => b.score - a.score);
+          sorted.forEach((p, idx) => {
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
+            li.innerHTML = `
+              <span class="font-bold text-text">${idx + 1}位: ${p.name}</span>
+              <span class="font-black text-dustyblue-600">${p.score} 点</span>
+            `;
+            list.appendChild(li);
+          });
+          
+          SoundManager.playLevelUp();
+          Confetti.start();
+        }
 
-      unificationState.currentPlayerIdx++;
-      if (unificationState.currentPlayerIdx >= unificationState.players.length) {
-        unificationState.currentPlayerIdx = 0;
-        unificationState.round++;
-      }
+        // ================= 特産品デリバリー =================
+        function startDeliveryGame() {
+          resetMapState();
+          const start = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+          let target = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+          while (start.id === target.id) {
+            target = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
+          }
+          
+          deliveryState = {
+            startPref: start,
+            targetPref: target,
+            currentPref: start,
+            cargoValue: 10000,
+            steps: 0
+          };
+          
+          document.getElementById('del-cargo-info').textContent = start.food.split('・')[0] || "名物特産品";
+          document.getElementById('del-target-name').textContent = target.name;
+          
+          updateDeliveryUI();
+          switchView('game-delivery');
+        }
 
-      if (unificationState.round > unificationState.maxRounds) {
-        finishUnificationGame();
-      } else {
-        setupUnificationTurn();
-      }
-    }
-
-    function finishUnificationGame() {
-      switchView('party-result');
-      const list = document.getElementById('party-result-list');
-      list.innerHTML = '';
-      const msg = document.getElementById('party-win-message');
-      msg.textContent = "サバイバル天下統一戦、決着！";
-
-      document.getElementById('party-result-label').textContent = "各大名家の最終支配国数";
-
-      const sorted = [...unificationState.players].sort((a,b)=>b.territories.length - a.territories.length);
-      sorted.forEach((p, index) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
-        li.style.borderLeft = `4px solid ${p.colorHex}`;
-        li.style.paddingLeft = "8px";
-        li.innerHTML = `
-          <span class="font-bold text-text">${index + 1}位: ${p.name} (${p.clan})</span>
-          <span class="font-black text-sm" style="color: ${p.colorHex}">${p.territories.length} カ国支配</span>
-        `;
-        list.appendChild(li);
-      });
-
-      SoundManager.playLevelUp();
-      Confetti.start();
-    }
-
-    function unificationGiveUp() {
-      if (confirm("ゲームを強制終了してメイン画面に戻りますか？")) {
-        switchView('top');
-      }
-    }
-
-
-    // ========================================================
-    // ================== 初期ロード処理 ==================
-    // ========================================================
-    window.addEventListener('DOMContentLoaded', () => {
-      const cover = document.getElementById('loading-cover');
-      
-      const savedMute = localStorage.getItem('geo_sound_muted');
-      if (savedMute === '1') {
-        toggleMute(); 
-      }
-
-      document.fonts.ready.then(() => {
-        setTimeout(() => {
-          calculatePrefCenters();
-          generateHitMap();
-          Confetti.init(); 
-          updateUIFromStorage();
+        function updateDeliveryUI() {
+          document.getElementById('del-steps').textContent = deliveryState.steps;
+          document.getElementById('del-cargo-value').textContent = `${deliveryState.cargoValue.toLocaleString()} 円`;
+          document.getElementById('del-current-name').textContent = deliveryState.currentPref.name;
+          
+          document.querySelectorAll('#map-container li').forEach(el => {
+            el.classList.remove('is-open', 'is-route-path');
+          });
+          
+          const currentEl = document.querySelector(`.p-eveMapPref--${deliveryState.currentPref.id}`);
+          if (currentEl) currentEl.classList.add('is-open');
+          
+          const targetEl = document.querySelector(`.p-eveMapPref--${deliveryState.targetPref.id}`);
+          if (targetEl) targetEl.classList.add('is-route-path');
+          
           resetMapScale();
-          if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
-        }, 150);
-        window.addEventListener('resize', resetMapScale);
-      });
-    });
+        }
+
+        function handleDeliveryClick(pref) {
+          if (pref.id === deliveryState.currentPref.id) return;
+          
+          const adj = BORDERS[deliveryState.currentPref.id] || [];
+          if (adj.includes(pref.id)) {
+            showDeliveryQuiz(pref);
+          } else {
+            SoundManager.playIncorrect();
+            alert("隣接していない都道府県には移動できません。");
+          }
+        }
+
+        function showDeliveryQuiz(pref) {
+          const qData = makePrefectureQuestion(pref);
+          const overlay = document.getElementById('del-quiz-overlay');
+          overlay.classList.remove('hidden');
+
+          document.getElementById('del-quiz-title').textContent = `${pref.name} への進入チェック！`;
+          document.getElementById('del-quiz-question').textContent = qData.q;
+
+          const optContainer = document.getElementById('del-quiz-options');
+          optContainer.innerHTML = '';
+
+          const opts = qData.getOpts().sort(() => Math.random() - 0.5);
+          opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "py-3 bg-surface border border-border rounded-xl font-bold text-xs hover:border-dustyblue-400 active:scale-95 transition-transform shadow-sm text-text";
+            btn.textContent = opt;
+            btn.onclick = () => checkDeliveryAnswer(opt, qData.a, pref);
+            optContainer.appendChild(btn);
+          });
+        }
+
+        function checkDeliveryAnswer(ans, correct, pref) {
+          document.getElementById('del-quiz-overlay').classList.add('hidden');
+          
+          const isCorrect = (ans === correct);
+          deliveryState.steps++;
+
+          if (isCorrect) {
+            SoundManager.playCorrect();
+            alert(`${pref.name} への進入に成功！鮮度と売却価値をキープしました。`);
+          } else {
+            SoundManager.playIncorrect();
+            deliveryState.cargoValue = Math.max(2000, deliveryState.cargoValue - 2000);
+            alert(`不正解！迂回・遅延ペナルティで積み荷の価値が低下しました。(-2,000円)`);
+          }
+
+          deliveryState.currentPref = pref;
+          updateDeliveryUI();
+
+          if (pref.id === deliveryState.targetPref.id) {
+            setTimeout(() => {
+              SoundManager.playLevelUp();
+              Confetti.start();
+              
+              const xpEarned = Math.round(deliveryState.cargoValue / 50);
+              addXP(xpEarned);
+
+              alert(`配送完了！\n${deliveryState.steps}手で無事に市場へ届けました！\n最終売却額: ${deliveryState.cargoValue.toLocaleString()}円\nボーナス経験値: ${xpEarned}XP を獲得！`);
+              switchView('top');
+            }, 300);
+          }
+        }
+
+
+        // ================= 天下統一の道 =================
+        let unificationState = {
+          players: [], 
+          currentPlayerIdx: 0,
+          round: 1,
+          maxRounds: 8,
+          pendingTargetPref: null
+        };
+
+        const CLAN_COLORS = [
+          { name: "織田家", hex: "#f43f5e" }, 
+          { name: "武田家", hex: "#0ea5e9" }, 
+          { name: "上杉家", hex: "#22c55e" }, 
+          { name: "毛利家", hex: "#f97316" }  
+        ];
+
+        function startUnificationGame(playerNames) {
+          unificationState.round = 1;
+          unificationState.maxRounds = 8;
+          unificationState.currentPlayerIdx = 0;
+          unificationState.pendingTargetPref = null;
+
+          const numPlayers = playerNames.length;
+          unificationState.players = playerNames.map((name, i) => ({
+            name: name,
+            colorHex: CLAN_COLORS[i % CLAN_COLORS.length].hex,
+            clan: CLAN_COLORS[i % CLAN_COLORS.length].name,
+            territories: []
+          }));
+
+          const startingPoints = ['tokyo', 'osaka', 'miyagi', 'fukuoka', 'hokkaido', 'aichi', 'hiroshima', 'kochi'];
+          const shuffledPoints = startingPoints.sort(() => Math.random() - 0.5);
+          
+          unificationState.players.forEach((p, index) => {
+            p.territories.push(shuffledPoints[index]);
+          });
+
+          switchView('game-unification');
+          document.getElementById('uni-quiz-overlay').classList.add('hidden');
+          
+          setupUnificationTurn();
+        }
+
+        function setupUnificationTurn() {
+          document.getElementById('uni-round').textContent = unificationState.round;
+          
+          const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
+          const el = document.getElementById('uni-active-player');
+          el.textContent = `${activePlayer.name} (${activePlayer.clan})`;
+          el.style.color = activePlayer.colorHex;
+
+          updateUnificationUI();
+          updateUnificationMap();
+        }
+
+        function updateUnificationUI() {
+          const board = document.getElementById('uni-leaderboard');
+          board.innerHTML = '';
+
+          unificationState.players.forEach(p => {
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center py-1.5 px-3 rounded-xl";
+            li.style.backgroundColor = p.colorHex + "15"; 
+            li.style.borderLeft = `4px solid ${p.colorHex}`;
+            li.innerHTML = `
+              <span class="text-text">${p.name} (${p.clan})</span>
+              <span class="font-black text-sm" style="color: ${p.colorHex}">${p.territories.length} カ国支配</span>
+            `;
+            board.appendChild(li);
+          });
+        }
+
+        function updateUnificationMap() {
+          document.querySelectorAll('#map-container li').forEach(el => {
+            el.classList.remove('is-open', 'is-route-path');
+            el.style.removeProperty('color');
+          });
+
+          unificationState.players.forEach(p => {
+            p.territories.forEach(prefId => {
+              const el = document.querySelector(`.p-eveMapPref--${prefId}`);
+              if (el) {
+                el.style.setProperty('color', p.colorHex, 'important');
+              }
+            });
+          });
+          resetMapScale();
+        }
+
+        function handleUnificationClick(pref) {
+          if (document.getElementById('uni-quiz-overlay').classList.contains('hidden') === false) return; 
+
+          const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
+          
+          if (activePlayer.territories.includes(pref.id)) {
+            alert("その都道府県は既にあなたの支配下にあります。他国を選択してください！");
+            return;
+          }
+
+          let isAdjacentToMyTerritory = false;
+          activePlayer.territories.forEach(myPrefId => {
+            const adj = BORDERS[myPrefId] || [];
+            if (adj.includes(pref.id)) {
+              isAdjacentToMyTerritory = true;
+            }
+          });
+
+          if (!isAdjacentToMyTerritory) {
+            alert("あなたの現在の支配国と隣接（境界線が接する）していない地域には攻め込めません！");
+            return;
+          }
+
+          unificationState.pendingTargetPref = pref;
+          showUnificationQuiz(pref);
+        }
+
+        function showUnificationQuiz(pref) {
+          const qData = makePrefectureQuestion(pref);
+          const overlay = document.getElementById('uni-quiz-overlay');
+          overlay.classList.remove('hidden');
+
+          document.getElementById('uni-quiz-title').textContent = `${pref.name} 征服戦！`;
+          document.getElementById('uni-quiz-question').textContent = qData.q;
+
+          const optContainer = document.getElementById('uni-quiz-options');
+          optContainer.innerHTML = '';
+
+          const opts = qData.getOpts().sort(() => Math.random() - 0.5);
+          opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "py-3 bg-surface border border-border rounded-xl font-bold text-xs hover:border-dustyorange-400 active:scale-95 transition-transform shadow-sm text-text";
+            btn.textContent = opt;
+            btn.onclick = () => checkUnificationAnswer(opt, qData.a, pref);
+            optContainer.appendChild(btn);
+          });
+        }
+
+        function checkUnificationAnswer(ans, correct, pref) {
+          document.getElementById('uni-quiz-overlay').classList.add('hidden');
+          
+          const isCorrect = (ans === correct);
+          const activePlayer = unificationState.players[unificationState.currentPlayerIdx];
+
+          if (isCorrect) {
+            SoundManager.playCorrect();
+            alert(`侵略大成功！ ${pref.name} を征服し、我が支配国としました。`);
+            
+            unificationState.players.forEach(p => {
+              const index = p.territories.indexOf(pref.id);
+              if (index !== -1) {
+                p.territories.splice(index, 1);
+              }
+            });
+
+            activePlayer.territories.push(pref.id);
+            addXP(15);
+          } else {
+            SoundManager.playIncorrect();
+            alert(`侵攻失敗！敵国の防衛ラインを崩すことはできませんでした。`);
+          }
+
+          unificationState.currentPlayerIdx++;
+          if (unificationState.currentPlayerIdx >= unificationState.players.length) {
+            unificationState.currentPlayerIdx = 0;
+            unificationState.round++;
+          }
+
+          if (unificationState.round > unificationState.maxRounds) {
+            finishUnificationGame();
+          } else {
+            setupUnificationTurn();
+          }
+        }
+
+        function finishUnificationGame() {
+          switchView('party-result');
+          const list = document.getElementById('party-result-list');
+          list.innerHTML = '';
+          const msg = document.getElementById('party-win-message');
+          msg.textContent = "サバイバル天下統一戦、決着！";
+
+          document.getElementById('party-result-label').textContent = "各大名家の最終支配国数";
+
+          const sorted = [...unificationState.players].sort((a,b)=>b.territories.length - a.territories.length);
+          sorted.forEach((p, index) => {
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center py-3 border-b border-border last:border-0";
+            li.style.borderLeft = `4px solid ${p.colorHex}`;
+            li.style.paddingLeft = "8px";
+            li.innerHTML = `
+              <span class="font-bold text-text">${index + 1}位: ${p.name} (${p.clan})</span>
+              <span class="font-black text-sm" style="color: ${p.colorHex}">${p.territories.length} カ国支配</span>
+            `;
+            list.appendChild(li);
+          });
+
+          SoundManager.playLevelUp();
+          Confetti.start();
+        }
+
+        function unificationGiveUp() {
+          if (confirm("ゲームを強制終了してメイン画面に戻りますか？")) {
+            switchView('top');
+          }
+        }
+
+
+        // ========================================================
+        // ================== 初期ロード処理 ==================
+        // ========================================================
+        window.addEventListener('DOMContentLoaded', () => {
+          const cover = document.getElementById('loading-cover');
+          
+          const savedMute = localStorage.getItem('geo_sound_muted');
+          if (savedMute === '1') {
+            toggleMute(); 
+          }
+
+          document.fonts.ready.then(() => {
+            setTimeout(() => {
+              calculatePrefCenters();
+              generateHitMap();
+              Confetti.init(); 
+              updateUIFromStorage();
+              resetMapScale();
+              if(cover) cover.classList.add('opacity-0', 'pointer-events-none');
+            }, 150);
+            window.addEventListener('resize', resetMapScale);
+          });
+        });
   </script>
 </body>
 </html>
