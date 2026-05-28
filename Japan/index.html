@@ -186,7 +186,7 @@
       
       <!-- 日本／世界マップ切り替えトグル (丸みデザイン) -->
       <div class="absolute top-3 left-3 flex bg-base p-1 rounded-2xl border border-border z-30 shadow-sm gap-1 select-none">
-        <button id="toggle-map-japan" onclick="toggleMapType('japan')" class="bg-surface text-text px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1 shadow-sm">
+        <button id="toggle-map-japan" onclick="toggleMapType('japan')" class="bg-surface text-text px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1 shadow-sm border border-border">
           🇯🇵 日本地図
         </button>
         <button id="toggle-map-world" onclick="toggleMapType('world')" class="hover:bg-slate-200 text-subtext px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1">
@@ -226,46 +226,73 @@
         </ul>
       </div>
 
-      <!-- 世界地図 (外部教科書品質SVG動的ローダー & 経緯度オーバーレイ) -->
+      <!-- 世界地図 (外部教科書品質SVG動的ローダー) -->
       <div id="world-map-wrapper" class="hidden absolute inset-0 flex items-center justify-center p-4">
         <div class="relative w-full h-full flex flex-col items-center justify-center">
           
-          <!-- SVGが注入されるコンテナ (地図の縦横比を維持しながらきれいに収まります) -->
           <div id="world-svg-container" class="w-full h-full flex items-center justify-center relative overflow-hidden">
             <div class="text-center font-bold text-subtext text-xs p-4 flex flex-col items-center gap-3">
               <svg class="animate-spin text-dustyblue-600" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
               <span>地図帳品質の世界地図データをロード中...</span>
             </div>
           </div>
-          
-          <!-- 時差・緯度経度学習用の補助線＆テキスト（地図の上に正確に重ねて表示します） -->
-          <div id="world-lines-overlay" class="absolute inset-0 pointer-events-none z-10 select-none">
-            <!-- 赤道 (垂直方向中央付近に美しく配置) -->
-            <div class="absolute left-0 right-0 h-[1px] border-t border-dashed border-amber-500/80 top-[49.5%] flex justify-start pl-4">
-              <span class="text-[9px] font-black text-amber-600 bg-white/80 px-1 rounded -translate-y-1.5 shadow-sm">赤道 (0°)</span>
-            </div>
-            
-            <!-- 本初子午線 (ロンドン 0° 通過線) -->
-            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-sky-500/80 left-[34%] flex flex-col justify-start pt-6 pl-1.5">
-              <span class="text-[9px] font-black text-sky-600 bg-white/80 px-1 rounded shadow-sm">本初子午線 (0° ロンドン)</span>
-            </div>
-
-            <!-- 日本標準時子午線 (東経135° 通過線) -->
-            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-rose-500/80 left-[71.5%] flex flex-col justify-start pt-12 pl-1.5">
-              <span class="text-[9px] font-black text-rose-600 bg-white/80 px-1 rounded shadow-sm">東経135° (日本)</span>
-            </div>
-            
-            <!-- 西経75度 (米国東部時間) -->
-            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dotted border-slate-400/60 left-[19.8%] flex flex-col justify-end pb-8 pl-1.5">
-              <span class="text-[8px] font-bold text-slate-500 bg-white/80 px-1 rounded shadow-sm">西経75° (米国東部)</span>
-            </div>
-          </div>
 
           <div class="absolute bottom-3 left-4 bg-white/95 border border-slate-200 rounded-2xl px-3 py-1.5 text-[10px] font-black text-slate-500 flex items-center gap-1.5 shadow-sm z-20">
-            <span class="w-2.5 h-2.5 rounded-full bg-dustyrose-500"></span> 経線や緯線を目安に、国を直接クリックして時差を計算してみましょう！
+            <span class="w-2.5 h-2.5 rounded-full bg-dustyrose-500"></span> 経緯線を目安に、国を直接タップして学習しましょう！
           </div>
         </div>
       </div>
+
+      <!-- ロード中カバー -->
+      <div id="loading-cover" class="absolute inset-0 bg-surface z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <svg class="animate-spin text-dustyblue-600 mb-4" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <p class="text-[11px] font-bold text-subtext tracking-widest">MAP LOADING...</p>
+      </div>
+    </div>
+
+    <!-- ================= コンテンツエリア (右側) ================= -->
+    <div class="w-full lg:w-1/2 flex-1 bg-surface rounded-3xl shadow-sm relative overflow-hidden flex flex-col border border-border">
+      
+      <!-- 【1】 トップメニュー -->
+      <div id="view-top" class="app-view absolute inset-0 flex flex-col overflow-hidden bg-base/50">
+        
+        <!-- 学習進捗＆レベルダッシュボード -->
+        <div class="px-5 pt-3 pb-1 shrink-0 select-none flex flex-col gap-1.5">
+          <!-- レベル・XP表示バー -->
+          <div class="bg-surface border border-border rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="bg-dustypurple-100 text-dustypurple-600 px-2.5 py-1 rounded-xl text-xs font-black">
+                Lv.<span id="top-level">1</span>
+              </div>
+              <div>
+                <div class="text-[9px] font-bold text-subtext leading-none">獲得経験値 (XP)</div>
+                <div class="text-[10px] font-bold text-text mt-1"><span id="top-xp-current">0</span> / <span id="top-xp-next">200</span> XP</div>
+              </div>
+            </div>
+            <div class="w-28 bg-border h-1.5 rounded-full overflow-hidden">
+              <div id="top-xp-bar" class="bg-dustypurple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 地図制覇率表示バー -->
+          <div class="bg-surface border border-border rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="bg-sage-100 text-sage-600 p-1.5 rounded-lg flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div>
+                <div class="text-[9px] font-bold text-subtext leading-none">日本地図制覇率</div>
+                <div class="text-[10px] font-bold text-text mt-1"><span id="top-progress-count">0</span> / 47 都道府県</div>
+              </div>
+            </div>
+            <div class="text-right flex items-center gap-3">
+              <span class="text-xs font-black text-sage-600" id="top-progress-percent">0%</span>
+              <div class="w-16 bg-border h-1.5 rounded-full overflow-hidden">
+                <div id="top-progress-bar" class="bg-sage-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- カルーセル本体 (5ページ拡張) -->
         <div id="top-carousel" class="flex-grow flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full scroll-smooth">
@@ -397,7 +424,7 @@
             </div>
           </div>
 
-          <!-- ページ4: 世界地理・時差攻略 (追加コンテンツ) -->
+          <!-- ページ4: 世界地理・時差攻略 -->
           <div class="w-full h-full shrink-0 snap-center p-5 flex flex-col gap-2.5 overflow-y-auto no-scrollbar pb-16">
             <h2 class="text-sm font-black text-subtext text-center">世界地理・時差攻略（4 / 5）</h2>
             <div class="p-4 bg-blue-50 border border-blue-200 rounded-3xl text-xs text-blue-700 font-bold leading-relaxed text-center">
@@ -425,7 +452,7 @@
               <button onclick="startQuiz('world_countries')" class="flex flex-col items-center p-4 bg-dustyorange-50 border border-dustyorange-200 rounded-3xl active:scale-95 transition-all hover:border-dustyorange-400 shadow-sm group">
                 <div class="bg-dustyorange-100 text-dustyorange-600 p-3 rounded-2xl mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                 <span class="font-black text-xs text-text text-center">世界国名・首都当て</span>
-                <span class="text-[9px] font-bold text-subtext mt-1 text-center">地図位置と首都・旧国名</span>
+                <span class="text-[9px] font-bold text-subtext mt-1 text-center">地図位置と首都・データ</span>
               </button>
             </div>
           </div>
@@ -1015,10 +1042,9 @@
   </div>
 
   <script>
-    // ================= 不足していた地理データの完全定義 =================
+    // ================= 日本＆世界 地理データ定義 =================
     const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
 
-    // 隣接都道府県定義
     const BORDERS = {
       hokkaido: [],
       aomori: ['iwate', 'akita'],
@@ -1069,7 +1095,6 @@
       okinawa: ['kagoshima']
     };
 
-    // 日本の雨温図区分データ
     const CLIMATES = [
       { id: 'hokkaido', key: 'hokkaido', desc: '【北海道の気候】梅雨がなく、冬の寒さが厳しい。年間降水量が少なめ。' },
       { id: 'japan_sea', key: 'niigata', desc: '【日本海側の気候】北西の冬の季節風により、冬（12〜2月）に降水量（雪）が急増する。' },
@@ -1079,7 +1104,6 @@
       { id: 'okinawa', key: 'okinawa', desc: '【南西諸島の気候】年間を通して温暖（冬も15℃以上）で、梅雨や台風による降水量が非常に多い。' }
     ];
 
-    // 中学地理・地形問題
     const TOPO_QUESTIONS = [
       { q: "日本で最も長い川は？", a: "信濃川", key: "niigata" },
       { q: "流域面積が日本で最大の川は？", a: "利根川", key: "ibaraki" },
@@ -1091,7 +1115,6 @@
       { q: "信濃川の下流に広がり、日本トップクラスの米どころである平野は？", a: "越後平野", key: "niigata" }
     ];
 
-    // 工業・農業の統計帯グラフ問題
     const STAT_QUESTIONS = [
       { title: "米の収穫量割合", q: "日本のお米（コシヒカリなど）の国内収穫量が圧倒的に日本一の県は？", a: "新潟県", shares: [{ name: "新潟", percent: 8, color: "bg-sage-600" }, { name: "北海道", percent: 7, color: "bg-dustyblue-500" }, { name: "秋田", percent: 6, color: "bg-dustyyellow-500" }, { name: "その他", percent: 79, color: "bg-slate-400" }], opts: ["新潟県", "北海道", "秋田県", "山形県"] },
       { title: "みかんの収穫量割合", q: "みかんの収穫量が全国1位で、温暖な気候を利用して栽培する県は？", a: "和歌山県", shares: [{ name: "和歌山", percent: 19, color: "bg-dustyorange-500" }, { name: "愛媛", percent: 16, color: "bg-dustyyellow-500" }, { name: "静岡", percent: 13, color: "bg-sage-500" }, { name: "その他", percent: 52, color: "bg-slate-400" }], opts: ["和歌山県", "愛媛県", "静岡県", "熊本県"] },
@@ -1099,7 +1122,6 @@
       { title: "茶の生産量割合", q: "牧之原などの大台地があり、お茶の生産量が日本有数の県は？", a: "静岡県", shares: [{ name: "静岡", percent: 36, color: "bg-sage-600" }, { name: "鹿児島", percent: 34, color: "bg-dustypurple-500" }, { name: "三重", percent: 6, color: "bg-dustyorange-500" }, { name: "その他", percent: 24, color: "bg-slate-400" }], opts: ["静岡県", "鹿児島県", "三重県", "京都府"] }
     ];
 
-    // 地図記号・縮尺計算問題
     const MAPSCALE_QUESTIONS = [
       { type: 'symbol', symbolId: 'fire', q: "この地図記号が表す建物は？", a: "消防署", opts: ["消防署", "警察署", "役所", "郵便局"] },
       { type: 'symbol', symbolId: 'orchard', q: "この地図記号が表す土地利用は？", a: "果樹園", opts: ["果樹園", "田", "畑", "茶畑"] },
@@ -1109,7 +1131,6 @@
       { type: 'scale', q: "2万5千分の1の地形図における「主曲線（細い実線）」の間隔は？", a: "10mごと", opts: ["10mごと", "20mごと", "5mごと", "50mごと"] }
     ];
 
-    // ワードウルフお題話題ヒント
     const WW_QUESTIONS = {
       name: [
         { q: "この県に行ったとき、お土産として真っ先に思い浮かぶ食べ物は何ですか？", hint: "有名な名産品をヒントに、相手と自分のお題のズレを見出しましょう。" },
@@ -1126,7 +1147,6 @@
       ]
     };
 
-    // ハラハラ爆弾カテゴリ
     const BOMB_CATEGORIES = [
       { title: "名前に「山」がつく都道府県（例: 山形、山梨など）", check: p => p.name.includes("山") },
       { title: "「海」に面していない内陸県（例: 埼玉、長野、栃木など）", check: p => ["tochigi", "gumma", "saitama", "yamanashi", "nagano", "gifu", "shiga", "nara"].includes(p.id) },
@@ -1134,7 +1154,6 @@
       { title: "名前に「川」か「島」が入る都道府県（例: 神奈川、徳島、広島など）", check: p => p.name.includes("川") || p.name.includes("島") }
     ];
 
-    // ================= 世界地理・時差攻略用の詳細データ =================
     const WORLD_COUNTRIES = [
       { id: 'uk', name: 'イギリス', capital: 'ロンドン', gmt: 0, region: 'ヨーロッパ', food: 'フィッシュ＆チップス', tourism: 'ビッグベン・タワーブリッジ', trivia: '本初子午線（経度0度）が通る国で、世界の標準時（GMT）の基準点となっています。', oldProv: '西ヨーロッパ', hardRead: 'London (UTC+0)' },
       { id: 'egypt', name: 'エジプト', capital: 'カイロ', gmt: 2, region: 'アフリカ', food: 'コシャリ(パスタご飯)', tourism: 'ギザの三大ピラミッド', trivia: '東経30度を標準時とし、日本との時差は7時間（日本が早い）。ナイル川流域のみに人口が集中。', oldProv: '北アフリカ', hardRead: 'Cairo (UTC+2)' },
@@ -1146,7 +1165,6 @@
       { id: 'brazil', name: 'ブラジル', capital: 'ブラジリア', gmt: -3, region: '南アメリカ', food: 'シュラスコ・フェジョアーダ', tourism: 'アマゾン川・コルコバードのキリスト像', trivia: '南米最大の国。西経45度付近を標準時（時差-3時間、日本より12時間遅い）としています。', oldProv: '南アメリカ', hardRead: 'Brasilia (UTC-3)' }
     ];
 
-    // 世界地理・時差クイズ
     const WORLD_QUIZZES = [
       { q: "ロンドン（経度0度）が午前9時のとき、東京（東経135度）は同じ日の何時でしょう？", a: "午後6時 (18時)", opts: ["午後6時 (18時)", "午後5時 (17時)", "午前0時", "午後9時 (21時)"] },
       { q: "東京（東経135度）が5月5日午前10時のとき、ロンドン（経度0度）の日時は？", a: "5月5日午前1時", opts: ["5月5日午前1時", "5月5日午前3時", "5月4日午後8時", "5月4日午後11時"] },
@@ -1159,7 +1177,6 @@
       { q: "世界の気候帯のうち、一年中気温が低く樹木が育たない、寒帯や高緯度地方にみられる気候帯は？", a: "寒帯", opts: ["寒帯", "冷帯(亜寒帯)", "乾燥帯", "温帯"] }
     ];
 
-    // 都道府県・旧国名等の質問作成ヘルパー
     function makePrefectureQuestion(pref) {
       const qTypes = [
         { q: `「${pref.name}」の県庁所在地はどこでしょう？`, a: pref.capital, getOpts: () => [pref.capital, "仙台市", "名古屋市", "広島市"] },
@@ -1187,7 +1204,6 @@
         worldMapWrapper.classList.remove('hidden');
         controls.classList.add('hidden'); // 世界地図は固定表示
         
-        // 【重要】ここで外部SVGを動的ロード
         loadWorldMapSvg();
       } else {
         btnJapan.className = "bg-surface text-text px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1 shadow-sm border border-border";
@@ -1197,14 +1213,14 @@
         controls.classList.remove('hidden');
         resetMapScale();
       }
-    }}
+    }
 
     // ================= 世界地理辞書の開始 =================
     function startWorldDictionary() {
       switchView('study');
       highlightWorldCountry(null);
       const container = document.getElementById('study-list-container');
-      container.innerHTML = ''; // クリア
+      container.innerHTML = ''; 
 
       const title = document.createElement('div');
       title.className = "text-[11px] font-bold text-subtext mt-2 mb-2 pl-3 border-l-4 border-dustyblue-500 rounded-full";
@@ -1250,7 +1266,6 @@
       
       document.getElementById('study-trivia').textContent = wc.trivia;
 
-      // 「覚えた！」チェックボックスの表示設定
       document.getElementById('chk-learned-wrap').classList.add('hidden');
 
       const detail = document.getElementById('study-detail');
@@ -1258,24 +1273,145 @@
       detail.classList.add('translate-y-0');
     }
 
-    function highlightWorldCountry(wcId) {
-      document.querySelectorAll('.world-country rect').forEach(rect => {
-        rect.style.removeProperty('fill');
-        rect.style.removeProperty('stroke-width');
-      });
-      if (wcId) {
-        const activeRect = document.querySelector(`#wc-${wcId} rect`);
-        if (activeRect) {
-          activeRect.style.setProperty('fill', '#f43f5e', 'important');
-          activeRect.style.setProperty('stroke-width', '3px', 'important');
+    // ================= 外部世界地図(しっかりとした教科書マップ)の動的ロード =================
+    let worldSvgLoaded = false;
+
+    function loadWorldMapSvg() {
+      if (worldSvgLoaded) return;
+      
+      const container = document.getElementById('world-svg-container');
+      
+      // 高精度オープンソース世界地図 (ISO 3166-1 2文字コード付与済み) をCDNから安全に読み込み
+      fetch('https://cdn.jsdelivr.net/gh/flekschas/simple-world-map@master/world.svg')
+        .then(response => {
+          if (!response.ok) throw new Error('地図データの取得に失敗しました。');
+          return response.text();
+        })
+        .then(svgText => {
+          container.innerHTML = svgText;
+          const svg = container.querySelector('svg');
+          if (svg) {
+            svg.setAttribute('class', 'w-full h-full max-h-[360px] select-none');
+            svg.style.filter = 'drop-shadow(0px 8px 24px rgba(15,23,42,0.06))';
+            
+            // 赤道、本初子午線、日本標準時などの線を数理的座標でSVGに直接インジェクション
+            const linesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            linesGroup.setAttribute('id', 'g-map-grid-lines');
+            linesGroup.innerHTML = `
+              <!-- 赤道 -->
+              <line x1="0" y1="325.5" x2="1008" y2="325.5" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" />
+              <text x="30" y="315" fill="#d97706" font-size="12" font-weight="900">赤道 (0°)</text>
+
+              <!-- 本初子午線 -->
+              <line x1="504" y1="0" x2="504" y2="651" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="6,4" />
+              <text x="512" y="40" fill="#0284c7" font-size="12" font-weight="900">本初子午線 (0° ロンドン)</text>
+
+              <!-- 日本標準時子午線 -->
+              <line x1="882" y1="0" x2="882" y2="651" stroke="#f43f5e" stroke-width="2" stroke-dasharray="6,4" />
+              <text x="810" y="60" fill="#e11d48" font-size="12" font-weight="900">東経135° (日本標準時)</text>
+
+              <!-- 西経75度 -->
+              <line x1="294" y1="0" x2="294" y2="651" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4" />
+              <text x="210" y="80" fill="#475569" font-size="11" font-weight="bold">西経75° (米国東部)</text>
+            `;
+            svg.appendChild(linesGroup);
+
+            // 国別のパスを取得して、柔らかなカラーリングとホバー時の反応を動的に付加
+            const paths = svg.querySelectorAll('path');
+            paths.forEach(p => {
+              p.setAttribute('fill', '#cbd5e1');
+              p.setAttribute('stroke', '#ffffff');
+              p.setAttribute('stroke-width', '1');
+              p.style.transition = 'fill 0.3s ease, stroke-width 0.3s ease';
+              p.classList.add('cursor-pointer', 'world-country-path');
+              
+              p.addEventListener('mouseenter', () => {
+                if (!p.classList.contains('is-active-highlight')) {
+                  p.setAttribute('fill', '#93c5fd'); 
+                }
+              });
+              p.addEventListener('mouseleave', () => {
+                if (!p.classList.contains('is-active-highlight')) {
+                  p.setAttribute('fill', '#cbd5e1');
+                }
+              });
+
+              p.addEventListener('click', () => {
+                const isoCode = p.id ? p.id.toLowerCase() : '';
+                onWorldCountryPathClick(isoCode);
+              });
+            });
+          }
+          worldSvgLoaded = true;
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = `
+            <div class="text-center font-bold text-dustyrose-600 text-xs p-4 bg-dustyrose-50 rounded-2xl border border-dustyrose-100">
+              世界地図データの取得に失敗しました（オフラインまたは接続不良）。<br>
+              <button onclick="worldSvgLoaded=false; loadWorldMapSvg();" class="mt-3 px-4 py-2 bg-dustyrose-500 text-white rounded-xl active:scale-95 transition-transform font-black">地図の再読み込み</button>
+            </div>
+          `;
+        });
+    }
+
+    function onWorldCountryPathClick(isoCode) {
+      const mapping = {
+        'gb': 'uk',
+        'eg': 'egypt',
+        'cn': 'china',
+        'jp': 'japan',
+        'au': 'australia',
+        'us': 'usa_east', 
+        'br': 'brazil'
+      };
+      
+      const mappedId = mapping[isoCode];
+      if (mappedId) {
+        const activeView = Array.from(document.querySelectorAll('.app-view')).find(el => !el.classList.contains('hidden'));
+        if (activeView && activeView.id === 'view-study') {
+          selectWorldCountry(mappedId);
         }
+      }
+    }
+
+    function highlightWorldCountry(wcId) {
+      const revMapping = {
+        'uk': 'gb',
+        'egypt': 'eg',
+        'china': 'cn',
+        'japan': 'jp',
+        'australia': 'au',
+        'usa_east': 'us',
+        'usa_west': 'us',
+        'brazil': 'br'
+      };
+      
+      const targetIso = revMapping[wcId];
+      
+      document.querySelectorAll('.world-country-path').forEach(p => {
+        p.classList.remove('is-active-highlight');
+        p.setAttribute('fill', '#cbd5e1');
+        p.setAttribute('stroke', '#ffffff');
+        p.setAttribute('stroke-width', '1');
+      });
+
+      if (targetIso) {
+        const paths = document.querySelectorAll(`.world-country-path`);
+        paths.forEach(p => {
+          if (p.id && p.id.toLowerCase() === targetIso) {
+            p.classList.add('is-active-highlight');
+            p.setAttribute('fill', '#f43f5e'); 
+            p.setAttribute('stroke', '#be123c');
+            p.setAttribute('stroke-width', '1.5');
+          }
+        });
       }
     }
   </script>
 
-  <!-- ================= 既存スクリプトの補完とバグ修正 ================= -->
   <script>
-    // 状態管理
+    // ================= 状態管理・各ゲームループ =================
     let qState = {
       mode: '', 
       format: '',
@@ -1303,7 +1439,6 @@
     let lhState = { targetPref: null, rounds: 1, maxRounds: 3, players: [], currentPlayerIdx: 0, selectedPref: null, score: 0 };
     let deliveryState = { startPref: null, targetPref: null, currentPref: null, cargoValue: 10000, steps: 0 };
 
-    // 日本都道府県データ (提供データをそのまま使用)
     const PREFECTURES = [
       { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。', area: 83400 },
       { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。', area: 9600 },
@@ -1332,7 +1467,7 @@
       { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。', area: 4000 },
       { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。', area: 4600 },
       { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（はてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。', area: 1900 },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・but但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。', area: 8400 },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。', area: 8400 },
       { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。', area: 3600 },
       { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。', area: 4700 },
       { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。', area: 3500 },
@@ -1347,7 +1482,7 @@
       { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。', area: 4900 },
       { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。', area: 2400 },
       { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。', area: 4100 },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級 of カルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
       { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。', area: 6300 },
       { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。', area: 7700 },
       { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。', area: 9100 },
@@ -1369,7 +1504,6 @@
     let currentDetailPref = null; 
     let currentDetailBackView = 'study';
 
-    // 5ドット化したカルーセル連動
     const carousel = document.getElementById('top-carousel');
     const dots = [
       document.getElementById('dot-0'), 
@@ -1394,7 +1528,6 @@
       });
     }
 
-    // ビュー切り替え
     function switchView(viewId) {
       document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
       const view = document.getElementById('view-' + viewId);
@@ -1405,7 +1538,7 @@
         btnBack.classList.add('hidden');
         resetMapState();
         updateUIFromStorage();
-        toggleMapType('japan'); // トップに戻る時は日本地図デフォルト
+        toggleMapType('japan'); 
       } else {
         btnBack.classList.remove('hidden');
       }
@@ -1451,7 +1584,7 @@
     }
 
     mapWrapper.addEventListener('touchstart', (e) => {
-      if (currentMapType === 'world') return; // 世界地図時は操作固定
+      if (currentMapType === 'world') return; 
       mapTransform.classList.add('is-dragging');
       isPointerDown = true;
       const mid = getTouchMidpoint(e);
@@ -1632,7 +1765,7 @@
     }
 
     mapWrapper.addEventListener('click', (e) => {
-      if (currentMapType === 'world') return; // 世界地図時は別イベントで処理
+      if (currentMapType === 'world') return; 
       const cover = document.getElementById('loading-cover');
       if (cover && !cover.classList.contains('pointer-events-none')) return;
 
@@ -2039,7 +2172,7 @@
     function initStudyMode() {
       highlightMap(null, 'normal', false);
       const container = document.getElementById('study-list-container');
-      container.innerHTML = ''; // クリアして常に正しく日本側リストを描画
+      container.innerHTML = ''; 
 
       REGIONS.forEach(region => {
         const title = document.createElement('div');
@@ -2085,7 +2218,6 @@
       
       document.getElementById('study-trivia').textContent = pref.trivia;
       
-      // 覚えた！のチェックを表示
       document.getElementById('chk-learned-wrap').classList.remove('hidden');
       document.getElementById('chk-learned').checked = isLearned(pref.id);
       
@@ -2190,7 +2322,6 @@
     function startQuiz(mode) {
       qState.mode = mode;
       
-      // 自動マップ切り替え
       if (mode.startsWith('world_')) {
         toggleMapType('world');
       } else {
@@ -2264,7 +2395,7 @@
       let optType = 'name'; 
       let colorClass = 'sage';
       let headerText = 'TEST MODE';
-      let timerLimit = 15; // デフォルトは15秒
+      let timerLimit = 15; 
 
       if (qState.mode === 'test') {
         headerText = "総合テスト";
@@ -2427,11 +2558,10 @@
         startQuizTimer(colorClass, timerLimit);
         return;
       } else if (qState.mode === 'world_time') {
-        // 時差特訓
         headerText = "時差計算特訓";
         colorClass = 'dustypurple';
-        timerLimit = 30; // 時差計算は30秒に延長
-        const wtQ = p; // 世界のクイズが入っている
+        timerLimit = 30; 
+        const wtQ = p; 
         qText = `<span class="text-xs text-subtext block">【時差・標準時】</span>${wtQ.q}`;
         correctAns = wtQ.a;
         hint = "地球は15度で1時間の時差。東経と西経の計算を整理しましょう。";
@@ -2444,7 +2574,6 @@
         startQuizTimer(colorClass, timerLimit);
         return;
       } else if (qState.mode === 'world_general') {
-        // 世界の地域
         headerText = "世界の諸地域・気候";
         colorClass = 'sage';
         const wgQ = p;
@@ -2460,10 +2589,9 @@
         startQuizTimer(colorClass, timerLimit);
         return;
       } else if (qState.mode === 'world_countries') {
-        // 世界の国
         headerText = "世界国名・首都";
         colorClass = 'dustyorange';
-        const wc = p; // 世界の国
+        const wc = p; 
         const isCapital = Math.random() > 0.5;
         if (isCapital) {
           qText = `「${wc.name}」の<span class="text-dustyorange-600 font-bold">首都</span>はどこでしょう？`;
@@ -2481,7 +2609,6 @@
         document.getElementById('quiz-question-text').innerHTML = qText;
         document.getElementById('quiz-hint-text').textContent = hint;
 
-        // 選択肢生成
         const optionsSet = new Set([correctAns]);
         while (optionsSet.size < 4) {
           const rWc = WORLD_COUNTRIES[Math.floor(Math.random() * WORLD_COUNTRIES.length)];
@@ -3040,7 +3167,7 @@
 
     function switchPartyConfig(type) {
       partyState.gameType = type;
-      toggleMapType('japan'); // パーティーゲーム時は日本地図に切り替え
+      toggleMapType('japan'); 
       const pcSelect = document.getElementById('party-player-count');
       pcSelect.innerHTML = `<option value="1">1人 (ソロ挑戦)</option><option value="2">2人</option><option value="3">3人</option><option value="4" selected>4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option><option value="8">8人</option>`;
 
@@ -3360,7 +3487,7 @@
         msg.innerHTML = `正解おめでとうございます！<br><span class="text-sm font-bold text-subtext mt-2 block">獲得ポイント: <span class="text-dustypurple-600 font-black text-xl">${assocState.score}</span> 点</span>`;
       } else {
         SoundManager.playIncorrect();
-        msg.innerHTML = `全員ギブアップ！<br><span class="text-sm font-bold text-subtext mt-2 block">正解は ${assocState.secretPref.name} ででした。</span>`;
+        msg.innerHTML = `全員ギブアップ！<br><span class="text-sm font-bold text-subtext mt-2 block">正解は ${assocState.secretPref.name} でした。</span>`;
       }
     }
 
@@ -3376,7 +3503,6 @@
         currentPlayerIdx: 0
       };
       
-      // 爆弾プレイ用仮想プレイヤー(名前が未定義ならダミー設定)
       if (!partyState.players || partyState.players.length === 0) {
         partyState.players = [{ name: "プレイヤー1" }, { name: "プレイヤー2" }];
       }
@@ -3672,129 +3798,7 @@
       SoundManager.playLevelUp();
       Confetti.start();
     }
-// ================= 外部世界地図(しっかりとした教科書マップ)の動的ロード =================
-    let worldSvgLoaded = false;
 
-    function loadWorldMapSvg() {
-      if (worldSvgLoaded) return;
-      
-      const container = document.getElementById('world-svg-container');
-      
-      // 高精度オープンソース世界地図 (ISO 3166-1 2文字コード付与済み) をCDNから安全に読み込み
-      fetch('https://cdn.jsdelivr.net/gh/flekschas/simple-world-map@master/world.svg')
-        .then(response => {
-          if (!response.ok) throw new Error('地図データの取得に失敗しました。');
-          return response.text();
-        })
-        .then(svgText => {
-          container.innerHTML = svgText;
-          const svg = container.querySelector('svg');
-          if (svg) {
-            svg.setAttribute('class', 'w-full h-full max-h-[360px] select-none');
-            svg.style.filter = 'drop-shadow(0px 8px 24px rgba(15,23,42,0.06))';
-            
-            // 国別のパスを取得して、柔らかなカラーリングとホバー時の反応を動的に付加
-            const paths = svg.querySelectorAll('path');
-            paths.forEach(p => {
-              // デフォルトのスタイル設定（丸みと清潔感のある質感）
-              p.setAttribute('fill', '#cbd5e1');
-              p.setAttribute('stroke', '#ffffff');
-              p.setAttribute('stroke-width', '1');
-              p.style.transition = 'fill 0.3s ease, stroke-width 0.3s ease';
-              p.classList.add('cursor-pointer', 'world-country-path');
-              
-              // ホバー時の演出
-              p.addEventListener('mouseenter', () => {
-                if (!p.classList.contains('is-active-highlight')) {
-                  p.setAttribute('fill', '#93c5fd'); // dustyblue-300
-                }
-              });
-              p.addEventListener('mouseleave', () => {
-                if (!p.classList.contains('is-active-highlight')) {
-                  p.setAttribute('fill', '#cbd5e1');
-                }
-              });
-
-              // 点击時の処理
-              p.addEventListener('click', () => {
-                const isoCode = p.id ? p.id.toLowerCase() : '';
-                onWorldCountryPathClick(isoCode);
-              });
-            });
-          }
-          worldSvgLoaded = true;
-        })
-        .catch(err => {
-          console.error(err);
-          container.innerHTML = `
-            <div class="text-center font-bold text-dustyrose-600 text-xs p-4 bg-dustyrose-50 rounded-2xl border border-dustyrose-100">
-              世界地図データの取得に失敗しました（オフラインまたは接続不良）。<br>
-              <button onclick="worldSvgLoaded=false; loadWorldMapSvg();" class="mt-3 px-4 py-2 bg-dustyrose-500 text-white rounded-xl active:scale-95 transition-transform font-black">地図の再読み込み</button>
-            </div>
-          `;
-        });
-    }
-
-    // 外部世界地図の国クリック時のデータ紐付け (ISO-3166 から WORLD_COUNTRIES)
-    function onWorldCountryPathClick(isoCode) {
-      // 地図データのIDとアプリ側国データのIDを対応
-      const mapping = {
-        'gb': 'uk',
-        'eg': 'egypt',
-        'cn': 'china',
-        'jp': 'japan',
-        'au': 'australia',
-        'us': 'usa_east', // 米国東
-        'br': 'brazil'
-      };
-      
-      const mappedId = mapping[isoCode];
-      if (mappedId) {
-        // 時差クイズ、世界の国クイズ、または学習辞書それぞれの処理にパス
-        const activeView = Array.from(document.querySelectorAll('.app-view')).find(el => !el.classList.contains('hidden'));
-        if (activeView && activeView.id === 'view-study') {
-          selectWorldCountry(mappedId);
-        } else if (activeView && activeView.id === 'view-quiz-play') {
-          // プレイ中ならクリック選択肢の回答判定に使えるよう処理可能（必要に応じて拡張）
-        }
-      }
-    }
-
-    // クイズプレイ時などの特定国ハイライト表示
-    function highlightWorldCountry(wcId) {
-      // マッピングの逆変換
-      const revMapping = {
-        'uk': 'gb',
-        'egypt': 'eg',
-        'china': 'cn',
-        'japan': 'jp',
-        'australia': 'au',
-        'usa_east': 'us',
-        'usa_west': 'us',
-        'brazil': 'br'
-      };
-      
-      const targetIso = revMapping[wcId];
-      
-      document.querySelectorAll('.world-country-path').forEach(p => {
-        p.classList.remove('is-active-highlight');
-        p.setAttribute('fill', '#cbd5e1');
-        p.setAttribute('stroke', '#ffffff');
-        p.setAttribute('stroke-width', '1');
-      });
-
-      if (targetIso) {
-        const paths = document.querySelectorAll(`.world-country-path`);
-        paths.forEach(p => {
-          if (p.id && p.id.toLowerCase() === targetIso) {
-            p.classList.add('is-active-highlight');
-            p.setAttribute('fill', '#f43f5e'); // dustyrose-500 (ハイライト)
-            p.setAttribute('stroke', '#be123c');
-            p.setAttribute('stroke-width', '1.5');
-          }
-        });
-      }
-    }
     // ========================================================
     // ================== 初期ロード処理 ==================
     // ========================================================
