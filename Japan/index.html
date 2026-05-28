@@ -226,99 +226,44 @@
         </ul>
       </div>
 
-      <!-- 世界地図 (丸みと正確性を両立したデフォルメSVG) -->
+      <!-- 世界地図 (外部教科書品質SVG動的ローダー & 経緯度オーバーレイ) -->
       <div id="world-map-wrapper" class="hidden absolute inset-0 flex items-center justify-center p-4">
-        <div class="relative w-full h-full flex flex-col items-center justify-center mt-6">
-          <svg id="world-svg" viewBox="0 0 800 450" class="w-full h-auto max-h-full select-none" style="filter: drop-shadow(0px 8px 24px rgba(15,23,42,0.06));">
-            <!-- 海のベース -->
-            <rect width="800" height="450" rx="36" fill="#eff6ff" stroke="#cbd5e1" stroke-width="1.5" />
+        <div class="relative w-full h-full flex flex-col items-center justify-center">
+          
+          <!-- SVGが注入されるコンテナ (地図の縦横比を維持しながらきれいに収まります) -->
+          <div id="world-svg-container" class="w-full h-full flex items-center justify-center relative overflow-hidden">
+            <div class="text-center font-bold text-subtext text-xs p-4 flex flex-col items-center gap-3">
+              <svg class="animate-spin text-dustyblue-600" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <span>地図帳品質の世界地図データをロード中...</span>
+            </div>
+          </div>
+          
+          <!-- 時差・緯度経度学習用の補助線＆テキスト（地図の上に正確に重ねて表示します） -->
+          <div id="world-lines-overlay" class="absolute inset-0 pointer-events-none z-10 select-none">
+            <!-- 赤道 (垂直方向中央付近に美しく配置) -->
+            <div class="absolute left-0 right-0 h-[1px] border-t border-dashed border-amber-500/80 top-[49.5%] flex justify-start pl-4">
+              <span class="text-[9px] font-black text-amber-600 bg-white/80 px-1 rounded -translate-y-1.5 shadow-sm">赤道 (0°)</span>
+            </div>
             
-            <!-- 経緯度網 -->
-            <!-- 赤道 -->
-            <line x1="20" y1="225" x2="780" y2="225" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.8" />
-            <text x="30" y="217" font-size="11" font-weight="900" fill="#d97706">赤道 (0°)</text>
+            <!-- 本初子午線 (ロンドン 0° 通過線) -->
+            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-sky-500/80 left-[34%] flex flex-col justify-start pt-6 pl-1.5">
+              <span class="text-[9px] font-black text-sky-600 bg-white/80 px-1 rounded shadow-sm">本初子午線 (0° ロンドン)</span>
+            </div>
+
+            <!-- 日本標準時子午線 (東経135° 通過線) -->
+            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-rose-500/80 left-[71.5%] flex flex-col justify-start pt-12 pl-1.5">
+              <span class="text-[9px] font-black text-rose-600 bg-white/80 px-1 rounded shadow-sm">東経135° (日本)</span>
+            </div>
             
-            <!-- 本初子午線 (ロンドン 0°) -->
-            <line x1="310" y1="20" x2="310" y2="430" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.8" />
-            <text x="315" y="40" font-size="11" font-weight="900" fill="#0284c7">本初子午線 (0°)</text>
+            <!-- 西経75度 (米国東部時間) -->
+            <div class="absolute top-0 bottom-0 w-[1px] border-l border-dotted border-slate-400/60 left-[19.8%] flex flex-col justify-end pb-8 pl-1.5">
+              <span class="text-[8px] font-bold text-slate-500 bg-white/80 px-1 rounded shadow-sm">西経75° (米国東部)</span>
+            </div>
+          </div>
 
-            <!-- 日本標準時子午線 (東経135°) -->
-            <line x1="570" y1="20" x2="570" y2="430" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.8" />
-            <text x="575" y="40" font-size="11" font-weight="900" fill="#e11d48">東経135° (日本)</text>
-            
-            <!-- 西経75度 (アメリカ東部標準時) -->
-            <line x1="160" y1="20" x2="160" y2="430" stroke="#64748b" stroke-width="1" stroke-dasharray="4,4" opacity="0.6" />
-            <text x="110" y="60" font-size="9" font-weight="bold" fill="#475569">西経75° (米国東部)</text>
-
-            <!-- ================= 各大陸の丸みパス (Landmasses) ================= -->
-            <!-- グリーンランド -->
-            <path d="M 210,40 C 230,35 255,30 250,55 C 245,65 225,75 215,65 C 205,55 200,45 210,40 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5" stroke-linejoin="round" />
-
-            <!-- 北アメリカ大陸 -->
-            <path d="M 60,80 C 70,60 110,55 130,55 C 150,55 165,65 175,80 C 185,95 210,105 220,115 C 225,120 220,135 210,140 C 200,145 185,135 175,145 C 165,155 155,175 145,195 C 135,215 125,230 110,240 C 95,250 85,245 85,235 C 85,225 100,210 100,195 C 100,180 85,175 75,170 C 65,165 55,155 45,145 C 35,135 40,115 45,100 C 50,85 50,100 60,80 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-            <!-- 南アメリカ大陸 -->
-            <path d="M 165,240 C 185,240 205,250 215,265 C 225,280 235,305 235,335 C 235,365 210,400 195,415 C 185,425 175,430 170,420 C 165,410 160,380 155,350 C 150,320 145,290 145,270 C 145,250 155,240 165,240 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-            <!-- アフリカ大陸 -->
-            <path d="M 320,200 C 340,190 380,185 410,190 C 430,195 440,210 435,230 C 430,250 420,270 410,295 C 400,320 395,345 390,370 C 385,385 375,390 365,385 C 355,380 350,355 345,335 C 340,315 325,295 320,270 C 315,245 310,215 320,200 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-            <!-- ユーラシア＆ヨーロッパ -->
-            <path d="M 280,130 C 280,110 300,90 325,80 C 350,70 390,60 440,65 C 490,70 550,55 610,60 C 670,65 720,80 740,110 C 750,125 745,145 735,165 C 725,185 700,200 685,215 C 670,230 645,235 625,230 C 610,235 595,250 580,255 C 565,260 550,245 545,230 C 530,240 515,250 500,250 C 485,250 475,235 465,220 C 455,205 425,215 405,225 C 385,235 375,215 370,200 C 360,180 340,175 335,165 C 330,155 280,150 280,130 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-            <!-- オーストラリア大陸 -->
-            <path d="M 570,300 C 600,290 640,295 660,310 C 680,325 675,355 655,370 C 635,385 605,375 585,365 C 565,355 555,325 565,310 C 568,305 569,300 570,300 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-
-            <!-- ================= 各国のインタラクティブな丸みボタン (Interactive Nodes) ================= -->
-            <!-- 1. イギリス (UK) -->
-            <g class="world-country cursor-pointer group" id="wc-uk" onclick="selectWorldCountry('uk')">
-              <rect x="295" y="105" width="30" height="28" rx="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyblue-300 group-hover:stroke-dustyblue-500" />
-              <text x="301" y="122" font-size="9" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustyblue-800" pointer-events="none">英国</text>
-            </g>
-
-            <!-- 2. エジプト -->
-            <g class="world-country cursor-pointer group" id="wc-egypt" onclick="selectWorldCountry('egypt')">
-              <rect x="365" y="200" width="42" height="28" rx="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyorange-300 group-hover:stroke-dustyorange-500" />
-              <text x="370" y="217" font-size="9" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustyorange-800" pointer-events="none">エジプト</text>
-            </g>
-
-            <!-- 3. 中国 -->
-            <g class="world-country cursor-pointer group" id="wc-china" onclick="selectWorldCountry('china')">
-              <rect x="500" y="140" width="55" height="35" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyyellow-300 group-hover:stroke-dustyyellow-500" />
-              <text x="515" y="161" font-size="10" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustyyellow-800" pointer-events="none">中国</text>
-            </g>
-
-            <!-- 4. 日本 -->
-            <g class="world-country cursor-pointer group" id="wc-japan" onclick="selectWorldCountry('japan')">
-              <rect x="580" y="130" width="22" height="30" rx="6" fill="#fecdd3" stroke="#f43f5e" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyrose-300 group-hover:stroke-dustyrose-600 animate-pulse" />
-              <text x="583" y="148" font-size="8" font-weight="900" fill="#be123c" class="transition-colors group-hover:fill-dustyrose-900" pointer-events="none">日本</text>
-            </g>
-
-            <!-- 5. オーストラリア -->
-            <g class="world-country cursor-pointer group" id="wc-australia" onclick="selectWorldCountry('australia')">
-              <rect x="580" y="305" width="65" height="35" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-sage-300 group-hover:stroke-sage-500" />
-              <text x="597" y="326" font-size="10" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-sage-800" pointer-events="none">豪州</text>
-            </g>
-
-            <!-- 6. アメリカ東部 -->
-            <g class="world-country cursor-pointer group" id="wc-usa_east" onclick="selectWorldCountry('usa_east')">
-              <rect x="145" y="130" width="45" height="28" rx="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyblue-300 group-hover:stroke-dustyblue-500" />
-              <text x="150" y="147" font-size="9" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustyblue-800" pointer-events="none">米国東</text>
-            </g>
-
-            <!-- 7. アメリカ西部 -->
-            <g class="world-country cursor-pointer group" id="wc-usa_west" onclick="selectWorldCountry('usa_west')">
-              <rect x="90" y="140" width="45" height="28" rx="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustyblue-200 group-hover:stroke-dustyblue-500" />
-              <text x="95" y="157" font-size="9" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustyblue-800" pointer-events="none">米国西</text>
-            </g>
-
-            <!-- 8. ブラジル -->
-            <g class="world-country cursor-pointer group" id="wc-brazil" onclick="selectWorldCountry('brazil')">
-              <rect x="200" y="270" width="55" height="40" rx="12" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" class="transition-all duration-300 group-hover:fill-dustypurple-300 group-hover:stroke-dustypurple-500" />
-              <text x="208" y="294" font-size="10" font-weight="900" fill="#334155" class="transition-colors group-hover:fill-dustypurple-800" pointer-events="none">ブラジル</text>
-            </g>
-          </svg>
+          <div class="absolute bottom-3 left-4 bg-white/95 border border-slate-200 rounded-2xl px-3 py-1.5 text-[10px] font-black text-slate-500 flex items-center gap-1.5 shadow-sm z-20">
+            <span class="w-2.5 h-2.5 rounded-full bg-dustyrose-500"></span> 経線や緯線を目安に、国を直接クリックして時差を計算してみましょう！
+          </div>
         </div>
       </div>
 
@@ -1241,6 +1186,9 @@
         mapTransform.classList.add('hidden');
         worldMapWrapper.classList.remove('hidden');
         controls.classList.add('hidden'); // 世界地図は固定表示
+        
+        // 【重要】ここで外部SVGを動的ロード
+        loadWorldMapSvg();
       } else {
         btnJapan.className = "bg-surface text-text px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1 shadow-sm border border-border";
         btnWorld.className = "hover:bg-slate-200 text-subtext px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1";
@@ -1249,7 +1197,7 @@
         controls.classList.remove('hidden');
         resetMapScale();
       }
-    }
+    }}
 
     // ================= 世界地理辞書の開始 =================
     function startWorldDictionary() {
@@ -3724,7 +3672,129 @@
       SoundManager.playLevelUp();
       Confetti.start();
     }
+// ================= 外部世界地図(しっかりとした教科書マップ)の動的ロード =================
+    let worldSvgLoaded = false;
 
+    function loadWorldMapSvg() {
+      if (worldSvgLoaded) return;
+      
+      const container = document.getElementById('world-svg-container');
+      
+      // 高精度オープンソース世界地図 (ISO 3166-1 2文字コード付与済み) をCDNから安全に読み込み
+      fetch('https://cdn.jsdelivr.net/gh/flekschas/simple-world-map@master/world.svg')
+        .then(response => {
+          if (!response.ok) throw new Error('地図データの取得に失敗しました。');
+          return response.text();
+        })
+        .then(svgText => {
+          container.innerHTML = svgText;
+          const svg = container.querySelector('svg');
+          if (svg) {
+            svg.setAttribute('class', 'w-full h-full max-h-[360px] select-none');
+            svg.style.filter = 'drop-shadow(0px 8px 24px rgba(15,23,42,0.06))';
+            
+            // 国別のパスを取得して、柔らかなカラーリングとホバー時の反応を動的に付加
+            const paths = svg.querySelectorAll('path');
+            paths.forEach(p => {
+              // デフォルトのスタイル設定（丸みと清潔感のある質感）
+              p.setAttribute('fill', '#cbd5e1');
+              p.setAttribute('stroke', '#ffffff');
+              p.setAttribute('stroke-width', '1');
+              p.style.transition = 'fill 0.3s ease, stroke-width 0.3s ease';
+              p.classList.add('cursor-pointer', 'world-country-path');
+              
+              // ホバー時の演出
+              p.addEventListener('mouseenter', () => {
+                if (!p.classList.contains('is-active-highlight')) {
+                  p.setAttribute('fill', '#93c5fd'); // dustyblue-300
+                }
+              });
+              p.addEventListener('mouseleave', () => {
+                if (!p.classList.contains('is-active-highlight')) {
+                  p.setAttribute('fill', '#cbd5e1');
+                }
+              });
+
+              // 点击時の処理
+              p.addEventListener('click', () => {
+                const isoCode = p.id ? p.id.toLowerCase() : '';
+                onWorldCountryPathClick(isoCode);
+              });
+            });
+          }
+          worldSvgLoaded = true;
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = `
+            <div class="text-center font-bold text-dustyrose-600 text-xs p-4 bg-dustyrose-50 rounded-2xl border border-dustyrose-100">
+              世界地図データの取得に失敗しました（オフラインまたは接続不良）。<br>
+              <button onclick="worldSvgLoaded=false; loadWorldMapSvg();" class="mt-3 px-4 py-2 bg-dustyrose-500 text-white rounded-xl active:scale-95 transition-transform font-black">地図の再読み込み</button>
+            </div>
+          `;
+        });
+    }
+
+    // 外部世界地図の国クリック時のデータ紐付け (ISO-3166 から WORLD_COUNTRIES)
+    function onWorldCountryPathClick(isoCode) {
+      // 地図データのIDとアプリ側国データのIDを対応
+      const mapping = {
+        'gb': 'uk',
+        'eg': 'egypt',
+        'cn': 'china',
+        'jp': 'japan',
+        'au': 'australia',
+        'us': 'usa_east', // 米国東
+        'br': 'brazil'
+      };
+      
+      const mappedId = mapping[isoCode];
+      if (mappedId) {
+        // 時差クイズ、世界の国クイズ、または学習辞書それぞれの処理にパス
+        const activeView = Array.from(document.querySelectorAll('.app-view')).find(el => !el.classList.contains('hidden'));
+        if (activeView && activeView.id === 'view-study') {
+          selectWorldCountry(mappedId);
+        } else if (activeView && activeView.id === 'view-quiz-play') {
+          // プレイ中ならクリック選択肢の回答判定に使えるよう処理可能（必要に応じて拡張）
+        }
+      }
+    }
+
+    // クイズプレイ時などの特定国ハイライト表示
+    function highlightWorldCountry(wcId) {
+      // マッピングの逆変換
+      const revMapping = {
+        'uk': 'gb',
+        'egypt': 'eg',
+        'china': 'cn',
+        'japan': 'jp',
+        'australia': 'au',
+        'usa_east': 'us',
+        'usa_west': 'us',
+        'brazil': 'br'
+      };
+      
+      const targetIso = revMapping[wcId];
+      
+      document.querySelectorAll('.world-country-path').forEach(p => {
+        p.classList.remove('is-active-highlight');
+        p.setAttribute('fill', '#cbd5e1');
+        p.setAttribute('stroke', '#ffffff');
+        p.setAttribute('stroke-width', '1');
+      });
+
+      if (targetIso) {
+        const paths = document.querySelectorAll(`.world-country-path`);
+        paths.forEach(p => {
+          if (p.id && p.id.toLowerCase() === targetIso) {
+            p.classList.add('is-active-highlight');
+            p.setAttribute('fill', '#f43f5e'); // dustyrose-500 (ハイライト)
+            p.setAttribute('stroke', '#be123c');
+            p.setAttribute('stroke-width', '1.5');
+          }
+        });
+      }
+    }
     // ========================================================
     // ================== 初期ロード処理 ==================
     // ========================================================
