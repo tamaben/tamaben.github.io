@@ -20,7 +20,6 @@
             border: '#cbd5e1',    // 境界線 (slate-300)
             text: '#1e293b',      // メインテキスト (slate-800)
             subtext: '#64748b',   // サブテキスト (slate-500)
-            
             sage: {
               50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#36b34a', 600: '#16a34a', 700: '#15803d',
             },
@@ -64,7 +63,7 @@
 
     @font-face {
       font-family: 'map';
-      src: url('https://www.granfairs.com/_codetest/iconfont-for-map/assets/font/map.ttf') format('truetype');
+      src: url('./map.ttf') format('truetype');
       font-weight: normal; font-style: normal; font-display: block;
     }
 
@@ -548,7 +547,7 @@
               </div>
             </button>
 
-            <!-- 【追加・ワードウルフ】 -->
+            <!-- ワードウルフ -->
             <button onclick="switchPartyConfig('word_wolf')" class="flex items-center p-3.5 bg-dustypurple-50 border border-dustypurple-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustypurple-400 shadow-sm group">
               <div class="bg-dustypurple-100 text-dustypurple-600 p-3 rounded-xl mr-4 shrink-0 flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -559,7 +558,7 @@
               </div>
             </button>
 
-            <!-- 【追加・スパイフォール】 -->
+            <!-- 地理スパイフォール -->
             <button onclick="switchPartyConfig('spyfall')" class="flex items-center p-3.5 bg-dustyrose-50 border border-dustyrose-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyrose-400 shadow-sm group">
               <div class="bg-dustyrose-100 text-dustyrose-600 p-3 rounded-xl mr-4 shrink-0 flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -570,7 +569,7 @@
               </div>
             </button>
 
-            <!-- 【追加・インサイダー】 -->
+            <!-- 地理インサイダー -->
             <button onclick="switchPartyConfig('insider')" class="flex items-center p-3.5 bg-dustyyellow-50 border border-dustyyellow-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyyellow-400 shadow-sm group">
               <div class="bg-dustyyellow-100 text-dustyyellow-600 p-3 rounded-xl mr-4 shrink-0 flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -581,7 +580,7 @@
               </div>
             </button>
 
-            <!-- 【追加・シークレット・トリップ】 -->
+            <!-- シークレット・トリップ -->
             <button onclick="switchPartyConfig('secret_trip')" class="flex items-center p-3.5 bg-sage-50 border border-sage-200 rounded-2xl active:scale-95 transition-all text-left hover:border-sage-400 shadow-sm group">
               <div class="bg-sage-100 text-sage-600 p-3 rounded-xl mr-4 shrink-0 flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -592,7 +591,7 @@
               </div>
             </button>
 
-            <!-- 【追加・ジャスト・ワン地理】 -->
+            <!-- ジャスト・ワン地理 -->
             <button onclick="switchPartyConfig('just_one')" class="flex items-center p-3.5 bg-dustyblue-50 border border-dustyblue-200 rounded-2xl active:scale-95 transition-all text-left hover:border-dustyblue-400 shadow-sm group">
               <div class="bg-dustyblue-100 text-dustyblue-600 p-3 rounded-xl mr-4 shrink-0 flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
@@ -723,7 +722,7 @@
           </label>
         </div>
         <div class="p-4 bg-dustyyellow-50 rounded-2xl mb-6 text-xs text-dustyyellow-600 font-bold leading-relaxed text-center border border-dustyyellow-100">
-          対象 of 都道府県は濃い色で表示されます。<br>周りの県もうっすら見えるので、<br>位置関係もヒントにして当てましょう！
+          対象の都道府県は濃い色で表示されます。<br>周りの県もうっすら見えるので、<br>位置関係もヒントにして当てましょう！
         </div>
         <button onclick="startQuiz('sil')" class="w-full py-4 mt-auto bg-dustyyellow-600 text-surface rounded-2xl font-black text-sm active:scale-95 transition-transform shrink-0 shadow-sm">クイズ開始 (全47問)</button>
       </div>
@@ -1161,7 +1160,6 @@
   </div>
 
   <script>
-    // ================= 不足していた地理データの完全定義 =================
     const REGIONS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
 
     // 隣接都道府県定義
@@ -1215,98 +1213,64 @@
       okinawa: ['kagoshima']
     };
 
-    // 日本の雨温図区分データ
     const CLIMATES = [
       { id: 'hokkaido', key: 'hokkaido', desc: '【北海道の気候】梅雨がなく、冬の寒さが厳しい。年間降水量が少なめ。' },
-      { id: 'japan_sea', key: 'niigata', desc: '【日本海側の気候】北西の冬の季節風により、冬（12〜2月）に降水量（雪）が急増する。' },
-      { id: 'pacific', key: 'tokyo', desc: '【太平洋側の気候】夏に雨が多く、冬は晴天の日が多く乾燥する。' },
-      { id: 'highland', key: 'nagano', desc: '【中央高地の気候】標高が高いため年中気温が低く、年間降水量も少ない。昼夜の寒暖差大。' },
-      { id: 'seto', key: 'kagawa', desc: '【瀬戸内の気候】中国山地と四国山地に遮られ、年間を通して温暖で雨が非常に少ない。' },
-      { id: 'okinawa', key: 'okinawa', desc: '【南西諸島の気候】年間を通して温暖（冬も15℃以上）で、梅雨や台風による降水量が非常に多い。' }
+      { id: 'japan_sea', key: 'niigata', desc: '【日本海側の気候】北西の冬の季節風により、冬に降水量が急増。' },
+      { id: 'pacific', key: 'tokyo', desc: '【太平洋側の気候】夏に雨が多く、冬は晴天の日が多く乾燥。' },
+      { id: 'highland', key: 'nagano', desc: '【中央高地の気候】標高が高いため年中気温が低く、年間降水量も少ない。' },
+      { id: 'seto', key: 'kagawa', desc: '【瀬戸内の気候】山地に遮られ、年間を通して温暖で雨が少ない。' },
+      { id: 'okinawa', key: 'okinawa', desc: '【南西諸島の気候】年間を通して温暖で、梅雨や台風による降水量が非常に多い。' }
     ];
 
-    // 中学地理・地形問題
     const TOPO_QUESTIONS = [
       { q: "日本で最も長い川は？", a: "信濃川", key: "niigata" },
       { q: "流域面積が日本で最大の川は？", a: "利根川", key: "ibaraki" },
-      { q: "日本最高峰の山地群であり、「北アルプス」と呼ばれるのは？", a: "飛騨山脈", key: "nagano" },
+      { q: "「北アルプス」と呼ばれる山脈は？", a: "飛騨山脈", key: "nagano" },
       { q: "山梨県と静岡県にまたがる日本最高峰の火山は？", a: "富士山", key: "shizuoka" },
-      { q: "巨大なカルデラを持ち、現在も活発に噴煙を上げる熊本県の山は？", a: "阿蘇山", key: "kumamoto" },
-      { q: "日本最大の平野で、日本の人口の約3分の1が集中する平野は？", a: "関東平野", key: "tokyo" },
-      { q: "最上川の下流に広がり、日本を代表する稲作地帯である山形県の平野は？", a: "庄内平野", key: "yamagata" },
-      { q: "信濃川の下流に広がり、日本トップクラスの米どころである平野は？", a: "越後平野", key: "niigata" }
+      { q: "巨大なカルデラを持つ熊本県の山は？", a: "阿蘇山", key: "kumamoto" },
+      { q: "日本最大の平野は？", a: "関東平野", key: "tokyo" }
     ];
 
-    // 工業・農業の統計帯グラフ問題
     const STAT_QUESTIONS = [
-      { title: "米の収穫量割合", q: "日本のお米（コシヒカリなど）の国内収穫量が圧倒的に日本一の県は？", a: "新潟県", shares: [{ name: "新潟", percent: 8, color: "bg-sage-600" }, { name: "北海道", percent: 7, color: "bg-dustyblue-500" }, { name: "秋田", percent: 6, color: "bg-dustyyellow-500" }, { name: "その他", percent: 79, color: "bg-slate-400" }], opts: ["新潟県", "北海道", "秋田県", "山形県"] },
-      { title: "みかんの収穫量割合", q: "みかんの収穫量が全国1位で、温暖な気候を利用して栽培する県は？", a: "和歌山県", shares: [{ name: "和歌山", percent: 19, color: "bg-dustyorange-500" }, { name: "愛媛", percent: 16, color: "bg-dustyyellow-500" }, { name: "静岡", percent: 13, color: "bg-sage-500" }, { name: "その他", percent: 52, color: "bg-slate-400" }], opts: ["和歌山県", "愛媛県", "静岡県", "熊本県"] },
-      { title: "工業出荷額割合（自動車産業等）", q: "中京工業地帯の中核で、自動車の生産が盛んで出荷額が圧倒的1位の県は？", a: "愛知県", shares: [{ name: "愛知", percent: 14, color: "bg-dustyrose-600" }, { name: "神奈川", percent: 6, color: "bg-dustyblue-500" }, { name: "静岡", percent: 5, color: "bg-sage-500" }, { name: "その他", percent: 75, color: "bg-slate-400" }], opts: ["愛知県", "静岡県", "神奈川県", "大阪府"] },
-      { title: "茶 of 生産量割合", q: "牧之原などの大台地があり、お茶の生産量が日本有数の県は？", a: "静岡県", shares: [{ name: "静岡", percent: 36, color: "bg-sage-600" }, { name: "鹿児島", percent: 34, color: "bg-dustypurple-500" }, { name: "三重", percent: 6, color: "bg-dustyorange-500" }, { name: "その他", percent: 24, color: "bg-slate-400" }], opts: ["静岡県", "鹿児島県", "三重県", "京都府"] }
+      { title: "米の収穫量割合", q: "日本のお米の国内収穫量が圧倒的に日本一の県は？", a: "新潟県", shares: [{ name: "新潟", percent: 8, color: "bg-sage-600" }, { name: "北海道", percent: 7, color: "bg-dustyblue-500" }, { name: "その他", percent: 85, color: "bg-slate-400" }], opts: ["新潟県", "北海道", "秋田県", "山形県"] },
+      { title: "みかんの収穫量割合", q: "みかんの収穫量が全国1位の県は？", a: "和歌山県", shares: [{ name: "和歌山", percent: 19, color: "bg-dustyorange-500" }, { name: "愛媛", percent: 16, color: "bg-dustyyellow-500" }, { name: "その他", percent: 65, color: "bg-slate-400" }], opts: ["和歌山県", "愛媛県", "静岡県", "熊本県"] }
     ];
 
-    // 地図記号・縮尺計算問題
     const MAPSCALE_QUESTIONS = [
       { type: 'symbol', symbolId: 'fire', q: "この地図記号が表す建物は？", a: "消防署", opts: ["消防署", "警察署", "役所", "郵便局"] },
       { type: 'symbol', symbolId: 'orchard', q: "この地図記号が表す土地利用は？", a: "果樹園", opts: ["果樹園", "田", "畑", "茶畑"] },
-      { type: 'symbol', symbolId: 'library', q: "この地図記号が表す建物は？", a: "図書館", opts: ["図書館", "学校", "博物館", "税務署"] },
-      { type: 'scale', q: "2万5千分の1の地形図上で「4cm」の長さは、実際の距離では何km？", a: "1km", opts: ["1km", "2.5km", "10km", "400m"] },
-      { type: 'scale', q: "5万分の1の地形図上で実際の距離「5km」は、地図の上では何cm？", a: "10cm", opts: ["10cm", "5cm", "2.5cm", "20cm"] },
-      { type: 'scale', q: "2万5千分の1の地形図における「主曲線（細い実線）」の間隔は？", a: "10mごと", opts: ["10mごと", "20mごと", "5mごと", "50mごと"] }
+      { type: 'scale', q: "2万5千分の1の地形図上で「4cm」の長さは、実際の距離では何km？", a: "1km", opts: ["1km", "2.5km", "10km", "400m"] }
     ];
 
-    // ワードウルフお題話題ヒント
     const WW_QUESTIONS = {
       name: [
-        { q: "この県に行ったとき、お土産として思い浮かぶ食べ物は何ですか？", hint: "有名な名産品をヒントに、相手と自分のお題のズレを見出しましょう。" },
-        { q: "この都道府県で一番有名だと思う観光名所はどこでしょう？", hint: "自然か、人工の建物か、どのような場所かを話し合ってみてください。" },
-        { q: "この県は、どの「地方（関東、関西など）」にありますか？また、海に面していますか？", hint: "地方のズレや内陸・沿岸の違いをそれとなく暴きます。" }
+        { q: "この県に行ったとき、お土産として思い浮かぶ食べ物は何ですか？", hint: "有名な名産品をヒントに、ズレを見出しましょう。" },
+        { q: "この都道府県で一番有名だと思う観光名所はどこでしょう？", hint: "自然か、人工の建物かで話し合ってみてください。" }
       ],
       capital: [
-        { q: "この都市（県庁所在地）は、新幹線が通っていますか？アクセスはどうですか？", hint: "新幹線の有無や大都市度合いで、相手の反応を探ります。" },
-        { q: "この都市の名物、または名前に使われている「漢字」の特徴は？", hint: "文字数や部首、文字の雰囲気を会話に混ぜます。" }
-      ],
-      food: [
-        { q: "このお題の食べ物は、どのような味付け（甘い、塩っぱい、辛いなど）が主ですか？", hint: "おかず、主食、スイーツ、どれに近いかを探ります。" },
-        { q: "これは、温かい食べ物ですか？冷たい食べ物ですか？", hint: "日常の食卓に出るものか、特定の季節・お祭りのものかで判断します。" }
-      ],
-      tourism: [
-        { q: "この観光地は、歴史のある場所ですか？それとも近代的なテーマパークや自然地形ですか？", hint: "屋内で楽しむ場所か、屋外の自然かで議論を回します。" },
-        { q: "この場所に行くなら、どのような服装・移動手段が適していますか？", hint: "山登りが必要か、駅から徒歩で行けるか等で探り合います。" }
+        { q: "この都市（県庁所在地）は、新幹線が通っていますか？", hint: "新幹線の有無や大都市度合いで、相手の反応を探ります。" }
       ]
     };
 
-    // ハラハラ爆弾カテゴリ
     const BOMB_CATEGORIES = [
       { title: "名前に「山」がつく都道府県（例: 山形、山梨など）", check: p => p.name.includes("山") },
-      { title: "「海」に面していない内陸県（例: 埼玉、長野、栃木など）", check: p => ["tochigi", "gumma", "saitama", "yamanashi", "nagano", "gifu", "shiga", "nara"].includes(p.id) },
-      { title: "地方名が「関東」に属する都県（例: 東京、神奈川など）", check: p => p.region === "関東" },
-      { title: "名前に「川」か「島」が入る都道府県（例: 神奈川、徳島、広島など）", check: p => p.name.includes("川") || p.name.includes("島") }
+      { title: "「海」に面していない内陸県（例: 埼玉、長野、栃木など）", check: p => ["tochigi", "gumma", "saitama", "yamanashi", "nagano", "gifu", "shiga", "nara"].includes(p.id) }
     ];
 
-    // ================= 世界地理・時差攻略用の詳細データ =================
     const WORLD_COUNTRIES = [
-      { id: 'uk', name: 'イギリス', capital: 'ロンドン', gmt: 0, region: 'ヨーロッパ', food: 'フィッシュ＆チップス', tourism: 'ビッグベン・タワーブリッジ', trivia: '本初子午線（経度0度）が通る国で、世界の標準時（GMT）の基準点となっています。', oldProv: '西ヨーロッパ', hardRead: 'London (UTC+0)' },
-      { id: 'egypt', name: 'エジプト', capital: 'カイロ', gmt: 2, region: 'アフリカ', food: 'コシャリ(パスタご飯)', tourism: 'ギザの三大ピラミッド', trivia: '東経30度を標準時とし、日本との時差は7時間（日本が早い）。ナイル川流域のみに人口が集中。', oldProv: '北アフリカ', hardRead: 'Cairo (UTC+2)' },
-      { id: 'china', name: '中国', capital: '北京', gmt: 8, region: 'アジア', food: '麻婆豆腐・ギョーザ', tourism: '万里の長城', trivia: '経度差が非常に広い国ですが、国内の標準時は東経120度（時差+8時間）の1つに統一されています。', oldProv: '東アジア', hardRead: 'Beijing (UTC+8)' },
-      { id: 'japan', name: '日本', capital: '東京', gmt: 9, region: 'アジア', food: '寿司・天ぷら', tourism: '富士山・金閣寺', trivia: '東経135度（兵庫県明石市）を標準時子午線（GMT+9）としています。', oldProv: '東アジア', hardRead: 'Tokyo (UTC+9)' },
-      { id: 'australia', name: 'オーストラリア', capital: 'キャンベラ', gmt: 10, region: 'オセアニア', food: 'ミートパイ・オージービーフ', tourism: 'ウルル(エアーズロック)', trivia: '南半球にあり日本と季節が逆。東経150度を東部標準時（時差+10時間）としています。', oldProv: 'オセアニア', hardRead: 'Canberra (UTC+10)' },
-      { id: 'usa_east', name: 'アメリカ（東部）', capital: 'ワシントンD.C.', gmt: -5, region: '北アメリカ', food: 'ハンバーガー・ホットドッグ', tourism: '自由の女神', trivia: '西経75度を標準時とし、日本標準時より14時間遅れています（UTC-5）。', oldProv: '北アメリカ', hardRead: 'Washington D.C. (UTC-5)' },
-      { id: 'usa_west', name: 'アメリカ（西部）', capital: 'ロサンゼルス', gmt: -8, region: '北アメリカ', food: 'カリフォルニアロール', tourism: 'ハリウッド', trivia: '西経120度を標準時とし、日本標準時より17時間遅れています（UTC-8）。', oldProv: '北アメリカ', hardRead: 'Los Angeles (UTC-8)' },
-      { id: 'brazil', name: 'ブラジル', capital: 'ブラジリア', gmt: -3, region: '南アメリカ', food: 'シュラスコ・フェジョアーダ', tourism: 'アマゾン川・コルコバードのキリスト像', trivia: '南米最大の国。西経45度付近を標準時（時差-3時間、日本より12時間遅い）としています。', oldProv: '南アメリカ', hardRead: 'Brasilia (UTC-3)' }
+      { id: 'uk', name: 'イギリス', capital: 'ロンドン', gmt: 0, region: 'ヨーロッパ', food: 'フィッシュ＆チップス', tourism: 'ビッグベン', trivia: '本初子午線（経度0度）が通る国。', oldProv: '西ヨーロッパ', hardRead: 'London (UTC+0)' },
+      { id: 'egypt', name: 'エジプト', capital: 'カイロ', gmt: 2, region: 'アフリカ', food: 'コシャリ', tourism: 'ピラミッド', trivia: '東経30度を標準時とし、日本との時差は7時間。', oldProv: '北アフリカ', hardRead: 'Cairo (UTC+2)' },
+      { id: 'china', name: '中国', capital: '北京', gmt: 8, region: 'アジア', food: '麻婆豆腐', tourism: '万里の長城', trivia: '国内の標準時は東経120度の1つに統一されています。', oldProv: '東アジア', hardRead: 'Beijing (UTC+8)' },
+      { id: 'japan', name: '日本', capital: '東京', gmt: 9, region: 'アジア', food: '寿司', tourism: '富士山', trivia: '東経135度（兵庫県明石市）を標準時子午線。', oldProv: '東アジア', hardRead: 'Tokyo (UTC+9)' },
+      { id: 'australia', name: 'オーストラリア', capital: 'キャンベラ', gmt: 10, region: 'オセアニア', food: 'ミートパイ', tourism: 'ウルル', trivia: '南半球にあり日本と季節が逆。', oldProv: 'オセアニア', hardRead: 'Canberra (UTC+10)' },
+      { id: 'usa_east', name: 'アメリカ（東部）', capital: 'ワシントンD.C.', gmt: -5, region: '北アメリカ', food: 'ハンバーガー', tourism: '自由の女神', trivia: '西経75度を標準時とし、日本標準時より14時間遅れ。', oldProv: '北アメリカ', hardRead: 'Washington D.C. (UTC-5)' },
+      { id: 'usa_west', name: 'アメリカ（西部）', capital: 'ロサンゼルス', gmt: -8, region: '北アメリカ', food: 'カリフォルニアロール', tourism: 'ハリウッド', trivia: '西経120度を標準時とし、日本標準時より17時間遅れ。', oldProv: '北アメリカ', hardRead: 'Los Angeles (UTC-8)' },
+      { id: 'brazil', name: 'ブラジル', capital: 'ブラジリア', gmt: -3, region: '南アメリカ', food: 'シュラスコ', tourism: 'アマゾン川', trivia: '南米最大の国。日本より12時間遅い。', oldProv: '南アメリカ', hardRead: 'Brasilia (UTC-3)' }
     ];
 
-    // 世界地理・時差クイズ
     const WORLD_QUIZZES = [
-      { q: "ロンドン（経度0度）が午前9時のとき、東京（東経135度）は同じ日の何時でしょう？", a: "午後6時 (18時)", opts: ["午後6時 (18時)", "午後5時 (17時)", "午前0時", "午後9時 (21時)"] },
-      { q: "東京（東経135度）が5月5日午前10時のとき、ロンドン（経度0度）の日時は？", a: "5月5日午前1時", opts: ["5月5日午前1時", "5月5日午前3時", "5月4日午後8時", "5月4日午後11時"] },
-      { q: "東京（東経135度）が1月1日午前9時のとき、ニューヨーク（西経75度）の日時は？", a: "前日(12月31日)午後7時", opts: ["前日(12月31日)午後7時", "前日(12月31日)午後5時", "1月1日午後11時", "1月1日午後5時"] },
-      { q: "東京を12月1日午前10時に出発した飛行機が、12時間かけてロンドン（時差9時間遅い）に直行しました。到着時の現地時間は？", a: "12月1日午後1時", opts: ["12月1日午後1時", "12月1日午後3時", "12月1日午後10時", "12月2日午前10時"] },
-      { q: "地球は24時間で360度自転します。経度が何度変化するごとに1時間の時差が生じるでしょう？", a: "15度", opts: ["15度", "30度", "10度", "45度"] },
-      { q: "太平洋上にあり、ほぼ経度180度線に沿って設けられている、日付を調整するための境界線を何という？", a: "日付変更線", opts: ["日付変更線", "本初子午線", "赤道", "回帰線"] },
-      { q: "南アメリカ大陸のアマゾン川流域に広がる、世界最大の熱帯雨林をブラジルでは何と呼ぶ？", a: "セルバ", opts: ["セルバ", "パンパ", "サバナ", "ステップ"] },
-      { q: "ヨーロッパなどで盛んな、小麦や飼料作物の栽培と豚・牛などの家畜の飼育を組み合わせた農業形態は？", a: "混合農業", opts: ["混合農業", "地中海式農業", "酪農", "移牧"] },
-      { q: "世界の気候帯のうち、一年中気温が低く樹木が育たない、寒帯や高緯度地方にみられる気候帯は？", a: "寒帯", opts: ["寒帯", "冷帯(亜寒帯)", "乾燥帯", "温帯"] }
+      { q: "ロンドン（経度0度）が午前9時のとき、東京（東経135度）は同じ日の何時？", a: "午後6時 (18時)", opts: ["午後6時 (18時)", "午後5時 (17時)", "午前0時", "午後9時 (21時)"] },
+      { q: "地球は24時間で360度自転します。経度が何度変化するごとに1時間の時差？", a: "15度", opts: ["15度", "30度", "10度", "45度"] }
     ];
 
     // ==========================================
@@ -1362,10 +1326,9 @@
 
     const JUST_ONE_THEMES = [
       "琵琶湖", "富士山", "さくらんぼ", "讃岐うどん", "美ら海水族館", "ねぶた祭",
-      "東京タワー", "鳴門の渦潮", "信濃川", "白川郷", "阿蘇山"
+      "東京タワー", "鳴門 of 渦潮", "信濃川", "白川郷", "阿蘇山"
     ];
 
-    // 都道府県・旧国名等の質問作成ヘルパー
     function makePrefectureQuestion(pref) {
       const qTypes = [
         { q: `「${pref.name}」の県庁所在地はどこでしょう？`, a: pref.capital, getOpts: () => [pref.capital, "仙台市", "名古屋市", "広島市"] },
@@ -1375,8 +1338,7 @@
       return qTypes[Math.floor(Math.random() * qTypes.length)];
     }
 
-    // ================= マップ表示切替 (日本 vs 世界) =================
-    let currentMapType = 'japan'; // 'japan' or 'world'
+    let currentMapType = 'japan'; 
 
     function toggleMapType(type) {
       currentMapType = type;
@@ -1391,7 +1353,7 @@
         btnJapan.className = "hover:bg-slate-200 text-subtext px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1";
         mapTransform.classList.add('hidden');
         worldMapWrapper.classList.remove('hidden');
-        controls.classList.add('hidden'); // 世界地図は固定スケール
+        controls.classList.add('hidden'); 
       } else {
         btnJapan.className = "bg-surface text-text px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1 shadow-sm";
         btnWorld.className = "hover:bg-slate-200 text-subtext px-3 py-1.5 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center gap-1";
@@ -1402,12 +1364,11 @@
       }
     }
 
-    // ================= 世界地理辞書の開始 =================
     function startWorldDictionary() {
       switchView('study');
       highlightWorldCountry(null);
       const container = document.getElementById('study-list-container');
-      container.innerHTML = ''; // クリア
+      container.innerHTML = ''; 
 
       const title = document.createElement('div');
       title.className = "text-[11px] font-bold text-subtext mt-2 mb-2 pl-3 border-l-4 border-dustyblue-500 rounded-full";
@@ -1436,24 +1397,16 @@
 
       document.getElementById('study-region').textContent = `${wc.region}地方 (GMT ${wc.gmt >= 0 ? '+' + wc.gmt : wc.gmt})`;
       document.getElementById('study-name').textContent = wc.name;
-      
       document.getElementById('study-subinfo-label').innerHTML = `首都: <span id="study-capital" class="text-surface">${wc.capital}</span>`;
-      
       document.getElementById('detail-card-1-label').textContent = "主な名物料理・特産";
       document.getElementById('study-food').textContent = wc.food;
-      
       document.getElementById('detail-card-2-label').textContent = "有名な世界遺産・観光名所";
       document.getElementById('study-tourism').textContent = wc.tourism;
-      
       document.getElementById('detail-card-3-label').textContent = "地域区分";
       document.getElementById('study-oldprov').textContent = wc.oldProv;
-      
       document.getElementById('detail-card-4-label').textContent = "標準時 (時差)";
       document.getElementById('study-hardread').textContent = wc.hardRead;
-      
       document.getElementById('study-trivia').textContent = wc.trivia;
-
-      // 「覚えた！」チェックボックスの表示設定
       document.getElementById('chk-learned-wrap').classList.add('hidden');
 
       const detail = document.getElementById('study-detail');
@@ -1476,44 +1429,17 @@
     }
   </script>
 
-  <!-- ================= 既存スクリプトの補完とバグ修正 ================= -->
   <script>
-    // 状態管理
     let qState = {
-      mode: '', 
-      format: '',
-      currentQ: 1,
-      totalQ: 10,
-      score: 0,
-      timer: 15,
-      interval: null,
-      remaining: [],
-      currentPref: null,
-      mistakes: [],
-      streak: 0,
-      remainingTopo: [],
-      remainingStat: [],
-      remainingMapscale: []
+      mode: '', format: '', currentQ: 1, totalQ: 10, score: 0, timer: 15, interval: null, remaining: [], currentPref: null, mistakes: [], streak: 0, remainingTopo: [], remainingStat: [], remainingMapscale: []
     };
 
     let sprintState = { score: 0, timer: 30, currentPref: null };
     let routeState = { start: null, target: null, current: null, path: [], steps: 0 };
     
-    // パーティーゲームの状態
     let partyState = { 
-      gameType: '', 
-      topicGenre: 'name', 
-      players: [], 
-      currentIdx: 0, 
-      timer: 180, 
-      interval: null, 
-      bombInterval: null,
-      playerWords: [],   // ワードウルフ/スパイフォール用プレイヤーお題
-      wolfCount: 1,      // ウルフ数
-      justOneHints: [],  // ジャストワン用のヒント格納
-      secretWord: '',    // 正解お題
-      insiderIdx: -1,    // インサイダー
-      masterIdx: -1      // マスター
+      gameType: '', topicGenre: 'name', players: [], currentIdx: 0, timer: 180, interval: null, bombInterval: null,
+      playerWords: [], wolfCount: 1, justOneHints: [], secretWord: '', insiderIdx: -1, masterIdx: -1
     };
     
     let wwVoteState = { voterIdx: 0, votes: {}, currentVotedTarget: null };
@@ -1523,55 +1449,54 @@
     let lhState = { targetPref: null, rounds: 1, maxRounds: 3, players: [], currentPlayerIdx: 0, selectedPref: null, score: 0 };
     let deliveryState = { startPref: null, targetPref: null, currentPref: null, cargoValue: 10000, steps: 0 };
 
-    // 日本都道府県データ (提供データをそのまま使用)
     const PREFECTURES = [
-      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷（えぞ）', hardRead: '長万部（おしゃまんべ）', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい都道府県。日本の面積の約22%を占めます。', area: 83400 },
-      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸秋国（むつ）', hardRead: '三厩（みうまや）', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: '本州最北端に位置し、りんごの生産量が日本一です。', area: 9600 },
-      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中国（りくちゅう）', hardRead: '不来方（こずかた）', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで日本で2番目に広いです。', area: 15200 },
-      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前国（りくぜん）', hardRead: '愛子（あやし）', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗騎馬像', trivia: '日本三景の一つ「松島」があります。', area: 7200 },
-      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後国（うご）', hardRead: '生保内（おぼない）', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '大晦日の伝統行事「なまはげ」や秋田犬で有名です。', area: 11600 },
-      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前国（うぜん）', hardRead: '左沢（あてらざわ）', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。将棋の駒の生産も有名です。', area: 9300 },
-      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代国・磐城国', hardRead: '桑折（こおり）', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '面積が日本で3番目に広く、東北地方で最も南に位置しています。', area: 13700 },
-      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸国（ひたち）', hardRead: '潮来（いたこ）', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で全国的に有名です。', area: 6000 },
-      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野国（しもつけ）', hardRead: '五十里（いかり）', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）の生産量が日本一です。', area: 6400 },
-      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野国（こうずけ）', hardRead: '嬬恋（つまごい）', food: 'こんにゃく・焼きまんじゅう', tourism: '草津温泉・富岡製糸場', trivia: '草津や伊香保など名湯が多く「温泉大国」と呼ばれます。', area: 6300 },
-      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '越生（おごせ）', food: '草加せんべい・深谷ねぎ', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多く、自転車の保有率が日本一と言われています。', area: 3700 },
-      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総国・下総国', hardRead: '匝瑳（そうさ）', food: '落花生・なめろう', tourism: '東京ディズニーリゾート', trivia: '成田空港があり、日本の空の玄関口です。', area: 5100 },
-      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵国（むさし）', hardRead: '石神井（しゃくじい）', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都であり、世界有数の人口を持つ大都市です。', area: 2100 },
-      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模国（さがみ）', hardRead: '鵠沼（くげぬま）', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が東京に次いで日本で2番目に多いです。', area: 2400 },
-      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後国・佐渡国', hardRead: '新発田（しばた）', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: 'お米の生産量が多く、米菓（せんべい等）も有名です。', area: 12500 },
-      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中心（えっちゅう）', hardRead: '石動（いするぎ）', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '昔から「越中富山の薬売り」として製薬業が盛んです。', area: 4200 },
-      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀国・能登国', hardRead: '羽咋（はくい）', food: '金沢カレー・海鮮丼', tourism: '兼六園・ひがし茶屋街', trivia: '伝統工芸の金箔や加賀友禅が有名です。', area: 4100 },
-      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前国・若狭国', hardRead: '遠敷（おにゅう）', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石の発掘地で、メガネのフレーム生産も盛んです。', area: 4100 },
-      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐国（かい）', hardRead: '都留（つる）', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド・富士五湖', trivia: 'ぶどうや桃の生産量が日本一で、ワインも有名です。', area: 4400 },
-      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃国（信濃）', hardRead: '姨捨（おばすて）', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県で、標高の高い山々に囲まれています。', area: 13500 },
-      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃国・飛騨国', hardRead: '各務原（かかみがはら）', food: '飛騨牛・栗きんとん', tourism: '白川郷・下呂温泉', trivia: '合掌造りの集落「白川郷」が世界遺産に登録されています。', area: 10600 },
-      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河国・遠江国', hardRead: '焼津（やいづ）', food: 'お茶・うなぎ・さわやか', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一で、富士山がある県です。', area: 7700 },
-      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張国・三河国', hardRead: '蒲郡（がまごおり）', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業が盛んで、トヨタ自動車の本社があります。', area: 5100 },
-      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢国・伊賀国・志摩国', hardRead: '英虞（あご）', food: '松阪牛・赤福', tourism: '伊勢神宮・ナガシマスパーランド', trivia: '真珠の養殖で知られる英虞湾や忍者発祥の地があります。', area: 5700 },
-      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江国（おうみ）', hardRead: '膳所（ぜぜ）', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」が面積の約6分の1を占めます。', area: 4000 },
-      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城国・丹波国', hardRead: '先斗町（ぽんとちょう）', food: '八ツ橋・湯豆腐・抹茶', tourism: '金閣寺・清水寺', trivia: '古都として数多くの世界遺産や神社仏閣があります。', area: 4600 },
-      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津国・河内国・和泉国', hardRead: '放出（はんてん）', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀・大阪城', trivia: '「天下の台所」と呼ばれ、食い倒れの街として有名です。', area: 1900 },
-      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨国・但馬国', hardRead: '宍粟（しそう）', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る明石市や、甲子園球場があります。', area: 8400 },
-      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和国（やまと）', hardRead: '斑鳩（いかるが）', food: '柿の葉寿司・奈良漬', tourism: '東大寺・奈良公園', trivia: '大仏や、野生の鹿がたくさんいる奈良公園が有名です。', area: 3600 },
-      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊国（きい）', hardRead: '雑賀崎（さいかざき）', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかんと梅の生産量が日本一です。', area: 4700 },
-      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡国・伯耆国', hardRead: '八頭（やず）', food: 'カニ・二十世紀梨', tourism: '鳥取砂丘・水木しげるロード', trivia: '日本最大の砂丘である鳥取砂丘があります。', area: 3500 },
-      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', oldProv: '出雲国・石見国・隠岐国', hardRead: '温泉津（ゆのつ）', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '神々が集まる場所として知られる出雲大社があります。', area: 6700 },
-      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', oldProv: '備前国・備中国・美作国', hardRead: '邑久（おく）', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '「晴れの国」と呼ばれ、桃太郎伝説が残っています。', area: 7100 },
-      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', oldProv: '安芸国・備後国', hardRead: '向洋（むかいなだ）', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '平和を祈る都市であり、牡蠣やレモンの生産量日本一です。', area: 8400 },
-      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', oldProv: '長門国・周防国', hardRead: '特牛（こっとい）', food: 'ふぐ料理・瓦そば', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端にあり、歴代の総理大臣を多く輩出しています。', area: 6100 },
-      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', oldProv: '阿波国（あわ）', hardRead: '祖谷（いや）', food: '徳島ラーメン・すだち', tourism: '阿波踊り・鳴門の渦潮', trivia: '夏に行われる阿波踊りや、鳴門海峡の渦潮が全国的に有名です。', area: 4100 },
-      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', oldProv: '讃岐国（さぬき）', hardRead: '観音寺（かんおんじ）', food: '讃岐うどん・骨付鳥', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい都道府県で「うどん県」を名乗っています。', area: 1800 },
-      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', oldProv: '伊予国（いよ）', hardRead: '忽那（くつな）', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '日本最古の温泉と言われる道後温泉があります。', area: 5600 },
-      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', oldProv: '土佐国（土佐）', hardRead: '宿毛（すくも）', food: 'カツオのタタキ・ゆず', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地として知られ、よさこい祭りも盛んです。', area: 7100 },
-      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前国・筑後国・豊前国', hardRead: '雑餉隈（ざっしょのくま）', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮・キャナルシティ', trivia: '九州地方で最も人口が多く、屋台文化が盛んです。', area: 4900 },
-      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前国（ひぜん）', hardRead: '厳木（きゅうらぎ）', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '有田焼や伊万里焼、唐津焼などの陶磁器が有名です。', area: 2400 },
-      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前国・壱岐国・対馬国', hardRead: '東彼杵（ひがしそのぎ）', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス・グラバー園', trivia: '異国情緒あふれる街並みで、夜景の美しさも有名です。', area: 4100 },
-      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後国（ひご）', hardRead: '合志（こうし）', food: '馬刺し・いきなり団子', tourism: '熊本城・阿蘇山', trivia: '世界最大級のカルデラを持つ阿蘇山やくまモンが有名です。', area: 7400 },
-      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後国・豊前国', hardRead: '安心院（あじむ）', food: 'とり天・関あじ関さば', tourism: '別府温泉・由布院温泉', trivia: '温泉の源泉数・湧出量ともに日本一の「おんせん県」です。', area: 6300 },
-      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向国（ひゅうが）', hardRead: '飫肥（おび）', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡・青島', trivia: '温暖な気候で、プロ野球の春季キャンプ地として有名です。', area: 7700 },
-      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩国・大隅国', hardRead: '指宿（いぶすき）', food: '黒豚・しろくま(アイス)', tourism: '桜島・屋久島', trivia: '活火山の桜島や、世界自然遺産の屋久島があります。', area: 9100 },
-      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球国（ryukyu）', hardRead: '南風原（はえばる）', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '1年中暖かく、美しいサンゴ礁の海に囲まれたリゾート地です。', area: 2200 }
+      { id: 'hokkaido', name: '北海道', capital: '札幌市', region: '北海道', oldProv: '蝦夷', hardRead: '長万部', food: '海鮮丼・ジンギスカン', tourism: '時計台・旭山動物園', trivia: '日本で最も面積が大きい。', area: 83400 },
+      { id: 'aomori', name: '青森県', capital: '青森市', region: '東北', oldProv: '陸奥', hardRead: '三厩', food: 'りんご・大間まぐろ', tourism: 'ねぶた祭・白神山地', trivia: 'りんごの生産量が日本一。', area: 9600 },
+      { id: 'iwate', name: '岩手県', capital: '盛岡市', region: '東北', oldProv: '陸中', hardRead: '不来方', food: 'わんこそば・盛岡冷麺', tourism: '中尊寺・小岩井農場', trivia: '面積が北海道に次いで2番目に広い。', area: 15200 },
+      { id: 'miyagi', name: '宮城県', capital: '仙台市', region: '東北', oldProv: '陸前', hardRead: '愛子', food: '牛タン・ずんだ餅', tourism: '松島・伊達政宗像', trivia: '日本三景の一つ「松島」がある。', area: 7200 },
+      { id: 'akita', name: '秋田県', capital: '秋田市', region: '東北', oldProv: '羽後', hardRead: '生保内', food: 'きりたんぽ・稲庭うどん', tourism: 'なまはげ館・田沢湖', trivia: '伝統行事「なまはげ」が有名。', area: 11600 },
+      { id: 'yamagata', name: '山形県', capital: '山形市', region: '東北', oldProv: '羽前', hardRead: '左沢', food: 'さくらんぼ・芋煮', tourism: '蔵王温泉・山寺', trivia: 'さくらんぼの生産量が日本一。', area: 9300 },
+      { id: 'fukushima', name: '福島県', capital: '福島市', region: '東北', oldProv: '岩代・磐城', hardRead: '桑折', food: '喜多方ラーメン・桃', tourism: '鶴ヶ城・ハワイアンズ', trivia: '東北地方で最も南に位置。', area: 13700 },
+      { id: 'ibaraki', name: '茨城県', capital: '水戸市', region: '関東', oldProv: '常陸', hardRead: '潮来', food: '納豆・メロン', tourism: '偕楽園・ひたち海浜公園', trivia: '水戸黄門や納豆で有名。', area: 6000 },
+      { id: 'tochigi', name: '栃木県', capital: '宇都宮市', region: '関東', oldProv: '下野', hardRead: '五十里', food: '宇都宮餃子・いちご', tourism: '日光東照宮・華厳の滝', trivia: 'いちご（とちおとめ）日本一。', area: 6400 },
+      { id: 'gumma', name: '群馬県', capital: '前橋市', region: '関東', oldProv: '上野', hardRead: '嬬恋', food: 'こんにゃく', tourism: '草津温泉・富岡製糸場', trivia: '有数の温泉大国。', area: 6300 },
+      { id: 'saitama', name: '埼玉県', capital: 'さいたま市', region: '関東', oldProv: '武蔵', hardRead: '越生', food: '草加せんべい', tourism: '鉄道博物館・川越の蔵造り', trivia: '快晴の日が多い。', area: 3700 },
+      { id: 'chiba', name: '千葉県', capital: '千葉市', region: '関東', oldProv: '上総・下総', hardRead: '匝瑳', food: '落花生・なめろう', tourism: 'ディズニーリゾート', trivia: '成田空港がある。', area: 5100 },
+      { id: 'tokyo', name: '東京都', capital: '新宿区', region: '関東', oldProv: '武蔵', hardRead: '石神井', food: 'もんじゃ焼き・江戸前寿司', tourism: '東京スカイツリー・浅草寺', trivia: '日本の首都。', area: 2100 },
+      { id: 'kanagawa', name: '神奈川県', capital: '横浜市', region: '関東', oldProv: '相模', hardRead: '鵠沼', food: 'シウマイ・家系ラーメン', tourism: '横浜中華街・鎌倉大仏', trivia: '人口が日本で2番目に多い。', area: 2400 },
+      { id: 'niigata', name: '新潟県', capital: '新潟市', region: '中部', oldProv: '越後', hardRead: '新発田', food: 'コシヒカリ・笹だんご', tourism: '佐渡金山・越後湯沢', trivia: '米どころとして有名。', area: 12500 },
+      { id: 'toyama', name: '富山県', capital: '富山市', region: '中部', oldProv: '越中', hardRead: '石動', food: 'ホタルイカ・ます寿司', tourism: '黒部ダム・五箇山', trivia: '製薬業が盛ん。', area: 4200 },
+      { id: 'ishikawa', name: '石川県', capital: '金沢市', region: '中部', oldProv: '加賀', hardRead: '羽咋', food: '金沢カレー', tourism: '兼六園・ひがし茶屋街', trivia: '金箔や加賀友禅が有名。', area: 4100 },
+      { id: 'fukui', name: '福井県', capital: '福井市', region: '中部', oldProv: '越前', hardRead: '遠敷', food: '越前ガニ・ソースかつ丼', tourism: '恐竜博物館・東尋坊', trivia: '日本有数の恐竜化石発掘地。', area: 4100 },
+      { id: 'yamanashi', name: '山梨県', capital: '甲府市', region: '中部', oldProv: '甲斐', hardRead: '都留', food: 'ほうとう・信玄餅', tourism: '富士急ハイランド', trivia: 'ぶどうや桃の生産が盛ん。', area: 4400 },
+      { id: 'nagano', name: '長野県', capital: '長野市', region: '中部', oldProv: '信濃', hardRead: '姨捨', food: '信州そば・おやき', tourism: '善光寺・松本城', trivia: '海に面していない内陸県。', area: 13500 },
+      { id: 'gifu', name: '岐阜県', capital: '岐阜市', region: '中部', oldProv: '美濃・飛騨', hardRead: '各務原', food: '飛騨牛', tourism: '白川郷・下呂温泉', trivia: '世界遺産「白川郷」がある。', area: 10600 },
+      { id: 'shizuoka', name: '静岡県', capital: '静岡市', region: '中部', oldProv: '駿河・遠江', hardRead: '焼津', food: 'お茶・うなぎ', tourism: '富士山・浜名湖', trivia: 'お茶の生産量が日本一。', area: 7700 },
+      { id: 'aichi', name: '愛知県', capital: '名古屋市', region: '中部', oldProv: '尾張・三河', hardRead: '蒲郡', food: 'ひつまぶし・味噌カツ', tourism: '名古屋城・レゴランド', trivia: '自動車産業の本社がある。', area: 5100 },
+      { id: 'mie', name: '三重県', capital: '津市', region: '近畿', oldProv: '伊勢・伊賀', hardRead: '英虞', food: '松阪牛・赤福', tourism: '伊勢神宮', trivia: '伊勢神宮や忍者発祥の地。', area: 5700 },
+      { id: 'shiga', name: '滋賀県', capital: '大津市', region: '近畿', oldProv: '近江', hardRead: '膳所', food: '近江牛・鮒ずし', tourism: '琵琶湖・彦根城', trivia: '日本最大の湖「琵琶湖」がある。', area: 4000 },
+      { id: 'kyoto', name: '京都府', capital: '京都市', region: '近畿', oldProv: '山城・丹波', hardRead: '先斗町', food: '八ツ橋・湯豆腐', tourism: '金閣寺・清水寺', trivia: '数多くの神社仏閣がある古都。', area: 4600 },
+      { id: 'osaka', name: '大阪府', capital: '大阪市', region: '近畿', oldProv: '摂津・河内', hardRead: '放出', food: 'たこ焼き・お好み焼き', tourism: 'USJ・道頓堀', trivia: '「天下の台所」と呼ばれる。', area: 1900 },
+      { id: 'hyogo', name: '兵庫県', capital: '神戸市', region: '近畿', oldProv: '播磨・但馬', hardRead: '宍粟', food: '神戸牛・明石焼き', tourism: '姫路城・宝塚大劇場', trivia: '日本標準時子午線が通る。', area: 8400 },
+      { id: 'nara', name: '奈良県', capital: '奈良市', region: '近畿', oldProv: '大和', hardRead: '斑鳩', food: '柿の葉寿司', tourism: '東大寺・奈良公園', trivia: '大仏や野生の鹿で有名。', area: 3600 },
+      { id: 'wakayama', name: '和歌山県', capital: '和歌山市', region: '近畿', oldProv: '紀伊', hardRead: '雑賀崎', food: '和歌山ラーメン・梅干し', tourism: '高野山・アドベンチャーワールド', trivia: 'みかん、梅の生産日本一。', area: 4700 },
+      { id: 'tottori', name: '鳥取県', capital: '鳥取市', region: '中国', oldProv: '因幡・伯耆', hardRead: '八頭', food: '二十世紀梨', tourism: '鳥取砂丘', trivia: '鳥取砂丘がある。', area: 3500 },
+      { id: 'shimane', name: '島根県', capital: '松江市', region: '中国', oldProv: '出雲・石見', hardRead: '温泉津', food: '出雲そば・しじみ', tourism: '出雲大社・松江城', trivia: '出雲大社が有名。', area: 6700 },
+      { id: 'okayama', name: '岡山県', capital: '岡山市', region: '中国', oldProv: '備前・備中', hardRead: '邑久', food: 'きびだんご・白桃', tourism: '後楽園・倉敷美観地区', trivia: '桃太郎伝説が残る。', area: 7100 },
+      { id: 'hiroshima', name: '広島県', capital: '広島市', region: '中国', oldProv: '安芸・備後', hardRead: '向洋', food: 'お好み焼き・もみじ饅頭', tourism: '厳島神社・原爆ドーム', trivia: '牡蠣やレモンが生産日本一。', area: 8400 },
+      { id: 'yamaguchi', name: '山口県', capital: '山口市', region: '中国', oldProv: '長門・周防', hardRead: '特牛', food: 'ふぐ料理', tourism: '錦帯橋・秋芳洞', trivia: '本州の最西端に位置。', area: 6100 },
+      { id: 'tokushima', name: '徳島県', capital: '徳島市', region: '四国', oldProv: '阿波', hardRead: '祖谷', food: '徳島ラーメン', tourism: '阿波踊り・鳴門の渦潮', trivia: '阿波踊りや渦潮が有名。', area: 4100 },
+      { id: 'kagawa', name: '香川県', capital: '高松市', region: '四国', oldProv: '讃岐', hardRead: '観音寺', food: '讃岐うどん', tourism: '金刀比羅宮・小豆島', trivia: '日本で最も面積が小さい。', area: 1800 },
+      { id: 'ehime', name: '愛媛県', capital: '松山市', region: '四国', oldProv: '伊予', hardRead: '忽那', food: 'みかん・鯛めし', tourism: '道後温泉・松山城', trivia: '最古の温泉・道後温泉。', area: 5600 },
+      { id: 'kochi', name: '高知県', capital: '高知市', region: '四国', oldProv: '土佐', hardRead: '宿毛', food: 'カツオのタタキ', tourism: '桂浜・四万十川', trivia: '坂本龍馬の出身地。', area: 7100 },
+      { id: 'fukuoka', name: '福岡県', capital: '福岡市', region: '九州・沖縄', oldProv: '筑前・筑後', hardRead: '雑餉隈', food: '明太子・豚骨ラーメン', tourism: '太宰府天満宮', trivia: '九州で最も人口が多い。', area: 4900 },
+      { id: 'saga', name: '佐賀県', capital: '佐賀市', region: '九州・沖縄', oldProv: '肥前', hardRead: '厳木', food: '佐賀牛・呼子イカ', tourism: '吉野ヶ里遺跡', trivia: '陶磁器（有田焼など）有名。', area: 2400 },
+      { id: 'nagasaki', name: '長崎県', capital: '長崎市', region: '九州・沖縄', oldProv: '肥前・対馬', hardRead: '東彼杵', food: 'カステラ・ちゃんぽん', tourism: 'ハウステンボス', trivia: '異国情緒あふれる街。', area: 4100 },
+      { id: 'kumamoto', name: '熊本県', capital: '熊本市', region: '九州・沖縄', oldProv: '肥後', hardRead: '合志', food: '馬刺し', tourism: '熊本城・阿蘇山', trivia: '世界有数のカルデラ阿蘇山。', area: 7400 },
+      { id: 'oita', name: '大分県', capital: '大分市', region: '九州・沖縄', oldProv: '豊後', hardRead: '安心院', food: 'とり天・関あじ', tourism: '別府温泉・由布院温泉', trivia: '温泉の湧出量が日本一。', area: 6300 },
+      { id: 'miyazaki', name: '宮崎県', capital: '宮崎市', region: '九州・沖縄', oldProv: '日向', hardRead: '飫肥', food: 'チキン南蛮・マンゴー', tourism: '高千穂峡', trivia: '非常に温暖な気候。', area: 7700 },
+      { id: 'kagoshima', name: '鹿児島県', capital: '鹿児島市', region: '九州・沖縄', oldProv: '薩摩・大隅', hardRead: '指宿', food: '黒豚・しろくま', tourism: '桜島・屋久島', trivia: '活火山・桜島がある。', area: 9100 },
+      { id: 'okinawa', name: '沖縄県', capital: '那覇市', region: '九州・沖縄', oldProv: '琉球', hardRead: '南風原', food: 'ゴーヤチャンプルー', tourism: '美ら海水族館・首里城', trivia: '美しいサンゴ礁の海。', area: 2200 }
     ];
 
     const mapWrapper = document.getElementById('map-wrapper');
@@ -1589,7 +1514,6 @@
     let currentDetailPref = null; 
     let currentDetailBackView = 'study';
 
-    // 5ドット化したカルーセル連動
     const carousel = document.getElementById('top-carousel');
     const dots = [
       document.getElementById('dot-0'), 
@@ -1614,7 +1538,6 @@
       });
     }
 
-    // ビュー切り替え
     function switchView(viewId) {
       document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
       const view = document.getElementById('view-' + viewId);
@@ -1625,7 +1548,7 @@
         btnBack.classList.add('hidden');
         resetMapState();
         updateUIFromStorage();
-        toggleMapType('japan'); // トップに戻る時は日本地図デフォルト
+        toggleMapType('japan'); 
       } else {
         btnBack.classList.remove('hidden');
       }
@@ -1643,7 +1566,6 @@
       switchView('top');
     });
 
-    // ================= マップ操作 & ドラッグ =================
     let isPointerDown = false;
     let lastTouchX = 0, lastTouchY = 0;
     let touchStartDist = 0, touchStartScale = 1;
@@ -1671,7 +1593,7 @@
     }
 
     mapWrapper.addEventListener('touchstart', (e) => {
-      if (currentMapType === 'world') return; // 世界地図時は操作固定
+      if (currentMapType === 'world') return; 
       mapTransform.classList.add('is-dragging');
       isPointerDown = true;
       const mid = getTouchMidpoint(e);
@@ -1783,7 +1705,10 @@
       applyMapTransform();
     }
 
-    // ================= 重心計算 =================
+    function manualReset() {
+      resetMapState();
+    }
+
     function calculatePrefCenters() {
       const fontSize = 2000, offset = 400, size = fontSize + offset * 2;
       const canvas = document.createElement('canvas');
@@ -1848,7 +1773,7 @@
     }
 
     mapWrapper.addEventListener('click', (e) => {
-      if (currentMapType === 'world') return; // 世界地図時は別イベントで処理
+      if (currentMapType === 'world') return; 
       const cover = document.getElementById('loading-cover');
       if (cover && !cover.classList.contains('pointer-events-none')) return;
 
@@ -1927,7 +1852,6 @@
       resetMapScale();
     }
 
-    // ================= サウンド＆エフェクト & セーブ =================
     const SoundManager = {
       ctx: null,
       muted: false,
@@ -2135,7 +2059,7 @@
       if (weakPrefs.length === 0) {
         SoundManager.playCorrect();
         Confetti.start();
-        alert("現在、苦手な都道府県はありません。全問正解を目指して「総合テスト」に挑戦してみましょう！");
+        alert("現在、苦手な都道府県はありません。総合テストに挑戦してみましょう！");
         return;
       }
       weakPrefs.sort((a, b) => b.weight - a.weight);
@@ -2251,11 +2175,10 @@
       }
     }
 
-    // ================= 学習モード (日本地理辞書) =================
     function initStudyMode() {
       highlightMap(null, 'normal', false);
       const container = document.getElementById('study-list-container');
-      container.innerHTML = ''; // クリアして常に正しく日本側リストを描画
+      container.innerHTML = ''; 
 
       REGIONS.forEach(region => {
         const title = document.createElement('div');
@@ -2284,24 +2207,17 @@
       
       document.getElementById('study-region').textContent = pref.region + '地方';
       document.getElementById('study-name').textContent = pref.name;
-      
       document.getElementById('study-subinfo-label').innerHTML = `県庁所在地: <span id="study-capital" class="text-surface">${pref.capital}</span>`;
-      
       document.getElementById('detail-card-1-label').textContent = "名物・ご当地グルメ";
       document.getElementById('study-food').textContent = pref.food;
-      
       document.getElementById('detail-card-2-label').textContent = "観光地・名所";
       document.getElementById('study-tourism').textContent = pref.tourism;
-      
       document.getElementById('detail-card-3-label').textContent = "旧国名";
       document.getElementById('study-oldprov').textContent = pref.oldProv;
-      
       document.getElementById('detail-card-4-label').textContent = "難読地名";
       document.getElementById('study-hardread').textContent = pref.hardRead;
-      
       document.getElementById('study-trivia').textContent = pref.trivia;
       
-      // 覚えた！のチェックを表示
       document.getElementById('chk-learned-wrap').classList.remove('hidden');
       document.getElementById('chk-learned').checked = isLearned(pref.id);
       
@@ -2323,7 +2239,6 @@
       currentDetailPref = null;
     }
 
-    // ================= ビュービルダー (雨温図等) =================
     function generateClimatogramSVG(climateId) {
       let temps, precs;
       if (climateId === 'japan_sea') {
@@ -2394,19 +2309,12 @@
         innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#f43f5e" stroke="none"><circle cx="12" cy="5" r="3"/><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
       } else if (symbolId === 'library') {
         innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M7 16V8h4v8M17 16V8h-4v8M11 12h2"/></svg>`;
-      } else if (symbolId === 'police') {
-        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"><path d="M4 4l16 16M20 4L4 20"/></svg>`;
-      } else if (symbolId === 'spring') {
-        innerSVG = `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><path d="M4 18c4 2 10 2 14 0M10 13c0-3 2-3 2-6M6 14c0-3 2-3 2-6M14 14c0-3 2-3 2-6"/></svg>`;
       }
       return `<div class="my-4 flex justify-center"><div class="p-4 bg-white rounded-3xl border border-border inline-block shadow-sm">${innerSVG}</div></div>`;
     }
 
-    // ================= クイズ管理 =================
     function startQuiz(mode) {
       qState.mode = mode;
-      
-      // 自動マップ切り替え
       if (mode.startsWith('world_')) {
         toggleMapType('world');
       } else {
@@ -2480,7 +2388,7 @@
       let optType = 'name'; 
       let colorClass = 'sage';
       let headerText = 'TEST MODE';
-      let timerLimit = 15; // デフォルトは15秒
+      let timerLimit = 15; 
 
       if (qState.mode === 'test') {
         headerText = "総合テスト";
@@ -2512,10 +2420,10 @@
           qText = 'このシルエットの都道府県の<span class="text-dustyyellow-600 font-bold">県庁所在地</span>は？';
           correctAns = p.capital; optType = 'capital';
         } else {
-// [前回の続き] シルエット名当ての処理
-        optType = 'name';
-        qText = 'このシルエットの<span class="text-dustyyellow-600 font-bold">都道府県名</span>はどれ？';
-        correctAns = p.name;
+          optType = 'name';
+          qText = 'このシルエットの<span class="text-dustyyellow-600 font-bold">都道府県名</span>はどれ？';
+          correctAns = p.name;
+        }
       } else if (qState.mode === 'local') {
         headerText = "ご当地クイズ";
         colorClass = 'dustyorange';
@@ -2914,7 +2822,6 @@
       switchView('review-mistakes');
     }
 
-    // ================= 県庁所在地スプリンター =================
     function startSprintGame() {
       sprintState.score = 0;
       sprintState.timer = 30;
@@ -2958,7 +2865,7 @@
       document.getElementById('quiz-q-count').textContent = sprintState.score + 1;
       sprintState.currentPref = PREFECTURES[Math.floor(Math.random() * PREFECTURES.length)];
       const p = sprintState.currentPref;
-      document.getElementById('quiz-question-text').innerHTML = `「${p.name}」の<span class="text-dustypurple-600">県庁所在地</span>はどこ？`;
+      document.getElementById('quiz-question-text').innerHTML = `「${p.name}」の<span class="text-dustypurple-600 font-black">県庁所在地</span>はどこ？`;
       document.getElementById('quiz-hint-space').classList.add('hidden');
       document.getElementById('quiz-hint').classList.add('hidden');
       highlightMap(p.id, 'normal', true);
@@ -3044,7 +2951,6 @@
       switchView('quiz-result');
     }
 
-    // ================= ルートコネクト =================
     function startRouteGame() {
       resetMapState();
       const routes = [
@@ -3124,7 +3030,6 @@
       }
     }
 
-    // ================= 特産品デリバリー =================
     let pendingDeliveryPref = null;
 
     function startDeliveryGame() {
@@ -3255,7 +3160,6 @@
       const wolfWrap = document.getElementById('party-wolf-count-wrap');
       const topicWrap = document.getElementById('party-topic-wrap');
       
-      // 人数選択のオプション初期化
       pcSelect.innerHTML = `
         <option value="2">2人</option>
         <option value="3">3人</option>
@@ -3272,8 +3176,7 @@
       if (type === 'hide_seek') {
         document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-sage-600"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
         document.getElementById('party-title').textContent = "地図でかくれんぼ！";
-        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れたマスコットを、表示されるヒントを頼りに探し出す協力・対戦型探索ゲームです。";
-      } else if (type === 'loc_hunter') {
+        document.getElementById('party-rule-text').innerHTML = "日本各地に隠れたマスコットを、表示されるヒントを頼りに探し出す協力・対戦型探索ゲームです。} else if (type === 'loc_hunter') {
         document.getElementById('party-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-dustyblue-600"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
         document.getElementById('party-title').textContent = "ロケーションハンター";
         document.getElementById('party-rule-text').innerHTML = "旧国名、難読地名、詳細雑学などを含む高度なロケーション調査データを読み解き、地図上をピンポイントで射抜く推理ゲームです。";
@@ -3337,7 +3240,6 @@
       partyState.players = names.map((name, i) => ({ id: i, name: name }));
       partyState.currentIdx = 0;
 
-      // 各ゲームごとの初期セットアップ
       if (partyState.gameType === 'hide_seek') {
         startHSGame(names);
         return;
@@ -3352,9 +3254,6 @@
       setupSpecialPartyGame();
     }
 
-    // ==========================================
-    // ==== 【新規実装】お題配布・配役決定 ====
-    // ==========================================
     function setupSpecialPartyGame() {
       const numPlayers = partyState.players.length;
       partyState.playerWords = [];
@@ -3368,7 +3267,6 @@
         const themes = WW_THEMES[genre];
         const selectedPair = themes[Math.floor(Math.random() * themes.length)];
 
-        // 市民お題・ウルフお題をランダムシャッフルして割り当て
         const wolfCount = parseInt(document.getElementById('party-wolf-count').value) || 1;
         partyState.wolfCount = wolfCount;
         
@@ -3401,8 +3299,6 @@
 
       } else if (partyState.gameType === 'insider') {
         const selectedTheme = INSIDER_THEMES[Math.floor(Math.random() * INSIDER_THEMES.length)];
-        
-        // マスターとインサイダーの決定
         const indices = Array.from({length: numPlayers}, (_, i) => i).sort(() => Math.random() - 0.5);
         partyState.masterIdx = indices[0];
         partyState.insiderIdx = indices[1];
@@ -3444,9 +3340,8 @@
         const selectedTheme = JUST_ONE_THEMES[Math.floor(Math.random() * JUST_ONE_THEMES.length)];
         partyState.secretWord = selectedTheme;
         
-        // 回答者を1人選出
         const guesserIdx = Math.floor(Math.random() * numPlayers);
-        partyState.masterIdx = guesserIdx; // masterIdxを回答者indexとして使い回し
+        partyState.masterIdx = guesserIdx; 
 
         partyState.players.forEach((p, idx) => {
           const isGuesser = (idx === guesserIdx);
@@ -3460,7 +3355,6 @@
       startPartyCheck();
     }
 
-    // お題確認ビューの立ち上げ
     function startPartyCheck() {
       const idx = partyState.currentIdx;
       const player = partyState.players[idx];
@@ -3469,7 +3363,6 @@
       document.getElementById('party-player-name').textContent = player.name;
       document.getElementById('party-word-text').textContent = pWord.word;
 
-      // ジャストワン用のヒント入力欄表示
       const joInputPanel = document.getElementById('just-one-input-panel');
       const hintInput = document.getElementById('just-one-hint-input');
       if (partyState.gameType === 'just_one' && pWord.role === 'hinter') {
@@ -3479,14 +3372,12 @@
         joInputPanel.classList.add('hidden');
       }
 
-      // 日本地図における都道府県が関係するお題の場合、参考データパネルを表示
       const refPanel = document.getElementById('party-reference-panel');
       const rowCapital = document.getElementById('party-row-capital');
       const rowFood = document.getElementById('party-row-food');
       const rowTourism = document.getElementById('party-row-tourism');
       const rowTrivia = document.getElementById('party-row-trivia');
 
-      // 県のお題検索
       let matchedPref = null;
       if (pWord.role !== 'spy' && pWord.role !== 'guesser' && pWord.role !== 'master' && pWord.role !== 'hinter') {
         matchedPref = PREFECTURES.find(x => x.name === pWord.word || x.name + "県" === pWord.word || x.name + "府" === pWord.word || x.name + "都" === pWord.word);
@@ -3508,12 +3399,10 @@
         highlightMap(matchedPref.id, 'normal', true);
         document.getElementById('party-footer-clue').classList.remove('hidden');
       } else {
-        // 都道府県情報がない簡易ワードや役職データの場合
         document.getElementById('party-footer-clue').classList.add('hidden');
         resetMapState();
 
         if (pWord.role === 'master' || pWord.role === 'insider') {
-          // インサイダーゲームで都道府県に合致するものがあれば一応出す
           const matchWord = PREFECTURES.find(x => x.name === partyState.secretWord);
           if (matchWord) {
             refPanel.classList.remove('hidden');
@@ -3531,7 +3420,6 @@
         }
       }
 
-      // 確認ビューを初期化
       document.getElementById('party-word-layer').classList.remove('opacity-100');
       document.getElementById('party-word-layer').classList.add('opacity-0', 'pointer-events-none');
       
@@ -3542,7 +3430,6 @@
       switchView('party-check');
     }
 
-    // 長押し確認アクション
     const btnShow = document.getElementById('btn-party-show');
     const wordLayer = document.getElementById('party-word-layer');
     const btnNext = document.getElementById('btn-party-next');
@@ -3555,7 +3442,6 @@
     }
 
     function hideWord() {
-      // ジャストワンでヒントを記入中、あるいはフォーカスしている間は長押しを解除しても閉じないようにする
       if (partyState.gameType === 'just_one' && document.activeElement === document.getElementById('just-one-hint-input')) {
         return;
       }
@@ -3570,7 +3456,6 @@
     btnShow.addEventListener('mouseleave', hideWord);
 
     function nextPartyPlayer() {
-      // ジャストワンのヒントを回収
       if (partyState.gameType === 'just_one' && partyState.playerWords[partyState.currentIdx].role === 'hinter') {
         const inp = document.getElementById('just-one-hint-input').value.trim();
         if (!inp) {
@@ -3588,7 +3473,6 @@
       if (partyState.currentIdx < partyState.players.length) {
         startPartyCheck();
       } else {
-        // 全員の確認・入力が終了した
         if (partyState.gameType === 'just_one') {
           processJustOneElimination();
         } else {
@@ -3597,11 +3481,7 @@
       }
     }
 
-    // ==========================================
-    // ==== 【新規実装】ジャストワンヒント排除 ====
-    // ==========================================
     function processJustOneElimination() {
-      // 各ヒントを正規化して重複チェック
       const hints = partyState.justOneHints;
       let checkMap = {};
       hints.forEach(item => {
@@ -3612,17 +3492,15 @@
         checkMap[norm].push(item);
       });
 
-      // 重複されたヒントマーク
       hints.forEach(item => {
         const norm = item.hint.replace(/[\s　]+/g, "").toLowerCase();
         if (checkMap[norm].length > 1) {
-          item.isEliminated = true; // 重複につき除外
+          item.isEliminated = true; 
         } else {
           item.isEliminated = false;
         }
       });
 
-      // 回答フェーズ（議論画面を回答画面に流用）へ
       switchView('party-discuss');
       resetMapState();
       
@@ -3633,7 +3511,6 @@
       const guesser = partyState.players[partyState.masterIdx];
       desc.textContent = `${guesser.name} さん、残ったヒントからお題を当ててください！`;
 
-      // 議論用のタイマーを隠し、ヒントカードを配置
       document.getElementById('party-timer-bar').parentElement.classList.add('hidden');
       document.getElementById('party-timer-text').classList.add('hidden');
       
@@ -3663,7 +3540,6 @@
         container.appendChild(grid);
       }
 
-      // 回答ボタンを設置
       const actionBtn = document.getElementById('btn-party-discuss-end');
       actionBtn.textContent = "お題を回答する";
       actionBtn.onclick = showJustOneGuessModal;
@@ -3705,14 +3581,10 @@
       });
     }
 
-    // ==========================================
-    // ==== 【新規実装】討論・タイマー管理 ====
-    // ==========================================
     function startPartyDiscuss() {
       switchView('party-discuss');
       resetMapState();
 
-      // UI表示の切り替え
       document.getElementById('party-timer-bar').parentElement.classList.remove('hidden');
       document.getElementById('party-timer-text').classList.remove('hidden');
       document.getElementById('btn-party-change-question').classList.remove('hidden');
@@ -3746,7 +3618,6 @@
         middleBox.classList.add('hidden');
       }
 
-      // 3分タイマー始動
       partyState.timer = 180;
       updateDiscussTimerUI();
       
@@ -3790,15 +3661,11 @@
       startPartyVotePhase();
     }
 
-    // ==========================================
-    // ==== 【新規実装】投票フェーズの管理 ====
-    // ==========================================
     function startPartyVotePhase() {
       wwVoteState.voterIdx = 0;
       wwVoteState.votes = {};
       wwVoteState.currentVotedTarget = null;
 
-      // 投票データの初期化
       partyState.players.forEach(p => {
         wwVoteState.votes[p.id] = 0;
       });
@@ -3810,11 +3677,9 @@
       const vIdx = wwVoteState.voterIdx;
       const voter = partyState.players[vIdx];
 
-      // インサイダーゲームで、お題が当てられなかった（諦めた）場合
       if (partyState.gameType === 'insider' && vIdx === 0) {
         const didAnswer = confirm("制限時間内にお題の答えに辿り着きましたか？");
         if (!didAnswer) {
-          // お題を当てられなかったので、インサイダー投票をスキップして直接敗北へ
           finishInsiderGame(false, null);
           return;
         }
@@ -3841,11 +3706,8 @@
       const confirmBtn = document.getElementById('btn-party-vote-next');
       confirmBtn.className = "w-full py-4 bg-border text-subtext rounded-2xl font-black mt-auto opacity-50 pointer-events-none transition-opacity shrink-0 text-sm shadow-sm";
 
-      // 自分以外のメンバーをグリッド選択肢に並べる
       partyState.players.forEach(p => {
-        if (p.id === voter.id) return; // 自分には投票できない
-        
-        // インサイダーゲームにおけるマスターにも投票できない（除外）
+        if (p.id === voter.id) return; 
         if (partyState.gameType === 'insider' && p.id === partyState.masterIdx) return;
 
         const btn = document.createElement('button');
@@ -3878,13 +3740,8 @@
       }
     }
 
-    // ==========================================
-    // ==== 【新規実装】投票集計・勝敗判定 ====
-    // ==========================================
     function processPartyVoteResult() {
       const votes = wwVoteState.votes;
-      
-      // 得票の最大値を持つプレイヤーの特定
       let maxVote = -1;
       let maxPlayerIds = [];
       for (const [pId, count] of Object.entries(votes)) {
@@ -3897,7 +3754,6 @@
         }
       }
 
-      // 同票の場合はランダムに代表者を1名選出
       const votedOutId = maxPlayerIds[Math.floor(Math.random() * maxPlayerIds.length)];
 
       if (partyState.gameType === 'word_wolf' || partyState.gameType === 'secret_trip') {
@@ -3909,7 +3765,6 @@
       }
     }
 
-    // 【1】ワードウルフ結果判定
     function finishWordWolfGame(votedOutId) {
       switchView('party-result');
       const msg = document.getElementById('party-win-message');
@@ -3949,7 +3804,6 @@
       });
     }
 
-    // 【2】スパイフォール結果判定
     function finishSpyfallGame(votedOutId) {
       switchView('party-result');
       const msg = document.getElementById('party-win-message');
@@ -3963,7 +3817,6 @@
       const realTheme = partyState.playerWords.find(x => x.role === 'citizen').word;
 
       if (isSpyOut) {
-        // スパイを追放したが、スパイの逆転回答の権利
         const spyPlayer = partyState.players.find(x => x.id === votedOutId);
         const spyGuess = prompt(`スパイの ${spyPlayer.name} さん、逆転のチャンス！\n滞在地（お題の名所）はどこだと思いますか？`);
         
@@ -3973,7 +3826,7 @@
         } else {
           SoundManager.playLevelUp();
           Confetti.start();
-          msg.innerHTML = `<span class="text-sage-600 font-black">市民の完全勝利！🎉</span><br><span class="text-xs text-subtext mt-1 block">スパイを見事特定し、スパイの逆転回答も防ぎました！（お題: ${realTheme}）</span>`;
+          msg.innerHTML = `<span class="text-sage-600 font-black">市民の完全勝利！🎉</span><br><span class="text-xs text-subtext mt-1 block">スパイを見事特定し、スパイの逆転回答も防ぎました。（お題: ${realTheme}）</span>`;
         }
       } else {
         SoundManager.playIncorrect();
@@ -3998,7 +3851,6 @@
       });
     }
 
-    // 【3】インサイダー結果判定
     function finishInsiderGame(didFindWord, votedOutId) {
       switchView('party-result');
       const msg = document.getElementById('party-win-message');
@@ -4007,21 +3859,19 @@
       document.getElementById('party-result-label').textContent = "各プレイヤーの配役と得票数";
 
       if (!didFindWord) {
-        // お題そのものが当たらなかった場合：全員敗北
         SoundManager.playIncorrect();
         msg.innerHTML = `<span class="text-dustyrose-600 font-black">ミッション失敗（全員敗北）❌</span><br><span class="text-xs text-subtext mt-1 block">制限時間内にお題【${partyState.secretWord}】を当てられませんでした。</span>`;
       } else {
-        // 当てた場合は、インサイダーを追放できたかで勝敗が決まる
         const votedOutWord = partyState.playerWords[votedOutId];
         const isInsiderOut = (votedOutWord.role === 'insider');
 
         if (isInsiderOut) {
           SoundManager.playLevelUp();
           Confetti.start();
-          msg.innerHTML = `<span class="text-sage-600 font-black">市民の完全勝利！インサイダー逮捕！🎉</span><br><span class="text-xs text-subtext mt-1 block">見事、陰でお題を誘導していたインサイダーを暴き出しました！（お題: ${partyState.secretWord}）</span>`;
+          msg.innerHTML = `<span class="text-sage-600 font-black">市民の完全勝利！インサイダー特定！🎉</span><br><span class="text-xs text-subtext mt-1 block">見事、お題へ誘導していたインサイダーを暴き出しました！（お題: ${partyState.secretWord}）</span>`;
         } else {
           SoundManager.playIncorrect();
-          msg.innerHTML = `<span class="text-dustyrose-600 font-black">インサイダーの勝利！完全犯罪です！🕵️</span><br><span class="text-xs text-subtext mt-1 block">正解に導いたインサイダーを暴けず、別の一般市民を処刑してしまいました。（お題: ${partyState.secretWord}）</span>`;
+          msg.innerHTML = `<span class="text-dustyrose-600 font-black">インサイダーの勝利！完全犯罪成立！🕵️</span><br><span class="text-xs text-subtext mt-1 block">インサイダーを暴けず、別の市民を追放してしまいました。（お題: ${partyState.secretWord}）</span>`;
         }
       }
 
@@ -4047,14 +3897,10 @@
     }
 
     // ==========================================
-    // ==== 【新規実装】天下統一の道 ============
+    // ==== 天下統一の道 ========================
     // ==========================================
     let unificationState = {
-      players: [], 
-      currentPlayerIdx: 0,
-      round: 1,
-      maxRounds: 8,
-      pendingTargetPref: null
+      players: [], currentPlayerIdx: 0, round: 1, maxRounds: 8, pendingTargetPref: null
     };
 
     const CLAN_COLORS = [
@@ -4077,7 +3923,6 @@
         territories: []
       }));
 
-      // 開始地点の初期配置
       const startingPoints = ['tokyo', 'osaka', 'miyagi', 'fukuoka', 'hokkaido', 'aichi', 'hiroshima', 'kochi'];
       const shuffledPoints = startingPoints.sort(() => Math.random() - 0.5);
       
@@ -4156,7 +4001,7 @@
       });
 
       if (!isAdjacentToMyTerritory) {
-        alert("自分の支配している地域と隣接している地域にしか攻め込めません！");
+        alert("支配している地域と隣接している地域にしか攻め込めません！");
         return;
       }
 
@@ -4254,7 +4099,7 @@
     }
 
     // ==========================================
-    // ==== 【新規実装】私は誰でしょう？ ========
+    // ==== 私は誰でしょう？ ====================
     // ==========================================
     function startAssocRound() {
       toggleMapType('japan');
@@ -4336,7 +4181,7 @@
     }
 
     // ==========================================
-    // ==== 【新規実装】地理ハラハラ爆弾 ========
+    // ==== 地理ハラハラ爆弾 ====================
     // ==========================================
     function startBombRound() {
       toggleMapType('japan');
@@ -4434,7 +4279,7 @@
     }
 
     // ==========================================
-    // ==== 【新規実装】地図でかくれんぼ！ ======
+    // ==== 地図でかくれんぼ！ ==================
     // ==========================================
     function startHSGame(playerNames) {
       hsState = {
@@ -4488,7 +4333,7 @@
       if (isCorrect) {
         SoundManager.playCorrect();
         hsState.players[hsState.currentPlayerIdx].score += 10;
-        resultText.innerHTML = `<span class="text-sage-600 font-black">正解！見つかりました！🎉</span><br><span class="text-xs text-subtext">お見事！${pref.name}に隠れていました。(+10点)</span>`;
+        resultText.innerHTML = `<span class="text-sage-600 font-black">正解！見つかりました！🎉</span><br><span class="text-xs text-subtext">お見事！${pref.name}に隠れていました。 (+10点)</span>`;
         highlightMap(pref.id, 'normal', true);
       } else {
         SoundManager.playIncorrect();
@@ -4535,7 +4380,7 @@
     }
 
     // ==========================================
-    // ==== 【新規実装】ロケーションハンター ====
+    // ==== ロケーションハンター ================
     // ==========================================
     function startLHGame(playerNames) {
       lhState = {
@@ -4603,7 +4448,7 @@
       if (isCorrect) {
         SoundManager.playCorrect();
         lhState.players[lhState.currentPlayerIdx].score += 20;
-        resultText.innerHTML = `<span class="text-sage-600 font-black">正解！ロケーションを特定しました。🎉</span><br><span class="text-xs text-subtext">位置関係を見事に見抜きました！(+20点)</span>`;
+        resultText.innerHTML = `<span class="text-sage-600 font-black">正解！ロケーションを特定しました。🎉</span><br><span class="text-xs text-subtext">位置関係を見事に見抜きました！ (+20点)</span>`;
         highlightMap(lhState.targetPref.id, 'normal', true);
       } else {
         SoundManager.playIncorrect();
@@ -4650,14 +4495,18 @@
     }
 
     // ========================================================
-    // ================== 初期ロード処理 ==================
+    // ================== アプリ初期起動処理 ==================
     // ========================================================
-    window.addEventListener('DOMContentLoaded', () => {
+    function runInit() {
       const cover = document.getElementById('loading-cover');
       
-      const savedMute = localStorage.getItem('geo_sound_muted');
-      if (savedMute === '1') {
-        toggleMute(); 
+      try {
+        const savedMute = localStorage.getItem('geo_sound_muted');
+        if (savedMute === '1') {
+          toggleMute(); 
+        }
+      } catch (e) {
+        console.warn("localStorage のアクセスに失敗しました:", e);
       }
 
       let initialized = false;
@@ -4680,34 +4529,48 @@
         } catch (err) {
           console.warn("Confettiの初期化に失敗しました:", err);
         }
+        try {
+          updateUIFromStorage();
+        } catch (err) {
+          console.warn("ストレージデータの反映に失敗しました:", err);
+        }
+        try {
+          resetMapScale();
+        } catch (err) {
+          console.warn("マップスケールのリセットに失敗しました:", err);
+        }
         
-        updateUIFromStorage();
-        resetMapScale();
+        // すべての準備またはタイムアウトが完了したら、確実にカバーを外す
         if (cover) {
           cover.classList.add('opacity-0', 'pointer-events-none');
         }
       };
 
+      // 安全策：フォントのロードを待ちつつ、確実に一定時間（800ms）で非表示にする
       const timeoutId = setTimeout(initApp, 800);
 
-      document.fonts.ready.then(() => {
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          clearTimeout(timeoutId);
+          initApp();
+        }).catch((err) => {
+          console.warn("フォントロードのプロミスが拒否されました。代替描画を開始します:", err);
+          clearTimeout(timeoutId);
+          initApp();
+        });
+      } else {
         clearTimeout(timeoutId);
         initApp();
-      }).catch((err) => {
-        console.warn("フォントロードのプロミスが拒否されました。代替描画を開始します:", err);
-        clearTimeout(timeoutId);
-        initApp();
-      });
+      }
 
       window.addEventListener('resize', resetMapScale);
-    });
+    }
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA Service Worker registered:', reg.scope))
-          .catch(err => console.warn('PWA Service Worker registration failed:', err));
-      });
+    // DOMContentLoaded がすでに発生している場合でも確実に初期化処理(runInit)が実行されるように readyState を判別します。
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', runInit);
+    } else {
+      runInit();
     }
   </script>
 </body>
