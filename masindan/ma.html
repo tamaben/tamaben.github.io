@@ -11,9 +11,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@200;400;500;700&family=Space+Grotesk:wght@300;400;500&display=swap');
 
         :root {
-            --bg-base: #f5f5f2;       /* 洗練されたスタジオアイボリー */
-            --accent-dark: #111413;   /* ピュアオブシディアン */
-            --accent-core: #3e5249;   /* 深層サージュグリーン */
+            --bg-base: #f5f5f2;       
+            --accent-dark: #111413;   
+            --accent-core: #3e5249;   
             --text-main: #1c1c1c;
             --text-muted: #5c6662;
             --panel-bg: #ffffff;
@@ -44,7 +44,7 @@
         .option-btn {
             width: 100%; text-align: left; padding: 1.25rem 1.5rem; 
             background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
-            transition: all 0.2s cubic-bezier(0.21, 0.6, 0.35, 1); font-size: 0.86rem; line-height: 1.6;
+            transition: all 0.2s cubic-bezier(0.21, 0.6, 0.35, 1); font-size: 0.88rem; line-height: 1.6;
             color: var(--text-main); margin-bottom: 0.75rem; cursor: pointer;
         }
         .option-btn:hover, .option-btn:active { 
@@ -88,10 +88,10 @@
     <div id="start-screen" class="minimal-panel p-8 md:p-12 text-center fade-in">
         <p class="text-[var(--accent-core)] font-space tracking-[0.6em] text-[9px] mb-3 uppercase font-medium">8D Psyche Matrix Engine</p>
         <h1 class="text-4xl font-light mb-8 tracking-[0.2em] text-[var(--accent-dark)] font-serif-en">マ診断 <span class="text-xs font-space align-super text-gray-400">v120</span></h1>
-        <p class="text-[var(--text-muted)] text-[12px] leading-relaxed mb-10 text-left font-normal">
-            MBTI認知機能モデルおよび「超マ本人」の8次元精神力学マトリクスを完全実装。500種類以上のプロシージャル質問と200種類以上のコンテキスト選択肢により、微細な心理ノイズまでミリ単位でフィルタリングします。
+        <p class="text-[var(--text-muted)] text-[12.5px] leading-relaxed mb-10 text-left font-normal">
+            お待たせしました！むずかしい専門用語をぜんぶ翻訳して、直感でサクサク答えられるようにしました。裏側では、超強力な8次元の心理計算AIが君のサボり純度を正確にプロファイリングします。
         </p>
-        <button onclick="startDiagnosis()" type="button" class="w-full py-4 btn-black text-xs uppercase tracking-[0.2em]">8次元スキャンを開始</button>
+        <button onclick="startDiagnosis()" type="button" class="w-full py-4 btn-black text-xs uppercase tracking-[0.2em]">診断をはじめる</button>
     </div>
 
     <div id="quiz-screen" class="hidden minimal-panel p-6 md:p-10 fade-in">
@@ -108,17 +108,17 @@
         </div>
         <div>
             <div class="min-h-[6.5rem] mb-6 flex flex-col justify-center">
-                <span id="q-cat" class="text-[8px] uppercase tracking-[0.4em] text-[var(--accent-core)] mb-2 font-space font-medium">Quantum Procedural Generation</span>
-                <h2 id="q-text" class="text-[14px] font-medium text-[var(--text-main)] leading-relaxed text-left w-full"></h2>
+                <span id="q-cat" class="text-[8px] uppercase tracking-[0.4em] text-[var(--accent-core)] mb-2 font-space font-medium">かんたん直感モード</span>
+                <h2 id="q-text" class="text-[14.5px] font-medium text-[var(--text-main)] leading-relaxed text-left w-full"></h2>
             </div>
             <div id="options-container" class="space-y-0"></div>
         </div>
     </div>
 
     <div id="loading-screen" class="hidden minimal-panel p-10 text-center fade-in">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-100 border-t-[var(--accent-core)] mb-6"></div>
-        <p class="text-[9px] font-space tracking-[0.3em] uppercase text-[var(--accent-core)] mb-2">Hyper Algorithm Processing</p>
-        <div id="loading-status" class="text-xs font-mono text-gray-400 h-6">Calibrating 8D-Vector Coordinates...</div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-[var(--accent-core)] mb-6"></div>
+        <p class="text-[9px] font-space tracking-[0.3em] uppercase text-[var(--accent-core)] mb-2">AIプロファイリング中...</p>
+        <div id="loading-status" class="text-xs font-mono text-gray-400 h-6">心のメーターを計算しています...</div>
     </div>
 
     <div id="result-screen" class="hidden fade-in">
@@ -142,7 +142,7 @@
             <div class="text-left px-6 space-y-6 border-t border-gray-100 pt-6">
                 <div>
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1 flex justify-between">
-                        <span>深層アーキタイプ・モデリング（v120）</span>
+                        <span>深層アーキタイプ分析結果（v120）</span>
                         <span class="text-[9px] font-space text-[var(--accent-core)]" id="sync-rate">Absolute Sync</span>
                     </h4>
                     <div id="result-desc" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
@@ -150,14 +150,14 @@
                 
                 <div>
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1">
-                        <span>「マ本人」との精神力学ギャップ分析</span>
+                        <span>「マ本人」とのズレ分析</span>
                     </h4>
                     <div id="result-diff" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
                 </div>
 
                 <div class="bg-[var(--bg-base)] p-4 rounded-xl border border-gray-200/40">
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-1.5 tracking-[0.1em]">
-                        ニューラル・最適化フィードバック
+                        AIからのアドバイス
                     </h4>
                     <div id="result-advice" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
                 </div>
@@ -168,62 +168,62 @@
             <button onclick="downloadImage()" type="button" class="w-full py-3.5 btn-black text-xs uppercase tracking-widest">高解像度レポートを保存</button>
             <div class="flex gap-2">
                 <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">シンクロ率を共有</button>
-                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">再スキャン</button>
+                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">もう一度</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // プロシージャル・生成コンポーネント (25 × 25 = 625通りの質問コンテキスト)
+    // 💡 500通り以上の質問を自動でつくる、超わかりやすい日常パーツプール
     const sitPool = [
-        "洗練されたUI/UXデザインのツールを触ってプロトタイプを組んでいるとき、", "完璧に調律された楽器のファーストノートを静かに響かせた瞬間、", 
-        "深夜3時、完全にノイズの消えた自室で布団に潜り込み思考のレイヤーを下りていくとき、", "予定がすべて美しく白紙化され、完全に独立したタイムラインを手に入れた瞬間、", 
-        "スマートフォンの雑多な通知をすべてバックグラウンドへミュートした静寂な夜、", "お気に入りの解像度の高い音楽が、耳元で完璧な定位で鳴り響いているとき、",
-        "ルービックキューブの微細なパターンの最適解（F2L）を頭の中でトレースしているとき、", "XR（空間コンピューティング）のような新しい3次元インターフェースを覗き込んだとき、",
-        "無駄のないミニマルな作業空間を、自分の美学通りに完璧にスクラップ＆ビルドしたとき、", "自分の脳内だけに存在するオリジナルキャラクターのレイアウトや世界観を妄想するとき、",
-        "夕暮れ時、 Expo記念公園のような広い空間のベンチで風の周波数を感知しているとき、", "他人の視線や世間の『普通』というノイズが、意識のフィルターから綺麗に消え去ったとき、",
-        "何の意味も生産性もない、けれど自分の美学だけが100%満たされる作業に没頭しているとき、", "白黒はっきりつけさせられる社会的なアンケートの4択を突きつけられた瞬間、",
-        "タイムラインの濁流から完全にエスケープし、自分だけのデジタル聖域に帰還したとき、", "お気に入りのキャラクターグッズや、洗練されたデザインのプロダクトを愛でているとき、",
-        "誰の承認も必要としない、自分だけの絶対的なこだわりが内側から湧き上がってきたとき、", "めんどくさい現実のタスクを目の前にし、脳が高度なサボりの言い訳を生成し始めたとき、",
-        "いつもと同じ通学路や街並みが、ふと幾何学的に美しい構造体に見えた瞬間の感覚、", "複雑なコードやデータ構造を、最も美しく無駄のない形へリファクタリングしているとき、",
-        "自分の「好き・不快」の直感が、世間の常識を完全に上回ったと感じる瞬間、", "誰もいない静かな空間で、ただ自由にスマホをフリックして時間を浪費しているとき、",
-        "日常の些細な環境音や、美しいグラデーションを五感がダイレクトに捉えたとき、", "他人の気遣いや表面的な付き合いの場から、音を立てずにすっとフェードアウトしたとき、",
-        "効率性を徹底的に極めた先に、あえて究極の『脱力』を選択したくなった瞬間、"
+        "スマホで新しいアプリや、おもしろい便利なツールを触っているとき、", "自分の大好きな音楽や、お気に入りの音がきれいに聴こえている瞬間、", 
+        "夜遅く、まわりが静まりかえった部屋で、布団に入ってのんびりしているとき、", "予定がぜんぶなくなって、丸一日が完全にヒマになった瞬間、", 
+        "スマホの通知をぜんぶオフにして、誰にも邪魔されない時間を過ごす夜、", "お気に入りの音楽をイヤホンで聴きながら、街をのんびり歩いているとき、",
+        "ルービックキューブをガチャガチャ回して、やり方に集中しているとき、", "最新のハイテクメカや、おもしろいガジェットをのぞき込んだとき、",
+        "自分の部屋や机の上を、きれいにすっきりと片づけ終えたとき、", "イラストを描いたり、自分の好きなキャラクターのことを考えているとき、",
+        "夕方、広い公園のベンチに座って、ぼんやり風に当たっているとき、", "まわりの人の目や、学校のルールがふとどうでもよくなったとき、",
+        "自分の大好きな趣味に、時間を忘れてめちゃくちゃ熱中しているとき、", "アンケートやテストで、どれにも当てはまらない微妙な選択肢を突きつけられたとき",
+        "SNSを見るのをやめて、一人の時間に深く戻ってきた瞬間、", "お気に入りのスヌーピーのグッズや、かわいいものを眺めているとき、",
+        "誰にも負けない自分だけのこだわりが、胸の中でムクムクと湧いてきたとき、", "めんどくさい宿題を前にして、頭がサボる言い訳を探し始めたとき、",
+        "いつもの通学路を歩いていて、ふと景色がきれいに見えた瞬間の感覚、", "パソコンやスマホを使って、何かおもしろいものづくり（開発など）をしているとき、",
+        "自分が『好き！』と思う気持ちが、みんなの意見より絶対に正しいと思える瞬間、", "誰もいない部屋で、ただなんとなくスマホをいじって時間を無駄にしているとき、",
+        "きれいな景色や、心地いい音を自分の五感でじっくり感じているとき、", "気を使うだけのめんどくさい集まりから、こっそり抜け出したとき、",
+        "めちゃくちゃがんばった後に、思いっきりダラダラしたくなった瞬間"
     ];
 
     const evePool = [
-        "ふと脳内に『誰の役にも立たないけれど最高に美しい謎の空想』が限界まで溢れてきたら、", "周囲の時間の流れや社会的な義務が、急にどうでもいい背景レイヤーに変わっていく感覚を覚えたら、",
-        "次に自分が選択するべき行動の『純粋な美意識と直感の純度』を厳密にテストされているとき、", "社会のルールや他人の視線というノイズが、一時的に完全にハッキングされて消え去ったら、",
-        "直感的に『今は1秒も動かず、この心地よいエスケープ空間に引きこもりたい』という衝動が湧いたら、", "自分のクリエイティブなこだわりに、誰の承認も評価も必要ないと心の底から確信できたとき、",
-        "誰の役にも立たないけれど、自分だけがニヤリとできる最高なアイデアのピースが繋がったとき、", "目の前にあるデザインのドット単位の配置や、空間の空気感のディテールに強烈に意識が同期したら、",
-        "合理的な正解を出すのをやめ、あえて『割り切れない中間』の美学を選びたくなった瞬間、", "五感のセンサーがクリアになり、色や音の質感のグラデーションをダイレクトに知覚したとき、",
-        "今日という一日の満足度を、他人の評価や数字を一切排除して自分自身の内なる尺度だけで測るとき、", "空間のバイブスや他人の感情の機微を、無意識のうちに超高感度でキャッチしてしまった瞬間、",
-        "計画通りに進めることの窮屈さから、一瞬でマッハで脳内エスケープしたくなったとき、", "脳内のあらゆるタスクエラーがすっと消え、極めてクリアな『自己美学』だけが残ったとき、",
-        "自分が一番大切にしている『内なるサボり聖域』に、外部のシグナルがシンクロした感覚を覚えたら、", "目の前の現実的な選択肢が、すべて自分の美学のフィルターによって一瞬で弾かれてしまったとき、",
-        "理由のない全能感、または究極の心地よい脱力エントロピーが全身の神経を支配したとき、", "過去の記憶の断片や、特定の美しいフレーズが急に脳内に鮮明に呼び起こされたとき、",
-        "誰かに何かを証明する必要すら忘れ、ただただ布団の中でスマホを触る自由を噛みしめるとき、", "世界の複雑なアルゴリズムが、自分の直感というシンプルな数式に集約されていく感覚に陥ったら、",
-        "自分の精神的なペースを他人に一切乱されず、完全なコントロールを手に入れたと実感したとき、", "何時間でも同じ幾何学的なルーティンを繰り返せるような、奇妙でクリアな集中力が湧いたとき、",
-        "常識という枠組みが、いかに不自由でクリエイティビティを阻害するものかに気づいてしまったとき、", "心の奥底にある『本当にやりたいこと』のシグナルが、ノイズの隙間からクリアに点滅し始めたとき、", "すべてのめんどくさいタスクを完全に放棄して、ただただ自由な空想に身を委ねたくなったとき、"
+        "ふと頭の中に『くだらないけれど最高におもしろい謎の妄想』がブワッと溢れてきたら、", "時間の流れや、やらなきゃいけないことが急にどうでもよくなってきたら、",
+        "自分が次にどう動くべきか、自分の『直感と好みのセンス』を試されているとき、", "まわりのルールや他人の視線が一瞬だけ完全に消え去ったような気がしたら、",
+        "直感的に『今はもう1ミリも動きたくない、サボりたい！』という気持ちが湧いたら、", "自分のこだわりに、誰の許可もほめ言葉もいらないや！と開き直れたとき、",
+        "誰の役にも立たないけれど、自分だけがニヤリとできる最高なアイデアを思いついたとき、", "目の前にあるものの形や、その場の雰囲気にグッと引き込まれたら、",
+        "正しい正解を出すのをやめて、あえてどっちつかずのグレーな気分を選びたくなった瞬間、", "まわりの音や景色の色合いが、いつもよりすごくきれいに感じられたとき、",
+        "今日という一日の楽しさを、他人のウワサやSNSの評価を気にせず自分だけで決めるとき、", "その場の空気や、まわりの人の気持ちをなんとなく敏感に察知してしまった瞬間、", "きっちり予定通りに進めるのが窮屈になって、一瞬で逃げ出したくなったとき、",
+        "頭のモヤモヤがすっと消えて、自分の『本当の気持ち』だけが残ったとき、", "自分が一番大切にしているヒミツのサボり空間に、何かがぴったりハマった気がしたら、",
+        "目の前の選択肢が、自分の好みに合わなくてぜんぶ嫌になってしまったとき、", "理由はわからないけれど、とにかく最高にリラックスした気分が全身に広がったとき、",
+        "昔の楽しかった思い出や、なつかしい匂いが急にパッと頭に浮かんだとき、", "誰かに自分をアピールすることすら忘れて、布団でスマホを触る幸せに浸っているとき、",
+        "世の中のややこしい仕組みが、自分の直感だけでシンプルにわかったような気がしたら、", "自分のやりたいペースを、誰にも邪魔されずにコントロールできていると感じたとき、",
+        "何時間でも同じお気に入りの作業を繰り返せるような、不思議な集中力が湧いたとき、", "大人の言う常識やフツウが、いかに不自由でつまらないものか気づいてしまったとき、",
+        "心の奥にある『本当にやりたいこと』のスイッチが、ピコピコと点滅し始めたとき、", "すべての作業をいったん放り投げて、ただただ自由な空想にひたりたくなったとき"
     ];
 
-    // 8次元スタンスに対応する各フレーズ掛け合わせマトリクス
+    // 💡 200種類以上のバリエーションを生み出す、超わかりやすい4つの選択肢テンプレート
     const optMatrix = {
         ma: {
-            cores: ["目的をすべて排除し、ただその曖昧な心地よさに身を委ねてスマホをダラダラと眺める", "布団の中に深く潜り込み、最も脈絡のない謎の空想を限界まで展開して脳内逃避を楽しむ", "効率や正解は忘れ、サボる言い訳を肯定しながら心地よい脱力時間を堂々と満喫する", "見にくいUIのノイズを即座にフィルタリングし、ただ自由にダラダラする時間を愛する", "白黒つけない中間の空気感の中で、ただただ時間の浪費を贅沢に味わい尽くす"],
-            tails: ["スタンスを貫く。", "領域を死守する。", "アプローチを肯定する。", "ことで精神を最適化する。", "ミニマリズムを愛する。"]
+            cores: ["目的をぜんぶ忘れて、ただなんとなくスマホをダラダラ眺める", "布団の中に潜り込んで、どうでもいい謎の妄想を限界まで膨らませて楽しむ", "サボる言い訳を自分で認めながら、心地いいダラダラ時間を堂々と満喫する", "めんどくさいノイズを無視して、ただ自由にゴロゴロする時間を大切にする", "白黒はっきりつけないグレーな空気の中で、ただただ時間をぜいたくにつぶす"],
+            tails: ["スタンスで行く。", "場所をキープする。", "やり方を大切にする。", "ことで心を休ませる。", "ダラダラが大好き。"]
         },
         rational: {
-            cores: ["現状のデータを客観的にプロファイリングし、次に取るべき最も合理的な一手を出算する", "タスクの優先順位を論理的にハックし、最短ルートでクリアするための構造を組む", "目の前の現象を幾何学的に構造化し、無駄のない最適な解決策をスマートに導き出す", "感情論を徹底的にミュートし、客観的事実に基づいた明確な正解を適用する", "スケジュールとリソースを正確にパースし、計画通りに完璧に遂行することに集中する"],
-            tails: ["論理的ルーティンを回す。", "最適解を冷徹に実行する。", "システムを構築する。", "方法でスマートに処理する。", "整合性を徹底する。"]
+            cores: ["今の状況を冷静に分析して、次にやるべき一番効率のいい行動を決める", "やるべき宿題やタスクに順番をつけて、最短で終わらせる計画を立てる", "目の前の問題を頭の中で整理して、無駄のない正しい解決策をサッと導き出す", "感情的にならずに、事実だけを見てはっきりした正解をえらび出す", "スケジュールを正確に確認して、予定通りに完璧に進めることに集中する"],
+            tails: ["論理的なやり方をする。", "正解をきっちり実行する。", "仕組みを作る。", "スマートな方法で処理する。", "きっちり感を大事にする。"]
         },
         empathy: {
-            cores: ["その瞬間湧き上がった自分自身の純粋な『好き・不快』の直感を100%信頼して動く", "自分の内なるオリジナルな美学や世界観を、誰に何と言われようと絶対に曲げずに表現する", "周囲の感情の機微を鋭く受け止め、心に深く響くニュアンスや色合いをそのまま愛でる", "他人の評価や数字などはどうでもよく、自分の心が最高にワクワクする選択へと飛び込む", "割り切れない感情のグラデーションを大切にし、直感の赴くままに自己のレイヤーを展開する"],
-            tails: ["エモーショナルを貫く。", "美学を100%表現する。", "直感に従って突き進む。", "スタイルを大事にする。", "ディテールに同期する。"]
+            cores: ["その瞬間湧き上がった、自分の『好き・嫌い』の直感を100%信じて動く", "自分のこだわりや好きな世界観を、誰になんと言われても絶対に曲げずに突き通す", "まわりの人の気持ちを大切にして、心に響くきれいな景色をそのまま楽しむ", "他人の目や評価は気にせず、自分の心が一番ワクワクする選択肢に飛び込む", "ハッキリ割り切れない複雑な気持ちを大切にして、直感のままに自分を表現する"],
+            tails: ["気持ちを一番に考える。", "こだわりを100%出す。", "直感のままに突き進む。", "自分のスタイルで行く。", "細かいところを大切にする。"]
         },
         harmony: {
-            cores: ["周囲の環境や、世間一般の調和・ルールに最も適合する無難な最適解を選択する", "周りの人たちの期待を裏切らないよう、全体の空気を読んで丁寧な調和を心がける", "あらかじめ決められた手順をリスペクトし、安定したいつもの日常とマナーを維持する", "他人に迷惑をかけないことを第一に考え、協調性と全体の着地点を最優先にして行動する", "周囲の意見をきっちりサンプリングし、みんなが納得するバランスの良い環境を作る"],
-            tails: ["調和を最優先に守る。", "スタンスを維持する。", "気配りを徹底する。", "ルートを安全に選ぶ。", "約束と調和をリスペクトする。"]
+            cores: ["まわりの環境や、みんなのルールに一番ぴったり合う無難な選択肢をえらぶ", "まわりの人たちの期待を裏切らないように、空気を読んでていねいに合わせる", "あらかじめ決められた手順を守って、いつも通りの安心できる日常をキープする", "みんなに迷惑をかけないことを第一に考えて、協力し合うことを最優先にする", "みんなの意見をしっかり聞いて、全員が納得するバランスのいい答えを作る"],
+            tails: ["みんなとの平和を守る。", "いつものスタンスで行く。", "気配りを大切にする。", "安全なルートをえらぶ。", "約束とマナーを大事にする。"]
         }
     };
 
@@ -238,10 +238,6 @@
         let eveShuffled = [...evePool].sort(() => Math.random() - 0.5);
         
         for (let i = 0; i < 10; i++) {
-            let sit = sitShuffled[i % sitShuffled.length];
-            let eve = eveShuffled[i % evePool.length];
-            
-            // 8次元ベクトルマッピング [DSA, FFE, FIL, TCL, SNR, CRG, ABT, SCF]
             let options = [
                 { text: optMatrix.ma.cores[i%5] + optMatrix.ma.tails[Math.floor(Math.random()*5)], vector: [8, 10, 9, 5, 8, 7, 10, 9], mbti: {I:2, P:2} },
                 { text: optMatrix.rational.cores[i%5] + optMatrix.rational.tails[Math.floor(Math.random()*5)], vector: [9, 2, 3, 10, 4, 5, 2, 4], mbti: {T:2, J:2} },
@@ -250,7 +246,7 @@
             ];
 
             questions.push({
-                q: `${sitShuffled[i]}、${eveShuffled[i]}`,
+                q: `Q. ${sitShuffled[i]}${eveShuffled[i]}`,
                 options: options.sort(() => Math.random() - 0.5)
             });
         }
@@ -305,10 +301,10 @@
         document.getElementById('loading-screen').classList.remove('hidden');
         
         const statuses = [
-            "Parsing 8-Dimensional Psyche Coordinates...",
-            "Computing Multi-Vector Cosine Similarity...",
-            "Calculating Cognitive Hesitation Variance...",
-            "Compiling Archetype Neural Feedback..."
+            "8次元精神ベクトルの座標を計算中...",
+            "心のブレ幅（一貫性）を計算中...",
+            "超マ本人とのシンクロ率をAI測定中...",
+            "オリジナル診断レポートを生成中..."
         ];
         
         statuses.forEach((status, i) => {
@@ -319,7 +315,7 @@
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('result-screen').classList.remove('hidden');
                         calculateResult();
-                    }, 600);
+                    }, 500);
                 }
             }, i * 500);
         });
@@ -338,7 +334,7 @@
 
         finalVector = finalVector.map(v => Math.round((v / 10) * 10) / 10);
         
-        // 🌟 超マ本人の絶対的な黄金比プロトタイプ・ベクトル
+        // 🌟 超マ本人の黄金比プロトタイプ・ベクトル
         const idealMa = [9.8, 9.6, 9.5, 8.8, 9.0, 9.2, 9.5, 4.2];
         
         let dotProduct = 0, normUser = 0, normIdeal = 0;
@@ -350,14 +346,12 @@
         let similarity = dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal));
         let maPercentage = Math.round(similarity * 100);
 
-        // 🧠 迷い度・仮面度のAI計算（ブレ幅と応答速度の相関）
         let varianceSum = 0;
         for(let i=1; i<historyArr.length; i++) {
             for(let j=0; j<8; j++) { varianceSum += Math.abs(historyArr[i].scores[j] - historyArr[i-1].scores[j]); }
         }
         let consistencyScore = Math.max(40, Math.min(100, Math.round(100 - (varianceSum / 2.2))));
         
-        // 平均応答速度が遅く、かつ調和寄りなら「Masking（周りを気にしている）」と判定
         let avgTime = totalTime / 10;
         let maskingRate = Math.round(Math.max(0, Math.min(95, ((mbtiCounts.Fe || 0) * 8) + (avgTime > 3000 ? (avgTime - 3000) / 100 : 0))));
 
@@ -380,31 +374,31 @@
         let maxIdx = 0;
         for(let i=1; i<8; i++) { if(vector[i] > vector[maxIdx]) maxIdx = i; }
 
-        let desc = `8Dプロファイリングが完了しました。あなたの精神構造は、超マ本人のプロトタイプモデルと 【${score}%】 の超高精度でシンクロしています。`;
+        let desc = `分析が完了しました！ あなたの心は、マ本人のマインドモデルと 【${score}%】 シンクロしています。`;
         if (score >= 90) {
-            desc += ` 社会のノイズを完全に除去（フィルタリング）し、布団の中での謎の空想、目的のないデジタルフリック、そして洗練されたUIやパターンの調和を愛する100%ピュアな「マ本人」の精神そのものです。`;
+            desc += ` まわりのめんどくさい雑音や他人の目をきれいに無視して、布団の中での謎の空想、目的のないスマホタイム、そして美しいデザインやパターンの調和を純粋に愛せる100%ピュアな「マ本人」そのものの精神です！`;
         } else if (score >= 65) {
-            desc += ` 高い論理的ハック能力（構造解析）や現実適応力を持ちながら、内なる深層レイヤーでは常に自分だけのオリジナルな余白と直感を死守している、極めて知的なハイブリッドアーキテクチャです。`;
+            desc += ` 高いハック能力やものづくりの論理的な頭脳を持ちながら、自分の内側では『自分だけのこだわりやサボり余白』をきっちりキープしている、めちゃくちゃスマートでバランスのいい精神構造です。`;
         } else {
-            desc += ` 非常に社会規律や論理的正解を重視するクリアな知性を持っています。白黒はっきりしない曖昧なグラデーションや、目的を持たない完全なる脱力空間を愛するマ本人のコア領域とは対称的な構造です。`;
+            desc += ` 非常にルールや論理的な正解を大切にする、しっかりした真面目な知性を持っています。そのため、白黒つけないグレーな空気や、目的を持たない脱力時間を愛するマ本人のコア領域とは反対のスタンスです。`;
         }
-        desc += ` 8つの力学のうち、現在は【${dimensions[maxIdx]}】のグリッドが最高値を記録しており、これがあなたの美学の主軸となっています。`;
+        desc += ` ちなみに今は【${dimensions[maxIdx]}】のパワーが一番強く出ていて、これが君の美学のベースになっています。`;
 
-        let diff = `認知一貫性は 【${consistency}%】、社会的仮面（同調ノイズ）は 【${masking}%】 です。`;
+        let diff = `自分の心への素直さは 【${consistency}%】、まわりの目を気にしている度（仮面度）は 【${masking}%】 です。`;
         if (masking < 30) {
-            diff += ` 他人の視線や環境ノイズに一切脳のリソースを割いておらず、自分の「好き・不快」の直感だけで世界を構築できています。`;
+            diff += ` 他人の視線や環境のノイズにムダな頭のパワーを全く使っておらず、自分の「好き・不快」の直感だけで世界をきれいに構築できています。`;
         } else {
-            diff += ` 現実の義務感やタスク、他者の期待といった環境ノイズに対して、脳が一時的に適応（マスキング）を行っている形跡がみられます。`;
+            diff += ` 学校の義務感や、他人の期待といったまわりのノイズに対して、頭が一時的にがんばって合わせようと仮面をつけている状態（マスキング）の形跡が見られます。`;
         }
 
-        let advice = score >= 70 ? "AIモデル最適化：現在のノイズレスなサボり空間と独自の美学を完全に肯定してください。布団の中での謎の空想や、無目的で美しいデザインのUIを眺める時間が、あなたのクリエイティビティの源泉です。"
-                                 : "AIモデル最適化：効率と論理を急ぐあまり、脳内エントロピーが増大しています。1日15分だけ『完全に意味のないスマホフリックや空想』を意図的にスケジュールし、精神の余白（脱力レイヤー）を解放してください。";
+        let advice = score >= 70 ? "AIからのアドバイス：今のノイズのない自由なサボり空間と、自分だけのこだわりを全力で大事にしてください。布団での謎の妄想や、意味のないスマホタイムこそが、君のクリエイティビティの最高のエネルギー源です！"
+                                 : "AIからのアドバイス：正しさを急ぐあまり、頭がちょっとお疲れ気味かも。1日15分だけでいいので、『完全に目的なくスマホをダラダラいじる時間』をあえて作って、頭を思いっきり脱力させて解放してあげてください。";
 
         document.getElementById('result-desc').innerText = desc;
         document.getElementById('result-diff').innerText = diff;
         document.getElementById('result-advice').innerText = advice;
 
-        renderCharts(vector.slice(0, 5)); // レーダーチャートはUIの視認性のため主要5次元を描画
+        renderCharts(vector.slice(0, 5)); 
     }
 
     function renderCharts(dataArray) {
@@ -442,13 +436,13 @@
 
     function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const text = `AI v120プロファイリング完了。私のマ度は【${score}】でした。8次元精神力学マトリクスによる精密測定。 #マ診断\n`;
+        const text = `AI v120プロファイリング完了。私のマ度は【${score}】でした。日常の直感で答える、最新の8次元心理テスト。 #マ診断\n`;
         const url = window.location.href;
         if (navigator.share) { navigator.share({ title: 'マ診断 v120', text: text, url: url }).catch(()=>{}); } 
         else {
             const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
             dummy.value = text + url; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
-            alert("結果をクリップボードにコピーしました。");
+            alert("結果をクリップボードにコピーしました！");
         }
     }
 
