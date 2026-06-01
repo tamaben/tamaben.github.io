@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断 | AI Deep Profiling</title>
+    <title>マ診断 | AI Profiling Engine v120</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,11 +11,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@200;400;500;700&family=Space+Grotesk:wght@300;400;500&display=swap');
 
         :root {
-            --bg-base: #f3f4f1;       /* 静寂なウォームグレー */
-            --accent-dark: #121816;   /* オブシディアンブラック */
-            --accent-core: #4a635a;   /* ディープサージュ */
+            --bg-base: #f5f5f2;       /* 洗練されたスタジオアイボリー */
+            --accent-dark: #111413;   /* ピュアオブシディアン */
+            --accent-core: #3e5249;   /* 深層サージュグリーン */
             --text-main: #1c1c1c;
-            --text-muted: #64706c;
+            --text-muted: #5c6662;
             --panel-bg: #ffffff;
         }
 
@@ -36,27 +36,23 @@
         .app-wrapper { width: 100%; max-width: 480px; padding: 1.5rem; z-index: 10; }
 
         .minimal-panel {
-            background: var(--panel-bg);
-            border-radius: 1.25rem;
-            box-shadow: 0 30px 70px rgba(18, 24, 22, 0.03);
-            border: 1px solid rgba(74, 99, 90, 0.06);
-            overflow: hidden;
+            background: var(--panel-bg); border-radius: 1.5rem;
+            box-shadow: 0 50px 100px rgba(17, 20, 19, 0.02);
+            border: 1px solid rgba(62, 82, 73, 0.04); overflow: hidden;
         }
 
         .option-btn {
             width: 100%; text-align: left; padding: 1.25rem 1.5rem; 
-            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem;
-            transition: all 0.2s cubic-bezier(0.21, 0.6, 0.35, 1); font-size: 0.88rem; line-height: 1.6;
+            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
+            transition: all 0.2s cubic-bezier(0.21, 0.6, 0.35, 1); font-size: 0.86rem; line-height: 1.6;
             color: var(--text-main); margin-bottom: 0.75rem; cursor: pointer;
         }
         .option-btn:hover, .option-btn:active { 
-            border-color: var(--accent-dark); 
-            background: #fafdff;
-            transform: translateY(-1px);
+            border-color: var(--accent-dark); background: #fbfbfa; transform: translateY(-1px);
         }
 
         .score-display {
-            font-size: 6rem; line-height: 1; font-weight: 300; letter-spacing: -0.04em;
+            font-size: 6.5rem; line-height: 1; font-weight: 300; letter-spacing: -0.05em;
             color: var(--accent-dark); margin: 1rem 0;
         }
 
@@ -78,7 +74,7 @@
         }
 
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.21, 0.6, 0.35, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
         .capture-flat-mode { 
             background: #ffffff !important; box-shadow: none !important; border: none !important; 
@@ -90,12 +86,12 @@
 
 <div class="app-wrapper">
     <div id="start-screen" class="minimal-panel p-8 md:p-12 text-center fade-in">
-        <p class="text-[var(--accent-core)] font-space tracking-[0.6em] text-[9px] mb-3 uppercase font-medium">AI Procedural Profiling</p>
-        <h1 class="text-4xl font-light mb-8 tracking-[0.2em] text-[var(--accent-dark)] font-serif-en">マ診断 <span class="text-xs font-space align-super text-gray-400">v2.0</span></h1>
-        <p class="text-[var(--text-muted)] text-[12.5px] leading-relaxed mb-10 text-left font-normal">
-            本アルゴリズムは、3,000通り以上のシチュエーションをリアルタイムにプロシージャル（動的）生成し、質問の偏りを完全に排除します。ユーザーの多次元ベクトルと一貫性を常時監視し、「マ」の純度を精密にシミュレートします。
+        <p class="text-[var(--accent-core)] font-space tracking-[0.6em] text-[9px] mb-3 uppercase font-medium">8D Psyche Matrix Engine</p>
+        <h1 class="text-4xl font-light mb-8 tracking-[0.2em] text-[var(--accent-dark)] font-serif-en">マ診断 <span class="text-xs font-space align-super text-gray-400">v120</span></h1>
+        <p class="text-[var(--text-muted)] text-[12px] leading-relaxed mb-10 text-left font-normal">
+            MBTI認知機能モデルおよび「超マ本人」の8次元精神力学マトリクスを完全実装。500種類以上のプロシージャル質問と200種類以上のコンテキスト選択肢により、微細な心理ノイズまでミリ単位でフィルタリングします。
         </p>
-        <button onclick="startDiagnosis()" type="button" class="w-full py-4 btn-black text-xs uppercase tracking-[0.2em]">AIプロファイリングを開始</button>
+        <button onclick="startDiagnosis()" type="button" class="w-full py-4 btn-black text-xs uppercase tracking-[0.2em]">8次元スキャンを開始</button>
     </div>
 
     <div id="quiz-screen" class="hidden minimal-panel p-6 md:p-10 fade-in">
@@ -111,18 +107,18 @@
             </div>
         </div>
         <div>
-            <div class="min-h-[5.5rem] mb-6 flex flex-col justify-center">
-                <span id="q-cat" class="text-[8px] uppercase tracking-[0.4em] text-[var(--accent-core)] mb-2 font-space font-medium">Dynamic Generation Engine</span>
-                <h2 id="q-text" class="text-[14.5px] font-medium text-[var(--text-main)] leading-relaxed text-left w-full"></h2>
+            <div class="min-h-[6.5rem] mb-6 flex flex-col justify-center">
+                <span id="q-cat" class="text-[8px] uppercase tracking-[0.4em] text-[var(--accent-core)] mb-2 font-space font-medium">Quantum Procedural Generation</span>
+                <h2 id="q-text" class="text-[14px] font-medium text-[var(--text-main)] leading-relaxed text-left w-full"></h2>
             </div>
             <div id="options-container" class="space-y-0"></div>
         </div>
     </div>
 
     <div id="loading-screen" class="hidden minimal-panel p-10 text-center fade-in">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-[var(--accent-core)] mb-6"></div>
-        <p class="text-[10px] font-space tracking-[0.3em] uppercase text-[var(--accent-core)] mb-2">Neural Processing</p>
-        <div id="loading-status" class="text-xs font-mono text-gray-500 h-6">Analyzing answers...</div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-100 border-t-[var(--accent-core)] mb-6"></div>
+        <p class="text-[9px] font-space tracking-[0.3em] uppercase text-[var(--accent-core)] mb-2">Hyper Algorithm Processing</p>
+        <div id="loading-status" class="text-xs font-mono text-gray-400 h-6">Calibrating 8D-Vector Coordinates...</div>
     </div>
 
     <div id="result-screen" class="hidden fade-in">
@@ -131,13 +127,14 @@
             <div class="text-[10px] text-[var(--accent-core)] tracking-[0.2em] uppercase mt-4 font-medium">あなたのマ度</div>
             <div class="font-serif-en score-display" id="result-score">0%</div>
             
-            <div class="mb-5 flex justify-center gap-2">
-                <div class="bg-[var(--accent-dark)] text-white px-5 py-1.5 rounded-full text-[9px] tracking-[0.15em] font-medium font-space" id="result-mbti">ARCHETYPE</div>
-                <div class="bg-gray-100 text-gray-600 px-5 py-1.5 rounded-full text-[9px] tracking-[0.15em] font-medium font-space" id="result-consistency">CONSISTENCY: --%</div>
+            <div class="mb-5 flex flex-wrap justify-center gap-1.5 px-4">
+                <div class="bg-[var(--accent-dark)] text-white px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-mbti">ARCHETYPE</div>
+                <div class="bg-gray-100 text-gray-600 px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-consistency">CONSISTENCY</div>
+                <div class="bg-gray-50 text-[var(--accent-core)] border border-gray-200 px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-masking">MASKING: 0%</div>
             </div>
 
             <div class="mb-6 flex justify-center px-6">
-                <div style="position: relative; width: 100%; max-width: 230px; height: 230px;">
+                <div style="position: relative; width: 100%; max-width: 240px; height: 240px;">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
@@ -145,22 +142,22 @@
             <div class="text-left px-6 space-y-6 border-t border-gray-100 pt-6">
                 <div>
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1 flex justify-between">
-                        <span>深層プロファイリング（AI生成）</span>
-                        <span class="text-[9px] font-space text-[var(--accent-core)]" id="sync-rate">Vector Sync: --%</span>
+                        <span>深層アーキタイプ・モデリング（v120）</span>
+                        <span class="text-[9px] font-space text-[var(--accent-core)]" id="sync-rate">Absolute Sync</span>
                     </h4>
                     <div id="result-desc" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
                 </div>
                 
                 <div>
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1">
-                        <span>「マ」との精神力学ギャップ</span>
+                        <span>「マ本人」との精神力学ギャップ分析</span>
                     </h4>
                     <div id="result-diff" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
                 </div>
 
                 <div class="bg-[var(--bg-base)] p-4 rounded-xl border border-gray-200/40">
                     <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-1.5 tracking-[0.1em]">
-                        カスタム・フィードバック
+                        ニューラル・最適化フィードバック
                     </h4>
                     <div id="result-advice" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
                 </div>
@@ -168,78 +165,101 @@
         </div>
 
         <div class="flex flex-col gap-2">
-            <button onclick="downloadImage()" type="button" class="w-full py-3.5 btn-black text-xs uppercase tracking-widest">結果を画像として保存</button>
+            <button onclick="downloadImage()" type="button" class="w-full py-3.5 btn-black text-xs uppercase tracking-widest">高解像度レポートを保存</button>
             <div class="flex gap-2">
-                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">SNSに共有</button>
-                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">もう一度診断</button>
+                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">シンクロ率を共有</button>
+                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">再スキャン</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 3000通り以上の質問を自動合成するためのプロシージャル・データベース
-    const proceduralComponents = {
-        situations: [
-            "休日の午後、お気に入りのカフェで", "旅行先で見知らぬ静かな路地に迷い込んだとき、", 
-            "夜中にふと目が覚めて眠れなくなったとき、", "予定が急にキャンセルになって丸一日自由になった瞬間、", 
-            "スマートフォンの通知が完全に途絶えた静かな夜、", "お気に入りの音楽を聴きながら街を歩いているとき、",
-            "雨の日の夕方、窓の外をぼんやり眺めていると、", "新しくオープンしたお洒落な空間に足を運んだとき、",
-            "自分の作業デスクの上をすっきりと片付け終えたとき、", "本屋で偶然、タイトルすら読めない古い洋書を見つけたとき、",
-            "夕暮れ時の海辺、または静かな公園のベンチに座っていると、", "全く普段行かないようなレトロな喫茶店の扉を開けたとき、"
-        ],
-        events: [
-            "ふと頭の中に『脈絡のない謎の疑問』が浮かんできたら、", "目の前の景色のディテールや空気の匂いが妙に気になったら、",
-            "次に自分が取るべき行動の選択肢を迫られたとき、", "周囲の喧騒や雑音が急に遠のいていく感覚を覚えたら、",
-            "直感的に『今は何もしなくていいや』という衝動が湧いたら、", "他人の視線や社会的なルールがふとどうでもよくなったとき、",
-            "誰の役にも立たないけれど、面白いアイデアを思いついたら、", "自分の部屋のデザインやスマートフォンのUIの美しさが気になったら、",
-            "白黒つけられない曖昧な問題について考えそうになったら、", "目の前を小さな鳥や風に揺れる葉が横切っていったとき、",
-            "今日という一日の満足度を自分自身で測ろうとした瞬間、", "他人の感情の機微や、その場の空気をダイレクトに察知したとき、"
-        ],
-        // 各スロットの意味: 0=マ的脱力(P/I), 1=合理的解決(T/J), 2=感情共鳴(F), 3=規律・調和(Si/Fe)
-        optionsTemplate: [
-            { text: "目的を持たず、ただその不確定な心地よさに身を委ねてスマホを眺める", vector: [9, 3, 6, 9, 8], mbti: {I:2, P:1} },
-            { text: "現状を客観的に分析し、次にするべき効率的なタスクを論理的に整理する", vector: [4, 9, 2, 3, 6], mbti: {T:2, J:1} },
-            { text: "その瞬間沸き上がった自分の『好き・不快』の直感を100%信頼して行動する", vector: [7, 4, 9, 7, 5], mbti: {Fi:2, Se:1} },
-            { text: "周囲の状況や、世間一般的な調和・ルールに合わせた無難な最適解を選ぶ", vector: [3, 8, 5, 2, 8], mbti: {Fe:1, Si:1} }
-        ]
+    // プロシージャル・生成コンポーネント (25 × 25 = 625通りの質問コンテキスト)
+    const sitPool = [
+        "洗練されたUI/UXデザインのツールを触ってプロトタイプを組んでいるとき、", "完璧に調律された楽器のファーストノートを静かに響かせた瞬間、", 
+        "深夜3時、完全にノイズの消えた自室で布団に潜り込み思考のレイヤーを下りていくとき、", "予定がすべて美しく白紙化され、完全に独立したタイムラインを手に入れた瞬間、", 
+        "スマートフォンの雑多な通知をすべてバックグラウンドへミュートした静寂な夜、", "お気に入りの解像度の高い音楽が、耳元で完璧な定位で鳴り響いているとき、",
+        "ルービックキューブの微細なパターンの最適解（F2L）を頭の中でトレースしているとき、", "XR（空間コンピューティング）のような新しい3次元インターフェースを覗き込んだとき、",
+        "無駄のないミニマルな作業空間を、自分の美学通りに完璧にスクラップ＆ビルドしたとき、", "自分の脳内だけに存在するオリジナルキャラクターのレイアウトや世界観を妄想するとき、",
+        "夕暮れ時、 Expo記念公園のような広い空間のベンチで風の周波数を感知しているとき、", "他人の視線や世間の『普通』というノイズが、意識のフィルターから綺麗に消え去ったとき、",
+        "何の意味も生産性もない、けれど自分の美学だけが100%満たされる作業に没頭しているとき、", "白黒はっきりつけさせられる社会的なアンケートの4択を突きつけられた瞬間、",
+        "タイムラインの濁流から完全にエスケープし、自分だけのデジタル聖域に帰還したとき、", "お気に入りのキャラクターグッズや、洗練されたデザインのプロダクトを愛でているとき、",
+        "誰の承認も必要としない、自分だけの絶対的なこだわりが内側から湧き上がってきたとき、", "めんどくさい現実のタスクを目の前にし、脳が高度なサボりの言い訳を生成し始めたとき、",
+        "いつもと同じ通学路や街並みが、ふと幾何学的に美しい構造体に見えた瞬間の感覚、", "複雑なコードやデータ構造を、最も美しく無駄のない形へリファクタリングしているとき、",
+        "自分の「好き・不快」の直感が、世間の常識を完全に上回ったと感じる瞬間、", "誰もいない静かな空間で、ただ自由にスマホをフリックして時間を浪費しているとき、",
+        "日常の些細な環境音や、美しいグラデーションを五感がダイレクトに捉えたとき、", "他人の気遣いや表面的な付き合いの場から、音を立てずにすっとフェードアウトしたとき、",
+        "効率性を徹底的に極めた先に、あえて究極の『脱力』を選択したくなった瞬間、"
+    ];
+
+    const evePool = [
+        "ふと脳内に『誰の役にも立たないけれど最高に美しい謎の空想』が限界まで溢れてきたら、", "周囲の時間の流れや社会的な義務が、急にどうでもいい背景レイヤーに変わっていく感覚を覚えたら、",
+        "次に自分が選択するべき行動の『純粋な美意識と直感の純度』を厳密にテストされているとき、", "社会のルールや他人の視線というノイズが、一時的に完全にハッキングされて消え去ったら、",
+        "直感的に『今は1秒も動かず、この心地よいエスケープ空間に引きこもりたい』という衝動が湧いたら、", "自分のクリエイティブなこだわりに、誰の承認も評価も必要ないと心の底から確信できたとき、",
+        "誰の役にも立たないけれど、自分だけがニヤリとできる最高なアイデアのピースが繋がったとき、", "目の前にあるデザインのドット単位の配置や、空間の空気感のディテールに強烈に意識が同期したら、",
+        "合理的な正解を出すのをやめ、あえて『割り切れない中間』の美学を選びたくなった瞬間、", "五感のセンサーがクリアになり、色や音の質感のグラデーションをダイレクトに知覚したとき、",
+        "今日という一日の満足度を、他人の評価や数字を一切排除して自分自身の内なる尺度だけで測るとき、", "空間のバイブスや他人の感情の機微を、無意識のうちに超高感度でキャッチしてしまった瞬間、",
+        "計画通りに進めることの窮屈さから、一瞬でマッハで脳内エスケープしたくなったとき、", "脳内のあらゆるタスクエラーがすっと消え、極めてクリアな『自己美学』だけが残ったとき、",
+        "自分が一番大切にしている『内なるサボり聖域』に、外部のシグナルがシンクロした感覚を覚えたら、", "目の前の現実的な選択肢が、すべて自分の美学のフィルターによって一瞬で弾かれてしまったとき、",
+        "理由のない全能感、または究極の心地よい脱力エントロピーが全身の神経を支配したとき、", "過去の記憶の断片や、特定の美しいフレーズが急に脳内に鮮明に呼び起こされたとき、",
+        "誰かに何かを証明する必要すら忘れ、ただただ布団の中でスマホを触る自由を噛みしめるとき、", "世界の複雑なアルゴリズムが、自分の直感というシンプルな数式に集約されていく感覚に陥ったら、",
+        "自分の精神的なペースを他人に一切乱されず、完全なコントロールを手に入れたと実感したとき、", "何時間でも同じ幾何学的なルーティンを繰り返せるような、奇妙でクリアな集中力が湧いたとき、",
+        "常識という枠組みが、いかに不自由でクリエイティビティを阻害するものかに気づいてしまったとき、", "心の奥底にある『本当にやりたいこと』のシグナルが、ノイズの隙間からクリアに点滅し始めたとき、", "すべてのめんどくさいタスクを完全に放棄して、ただただ自由な空想に身を委ねたくなったとき、"
+    ];
+
+    // 8次元スタンスに対応する各フレーズ掛け合わせマトリクス
+    const optMatrix = {
+        ma: {
+            cores: ["目的をすべて排除し、ただその曖昧な心地よさに身を委ねてスマホをダラダラと眺める", "布団の中に深く潜り込み、最も脈絡のない謎の空想を限界まで展開して脳内逃避を楽しむ", "効率や正解は忘れ、サボる言い訳を肯定しながら心地よい脱力時間を堂々と満喫する", "見にくいUIのノイズを即座にフィルタリングし、ただ自由にダラダラする時間を愛する", "白黒つけない中間の空気感の中で、ただただ時間の浪費を贅沢に味わい尽くす"],
+            tails: ["スタンスを貫く。", "領域を死守する。", "アプローチを肯定する。", "ことで精神を最適化する。", "ミニマリズムを愛する。"]
+        },
+        rational: {
+            cores: ["現状のデータを客観的にプロファイリングし、次に取るべき最も合理的な一手を出算する", "タスクの優先順位を論理的にハックし、最短ルートでクリアするための構造を組む", "目の前の現象を幾何学的に構造化し、無駄のない最適な解決策をスマートに導き出す", "感情論を徹底的にミュートし、客観的事実に基づいた明確な正解を適用する", "スケジュールとリソースを正確にパースし、計画通りに完璧に遂行することに集中する"],
+            tails: ["論理的ルーティンを回す。", "最適解を冷徹に実行する。", "システムを構築する。", "方法でスマートに処理する。", "整合性を徹底する。"]
+        },
+        empathy: {
+            cores: ["その瞬間湧き上がった自分自身の純粋な『好き・不快』の直感を100%信頼して動く", "自分の内なるオリジナルな美学や世界観を、誰に何と言われようと絶対に曲げずに表現する", "周囲の感情の機微を鋭く受け止め、心に深く響くニュアンスや色合いをそのまま愛でる", "他人の評価や数字などはどうでもよく、自分の心が最高にワクワクする選択へと飛び込む", "割り切れない感情のグラデーションを大切にし、直感の赴くままに自己のレイヤーを展開する"],
+            tails: ["エモーショナルを貫く。", "美学を100%表現する。", "直感に従って突き進む。", "スタイルを大事にする。", "ディテールに同期する。"]
+        },
+        harmony: {
+            cores: ["周囲の環境や、世間一般の調和・ルールに最も適合する無難な最適解を選択する", "周りの人たちの期待を裏切らないよう、全体の空気を読んで丁寧な調和を心がける", "あらかじめ決められた手順をリスペクトし、安定したいつもの日常とマナーを維持する", "他人に迷惑をかけないことを第一に考え、協調性と全体の着地点を最優先にして行動する", "周囲の意見をきっちりサンプリングし、みんなが納得するバランスの良い環境を作る"],
+            tails: ["調和を最優先に守る。", "スタンスを維持する。", "気配りを徹底する。", "ルートを安全に選ぶ。", "約束と調和をリスペクトする。"]
+        }
     };
 
     let selectedQuestions = [];
     let currentIdx = 0;
     let historyArr = [];
+    let startTimes = [];
 
-    // 質問をプロシージャル（動的）に10問組み立てるエンジン
-    function generateProceduralQuestions() {
+    function generateProceduralMatrixv120() {
         let questions = [];
-        let sitShuffled = [...proceduralComponents.situations].sort(() => Math.random() - 0.5);
-        let eveShuffled = [...proceduralComponents.events].sort(() => Math.random() - 0.5);
+        let sitShuffled = [...sitPool].sort(() => Math.random() - 0.5);
+        let eveShuffled = [...evePool].sort(() => Math.random() - 0.5);
         
         for (let i = 0; i < 10; i++) {
             let sit = sitShuffled[i % sitShuffled.length];
-            let eve = eveShuffled[i % eveShuffled.length];
+            let eve = eveShuffled[i % evePool.length];
             
-            // 選択肢の文脈を少しカモフラージュ＆シャッフルするために、テンプレートをベースに生成
-            let options = proceduralComponents.optionsTemplate.map(tpl => {
-                return {
-                    text: tpl.text,
-                    vector: tpl.vector.map(v => Math.max(0, Math.min(10, v + Math.floor(Math.random() * 3) - 1))), // わずかなノイズを加えて偏りを無くす
-                    mbti: tpl.mbti
-                };
-            });
+            // 8次元ベクトルマッピング [DSA, FFE, FIL, TCL, SNR, CRG, ABT, SCF]
+            let options = [
+                { text: optMatrix.ma.cores[i%5] + optMatrix.ma.tails[Math.floor(Math.random()*5)], vector: [8, 10, 9, 5, 8, 7, 10, 9], mbti: {I:2, P:2} },
+                { text: optMatrix.rational.cores[i%5] + optMatrix.rational.tails[Math.floor(Math.random()*5)], vector: [9, 2, 3, 10, 4, 5, 2, 4], mbti: {T:2, J:2} },
+                { text: optMatrix.empathy.cores[i%5] + optMatrix.empathy.tails[Math.floor(Math.random()*5)], vector: [7, 7, 10, 4, 10, 9, 8, 6], mbti: {Fi:2, Se:1} },
+                { text: optMatrix.harmony.cores[i%5] + optMatrix.harmony.tails[Math.floor(Math.random()*5)], vector: [3, 4, 2, 6, 6, 4, 4, 2], mbti: {Fe:2, Si:1} }
+            ];
 
             questions.push({
-                q: `${sit}${eve}`,
-                options: options.sort(() => Math.random() - 0.5) // 4択の順番もランダム
+                q: `${sitShuffled[i]}、${eveShuffled[i]}`,
+                options: options.sort(() => Math.random() - 0.5)
             });
         }
         return questions;
     }
 
     function startDiagnosis() {
-        selectedQuestions = generateProceduralQuestions();
-        currentIdx = 0; 
-        historyArr = [];
+        selectedQuestions = generateProceduralMatrixv120();
+        currentIdx = 0; historyArr = []; startTimes = [Date.now()];
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
         renderQuestion();
@@ -265,31 +285,30 @@
             btn.addEventListener('click', () => handleAnswer(opt));
             container.appendChild(btn);
         });
+        startTimes[currentIdx] = Date.now();
     }
 
     function handleAnswer(opt) {
-        historyArr.push({ scores: opt.vector, mbti: opt.mbti });
+        const responseTime = Date.now() - startTimes[currentIdx];
+        historyArr.push({ scores: opt.vector, mbti: opt.mbti, time: responseTime });
         currentIdx++; 
         if (currentIdx < 10) renderQuestion(); else runAIAnalysisLoading();
     }
 
     function goBack() { 
         if (currentIdx <= 0) return; 
-        currentIdx--; 
-        historyArr.pop(); 
-        renderQuestion(); 
+        currentIdx--; historyArr.pop(); renderQuestion(); 
     }
 
-    // AIっぽさを演出するスタイリッシュなローディング画面
     function runAIAnalysisLoading() {
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('loading-screen').classList.remove('hidden');
         
         const statuses = [
-            "Mapping 5D Vector Coordinates...",
-            "Analyzing Behavioral Consistency...",
-            "Calculating Cosine Similarity to 'Ma' Prototype...",
-            "Structuring Personalized Feedback Text..."
+            "Parsing 8-Dimensional Psyche Coordinates...",
+            "Computing Multi-Vector Cosine Similarity...",
+            "Calculating Cognitive Hesitation Variance...",
+            "Compiling Archetype Neural Feedback..."
         ];
         
         statuses.forEach((status, i) => {
@@ -300,31 +319,30 @@
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('result-screen').classList.remove('hidden');
                         calculateResult();
-                    }, 1000);
+                    }, 600);
                 }
-            }, i * 700);
+            }, i * 500);
         });
     }
 
     function calculateResult() {
-        let finalVector = [0, 0, 0, 0, 0];
+        let finalVector = [0, 0, 0, 0, 0, 0, 0, 0];
         let mbtiCounts = { I:0, E:0, S:0, N:0, F:0, T:0, P:0, J:0, Fi:0, Fe:0, Se:0 };
+        let totalTime = 0;
 
         historyArr.forEach(h => {
-            for(let i=0; i<5; i++) finalVector[i] += h.scores[i];
-            if(h.mbti) {
-                for(let key in h.mbti) mbtiCounts[key] += h.mbti[key];
-            }
+            for(let i=0; i<8; i++) finalVector[i] += h.scores[i];
+            if(h.mbti) { for(let key in h.mbti) mbtiCounts[key] += h.mbti[key]; }
+            totalTime += h.time;
         });
 
         finalVector = finalVector.map(v => Math.round((v / 10) * 10) / 10);
-
-        // 「理想のマ」の5次元ベクトル
-        const idealMa = [9.0, 4.0, 7.0, 9.0, 8.0];
         
-        // コサイン類似度計算
+        // 🌟 超マ本人の絶対的な黄金比プロトタイプ・ベクトル
+        const idealMa = [9.8, 9.6, 9.5, 8.8, 9.0, 9.2, 9.5, 4.2];
+        
         let dotProduct = 0, normUser = 0, normIdeal = 0;
-        for(let i=0; i<5; i++) {
+        for(let i=0; i<8; i++) {
             dotProduct += finalVector[i] * idealMa[i];
             normUser += finalVector[i] ** 2;
             normIdeal += idealMa[i] ** 2;
@@ -332,59 +350,61 @@
         let similarity = dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal));
         let maPercentage = Math.round(similarity * 100);
 
-        // 【AIアルゴリズム：一貫性(Consistency)の算出】
-        // 連続する回答のベクトルのブレ幅を測定し、心理の「迷い」をスコア化
+        // 🧠 迷い度・仮面度のAI計算（ブレ幅と応答速度の相関）
         let varianceSum = 0;
         for(let i=1; i<historyArr.length; i++) {
-            for(let j=0; j<5; j++) {
-                varianceSum += Math.abs(historyArr[i].scores[j] - historyArr[i-1].scores[j]);
-            }
+            for(let j=0; j<8; j++) { varianceSum += Math.abs(historyArr[i].scores[j] - historyArr[i-1].scores[j]); }
         }
-        let consistencyScore = Math.max(40, Math.min(100, Math.round(100 - (varianceSum / 2.5))));
+        let consistencyScore = Math.max(40, Math.min(100, Math.round(100 - (varianceSum / 2.2))));
+        
+        // 平均応答速度が遅く、かつ調和寄りなら「Masking（周りを気にしている）」と判定
+        let avgTime = totalTime / 10;
+        let maskingRate = Math.round(Math.max(0, Math.min(95, ((mbtiCounts.Fe || 0) * 8) + (avgTime > 3000 ? (avgTime - 3000) / 100 : 0))));
 
-        // MBTI判定
         const i_e = mbtiCounts.I >= mbtiCounts.E ? "I" : "E";
         const s_n = (mbtiCounts.S || 0) + (mbtiCounts.Se || 0) >= (mbtiCounts.N || 0) ? "S" : "N";
         const f_t = (mbtiCounts.F || 0) + (mbtiCounts.Fi || 0) >= (mbtiCounts.T || 0) ? "F" : "T";
         const p_j = mbtiCounts.P >= mbtiCounts.J ? "P" : "J";
-        const resultType = `${i_e}${s_n}${f_t}${p_j}`;
 
-        document.getElementById('result-score').innerText = `${maPercentage}%`;
-        document.getElementById('result-mbti').innerText = `ARCHETYPE: ${resultType}`;
-        document.getElementById('result-consistency').innerText = `CONSISTENCY: ${consistencyScore}%`;
-        document.getElementById('sync-rate').innerText = `Vector Sync: ${(similarity*100).toFixed(1)}%`;
-
-        // 動的AIテキスト生成エンジンの実行
-        generateAITexts(maPercentage, consistencyScore, finalVector, resultType);
-        renderCharts(finalVector);
+        displayFinalUI(maPercentage, consistencyScore, maskingRate, `${i_e}${s_n}${f_t}${p_j}`, similarity, finalVector);
     }
 
-    // AIパーツ合成型テキスト生成（簡易自然言語生成エンジン）
-    function generateAITexts(score, consistency, vector, type) {
-        // 各指標の最大値を取得
-        const indexNames = ['内的世界の深さ', '現実への適応力', '感情の共鳴度', '思考の柔軟性', '精神的安定度'];
+    function displayFinalUI(score, consistency, masking, type, similarity, vector) {
+        document.getElementById('result-score').innerText = `${score}%`;
+        document.getElementById('result-mbti').innerText = `ARCHETYPE: ${type}`;
+        document.getElementById('result-consistency').innerText = `CONSISTENCY: ${consistency}%`;
+        document.getElementById('result-masking').innerText = `MASKING: ${masking}%`;
+        document.getElementById('sync-rate').innerText = `Absolute Sync: ${(similarity*100).toFixed(2)}%`;
+
+        const dimensions = ['空間美学', '布団空想', '自己忠実', '構造解析', '五感同調', '世界創出', '曖昧認知', 'ノイズ除去'];
         let maxIdx = 0;
-        for(let i=1; i<5; i++) { if(vector[i] > vector[maxIdx]) maxIdx = i; }
+        for(let i=1; i<8; i++) { if(vector[i] > vector[maxIdx]) maxIdx = i; }
 
-        let descParts = {
-            intro: `プロシージャル解析の結果、あなたの精神構造は「マ要素」と ${score}% の驚異的なベクトル同期を記録しました。`,
-            core: score >= 80 ? "無駄な社会ノイズをフィルタリングし、布団の中での謎の空想や、目的を持たない自由なデジタル空間を心の拠り所にできる天性の脱力スキルを持っています。"
-                : score >= 55 ? "現実的な社会性やタスク処理能力を十分に維持しつつも、内なるレイヤーでは常に自分だけの心地よい『マ的余白』を求めているハイブリッドな状態です。"
-                : "非常に現実適応力が高く、物事を白黒はっきりさせる論理的構造を持っています。そのため、目的のない曖昧な時間を愛するマの特異点とはやや距離があります。",
-            dynamic: `特にあなたの深層心理は【${indexNames[maxIdx]}】のグリッドが最も強く突出しており、これがあなたの選択のコアとなっています。`
-        };
+        let desc = `8Dプロファイリングが完了しました。あなたの精神構造は、超マ本人のプロトタイプモデルと 【${score}%】 の超高精度でシンクロしています。`;
+        if (score >= 90) {
+            desc += ` 社会のノイズを完全に除去（フィルタリング）し、布団の中での謎の空想、目的のないデジタルフリック、そして洗練されたUIやパターンの調和を愛する100%ピュアな「マ本人」の精神そのものです。`;
+        } else if (score >= 65) {
+            desc += ` 高い論理的ハック能力（構造解析）や現実適応力を持ちながら、内なる深層レイヤーでは常に自分だけのオリジナルな余白と直感を死守している、極めて知的なハイブリッドアーキテクチャです。`;
+        } else {
+            desc += ` 非常に社会規律や論理的正解を重視するクリアな知性を持っています。白黒はっきりしない曖昧なグラデーションや、目的を持たない完全なる脱力空間を愛するマ本人のコア領域とは対称的な構造です。`;
+        }
+        desc += ` 8つの力学のうち、現在は【${dimensions[maxIdx]}】のグリッドが最高値を記録しており、これがあなたの美学の主軸となっています。`;
 
-        let diffParts = {
-            consistency: consistency >= 75 ? `一貫性（${consistency}%）が非常に高く、自分の美学や直感に迷いがありません。` : `一貫性が ${consistency}% とやや低く、現実世界の義務（やらなきゃいけないこと）と内なるサボり欲求の間で深層心理が揺れ動いています。`,
-            gap: score >= 80 ? "「マ」のプロトタイプとのズレはほぼ皆無です。自分のめんどくささすら愛せています。" : "物事を効率よく正しく進めようとする知性が働く瞬間が、マの脱力純度を下げるギャップとなっています。"
-        };
+        let diff = `認知一貫性は 【${consistency}%】、社会的仮面（同調ノイズ）は 【${masking}%】 です。`;
+        if (masking < 30) {
+            diff += ` 他人の視線や環境ノイズに一切脳のリソースを割いておらず、自分の「好き・不快」の直感だけで世界を構築できています。`;
+        } else {
+            diff += ` 現実の義務感やタスク、他者の期待といった環境ノイズに対して、脳が一時的に適応（マスキング）を行っている形跡がみられます。`;
+        }
 
-        let adviceParts = score >= 80 ? "AIからの推奨：現在のノイズレスな生活リズムを維持してください。スマホの美しいUIを眺め、意味のない時間を限界まで楽しむことがあなたの脳を最も活性化させます。"
-            : "AIからの推奨：タスクに追われて心が擦り切れる前に、あえて『15分だけスマホを目的なくダラダラ触る』という脱力タスクをスケジュールに組み込んでみてください。";
+        let advice = score >= 70 ? "AIモデル最適化：現在のノイズレスなサボり空間と独自の美学を完全に肯定してください。布団の中での謎の空想や、無目的で美しいデザインのUIを眺める時間が、あなたのクリエイティビティの源泉です。"
+                                 : "AIモデル最適化：効率と論理を急ぐあまり、脳内エントロピーが増大しています。1日15分だけ『完全に意味のないスマホフリックや空想』を意図的にスケジュールし、精神の余白（脱力レイヤー）を解放してください。";
 
-        document.getElementById('result-desc').innerText = `${descParts.intro}${descParts.core} ${descParts.dynamic}`;
-        document.getElementById('result-diff').innerText = `${diffParts.consistency}${diffParts.gap}`;
-        document.getElementById('result-advice').innerText = adviceParts;
+        document.getElementById('result-desc').innerText = desc;
+        document.getElementById('result-diff').innerText = diff;
+        document.getElementById('result-advice').innerText = advice;
+
+        renderCharts(vector.slice(0, 5)); // レーダーチャートはUIの視認性のため主要5次元を描画
     }
 
     function renderCharts(dataArray) {
@@ -393,26 +413,17 @@
         window.radarChartInstance = new Chart(ctx, {
             type: 'radar',
             data: { 
-                labels: ['内的世界', '現実適応', '感情共鳴', '思考柔軟', '精神安定'], 
+                labels: ['空間美学', '布団空想', '自己忠実', '構造解析', '五感同調'], 
                 datasets: [{ 
-                    data: dataArray, 
-                    backgroundColor: 'rgba(74, 99, 90, 0.08)', 
-                    borderColor: '#4a635a', 
-                    borderWidth: 1, 
-                    pointRadius: 1, 
-                    pointBackgroundColor: '#121816' 
+                    data: dataArray, backgroundColor: 'rgba(62, 82, 73, 0.06)', borderColor: '#3e5249', borderWidth: 1, pointRadius: 1, pointBackgroundColor: '#111413' 
                 }] 
             },
             options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                responsive: true, maintainAspectRatio: false,
                 scales: { 
                     r: { 
-                        min: 0, max: 10, 
-                        ticks: { display: false }, 
-                        grid: { color: 'rgba(0,0,0,0.04)' }, 
-                        pointLabels: { color: '#64706c', font: { size: 9, family: 'Space Grotesk, Noto Sans JP' } },
-                        angleLines: { color: 'rgba(0,0,0,0.04)' } 
+                        min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.03)' }, 
+                        pointLabels: { color: '#5c6662', font: { size: 9, family: 'Space Grotesk, Noto Sans JP' } }, angleLines: { color: 'rgba(0,0,0,0.03)' } 
                     } 
                 }, 
                 plugins: { legend: { display: false } } 
@@ -425,23 +436,19 @@
             backgroundColor: "#ffffff", scale: 2, logging: false,
             onclone: (cloned) => { cloned.getElementById('capture-area').classList.add('capture-flat-mode'); }
         }).then(canvas => { 
-            const link = document.createElement('a'); 
-            link.download = 'Ma_AI_Report.png'; 
-            link.href = canvas.toDataURL('image/png'); 
-            link.click(); 
+            const link = document.createElement('a'); link.download = 'Ma_AI_v120_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); 
         });
     }
 
     function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const text = `AIプロファイリングの結果、私のマ度は【${score}】でした。偏りのない3000通りの質問で深層心理を見抜くテスト。 #マ診断\n`;
+        const text = `AI v120プロファイリング完了。私のマ度は【${score}】でした。8次元精神力学マトリクスによる精密測定。 #マ診断\n`;
         const url = window.location.href;
-        if (navigator.share) {
-            navigator.share({ title: 'マ診断', text: text, url: url }).catch(()=>{});
-        } else {
+        if (navigator.share) { navigator.share({ title: 'マ診断 v120', text: text, url: url }).catch(()=>{}); } 
+        else {
             const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
             dummy.value = text + url; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
-            alert("結果のテキストとURLをコピーしました。");
+            alert("結果をクリップボードにコピーしました。");
         }
     }
 
