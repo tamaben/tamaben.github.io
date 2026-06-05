@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ma-AI Diagnostic Core v150 // Hyper-Matrix Console</title>
+    <title>マ診断 | AI Hyper-Matrix v150</title>
     
     <!-- CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +15,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@200;400;500;600;700;900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@200;400;500;600;700;900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -24,11 +25,12 @@
                         sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
                         space: ['Space Grotesk', 'sans-serif'],
                         mono: ['Fira Code', 'monospace'],
+                        serifEn: ['Cormorant Garamond', 'serif'],
                     },
                     colors: {
-                        cyberBg: '#04060a',
-                        cyberPanel: '#090f1c',
-                        cyberBorder: '#18243e',
+                        cyberBg: '#05070c',
+                        cyberPanel: '#0b0f19',
+                        cyberBorder: '#1c2336',
                         neonPurple: '#c084fc',
                         neonIndigo: '#818cf8',
                         neonEmerald: '#34d399',
@@ -41,37 +43,42 @@
     </script>
 
     <style>
-        /* スクリューバー & 特殊ビジュアル */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #04060a; }
-        ::-webkit-scrollbar-thumb { background: #18243e; border-radius: 3px; }
+        /* スクロールバー設定 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #05070c; }
+        ::-webkit-scrollbar-thumb { background: #1c2336; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
 
         .grid-bg {
             background-image: 
-                linear-gradient(rgba(24, 36, 62, 0.25) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(24, 36, 62, 0.25) 1px, transparent 1px);
+                linear-gradient(rgba(28, 35, 54, 0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(28, 35, 54, 0.25) 1px, transparent 1px);
             background-size: 24px 24px;
         }
 
         .option-btn {
-            width: 100%; text-align: left; padding: 1.1rem 1.4rem; 
-            background: rgba(9, 15, 28, 0.6); border: 1px solid #18243e; border-radius: 1rem;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.85rem; line-height: 1.6;
+            width: 100%; text-align: left; padding: 1.15rem 1.45rem; 
+            background: rgba(11, 15, 25, 0.7); border: 1px solid #1c2336; border-radius: 1rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.86rem; line-height: 1.6;
             color: #d1d5db; margin-bottom: 0.75rem; cursor: pointer;
         }
         .option-btn:hover, .option-btn:active { 
             border-color: #818cf8; background: rgba(129, 140, 248, 0.05); transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.1);
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.12);
         }
 
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* キャプチャ時の一時的フラットスタイル強制 */
+        /* html2canvas用エクスポート時フラットモード */
         .capture-flat-mode { 
-            background: #090f1c !important; box-shadow: none !important; border: 1px solid #18243e !important; 
+            background: #0b0f19 !important; box-shadow: none !important; border: 1px solid #1c2336 !important; 
             width: 480px !important; max-width: none !important; padding: 32px !important; border-radius: 1.5rem !important; 
+        }
+
+        /* 進行バー内部のトランジション */
+        .bar-fill-animate {
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
     </style>
 </head>
@@ -82,28 +89,28 @@
     <!-- ================= 1. START SCREEN ================= -->
     <div id="start-screen" class="bg-cyberPanel border border-cyberBorder rounded-3xl p-8 text-center fade-in shadow-2xl">
         <div class="flex justify-center mb-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonIndigo to-neonPurple flex items-center justify-center text-cyberBg font-black text-xl shadow-lg shadow-neonIndigo/20">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-neonIndigo to-neonPurple flex items-center justify-center text-cyberBg font-black text-2xl shadow-lg shadow-neonIndigo/25">
                 Σ
             </div>
         </div>
         <p class="text-neonIndigo font-space tracking-[0.5em] text-[10px] mb-2 uppercase font-bold">12D Cognitive System Control</p>
-        <h1 class="text-3xl font-light mb-6 tracking-wide text-white font-space">Ma-AI Core <span class="text-neonPurple font-bold">v150</span></h1>
+        <h1 class="text-4xl font-light mb-6 tracking-wide text-white font-space">マ診断</h1>
         
         <!-- ユーザーコンテキストレイヤー -->
         <div class="bg-cyberBg/60 border border-cyberBorder/60 p-4 rounded-xl text-left text-xs mb-8 space-y-2 font-mono">
-          <div class="flex justify-between text-gray-500 border-b border-cyberBorder pb-1 text-[10px]">
+          <div class="flex justify-between text-gray-500 border-b border-cyberBorder pb-1 text-[9px]">
             <span>SYSTEM SUBJECT PROFILE</span>
             <span class="text-neonCyan">CONNECTED</span>
           </div>
           <p><span class="text-gray-500">USER:</span> 上田聖優 (Masahiro Ueda)</p>
           <p><span class="text-gray-500">ROLE:</span> System Design Iterative Thinker</p>
           <p class="text-gray-400 text-[11px] leading-relaxed pt-1 font-sans">
-            本コンソールは、あなたの精神特性モデルに基づき、シチュエーション判定から「マの同調率」を状態ベクトルとして同定。反復改善（Iterate Loop）へ即座に接続します。
+            性格診断や適性検査で定番の問い（意思決定パターン、時間管理、整理整頓など）から、あなたの認知特性と深層にある「マの同調率」を12次元モデルとして客観的に解析します。
           </p>
         </div>
 
         <button onclick="startDiagnosis()" type="button" class="w-full py-4 bg-gradient-to-r from-neonIndigo to-neonPurple text-cyberBg font-bold text-xs uppercase tracking-[0.25em] rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
-            スキャン（診断）を開始する
+            12次元解析を開始する
         </button>
     </div>
 
@@ -124,7 +131,7 @@
         
         <div>
             <div class="min-h-[7rem] mb-6 flex flex-col justify-center">
-                <span id="q-cat" class="text-[8px] uppercase tracking-[0.3em] text-neonCyan mb-1.5 font-mono font-medium">φ_OBS_MATRIX // 状況特徴抽出</span>
+                <span id="q-cat" class="text-[8px] uppercase tracking-[0.3em] text-neonCyan mb-1.5 font-mono font-bold">φ_OBS_MATRIX // パーソナリティスキャン</span>
                 <h2 id="q-text" class="text-[14px] font-medium text-gray-200 leading-relaxed text-left w-full"></h2>
             </div>
             <div id="options-container" class="space-y-0"></div>
@@ -138,37 +145,48 @@
             <div class="absolute inset-0 rounded-full border-2 border-t-neonPurple animate-spin"></div>
         </div>
         <p class="text-[9px] font-mono tracking-[0.3em] uppercase text-neonCyan mb-2">Compiling 12D Vector State...</p>
-        <div id="loading-status" class="text-xs font-mono text-gray-500 h-6">精神ベクトルマッピングを収束処理中...</div>
+        <div id="loading-status" class="text-xs font-mono text-gray-400 h-6">12次元の精神ベクトルをマッピング中...</div>
     </div>
 
     <!-- ================= 4. RESULT SCREEN ================= -->
     <div id="result-screen" class="hidden space-y-6 fade-in">
         
-        <!-- キャプチャ対象エリア -->
+        <!-- キャプチャ対象レポートエリア -->
         <div id="capture-area" class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 text-center relative overflow-hidden shadow-2xl">
-            <!-- 背景に薄いネオンの光 -->
+            <!-- 薄いネオンの背景光 -->
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-neonPurple/5 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="font-space text-gray-500 tracking-[0.4em] text-[9px] uppercase font-bold mb-1">[MA-AI HYPER-MATRIX REPORT]</div>
             <div class="text-[10px] text-neonCyan tracking-[0.2em] uppercase font-bold font-mono">DETERMINED MA_SCORE</div>
             
+            <!-- マ度表示 -->
             <div class="score-display text-7xl md:text-8xl font-black font-space tracking-tighter text-white my-3" id="result-score">0%</div>
             
-            <!-- バッジ群 -->
+            <!-- 各種バッジ -->
             <div class="mb-6 flex flex-wrap justify-center gap-1.5 px-2">
                 <div class="bg-neonIndigo/20 text-neonIndigo border border-neonIndigo/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-mbti">ARCHETYPE</div>
                 <div class="bg-neonPurple/20 text-neonPurple border border-neonPurple/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-consistency">CONSISTENCY</div>
                 <div class="bg-neonRose/20 text-neonRose border border-neonRose/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-masking">MASKING</div>
             </div>
 
-            <!-- ChartJS レーダーチャート表示 -->
+            <!-- レーダーチャート表示 -->
             <div class="mb-6 flex justify-center">
                 <div class="relative w-full max-w-[240px] h-[240px] bg-cyberBg/40 border border-cyberBorder/60 p-2 rounded-2xl flex items-center justify-center">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
 
-            <!-- 分析結果ディスクリプション -->
+            <!-- 12次元状態ベクトル進行バー（前バージョン完全対応版） -->
+            <div class="text-left mb-6 border-t border-cyberBorder/60 pt-5 space-y-3">
+                <h4 class="text-[11px] text-white font-bold tracking-[0.1em] font-mono mb-3 flex items-center gap-1">
+                    <i class="fa-solid fa-chart-bar text-neonPurple"></i> ■ 12D STATE VECTOR DETAIL (状態ベクトル詳細)
+                </h4>
+                <div id="stat-vector-bars" class="space-y-2 font-mono text-[11px]">
+                    <!-- JSにて12次元全ての精密な進行バーが生成されます -->
+                </div>
+            </div>
+
+            <!-- 分析結果テキスト群 -->
             <div class="text-left space-y-5 border-t border-cyberBorder/60 pt-5">
                 <div>
                     <h4 class="text-[11px] text-white font-bold mb-2 tracking-[0.1em] font-mono flex justify-between items-center">
@@ -194,7 +212,7 @@
             </div>
         </div>
 
-        <!-- 段階的反復（ITERATIVE CALIBRATOR）コントロール -->
+        <!-- キャリブレーションランナー (v1 ➔ v3) -->
         <div class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 shadow-2xl font-mono text-xs">
           <h3 class="text-xs font-bold tracking-widest text-white mb-3 flex items-center gap-2">
             <i class="fa-solid fa-arrows-spin text-neonIndigo animate-spin"></i> CALIBRATION RUNNER (v1 ➔ v3)
@@ -218,7 +236,7 @@
           </div>
         </div>
 
-        <!-- 強制構造化出力 (STATE, MODEL, FLOW, POLICY, NEXT STEP) -->
+        <!-- 構造化コンソール出力 (STATE, MODEL, FLOW, POLICY, NEXT STEP) -->
         <div class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 shadow-2xl relative font-mono text-xs">
             <div class="flex justify-between items-center mb-3">
               <h3 class="text-[11px] font-bold tracking-widest text-gray-400 flex items-center gap-2">
@@ -234,7 +252,7 @@
             <pre id="console-output" class="bg-cyberBg border border-cyberBorder p-4 rounded-xl text-[11px] text-gray-300 h-64 overflow-y-auto whitespace-pre-wrap select-all leading-relaxed"></pre>
         </div>
 
-        <!-- アクションボタン群 -->
+        <!-- ボタンアクション -->
         <div class="flex flex-col gap-2">
             <button onclick="downloadImage()" type="button" class="w-full py-4 bg-gradient-to-r from-neonIndigo to-neonPurple text-cyberBg font-bold text-xs uppercase tracking-[0.25em] rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
               <i class="fa-solid fa-download"></i> 高解像度レポートを保存
@@ -252,90 +270,126 @@
 </div>
 
 <script>
-    // 💡 プロシージャルシチュエーションプール (25 × 25 = 625通り)
-    const sitPool = [
-        "休日の午後、特に行くあてもなくふらりと入った静かな空間で、", "自分の好きな音楽や、お気に入りの音が耳元でとてもきれいに響いているとき、", 
-        "夜遅く、まわりの物音が完全に消え去った静かな部屋で布団に入った瞬間、", "予定が急にすべてキャンセルになり、丸一日が完全に自由になったとき、", 
-        "スマートフォンの通知設定をすべてオフにして、一人の時間を過ごす夜、", "お気に入りの音楽を聴きながら、いつもとは違う道をのんびり歩いているとき、",
-        "パズルや作業など、目の前にある複雑なものの仕組みをじっくり考えているとき、", "新しくオープンした洗練されたデザインの場所へ初めて足を運んだとき、",
-        "自分の部屋やデスクの上を、無駄なくきれいにすっきりと片づけ終えたとき、", "自分の内側にある自由な空想や、頭の中のアイデアをぼんやり膨らませているとき、",
-        "夕暮れ時、広い公園のベンチに座って心地いい風を全身で感じているとき、", "他人の視線や、社会の細かいルールがふとどうでもよくなったと感じる瞬間、",
-        "誰のためでもない、自分だけの純粋な趣味に時間を忘れて熱中しているとき、", "白黒はっきりつけさせられる極端な選択肢や、アンケートを突きつけられた瞬間、",
-        "タイムラインの濁流から離れて、一人の静かな時間に深く戻ってきたとき、", "自分のお気に入りのデザインや、こだわりの詰まったプロダクトを眺めているとき、",
-        "誰の承認も必要としない、自分だけの絶対的なこだわりが内側から湧き上がってきたとき、", "めんどくさい現実のタスクを目の前にし、頭が高度なサボりの言い訳を生成し始めたとき、",
-        "いつもと同じ街並みを歩いていて、ふと全体の景色が幾何学的に美しく見えた瞬間の感覚、", "何か新しいものを作ったり、自分のアイデアを具体的な形へ組み立てているとき、",
-        "自分が『良い』と思う直感が、世間のフツウや流行を完全に上回ったと感じる瞬間、", "誰もいない部屋で、ただなんとなくスマートフォンをいじって時間を消費しているとき、",
-        "日常の些細な環境音や、美しいグラデーションを自分の五感がダイレクトに捉えたとき、", "気を使うだけの表面的な付き合いの場から、音を立てずにすっとフェードアウトしたとき、",
-        "効率性を徹底的に極めた先に、あえて究極の『脱力』を選択したくなった瞬間、"
-    ];
-
-    const evePool = [
-        "ふと頭の中に『脈絡のない、けれど最高に興味深い謎の疑問』が溢れてきたら、", "時間の流れや、やらなければいけない義務感が急にどうでもいい背景に変わっていったら、",
-        "次に自分が選択するべき行動の『純粋な美意識と直感の純度』を試されていると感じるとき、", "社会のルールや他人の視線というノイズが一瞬だけ完全に遮断された感覚を覚えたら、",
-        "直感的に『今は1秒も動きたくない、この心地よいエスケープ空間に引きこもりたい』という衝動が湧いたら、", "自分のクリエイティブなこだわりに、誰の承認も評価も必要ないと心の底から確信できたとき、",
-        "誰の役にも立たないけれど、自分だけが深く納得できる最高なアイデアのピースが繋がったとき", "目の前にあるデザインの配置や、空間の空気感のディテールに強烈に意識が同期したら、",
-        "合理的な正解を出すのをやめ、あえて『割り切れない中間』の美学を選びたくなった瞬間、", "五感のセンサーがクリアになり、色や音の質感のグラデーションをダイレクトに知覚したとき、",
-        "今日という一日の満足度を、他人の評価や数字を一切排除して自分自身の内なる尺度だけで測るとき、", "空間のバイブスや他人の感情の機微を、無意識のうちに超高感度でキャッチしてしまった瞬間、",
-        "計画通りに進めることの窮屈さから、一瞬で脳内エスケープしたくなったとき, ", "脳内のあらゆるタスクエラーがすっと消え、極めてクリアな『自己美学』だけが残ったとき、",
-        "自分が一番大切にしている『内なるサボり聖域』に、外部のシグナルがシンクロした感覚を覚えたら、", "目の前の現実的な選択肢が、すべて自分の美学のフィルターによって一瞬で弾かれてしまったとき、",
-        "理由のない全能感、または究極の心地よい脱力エントロピーが全身の神経を支配したとき、", "過去の記憶 of 特定の美しいフレーズが急に脳内に鮮明に呼び起こされたとき、", "誰かに何かを証明する必要すら忘れ、ただただ布団の中でスマホを触る自由を噛みしめるとき、", "世界の複雑なシステムが、自分の直感というシンプルな数式に集約されていく感覚に陥ったら、", "自分の精神的なペースを他人に一切乱されず、完全なコントロールを手に入れたと実感したとき、", "何時間でも同じ幾何学的なルーティンを繰り返せるような、奇妙でクリアな集中力が湧いたとき、", "常識という枠組みが、いかに不自由でクリエイティビティを阻害するものかに気づいてしまったとき、", "心の奥底にある『本当にやりたいこと』のシグナルが、ノイズの隙間からクリアに点滅し始めたとき、", "すべてのめんどくさいタスクを完全に放棄して、ただただ自由な空想に身を委ねたくなったとき"
-    ];
-
-    // 💡 12次元精神力学ベクトル順: [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
-    const optMatrix = {
-        ma: {
-            cores: ["目的をすべて放棄し、ただその曖昧な心地よさに身を委ねてスマホをダラダラと眺める", "布団の中に深く潜り込み、最も脈絡のない謎の空想を限界まで展開して脳内逃避を楽しむ", "効率や正解は忘れ、サボる自分を肯定しながら心地よい脱力時間を堂々と満喫する", "不快なノイズを即座にフィルタリングし、ただ自由にダラダラする時間を静かに愛する", "白黒つけない中間の空気感の中で、ただただ時間の浪費を贅沢に味わい尽くす"],
-            tails: ["スタンスを選択する。", "領域を最優先で死守する。", "アプローチをとる。", "ことで内面を最適化する。", "自由を何よりも好む。"]
+    // 💡 一般的な性格・傾向診断でよく見られる10問の標準設問セット
+    const diagnosticQuestions = [
+        {
+            q: "休日の最も理想的な過ごし方として、自分に一番近いものはどれですか？",
+            options: [
+                { text: "特に行くあても作らず一日中家で寝転がり、スマホを眺めたり空想に耽る", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "事前に決めたスケジュールに沿って、効率的に作業や勉強、TODOを消化する", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "自分の感性を刺激するような映画やアート鑑賞、創作活動に一晩中熱中する", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "友人や家族と予定を合わせ、にぎやかな場所へ出かけて楽しくコミュニケーションをとる", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
         },
-        rational: {
-            cores: ["現状のデータを客観的に分析し、次に取るべき最も合理的な一手を出算する", "タスクの優先順位を論理的に切り分け、最短ルートでクリアするための構造を組む", "目の前の現象を構造的に捉え、無駄のない最適な解決策をスマートに導き出す", "感情論を徹底的にミュートし、客観的事実に基づいた明確な正解を適用する", "スケジュールとリソースを正確に確認し、計画通りに完璧に遂行することに集中する"],
-            tails: ["論理的ルーティンを回す。", "最適解を冷徹に実行する。", "システムを構築する。", "方法でスマートに処理する。", "整合性を徹底する。"]
+        {
+            q: "新しいタスクや課題に取り組む際、あなたの最初のアプローチは？",
+            options: [
+                { text: "締め切りギリギリまで手をつけず、サボる言い訳を頭の中で何通りも組み立ててダラダラする", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "まず全体の構造や論理的な手順、効率的な設計書を作ってから計画的に進める", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "既存のルールや手順はすべて無視し、自分の直感とオリジナルな美学のみを信じて作り始める", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "周りの期待や安全なやり方をリスペクトし、摩擦を避けて確実な手順通りに忠実に進める", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
         },
-        empathy: {
-            cores: ["その瞬間湧き上がった自分自身の純粋な『好き・不快』の直感を100%信頼して動く", "自分の内なるオリジナルな美学や世界観を、誰に何と言われようと絶対に曲げずに表現する", "周囲の感情の機微を鋭く受け止め、心に深く響くニュアンスや色合いをそのまま愛でる", "他人の評価や数字などはどうでもよく、自分の心が最高にワクワクする選択へと飛び込む", "割り切れない感情のグラデーションを大切にし、直感の赴くままに自己のレイヤーを展開する"],
-            tails: ["美学を100%表現する。", "直感に従って突き進む。", "スタイルを大事にする。", "ディテールに同期する。", "生き方を貫く。"]
+        {
+            q: "大人数が集まるイベントや議論の場において、あなたはどのような立ち回りをしますか？",
+            options: [
+                { text: "周囲の動向や会話には全く興味を持たず、自分の脳内世界に逃避して音を立てずにやり過ごす", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "議論の合理性や論理的な矛盾点を冷静にチェックし、最もスマートな最適解をファクトベースで提示する", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "場の空気や会話の機微を鋭く受け止め、自分の内なる直感と独自の言葉で感性豊かに伝える", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "全体の調和と雰囲気を第一に優先し、全員が納得する安全な妥協点を探しながらきれいに協調する", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
         },
-        harmony: {
-            cores: ["周囲の環境や、世間一般の調和・ルールに最も適合する無難な最適解を選択する", "周りの人たちの期待を裏切らないよう、全体の空気を読んで丁寧な調和を心がける", "あらかじめ決められた手順をリスペクトし、安定したいつもの日常とマナーを維持する", "他人に迷惑をかけないことを第一に考え、協調性と全体の着地点を最優先にして行動する", "周囲の意見をきっちりサンプリングし、みんなが納得するバランスの良い環境を作る"],
-            tails: ["調和を最優先に守る。", "スタンスを維持する。", "気配りを徹底する。", "ルートを安全に選ぶ。", "約束をリスペクトする。"]
+        {
+            q: "急な予定変更や想定外のトラブルによって、進めていた計画が完全に狂ってしまった時、どうしますか？",
+            options: [
+                { text: "『まあいいか』と一瞬で諦め、すべての責任を放棄して最高に心地よいサボり空間に引きこもる", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "感情を完全に排して客観的な現状データを分析し、次に取るべき論理的代替ルートをすぐに組む", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "計画に縛られないアドリブや、その時の感情・直感の赴くままに全く新しい表現や寄り道を楽しむ", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "すぐに周囲の人と相談し、これ以上混乱を招かないようルールやマナーに従い皆で足並みを揃えて対処する", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "自分の部屋やデスクなど、身の回りの整理整頓の状況はどのようになっていますか？",
+            options: [
+                { text: "他人から見れば乱雑であっても、自分が最もダラダラと脱力できるカオスな聖域を維持している", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "必要なものが1秒で取り出せるよう、無駄な機能や重複をそぎ落とし合理的にシステムを整理している", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "使いやすさよりも、自分のこだわりやお気に入りのアート、洗練された配色・デザインの配置を優先する", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "いつでも来客を歓迎できるよう、世間一般の正しいマナーや平均的な常識基準に合わせて綺麗に整える", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "人とのコミュニケーションや対話において、あなたが何より最も重要視しているポイントは？",
+            options: [
+                { text: "必要最低限のやり取りだけで済ませ、相手の期待ノイズをかわしながら自分の深いマイペースを守ること", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "客観的な事実、事実に基づいたデータ、お互いの整合性、そして結論ファーストによる論理的な整合性", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "言葉の奥にあるエモーショナルな調和や世界観、細かなディテールの美学がお互いに深くシンクロする感覚", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "相手に不快感やプレッシャーを与えないための高い配慮、協調性、そして一般的な正しいマナーを守ること", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "あなたが作業や読書、物事に集中している時のスタイルはどのような状態ですか？",
+            options: [
+                { text: "目的を持たない、意味のないネットフリックやダラダラとした時間の浪費をひたすら愛で続けている", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "一度ルーティンを確立すると、あらゆる誘惑を徹底的にシャットアウトし一貫した生産性を維持し続ける", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "自分の感性を揺さぶる特定の配色、デザイン、または言葉の美学に強烈なゾーン（深い没頭）に入る", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "周囲の様子やみんなの声かけ、全体の進捗状況にいつでも気を配りながら安全な調和的集中をキープする", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "買い物をしたり、重要な選択を迫られたりした際、あなたの最大の判断軸となるものは？",
+            options: [
+                { text: "論理的な理由や説明はつかないが、自分の内側から湧き上がる『なんとなく心地よい』という曖昧な直感", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "費用対効果（コストパフォーマンス）、スペック性能、徹底的な比較データ、客観的ファクトの合理性", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "流行や他人の評価などは完全に無視し、自分のオリジナルな美学や世界観の純度に完全に一致するかどうか", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "多くの人が高く評価しているレビュー、世間的な知名度の信頼感、お互いの家族や周囲が喜ぶ無難な選択", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "SNSのタイムラインや情報収集を行う際、あなたが無意識に惹かれてしまうコンテンツは？",
+            options: [
+                { text: "トレンドや世の中の責任、義務感に満ちた有益そうな情報ノイズを完全にシャットアウトした癒し画像", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "最新の効率化ノウハウ、論理的なアルゴリズム設計、無駄を削ぎ落とした高密度な解説システム", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "洗練された配色、光と影のトーン、他にはない極めてオリジナルなこだわりと空気感を持ったクリエイティブ", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "みんなが話題にしているトレンド、心温まる日常のやり取り、お互いに役立つ調和のとれた情報やマナー", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
+        },
+        {
+            q: "あなたが日々の生活の中で、最も「真の平穏や至福」を感じる瞬間はいつですか？",
+            options: [
+                { text: "社会や現実的な役割、タスクを全て忘れて布団に潜り込み、ゴロゴロ無限に空想にふける完全脱力時間", vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
+                { text: "自ら計画した目標やTODOを論理的に全て完遂し、システムが完璧な整合性を持って綺麗に制御された時", vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
+                { text: "誰の承認も、評価の数字も必要としない、自分だけの絶対的な世界観や美しいアイデアを形にできた時", vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
+                { text: "周囲の大切な人たちと良好な関係を保ち、お互いに気配りしあって平和な日常のルーティンが回っている時", vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
+            ]
         }
-    };
+    ];
 
-    let selectedQuestions = [];
+    const dimensionMeta = [
+        { id: "IVA", jp: "内的空想 (IVA)", color: "#c084fc", ideal: 9.6 },
+        { id: "ERA", jp: "現実適応力 (ERA)", color: "#475569", ideal: 3.2 },
+        { id: "ALF", jp: "完全脱力欲 (ALF)", color: "#818cf8", ideal: 9.8 },
+        { id: "SND", jp: "五感知覚 (SND)", color: "#34d399", ideal: 9.4 },
+        { id: "STL", jp: "構造論理 (STL)", color: "#22d3ee", ideal: 8.8 },
+        { id: "EHM", jp: "感情調和 (EHM)", color: "#64748b", ideal: 3.5 },
+        { id: "ISA", jp: "独自美学 (ISA)", color: "#f472b6", ideal: 9.5 },
+        { id: "SNF", jp: "雑音除去 (SNF)", color: "#a855f7", ideal: 9.6 },
+        { id: "ATC", jp: "曖昧認知 (ATC)", color: "#fbbf24", ideal: 9.5 },
+        { id: "CDG", jp: "概念創出 (CDG)", color: "#fb7185", ideal: 8.8 },
+        { id: "COE", jp: "計画秩序 (COE)", color: "#475569", ideal: 2.0 },
+        { id: "NSI", jp: "新規探索 (NSI)", color: "#f97316", ideal: 7.2 }
+    ];
+
     let currentIdx = 0;
     let historyArr = [];
     let startTimes = [];
     
-    // 現在の診断結果保持 (Calibration用)
-    let stateS = {};
+    // キャリブレーションキャッシュ
     let finalVectorCached = [];
     let mbtiCountsCached = {};
     let totalTimeCached = 0;
     let currentCalibrateStage = "v1";
 
-    function generate12DMatrix() {
-        let questions = [];
-        let sitShuffled = [...sitPool].sort(() => Math.random() - 0.5);
-        let eveShuffled = [...evePool].sort(() => Math.random() - 0.5);
-        
-        for (let i = 0; i < 10; i++) {
-            let options = [
-                { text: optMatrix.ma.cores[i%5] + optMatrix.ma.tails[Math.floor(Math.random()*5)], vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
-                { text: optMatrix.rational.cores[i%5] + optMatrix.rational.tails[Math.floor(Math.random()*5)], vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
-                { text: optMatrix.empathy.cores[i%5] + optMatrix.empathy.tails[Math.floor(Math.random()*5)], vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
-                { text: optMatrix.harmony.cores[i%5] + optMatrix.harmony.tails[Math.floor(Math.random()*5)], vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
-            ];
-
-            questions.push({
-                q: `${sitShuffled[i]}${eveShuffled[i]}`,
-                options: options.sort(() => Math.random() - 0.5)
-            });
-        }
-        return questions;
-    }
-
     function startDiagnosis() {
-        selectedQuestions = generate12DMatrix();
         currentIdx = 0; historyArr = []; startTimes = [Date.now()];
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
@@ -343,7 +397,7 @@
     }
 
     function renderQuestion() {
-        const q = selectedQuestions[currentIdx];
+        const q = diagnosticQuestions[currentIdx];
         document.getElementById('q-counter').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 10`;
         document.getElementById('q-text').innerText = q.q;
         document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
@@ -415,20 +469,17 @@
 
         finalVector = finalVector.map(v => Math.round((v / 10) * 10) / 10);
         
-        // キャッシュへ格納
         finalVectorCached = [...finalVector];
         mbtiCountsCached = {...mbtiCounts};
         totalTimeCached = totalTime;
 
-        compileCurrentState("v1");
+        calibrateStage("v1");
     }
 
-    // 🌟 キャリブレーション段階の切り替え (v1 ➔ v2 ➔ v3)
     function calibrateStage(stage) {
         currentCalibrateStage = stage;
         compileCurrentState(stage);
         
-        // ボタン状態の切り替え
         ['v1', 'v2', 'v3'].forEach(s => {
             const btn = document.getElementById(`btn-${s}`);
             if (s === stage) {
@@ -441,19 +492,14 @@
 
     function compileCurrentState(stage) {
         let finalVector = [...finalVectorCached];
+        const idealMa = dimensionMeta.map(d => d.ideal);
         
-        // 🌟 超マ本人の12次元プロトタイプ黄金比ベクトル（理想モデルS*）
-        // [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
-        const idealMa = [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2];
-        
-        // 段階的収束フィルターの適用
+        // 段階的収束フィルター
         if (stage === "v2") {
-            // v2: 構造化フェーズ（理想に 40% 近似）
             for(let i=0; i<12; i++) {
                 finalVector[i] = Math.round((finalVector[i] * 0.6 + idealMa[i] * 0.4) * 10) / 10;
             }
         } else if (stage === "v3") {
-            // v3: 極限最適化フェーズ（理想に 85% 近似）
             for(let i=0; i<12; i++) {
                 finalVector[i] = Math.round((finalVector[i] * 0.15 + idealMa[i] * 0.85) * 10) / 10;
             }
@@ -469,7 +515,7 @@
         let similarity = dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal));
         let maPercentage = Math.round(similarity * 100);
 
-        // 一貫性算出
+        // 一貫性
         let varianceSum = 0;
         for(let i=1; i<historyArr.length; i++) {
             for(let j=0; j<12; j++) { varianceSum += Math.abs(historyArr[i].scores[j] - historyArr[i-1].scores[j]); }
@@ -478,7 +524,7 @@
         if (stage === "v2") consistencyScore = Math.min(100, consistencyScore + 10);
         if (stage === "v3") consistencyScore = Math.min(100, consistencyScore + 25);
 
-        // マスキング算出
+        // マスキング
         let avgTime = totalTimeCached / 10;
         let maskingRate = Math.round(Math.max(0, Math.min(95, ((mbtiCountsCached.Fe || 0) * 8) + (avgTime > 3000 ? (avgTime - 3000) / 100 : 0))));
         if (stage === "v2") maskingRate = Math.max(5, maskingRate - 15);
@@ -499,40 +545,86 @@
         document.getElementById('result-masking').innerText = `MASKING: ${masking}%`;
         document.getElementById('sync-rate').innerText = `Absolute Sync: ${(similarity*100).toFixed(2)}%`;
 
-        const dimensions = ['内的空想', '現実適応力', '完全脱力欲', '五感知覚', '構造論理', '感情調和', '独自美学', '雑音除去', '曖昧認知', '概念創出', '計画秩序', '新規探索'];
+        const dimensions = dimensionMeta.map(d => d.jp);
         let maxIdx = 0;
         for(let i=1; i<12; i++) { if(vector[i] > vector[maxIdx]) maxIdx = i; }
 
-        // レポート文章生成
-        let desc = `12次元超精細スキャンの結果、あなたの精神力学システムは「マ要素」の黄金プロトタイプモデルと【${score}%】の同調率（コサイン類似度）を記録しました。`;
-        if (score >= 90) {
-            desc += ` 社会のあらゆるノイズ（計画、ルール、責任）を完全に無力化し、自らの内的宇宙とサボり美学を極限まで肯定できる「純度100%の精神アーキテクト」です。布団の中での無限の空想と完全脱力を誰よりも愛しています。`;
-        } else if (score >= 65) {
-            desc += ` 高度な論理構造と適応能力を保持しつつも、内なるレイヤーでは独自のこだわりとサボり空間を冷徹に死守している、知的ハイブリッド精神構造の持ち主です。`;
-        } else {
-            desc += ` 秩序、計画性、調和的な着地点を何よりも重んじる極めて明晰で論理的なフロントエンド知性を保持しています。それゆえ、マ特有の「無目的で曖昧なエントロピー空間」とは対極の位置に収束しています。`;
-        }
-        desc += ` 12次元中、最大出力次元は【${dimensions[maxIdx]}】を検出。`;
+        // 状態ベクトルの進行バー描画（前バージョン完全対応版）
+        const barsContainer = document.getElementById("stat-vector-bars");
+        barsContainer.innerHTML = "";
+        
+        dimensionMeta.forEach((meta, i) => {
+            const currentVal = vector[i];
+            const idealVal = meta.ideal;
+            const currentPct = (currentVal / 10) * 100;
+            const idealPct = (idealVal / 10) * 100;
+            
+            // ギャップ評価
+            const gap = idealVal - currentVal;
+            let gapBadge = "";
+            if (Math.abs(gap) <= 0.8) {
+                gapBadge = `<span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-neonEmerald/10 text-neonEmerald border border-neonEmerald/20">同調</span>`;
+            } else {
+                gapBadge = `<span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-neonRose/10 text-neonRose border border-neonRose/20">差分 ${gap > 0 ? '-' : '+'}${Math.abs(gap).toFixed(1)}</span>`;
+            }
 
-        let diff = `精神のノイズ耐性（ブレなさ）は 【${consistency}%】。社会化マスクレベルは 【${masking}%】を検出。`;
-        if (masking < 35) {
-            diff += ` 外部の視線や評価ノイズにリソースを一切割かず、自己の美学パラメータのみで世界をスマートに再設計しています。`;
+            barsContainer.innerHTML += `
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="text-gray-300 font-bold">${meta.jp}</span>
+                        <div class="flex items-center gap-2">
+                            ${gapBadge}
+                            <span class="text-gray-400">現在: <span class="text-white font-bold">${currentVal.toFixed(1)}</span> / 理想: <span class="text-neonIndigo">${idealVal.toFixed(1)}</span></span>
+                        </div>
+                    </div>
+                    <div class="h-[6px] w-full bg-cyberBg border border-cyberBorder/80 rounded-full overflow-hidden relative">
+                        <!-- 理想目標値マーク -->
+                        <div class="absolute top-0 h-full w-[2px] bg-neonIndigo z-10" style="left: ${idealPct}%" title="理想目標"></div>
+                        <!-- 現在値バー -->
+                        <div class="h-full rounded-full bar-fill-animate" id="bar-fill-${meta.id}" style="width: 0%; background-color: ${meta.color}"></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // アニメーション適用
+        setTimeout(() => {
+            dimensionMeta.forEach((meta, i) => {
+                const fillBar = document.getElementById(`bar-fill-${meta.id}`);
+                if (fillBar) fillBar.style.width = `${(vector[i] / 10) * 100}%`;
+            });
+        }, 50);
+
+        // レポート文章生成
+        let desc = `12次元精細スキャン完了。あなたの精神構造は「マ要素」のプロトタイプモデルと【${score}%】の同調率を記録しました。`;
+        if (score >= 90) {
+            desc += ` 社会の雑音（計画、他者調和、現実義務）を完全に遮断し、布団の中での内的空想と無目的サボりフリックを最高度に肯定できる「純度100%のマ本質保持者」です。`;
+        } else if (score >= 65) {
+            desc += ` 現実適応と論理的な構造化を高い水準でこなしつつも、心の内側では自分自身の美学とサボりのための聖域を完璧に死守している知的ハイブリッド構造です。`;
         } else {
-            diff += ` 環境ノイズに対して脳のワーキングメモリが自己防御マスキングを行っているため、本来の純度が部分的に隠蔽されています。`;
+            desc += ` 秩序、計画性、および社会的な適合マナーを何よりも重んじる極めて明晰で論理的な知性を保持しています。そのため、マ本人の特徴である「曖昧で脱力したエントロピー領域」とは対極の位置に属しています。`;
+        }
+        desc += ` 12次元中、最大の認知出力は【${dimensions[maxIdx]}】を検出しています。`;
+
+        let diff = `精神のノイズ耐性（ブレなさ）は 【${consistency}%】。社会化マスクレベルは 【${masking}%】。`;
+        if (masking < 35) {
+            diff += ` 外部の視線や評価ノイズに精神の帯域を割くことなく、自らの美学パラメータだけで世界をシンプルに再構築できています。`;
+        } else {
+            diff += ` 環境ノイズに対して脳のメモリが過剰なマスキング防衛を行っている形跡があり、本来のマ純度が部分的に隠蔽されています。`;
         }
 
         let advice = score >= 70 
-            ? "マ本人からの直言：現在のサボり空間、徹底した無目的スマホフリックを全力で肯定せよ。何の意味もない空想の時間が、あなたの脳システムを最適化する。合理なんて面倒なタスクは周りのシステムに代行させておけば良い。"
-            : "マ本人からの直言：正しさや計画、他者調和に精神リソースを割きすぎて脳がオーバーヒートを起こしている。1日15分だけでいい、完全に意味のないサボりタスクを意図的にカレンダーに登録し、脱力レイヤーを開放せよ。";
+            ? "マ本人からの直言：現在のノイズレスなサボり空間と独自のこだわりを全力で肯定せよ。布団の中での謎の空想や、無目的で美しいデザインを眺める時間が、あなたの脳を最も純粋に活性化させる。効率なんて大変なことは他のやつにやらせておけばいい。"
+            : "マ本人からの直言：正しさや効率、計画性に縛られすぎて脳が完全にオーバーヒートを起こしている。1日15分だけでいい、完全に意味のないスマホフリックや空想を『必須タスク』として予定にぶち込み、精神の脱力レイヤーを意図的に解放しろ。";
 
         document.getElementById('result-desc').innerText = desc;
         document.getElementById('result-diff').innerText = diff;
         document.getElementById('result-advice').innerText = advice;
 
-        // レーダーチャートの描画 [内的空想, 現実適応, 完全脱力, 構造論理, 独自美学, 曖昧認知]
+        // レーダーチャート [内的空想, 現実適応, 完全脱力, 構造論理, 独自美学, 曖昧認知]
         renderCharts([vector[0], vector[1], vector[2], vector[4], vector[6], vector[8]]); 
 
-        // 強制指定フォーマット出力更新
+        // 構造化出力更新
         updateFormattedConsoleOutput(score, consistency, masking, type, similarity, vector);
     }
 
@@ -559,9 +651,9 @@
                     r: { 
                         min: 0, max: 10, 
                         ticks: { display: false }, 
-                        grid: { color: 'rgba(24, 36, 62, 0.3)' }, 
+                        grid: { color: 'rgba(28, 36, 62, 0.35)' }, 
                         pointLabels: { color: '#8e9bb4', font: { size: 9, family: 'Space Grotesk, Noto Sans JP' } }, 
-                        angleLines: { color: 'rgba(24, 36, 62, 0.3)' } 
+                        angleLines: { color: 'rgba(28, 36, 62, 0.35)' } 
                     } 
                 }, 
                 plugins: { legend: { display: false } } 
@@ -574,12 +666,11 @@
     // ==========================================
     function updateFormattedConsoleOutput(score, consistency, masking, type, similarity, vector) {
         const pre = document.getElementById("console-output");
-        
-        const S_ideal = [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2];
+        const S_ideal = dimensionMeta.map(d => d.ideal);
         let gaps = vector.map((v, i) => Math.round((S_ideal[i] - v) * 10) / 10);
 
         let criticalDevs = [];
-        const dimNames = ['IVA', 'ERA', 'ALF', 'SND', 'STL', 'EHM', 'ISA', 'SNF', 'ATC', 'CDG', 'COE', 'NSI'];
+        const dimNames = dimensionMeta.map(d => d.id);
         gaps.forEach((g, i) => {
             if (Math.abs(g) > 1.2) {
                 criticalDevs.push(`${dimNames[i]}: ${g > 0 ? '欠乏' : '過剰'} (差分: ${(-g).toFixed(1)})`);
@@ -591,9 +682,9 @@
         if (gaps[2] > 1.0) policyList.push("・[ALF_TRIGGER]：現実タスクの接続を遮断し、完全脱力（サボり）を実行する。");
         if (gaps[4] < -1.0) policyList.push("・[STL_BREAK]：過剰な論理構造化を一時ロックし、曖昧な状態（ATC）を許容する。");
         if (gaps[10] > 1.0) policyList.push("・[COE_RELEASE]：計画秩序から即エスケープし、無目的行動を選択。");
-        if (policyList.length === 0) policyList.push("・[MAINTENANCE]：理想モデル $S^*$ との誤差なし。定常最適運転を維持。");
+        if (policyList.length === 0) policyList.push("・[MAINTENANCE]：理想モデル S* との誤差なし。定常最適運転を維持。");
 
-        // 次段予測 S(t+1) (1h減衰シミュレート)
+        // 次状態予測 S(t+1) (1h時間減衰)
         let nextV = vector.map(v => {
             let lambda = 0.01 + 0.03 * (10 - v)/10;
             return Math.max(0, Math.min(10, Math.round((v * Math.exp(-lambda * 1.0)) * 10) / 10));
@@ -611,7 +702,7 @@
 
 MODEL（構造）:
   S_ideal (理想モデル目標値):
-    [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2]
+    ${JSON.stringify(S_ideal)}
   G (ギャップ・ベクトル G = S* - S):
     [${gaps.join(', ')}]
 
@@ -650,10 +741,9 @@ NEXT STEP:
     }
 
     function downloadImage() {
-        // html2canvas の適用
         const area = document.getElementById('capture-area');
         html2canvas(area, { 
-            backgroundColor: "#090f1c", 
+            backgroundColor: "#0b0f19", 
             scale: 2, 
             logging: false,
             onclone: (cloned) => { 
@@ -670,11 +760,11 @@ NEXT STEP:
 
     function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const text = `12次元精神力学スキャン（v150）完了。私のマ同調率は【${score}】でした。極限同調コンソール。 #マ診断\n`;
+        const text = `12次元精神力学スキャン完了。私のマ度は【${score}】でした。極限同調コンソール。 #マ診断\n`;
         const url = window.location.href;
         
         if (navigator.share) { 
-            navigator.share({ title: 'Ma-AI Diagnostic Core v150', text: text, url: url }).catch(()=>{}); 
+            navigator.share({ title: 'マ診断 v150', text: text, url: url }).catch(()=>{}); 
         } else {
             const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
             dummy.value = text + url; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
@@ -689,3 +779,5 @@ NEXT STEP:
 
 </body>
 </html>
+
+```
