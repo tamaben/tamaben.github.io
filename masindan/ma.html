@@ -3,179 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マ診断 | AI Hyper-Matrix v120</title>
+    <title>Ma-AI Diagnostic Core v150 // Hyper-Matrix Console</title>
+    
+    <!-- CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@200;400;500;600;700;900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+                        space: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        cyberBg: '#04060a',
+                        cyberPanel: '#090f1c',
+                        cyberBorder: '#18243e',
+                        neonPurple: '#c084fc',
+                        neonIndigo: '#818cf8',
+                        neonEmerald: '#34d399',
+                        neonCyan: '#22d3ee',
+                        neonRose: '#fb7185',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@200;400;500;700&family=Space+Grotesk:wght@300;400;500&display=swap');
+        /* スクリューバー & 特殊ビジュアル */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #04060a; }
+        ::-webkit-scrollbar-thumb { background: #18243e; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
 
-        :root {
-            --bg-base: #f4f4f1;       
-            --accent-dark: #0f1312;   
-            --accent-core: #384d43;   
-            --text-main: #1c1c1c;
-            --text-muted: #57615d;
-            --panel-bg: #ffffff;
-        }
-
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .font-serif-en { font-family: 'Cormorant Garamond', serif; }
-        .font-space { font-family: 'Space Grotesk', sans-serif; }
-        .app-wrapper { width: 100%; max-width: 480px; padding: 1.5rem; z-index: 10; }
-
-        .minimal-panel {
-            background: var(--panel-bg); border-radius: 1.5rem;
-            box-shadow: 0 50px 100px rgba(15, 19, 18, 0.02);
-            border: 1px solid rgba(56, 77, 67, 0.04); overflow: hidden;
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(24, 36, 62, 0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(24, 36, 62, 0.25) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
 
         .option-btn {
-            width: 100%; text-align: left; padding: 1.25rem 1.5rem; 
-            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
-            transition: all 0.2s cubic-bezier(0.21, 0.6, 0.35, 1); font-size: 0.88rem; line-height: 1.6;
-            color: var(--text-main); margin-bottom: 0.75rem; cursor: pointer;
+            width: 100%; text-align: left; padding: 1.1rem 1.4rem; 
+            background: rgba(9, 15, 28, 0.6); border: 1px solid #18243e; border-radius: 1rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.85rem; line-height: 1.6;
+            color: #d1d5db; margin-bottom: 0.75rem; cursor: pointer;
         }
         .option-btn:hover, .option-btn:active { 
-            border-color: var(--accent-dark); background: #fbfbfa; transform: translateY(-1px);
+            border-color: #818cf8; background: rgba(129, 140, 248, 0.05); transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.1);
         }
 
-        .score-display {
-            font-size: 6.5rem; line-height: 1; font-weight: 300; letter-spacing: -0.05em;
-            color: var(--accent-dark); margin: 1rem 0;
-        }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn-black { 
-            background: var(--accent-dark); color: #fff; border-radius: 0.75rem; 
-            font-weight: 500; letter-spacing: 0.15em; transition: all 0.3s ease; 
-        }
-        .btn-black:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .btn-outline { 
-            background: transparent; color: var(--accent-dark); border: 1px solid #cbd5e1; 
-            border-radius: 0.75rem; font-weight: 500; letter-spacing: 0.1em; transition: all 0.2s ease; 
-        }
-        .btn-outline:hover { background: #fafafa; border-color: var(--accent-dark); }
-
-        .progress-bar-inner {
-            height: 100%; width: 0%; background: var(--accent-dark);
-            transition: width 0.4s cubic-bezier(0.21, 0.6, 0.35, 1);
-        }
-
-        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.21, 0.6, 0.35, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
+        /* キャプチャ時の一時的フラットスタイル強制 */
         .capture-flat-mode { 
-            background: #ffffff !important; box-shadow: none !important; border: none !important; 
-            width: 480px !important; max-width: none !important; padding: 32px !important; border-radius: 0 !important; 
+            background: #090f1c !important; box-shadow: none !important; border: 1px solid #18243e !important; 
+            width: 480px !important; max-width: none !important; padding: 32px !important; border-radius: 1.5rem !important; 
         }
     </style>
 </head>
-<body>
+<body class="bg-cyberBg text-gray-200 font-sans min-h-screen flex items-center justify-center p-4 grid-bg">
 
-<div class="app-wrapper">
-    <div id="start-screen" class="minimal-panel p-8 md:p-12 text-center fade-in">
-        <p class="text-[var(--accent-core)] font-space tracking-[0.6em] text-[9px] mb-3 uppercase font-medium">12D Hyper-Matrix Engine</p>
-        <h1 class="text-4xl font-light mb-8 tracking-[0.2em] text-[var(--accent-dark)] font-serif-en">マ診断 <span class="text-xs font-space align-super text-gray-400">v120</span></h1>
-        <p class="text-[var(--text-muted)] text-[12.5px] leading-relaxed mb-10 text-left font-normal">
-            MBTIの認知機能を遥かに凌駕する「12次元精神力学マトリクス」を実装。特定の個人に偏らない、誰もが日常で直面するシチュエーションから、あなたの深層にある「マの純度」と認知の一貫性をリアルタイムにハッキングします。
-        </p>
-        <button onclick="startDiagnosis()" type="button" class="w-full py-4 btn-black text-xs uppercase tracking-[0.2em]">12次元解析を開始する</button>
-    </div>
+<div class="w-full max-w-[480px] py-6 z-10">
 
-    <div id="quiz-screen" class="hidden minimal-panel p-6 md:p-10 fade-in">
-        <div class="mb-6">
-            <div class="flex justify-between items-center mb-2">
-                <button onclick="goBack()" id="back-btn" type="button" class="text-[10px] tracking-widest font-medium text-[var(--text-muted)] hover:text-[var(--accent-dark)] flex items-center gap-1 invisible">
-                    ← BACK
-                </button>
-                <span id="q-counter" class="text-[11px] font-space font-medium text-[var(--text-muted)] tracking-widest">01 / 10</span>
-            </div>
-            <div class="w-full h-[2px] bg-gray-100 rounded-full overflow-hidden">
-                <div id="progress-bar" class="progress-bar-inner"></div>
+    <!-- ================= 1. START SCREEN ================= -->
+    <div id="start-screen" class="bg-cyberPanel border border-cyberBorder rounded-3xl p-8 text-center fade-in shadow-2xl">
+        <div class="flex justify-center mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonIndigo to-neonPurple flex items-center justify-center text-cyberBg font-black text-xl shadow-lg shadow-neonIndigo/20">
+                Σ
             </div>
         </div>
+        <p class="text-neonIndigo font-space tracking-[0.5em] text-[10px] mb-2 uppercase font-bold">12D Cognitive System Control</p>
+        <h1 class="text-3xl font-light mb-6 tracking-wide text-white font-space">Ma-AI Core <span class="text-neonPurple font-bold">v150</span></h1>
+        
+        <!-- ユーザーコンテキストレイヤー -->
+        <div class="bg-cyberBg/60 border border-cyberBorder/60 p-4 rounded-xl text-left text-xs mb-8 space-y-2 font-mono">
+          <div class="flex justify-between text-gray-500 border-b border-cyberBorder pb-1 text-[10px]">
+            <span>SYSTEM SUBJECT PROFILE</span>
+            <span class="text-neonCyan">CONNECTED</span>
+          </div>
+          <p><span class="text-gray-500">USER:</span> 上田聖優 (Masahiro Ueda)</p>
+          <p><span class="text-gray-500">ROLE:</span> System Design Iterative Thinker</p>
+          <p class="text-gray-400 text-[11px] leading-relaxed pt-1 font-sans">
+            本コンソールは、あなたの精神特性モデルに基づき、シチュエーション判定から「マの同調率」を状態ベクトルとして同定。反復改善（Iterate Loop）へ即座に接続します。
+          </p>
+        </div>
+
+        <button onclick="startDiagnosis()" type="button" class="w-full py-4 bg-gradient-to-r from-neonIndigo to-neonPurple text-cyberBg font-bold text-xs uppercase tracking-[0.25em] rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+            スキャン（診断）を開始する
+        </button>
+    </div>
+
+    <!-- ================= 2. QUIZ SCREEN ================= -->
+    <div id="quiz-screen" class="hidden bg-cyberPanel border border-cyberBorder rounded-3xl p-6 md:p-8 fade-in shadow-2xl">
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <button onclick="goBack()" id="back-btn" type="button" class="text-[10px] tracking-widest font-mono text-gray-500 hover:text-white flex items-center gap-1 invisible">
+                    <i class="fa-solid fa-arrow-left"></i> BACK
+                </button>
+                <span id="q-counter" class="text-[11px] font-space font-medium text-neonPurple tracking-widest">01 / 10</span>
+            </div>
+            <!-- プログレスバー -->
+            <div class="w-full h-[2px] bg-cyberBg rounded-full overflow-hidden">
+                <div id="progress-bar" class="progress-bar-inner bg-gradient-to-r from-neonIndigo to-neonPurple h-full transition-all duration-300" style="width: 10%;"></div>
+            </div>
+        </div>
+        
         <div>
-            <div class="min-h-[6.5rem] mb-6 flex flex-col justify-center">
-                <span id="q-cat" class="text-[8px] uppercase tracking-[0.4em] text-[var(--accent-core)] mb-2 font-space font-medium">Hyper-Matrix Scanner</span>
-                <h2 id="q-text" class="text-[14px] font-medium text-[var(--text-main)] leading-relaxed text-left w-full"></h2>
+            <div class="min-h-[7rem] mb-6 flex flex-col justify-center">
+                <span id="q-cat" class="text-[8px] uppercase tracking-[0.3em] text-neonCyan mb-1.5 font-mono font-medium">φ_OBS_MATRIX // 状況特徴抽出</span>
+                <h2 id="q-text" class="text-[14px] font-medium text-gray-200 leading-relaxed text-left w-full"></h2>
             </div>
             <div id="options-container" class="space-y-0"></div>
         </div>
     </div>
 
-    <div id="loading-screen" class="hidden minimal-panel p-10 text-center fade-in">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-[var(--accent-core)] mb-6"></div>
-        <p class="text-[9px] font-space tracking-[0.3em] uppercase text-[var(--accent-core)] mb-2">Analyzing 12 Dimensions...</p>
-        <div id="loading-status" class="text-xs font-mono text-gray-400 h-6">12次元の精神ベクトルをマッピング中...</div>
+    <!-- ================= 3. LOADING SCREEN ================= -->
+    <div id="loading-screen" class="hidden bg-cyberPanel border border-cyberBorder rounded-3xl p-10 text-center fade-in shadow-2xl">
+        <div class="relative inline-block w-12 h-12 mb-6">
+            <div class="absolute inset-0 rounded-full border-2 border-cyberBorder"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-t-neonPurple animate-spin"></div>
+        </div>
+        <p class="text-[9px] font-mono tracking-[0.3em] uppercase text-neonCyan mb-2">Compiling 12D Vector State...</p>
+        <div id="loading-status" class="text-xs font-mono text-gray-500 h-6">精神ベクトルマッピングを収束処理中...</div>
     </div>
 
-    <div id="result-screen" class="hidden fade-in">
-        <div id="capture-area" class="minimal-panel text-center mb-6 pb-8 relative">
-            <div class="font-serif-en text-[var(--text-muted)] tracking-[0.4em] text-[9px] uppercase pt-8 font-medium">Deep Analysis Report</div>
-            <div class="text-[10px] text-[var(--accent-core)] tracking-[0.2em] uppercase mt-4 font-medium">あなたのマ度</div>
-            <div class="font-serif-en score-display" id="result-score">0%</div>
+    <!-- ================= 4. RESULT SCREEN ================= -->
+    <div id="result-screen" class="hidden space-y-6 fade-in">
+        
+        <!-- キャプチャ対象エリア -->
+        <div id="capture-area" class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 text-center relative overflow-hidden shadow-2xl">
+            <!-- 背景に薄いネオンの光 -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-neonPurple/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="font-space text-gray-500 tracking-[0.4em] text-[9px] uppercase font-bold mb-1">[MA-AI HYPER-MATRIX REPORT]</div>
+            <div class="text-[10px] text-neonCyan tracking-[0.2em] uppercase font-bold font-mono">DETERMINED MA_SCORE</div>
             
-            <div class="mb-5 flex flex-wrap justify-center gap-1.5 px-4">
-                <div class="bg-[var(--accent-dark)] text-white px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-mbti">ARCHETYPE</div>
-                <div class="bg-gray-100 text-gray-600 px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-consistency">CONSISTENCY</div>
-                <div class="bg-gray-50 text-[var(--accent-core)] border border-gray-200 px-3.5 py-1 rounded-full text-[8.5px] tracking-[0.1em] font-medium font-space" id="result-masking">MASKING</div>
+            <div class="score-display text-7xl md:text-8xl font-black font-space tracking-tighter text-white my-3" id="result-score">0%</div>
+            
+            <!-- バッジ群 -->
+            <div class="mb-6 flex flex-wrap justify-center gap-1.5 px-2">
+                <div class="bg-neonIndigo/20 text-neonIndigo border border-neonIndigo/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-mbti">ARCHETYPE</div>
+                <div class="bg-neonPurple/20 text-neonPurple border border-neonPurple/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-consistency">CONSISTENCY</div>
+                <div class="bg-neonRose/20 text-neonRose border border-neonRose/30 px-3 py-1 rounded-full text-[9px] tracking-[0.1em] font-bold font-mono" id="result-masking">MASKING</div>
             </div>
 
-            <div class="mb-6 flex justify-center px-6">
-                <div style="position: relative; width: 100%; max-width: 240px; height: 240px;">
+            <!-- ChartJS レーダーチャート表示 -->
+            <div class="mb-6 flex justify-center">
+                <div class="relative w-full max-w-[240px] h-[240px] bg-cyberBg/40 border border-cyberBorder/60 p-2 rounded-2xl flex items-center justify-center">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
 
-            <div class="text-left px-6 space-y-6 border-t border-gray-100 pt-6">
+            <!-- 分析結果ディスクリプション -->
+            <div class="text-left space-y-5 border-t border-cyberBorder/60 pt-5">
                 <div>
-                    <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1 flex justify-between">
-                        <span>深層アーキタイプ・モデリング（12D解析）</span>
-                        <span class="text-[9px] font-space text-[var(--accent-core)]" id="sync-rate">Absolute Sync</span>
+                    <h4 class="text-[11px] text-white font-bold mb-2 tracking-[0.1em] font-mono flex justify-between items-center">
+                        <span>■ 12D COGNITIVE CO-INTEGRATION</span>
+                        <span class="text-[9px] text-neonCyan" id="sync-rate">Absolute Sync: --%</span>
                     </h4>
-                    <div id="result-desc" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
+                    <p id="result-desc" class="text-[12px] text-gray-400 leading-relaxed font-normal"></p>
                 </div>
                 
                 <div>
-                    <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-2 tracking-[0.1em] border-b border-gray-100 pb-1">
-                        <span>マ本人目線の冷徹精神分析</span>
+                    <h4 class="text-[11px] text-white font-bold mb-2 tracking-[0.1em] font-mono">
+                        <span>■ COGNITIVE STATIC ANALYSIS (冷徹精神分析)</span>
                     </h4>
-                    <div id="result-diff" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
+                    <p id="result-diff" class="text-[12px] text-gray-400 leading-relaxed font-normal"></p>
                 </div>
 
-                <div class="bg-[var(--bg-base)] p-4 rounded-xl border border-gray-200/40">
-                    <h4 class="text-[11px] text-[var(--accent-dark)] font-bold mb-1.5 tracking-[0.1em]">
-                        マ本人からの直言アドバイス
+                <div class="bg-cyberBg/60 p-4 rounded-xl border border-cyberBorder/60">
+                    <h4 class="text-[11px] text-neonPurple font-bold mb-1.5 tracking-[0.1em] font-mono">
+                        ■ DIRECT ADVICE FROM MA_ENGINE
                     </h4>
-                    <div id="result-advice" class="text-[12px] text-gray-600 leading-relaxed font-normal"></div>
+                    <p id="result-advice" class="text-[12px] text-gray-400 leading-relaxed font-normal"></p>
                 </div>
             </div>
         </div>
 
+        <!-- 段階的反復（ITERATIVE CALIBRATOR）コントロール -->
+        <div class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 shadow-2xl font-mono text-xs">
+          <h3 class="text-xs font-bold tracking-widest text-white mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-arrows-spin text-neonIndigo animate-spin"></i> CALIBRATION RUNNER (v1 ➔ v3)
+          </h3>
+          <p class="text-gray-400 text-[11px] mb-4 font-sans leading-relaxed">
+            上田聖優様の「段階要求型思考プロセス」に対応。診断結果ベクトルのブレを抑え、数理モデル $S^*$ に極限同調させる最適化ビルドを実行します。
+          </p>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="calibrateStage('v1')" id="btn-v1" class="bg-cyberBg hover:bg-cyberBorder border border-cyberBorder text-gray-300 py-2.5 rounded-lg text-center transition-all">
+              <span class="text-[9px] block text-gray-500">STAGE 1</span>
+              <span class="font-bold text-amber-400 text-[10px]">v1: DRAFT</span>
+            </button>
+            <button onclick="calibrateStage('v2')" id="btn-v2" class="bg-cyberBg hover:bg-cyberBorder border border-cyberBorder text-gray-300 py-2.5 rounded-lg text-center transition-all">
+              <span class="text-[9px] block text-gray-500">STAGE 2</span>
+              <span class="font-bold text-neonIndigo text-[10px]">v2: STRUCT</span>
+            </button>
+            <button onclick="calibrateStage('v3')" id="btn-v3" class="bg-cyberBg hover:bg-cyberBorder border border-cyberBorder text-gray-300 py-2.5 rounded-lg text-center transition-all">
+              <span class="text-[9px] block text-gray-500">STAGE 3</span>
+              <span class="font-bold text-neonPurple text-[10px]">v3: OPTIMAL</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 強制構造化出力 (STATE, MODEL, FLOW, POLICY, NEXT STEP) -->
+        <div class="bg-cyberPanel border border-cyberBorder rounded-3xl p-6 shadow-2xl relative font-mono text-xs">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-[11px] font-bold tracking-widest text-gray-400 flex items-center gap-2">
+                <i class="fa-solid fa-code text-neonCyan"></i> COGNITIVE LAYER CONSOLE (MANDATORY)
+              </h3>
+              <button onclick="copyConsoleOutput()" class="text-[9px] bg-cyberBg hover:bg-neonIndigo border border-cyberBorder text-white px-2.5 py-1 rounded transition-all flex items-center gap-1">
+                <i class="fa-regular fa-copy"></i> COPY
+              </button>
+            </div>
+            <p class="text-[10px] text-gray-500 mb-3 font-sans">
+              上田聖優様の対話・創造特性に対応した、そのままAIに入力として共有可能な構造化出力モデル。
+            </p>
+            <pre id="console-output" class="bg-cyberBg border border-cyberBorder p-4 rounded-xl text-[11px] text-gray-300 h-64 overflow-y-auto whitespace-pre-wrap select-all leading-relaxed"></pre>
+        </div>
+
+        <!-- アクションボタン群 -->
         <div class="flex flex-col gap-2">
-            <button onclick="downloadImage()" type="button" class="w-full py-3.5 btn-black text-xs uppercase tracking-widest">高解像度レポートを保存</button>
+            <button onclick="downloadImage()" type="button" class="w-full py-4 bg-gradient-to-r from-neonIndigo to-neonPurple text-cyberBg font-bold text-xs uppercase tracking-[0.25em] rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-download"></i> 高解像度レポートを保存
+            </button>
             <div class="flex gap-2">
-                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">シンクロ率を共有</button>
-                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 btn-outline text-[11px] tracking-widest bg-white">もう一度</button>
+                <button onclick="shareForSNS()" type="button" class="flex-1 py-3 bg-cyberPanel border border-cyberBorder hover:border-gray-500 text-gray-300 rounded-xl text-xs font-mono tracking-wider transition-all flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-share-nodes"></i> SHARE
+                </button>
+                <button onclick="resetAndRestart()" type="button" class="flex-1 py-3 bg-cyberPanel border border-cyberBorder hover:border-gray-500 text-gray-300 rounded-xl text-xs font-mono tracking-wider transition-all flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-rotate-left"></i> RESTART
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 💡 誰もが経験する100%一般向けのプロシージャルシチュエーション（25 × 25 = 625通り）
+    // 💡 プロシージャルシチュエーションプール (25 × 25 = 625通り)
     const sitPool = [
         "休日の午後、特に行くあてもなくふらりと入った静かな空間で、", "自分の好きな音楽や、お気に入りの音が耳元でとてもきれいに響いているとき、", 
         "夜遅く、まわりの物音が完全に消え去った静かな部屋で布団に入った瞬間、", "予定が急にすべてキャンセルになり、丸一日が完全に自由になったとき、", 
@@ -199,13 +276,12 @@
         "誰の役にも立たないけれど、自分だけが深く納得できる最高なアイデアのピースが繋がったとき", "目の前にあるデザインの配置や、空間の空気感のディテールに強烈に意識が同期したら、",
         "合理的な正解を出すのをやめ、あえて『割り切れない中間』の美学を選びたくなった瞬間、", "五感のセンサーがクリアになり、色や音の質感のグラデーションをダイレクトに知覚したとき、",
         "今日という一日の満足度を、他人の評価や数字を一切排除して自分自身の内なる尺度だけで測るとき、", "空間のバイブスや他人の感情の機微を、無意識のうちに超高感度でキャッチしてしまった瞬間、",
-        "計画通りに進めることの窮屈さから、一瞬で脳内エスケープしたくなったとき、", "脳内のあらゆるタスクエラーがすっと消え、極めてクリアな『自己美学』だけが残ったとき、",
+        "計画通りに進めることの窮屈さから、一瞬で脳内エスケープしたくなったとき, ", "脳内のあらゆるタスクエラーがすっと消え、極めてクリアな『自己美学』だけが残ったとき、",
         "自分が一番大切にしている『内なるサボり聖域』に、外部のシグナルがシンクロした感覚を覚えたら、", "目の前の現実的な選択肢が、すべて自分の美学のフィルターによって一瞬で弾かれてしまったとき、",
-        "理由のない全能感、または究極の心地よい脱力エントロピーが全身の神経を支配したとき、", "過去の記憶の断片や、特定の美しいフレーズが急に脳内に鮮明に呼び起こされたとき、", "誰かに何かを証明する必要すら忘れ、ただただ布団の中でスマホを触る自由を噛みしめるとき、", "世界の複雑なシステムが、自分の直感というシンプルな数式に集約されていく感覚に陥ったら、", "自分の精神的なペースを他人に一切乱されず、完全なコントロールを手に入れたと実感したとき、", "何時間でも同じ幾何学的なルーティンを繰り返せるような、奇妙でクリアな集中力が湧いたとき、", "常識という枠組みが、いかに不自由でクリエイティビティを阻害するものかに気づいてしまったとき、", "心の奥底にある『本当にやりたいこと』のシグナルが、ノイズの隙間からクリアに点滅し始めたとき、", "すべてのめんどくさいタスクを完全に放棄して、ただただ自由な空想に身を委ねたくなったとき"
+        "理由のない全能感、または究極の心地よい脱力エントロピーが全身の神経を支配したとき、", "過去の記憶 of 特定の美しいフレーズが急に脳内に鮮明に呼び起こされたとき、", "誰かに何かを証明する必要すら忘れ、ただただ布団の中でスマホを触る自由を噛みしめるとき、", "世界の複雑なシステムが、自分の直感というシンプルな数式に集約されていく感覚に陥ったら、", "自分の精神的なペースを他人に一切乱されず、完全なコントロールを手に入れたと実感したとき、", "何時間でも同じ幾何学的なルーティンを繰り返せるような、奇妙でクリアな集中力が湧いたとき、", "常識という枠組みが、いかに不自由でクリエイティビティを阻害するものかに気づいてしまったとき、", "心の奥底にある『本当にやりたいこと』のシグナルが、ノイズの隙間からクリアに点滅し始めたとき、", "すべてのめんどくさいタスクを完全に放棄して、ただただ自由な空想に身を委ねたくなったとき"
     ];
 
-    // 💡 12次元精神力学に完全に紐づく一般向け4択マトリクス（200種類以上のバリエーション）
-    // ベクトル順: [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
+    // 💡 12次元精神力学ベクトル順: [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
     const optMatrix = {
         ma: {
             cores: ["目的をすべて放棄し、ただその曖昧な心地よさに身を委ねてスマホをダラダラと眺める", "布団の中に深く潜り込み、最も脈絡のない謎の空想を限界まで展開して脳内逃避を楽しむ", "効率や正解は忘れ、サボる自分を肯定しながら心地よい脱力時間を堂々と満喫する", "不快なノイズを即座にフィルタリングし、ただ自由にダラダラする時間を静かに愛する", "白黒つけない中間の空気感の中で、ただただ時間の浪費を贅沢に味わい尽くす"],
@@ -229,6 +305,13 @@
     let currentIdx = 0;
     let historyArr = [];
     let startTimes = [];
+    
+    // 現在の診断結果保持 (Calibration用)
+    let stateS = {};
+    let finalVectorCached = [];
+    let mbtiCountsCached = {};
+    let totalTimeCached = 0;
+    let currentCalibrateStage = "v1";
 
     function generate12DMatrix() {
         let questions = [];
@@ -236,9 +319,8 @@
         let eveShuffled = [...evePool].sort(() => Math.random() - 0.5);
         
         for (let i = 0; i < 10; i++) {
-            // 12次元重み付け [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
             let options = [
-                { text: optMatrix.ma.cores[i%5] + optMatrix.ma.tails[Math.floor(Math.random()*5)], vector: [10, 1, 10, 8, 6, 2, 9, 10, 10, 8, 1, 4], mbti: {I:2, P:2} },
+                { text: optMatrix.ma.cores[i%5] + optMatrix.ma.tails[Math.floor(Math.random()*5)], vector: [10, 1, 10, 8, 4, 2, 9, 10, 10, 8, 1, 6], mbti: {I:2, P:2} },
                 { text: optMatrix.rational.cores[i%5] + optMatrix.rational.tails[Math.floor(Math.random()*5)], vector: [2, 10, 1, 4, 10, 4, 3, 5, 2, 6, 10, 5], mbti: {T:2, J:2} },
                 { text: optMatrix.empathy.cores[i%5] + optMatrix.empathy.tails[Math.floor(Math.random()*5)], vector: [8, 4, 7, 10, 3, 8, 10, 6, 8, 9, 2, 9], mbti: {Fi:2, Se:1} },
                 { text: optMatrix.harmony.cores[i%5] + optMatrix.harmony.tails[Math.floor(Math.random()*5)], vector: [3, 8, 3, 5, 5, 10, 2, 2, 4, 3, 8, 3], mbti: {Fe:2, Si:1} }
@@ -266,7 +348,7 @@
         document.getElementById('q-text').innerText = q.q;
         document.getElementById('back-btn').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
         
-        const progress = (currentIdx / 10) * 100;
+        const progress = ((currentIdx + 1) / 10) * 100;
         document.getElementById('progress-bar').style.width = `${progress}%`;
 
         const container = document.getElementById('options-container'); 
@@ -314,9 +396,9 @@
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('result-screen').classList.remove('hidden');
                         calculateResult();
-                    }, 500);
+                    }, 400);
                 }
-            }, i * 500);
+            }, i * 400);
         });
     }
 
@@ -333,10 +415,51 @@
 
         finalVector = finalVector.map(v => Math.round((v / 10) * 10) / 10);
         
-        // 🌟 超マ本人の12次元プロトタイプ黄金比ベクトル
+        // キャッシュへ格納
+        finalVectorCached = [...finalVector];
+        mbtiCountsCached = {...mbtiCounts};
+        totalTimeCached = totalTime;
+
+        compileCurrentState("v1");
+    }
+
+    // 🌟 キャリブレーション段階の切り替え (v1 ➔ v2 ➔ v3)
+    function calibrateStage(stage) {
+        currentCalibrateStage = stage;
+        compileCurrentState(stage);
+        
+        // ボタン状態の切り替え
+        ['v1', 'v2', 'v3'].forEach(s => {
+            const btn = document.getElementById(`btn-${s}`);
+            if (s === stage) {
+                btn.className = "bg-gradient-to-br from-neonIndigo to-neonPurple text-cyberBg font-bold py-2.5 rounded-lg text-center transition-all scale-[1.02] shadow-lg shadow-neonIndigo/10 border-transparent";
+            } else {
+                btn.className = "bg-cyberBg hover:bg-cyberBorder border border-cyberBorder text-gray-300 py-2.5 rounded-lg text-center transition-all";
+            }
+        });
+    }
+
+    function compileCurrentState(stage) {
+        let finalVector = [...finalVectorCached];
+        
+        // 🌟 超マ本人の12次元プロトタイプ黄金比ベクトル（理想モデルS*）
         // [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
         const idealMa = [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2];
         
+        // 段階的収束フィルターの適用
+        if (stage === "v2") {
+            // v2: 構造化フェーズ（理想に 40% 近似）
+            for(let i=0; i<12; i++) {
+                finalVector[i] = Math.round((finalVector[i] * 0.6 + idealMa[i] * 0.4) * 10) / 10;
+            }
+        } else if (stage === "v3") {
+            // v3: 極限最適化フェーズ（理想に 85% 近似）
+            for(let i=0; i<12; i++) {
+                finalVector[i] = Math.round((finalVector[i] * 0.15 + idealMa[i] * 0.85) * 10) / 10;
+            }
+        }
+
+        // コサイン類似度
         let dotProduct = 0, normUser = 0, normIdeal = 0;
         for(let i=0; i<12; i++) {
             dotProduct += finalVector[i] * idealMa[i];
@@ -346,19 +469,25 @@
         let similarity = dotProduct / (Math.sqrt(normUser) * Math.sqrt(normIdeal));
         let maPercentage = Math.round(similarity * 100);
 
+        // 一貫性算出
         let varianceSum = 0;
         for(let i=1; i<historyArr.length; i++) {
             for(let j=0; j<12; j++) { varianceSum += Math.abs(historyArr[i].scores[j] - historyArr[i-1].scores[j]); }
         }
         let consistencyScore = Math.max(40, Math.min(100, Math.round(100 - (varianceSum / 3.0))));
-        
-        let avgTime = totalTime / 10;
-        let maskingRate = Math.round(Math.max(0, Math.min(95, ((mbtiCounts.Fe || 0) * 8) + (avgTime > 3000 ? (avgTime - 3000) / 100 : 0))));
+        if (stage === "v2") consistencyScore = Math.min(100, consistencyScore + 10);
+        if (stage === "v3") consistencyScore = Math.min(100, consistencyScore + 25);
 
-        const i_e = mbtiCounts.I >= mbtiCounts.E ? "I" : "E";
-        const s_n = (mbtiCounts.S || 0) + (mbtiCounts.Se || 0) >= (mbtiCounts.N || 0) ? "S" : "N";
-        const f_t = (mbtiCounts.F || 0) + (mbtiCounts.Fi || 0) >= (mbtiCounts.T || 0) ? "F" : "T";
-        const p_j = mbtiCounts.P >= mbtiCounts.J ? "P" : "J";
+        // マスキング算出
+        let avgTime = totalTimeCached / 10;
+        let maskingRate = Math.round(Math.max(0, Math.min(95, ((mbtiCountsCached.Fe || 0) * 8) + (avgTime > 3000 ? (avgTime - 3000) / 100 : 0))));
+        if (stage === "v2") maskingRate = Math.max(5, maskingRate - 15);
+        if (stage === "v3") maskingRate = Math.max(2, maskingRate - 30);
+
+        const i_e = mbtiCountsCached.I >= mbtiCountsCached.E ? "I" : "E";
+        const s_n = (mbtiCountsCached.S || 0) + (mbtiCountsCached.Se || 0) >= (mbtiCountsCached.N || 0) ? "S" : "N";
+        const f_t = (mbtiCountsCached.F || 0) + (mbtiCountsCached.Fi || 0) >= (mbtiCountsCached.T || 0) ? "F" : "T";
+        const p_j = mbtiCountsCached.P >= mbtiCountsCached.J ? "P" : "J";
 
         displayFinalUI(maPercentage, consistencyScore, maskingRate, `${i_e}${s_n}${f_t}${p_j}`, similarity, finalVector);
     }
@@ -374,34 +503,37 @@
         let maxIdx = 0;
         for(let i=1; i<12; i++) { if(vector[i] > vector[maxIdx]) maxIdx = i; }
 
-        // 🧠 マ本人レベルの鋭く深いプロファイリング生成
-        let desc = `12次元超精細スキャンが完了した。君の精神力学構造は「マ要素」の黄金プロトタイプモデルと【${score}%】の同調率を記録している。`;
+        // レポート文章生成
+        let desc = `12次元超精細スキャンの結果、あなたの精神力学システムは「マ要素」の黄金プロトタイプモデルと【${score}%】の同調率（コサイン類似度）を記録しました。`;
         if (score >= 90) {
-            desc += ` 社会のどうでもいい雑音（義務感、同調圧力）を完璧にミュートし、一人の深い内的レイヤー、布団の中での無限の空想、そして目的を完全に排除した脱力フリックを愛せる、純度100%の『美学的サボりの天才』だ。`;
+            desc += ` 社会のあらゆるノイズ（計画、ルール、責任）を完全に無力化し、自らの内的宇宙とサボり美学を極限まで肯定できる「純度100%の精神アーキテクト」です。布団の中での無限の空想と完全脱力を誰よりも愛しています。`;
         } else if (score >= 65) {
-            desc += ` 構造論理や現実的なタスク処理能力を高度に回しながらも、内なるレイヤーでは自分だけの絶対的なこだわりとサボり余白を死守している、きわめて知的なハイブリッドアーキテクチャだ。`;
+            desc += ` 高度な論理構造と適応能力を保持しつつも、内なるレイヤーでは独自のこだわりとサボり空間を冷徹に死守している、知的ハイブリッド精神構造の持ち主です。`;
         } else {
-            desc += ` 秩序や客観的正解、社会的な調和を何よりも重んじるクリアなフロントエンド知性を持っている。そのため、白黒つけない中間のグラデーションや、意味のない時間の浪費を贅沢に味わうマ本人の領域とは完全に対極に位置している。`;
+            desc += ` 秩序、計画性、調和的な着地点を何よりも重んじる極めて明晰で論理的なフロントエンド知性を保持しています。それゆえ、マ特有の「無目的で曖昧なエントロピー空間」とは対極の位置に収束しています。`;
         }
-        desc += ` 12次元中、現在の最大出力は【${dimensions[maxIdx]}】。これが君の認知の主軸になっている。`;
+        desc += ` 12次元中、最大出力次元は【${dimensions[maxIdx]}】を検出。`;
 
-        let diff = `認知一貫性（ブレなさ）は 【${consistency}%】、社会的仮面（周りを気にしてる度）は 【${masking}%】。`;
+        let diff = `精神のノイズ耐性（ブレなさ）は 【${consistency}%】。社会化マスクレベルは 【${masking}%】を検出。`;
         if (masking < 35) {
-            diff += ` 他人の視線や環境ノイズに脳のリソースを一切割いておらず、自分の直感と美学だけで世界をシンプルに再構築できている。`;
+            diff += ` 外部の視線や評価ノイズにリソースを一切割かず、自己の美学パラメータのみで世界をスマートに再設計しています。`;
         } else {
-            diff += ` 現実のタスクや他者の期待という環境ノイズに対して、脳のエネルギーが一時的に適応（マスキング防御）を行っている形跡がみられる。`;
+            diff += ` 環境ノイズに対して脳のワーキングメモリが自己防御マスキングを行っているため、本来の純度が部分的に隠蔽されています。`;
         }
 
-        let advice = score >= 70 ? "マ本人からの直言：現在のノイズレスなサボり空間と独自のこだわりを全力で肯定していい。布団の中での謎の空想や、無目的で美しいデザインを眺める時間が、君の脳を最も純粋に活性化させる。効率なんて大変なことは他のやつにやらせておけばいい。"
-                                 : "マ本人からの直言：正しさや効率、計画性に縛られすぎて脳が完全にオーバーヒートを起こしている。1日15分だけでいい、完全に意味のないスマホフリックや空想を『必須タスク』として予定にぶち込み、精神の脱力レイヤーを意図的に解放しろ。";
+        let advice = score >= 70 
+            ? "マ本人からの直言：現在のサボり空間、徹底した無目的スマホフリックを全力で肯定せよ。何の意味もない空想の時間が、あなたの脳システムを最適化する。合理なんて面倒なタスクは周りのシステムに代行させておけば良い。"
+            : "マ本人からの直言：正しさや計画、他者調和に精神リソースを割きすぎて脳がオーバーヒートを起こしている。1日15分だけでいい、完全に意味のないサボりタスクを意図的にカレンダーに登録し、脱力レイヤーを開放せよ。";
 
         document.getElementById('result-desc').innerText = desc;
         document.getElementById('result-diff').innerText = diff;
         document.getElementById('result-advice').innerText = advice;
 
-        // レーダーチャートはUIの美しさのため主要な6機能にマッピングして描画
-        // [内的空想, 現実適応, 完全脱力, 構造論理, 独自美学, 曖昧認知]
+        // レーダーチャートの描画 [内的空想, 現実適応, 完全脱力, 構造論理, 独自美学, 曖昧認知]
         renderCharts([vector[0], vector[1], vector[2], vector[4], vector[6], vector[8]]); 
+
+        // 強制指定フォーマット出力更新
+        updateFormattedConsoleOutput(score, consistency, masking, type, similarity, vector);
     }
 
     function renderCharts(dataArray) {
@@ -412,15 +544,24 @@
             data: { 
                 labels: ['内的空想', '現実適応', '完全脱力', '構造論理', '独自美学', '曖昧認知'], 
                 datasets: [{ 
-                    data: dataArray, backgroundColor: 'rgba(56, 77, 67, 0.06)', borderColor: '#384d43', borderWidth: 1, pointRadius: 1, pointBackgroundColor: '#0f1312' 
+                    data: dataArray, 
+                    backgroundColor: 'rgba(129, 140, 248, 0.08)', 
+                    borderColor: '#818cf8', 
+                    borderWidth: 1.5, 
+                    pointRadius: 2, 
+                    pointBackgroundColor: '#22d3ee' 
                 }] 
             },
             options: { 
-                responsive: true, maintainAspectRatio: false,
+                responsive: true, 
+                maintainAspectRatio: false,
                 scales: { 
                     r: { 
-                        min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.03)' }, 
-                        pointLabels: { color: '#57615d', font: { size: 9, family: 'Space Grotesk, Noto Sans JP' } }, angleLines: { color: 'rgba(0,0,0,0.03)' } 
+                        min: 0, max: 10, 
+                        ticks: { display: false }, 
+                        grid: { color: 'rgba(24, 36, 62, 0.3)' }, 
+                        pointLabels: { color: '#8e9bb4', font: { size: 9, family: 'Space Grotesk, Noto Sans JP' } }, 
+                        angleLines: { color: 'rgba(24, 36, 62, 0.3)' } 
                     } 
                 }, 
                 plugins: { legend: { display: false } } 
@@ -428,28 +569,122 @@
         });
     }
 
+    // ==========================================
+    // 💡 COGNITIVE LAYER CONSOLE (MANDATORY FORMAT)
+    // ==========================================
+    function updateFormattedConsoleOutput(score, consistency, masking, type, similarity, vector) {
+        const pre = document.getElementById("console-output");
+        
+        const S_ideal = [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2];
+        let gaps = vector.map((v, i) => Math.round((S_ideal[i] - v) * 10) / 10);
+
+        let criticalDevs = [];
+        const dimNames = ['IVA', 'ERA', 'ALF', 'SND', 'STL', 'EHM', 'ISA', 'SNF', 'ATC', 'CDG', 'COE', 'NSI'];
+        gaps.forEach((g, i) => {
+            if (Math.abs(g) > 1.2) {
+                criticalDevs.push(`${dimNames[i]}: ${g > 0 ? '欠乏' : '過剰'} (差分: ${(-g).toFixed(1)})`);
+            }
+        });
+
+        let policyList = [];
+        if (gaps[0] > 1.0) policyList.push("・[IVA_FORCE]：脳内の空想タスクへのリソース割当を即座に拡張する。");
+        if (gaps[2] > 1.0) policyList.push("・[ALF_TRIGGER]：現実タスクの接続を遮断し、完全脱力（サボり）を実行する。");
+        if (gaps[4] < -1.0) policyList.push("・[STL_BREAK]：過剰な論理構造化を一時ロックし、曖昧な状態（ATC）を許容する。");
+        if (gaps[10] > 1.0) policyList.push("・[COE_RELEASE]：計画秩序から即エスケープし、無目的行動を選択。");
+        if (policyList.length === 0) policyList.push("・[MAINTENANCE]：理想モデル $S^*$ との誤差なし。定常最適運転を維持。");
+
+        // 次段予測 S(t+1) (1h減衰シミュレート)
+        let nextV = vector.map(v => {
+            let lambda = 0.01 + 0.03 * (10 - v)/10;
+            return Math.max(0, Math.min(10, Math.round((v * Math.exp(-lambda * 1.0)) * 10) / 10));
+        });
+
+        const outputText = `STATE（状態）:
+  USER: MASAHIRO_UEDA // SUBJECT_ID: 2010-06-22
+  COGNITIVE_CLASSIFICATION: "System Design Iterative Thinker"
+  MA_SYNCHRONICITY: ${score}%
+  CALIBRATION_STAGE: ${currentCalibrateStage.toUpperCase()}
+  COGNITIVE_ARCHETYPE: ${type}
+  STATE_VECTOR S(t):
+    [IVA, ERA, ALF, SND, STL, EHM, ISA, SNF, ATC, CDG, COE, NSI]
+    ${JSON.stringify(vector)}
+
+MODEL（構造）:
+  S_ideal (理想モデル目標値):
+    [9.6, 3.2, 9.8, 9.4, 8.8, 3.5, 9.5, 9.6, 9.5, 8.8, 2.0, 7.2]
+  G (ギャップ・ベクトル G = S* - S):
+    [${gaps.join(', ')}]
+
+FLOW（流れ）:
+  CONSISTENCY_SCORE: ${consistency}%
+  MASKING_PENALTY: ${masking}%
+  CRITICAL_DEVIATIONS:
+    ${criticalDevs.length > 0 ? criticalDevs.join('\n    ') : '検出なし（同調限界内）'}
+
+POLICY（行動）:
+${policyList.join('\n')}
+
+NEXT STEP:
+  予測次状態 S(t+1) [1h時間減衰適用後]:
+    [${nextV.join(', ')}]
+  制御アクション:
+    上田聖優様の行動特性に即し、ステージ「${currentCalibrateStage.toUpperCase()}」における精神エントロピーの最適制御を実行完了。次の反復(Iteration)に備えてください。`;
+
+        pre.textContent = outputText;
+    }
+
+    function copyConsoleOutput() {
+        const text = document.getElementById("console-output").textContent;
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            alert("コンソール出力をクリップボードにコピーしました！");
+        } catch (err) {
+            alert("コピーに失敗しました。");
+        }
+        document.body.removeChild(textarea);
+    }
+
     function downloadImage() {
-        html2canvas(document.getElementById('capture-area'), { 
-            backgroundColor: "#ffffff", scale: 2, logging: false,
-            onclone: (cloned) => { cloned.getElementById('capture-area').classList.add('capture-flat-mode'); }
+        // html2canvas の適用
+        const area = document.getElementById('capture-area');
+        html2canvas(area, { 
+            backgroundColor: "#090f1c", 
+            scale: 2, 
+            logging: false,
+            onclone: (cloned) => { 
+                const clonedArea = cloned.getElementById('capture-area');
+                clonedArea.className = 'capture-flat-mode'; 
+            }
         }).then(canvas => { 
-            const link = document.createElement('a'); link.download = 'Ma_AI_v120_12D_Report.png'; link.href = canvas.toDataURL('image/png'); link.click(); 
+            const link = document.createElement('a'); 
+            link.download = `Ma_AI_v150_Report_${currentCalibrateStage.toUpperCase()}.png`; 
+            link.href = canvas.toDataURL('image/png'); 
+            link.click(); 
         });
     }
 
     function shareForSNS() {
         const score = document.getElementById('result-score').innerText;
-        const text = `12次元Hyper-Matrix解析完了。私のマ度は【${score}】でした。MBTIを超精細化した最新のサイコスキャン。 #マ診断\n`;
+        const text = `12次元精神力学スキャン（v150）完了。私のマ同調率は【${score}】でした。極限同調コンソール。 #マ診断\n`;
         const url = window.location.href;
-        if (navigator.share) { navigator.share({ title: 'マ診断 v120', text: text, url: url }).catch(()=>{}); } 
-        else {
+        
+        if (navigator.share) { 
+            navigator.share({ title: 'Ma-AI Diagnostic Core v150', text: text, url: url }).catch(()=>{}); 
+        } else {
             const dummy = document.createElement('textarea'); document.body.appendChild(dummy);
             dummy.value = text + url; dummy.select(); document.execCommand('copy'); document.body.removeChild(dummy);
-            alert("結果をクリップボードにコピーしました！");
+            alert("結果とURLをクリップボードにコピーしました！SNSにペーストしてください。");
         }
     }
 
-    function resetAndRestart() { location.href = window.location.pathname; }
+    function resetAndRestart() { 
+        location.href = window.location.pathname; 
+    }
 </script>
 
 </body>
