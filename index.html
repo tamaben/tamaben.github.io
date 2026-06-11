@@ -22,11 +22,11 @@
 
     <style>
         :root {
-            --bg-base: #f4fbf7;
-            --text-main: #233627;
-            --text-dark: #121f15;
-            --text-muted: #6b8a74;
-            --text-light: #9dbda7;
+            --bg-base: #f5fcf8;
+            --text-main: #243527;
+            --text-dark: #121e14;
+            --text-muted: #6b8872;
+            --text-light: #9cbba5;
             --accent-main: #2d6a4f;
             --accent-dark: #1b4332;
             --accent-light: rgba(45, 106, 79, 0.08);
@@ -47,7 +47,7 @@
            グラスモルフィズム（自然に馴染むすりガラス）
            ━━━━━━━━━━━━━━━━━━━━ */
         .glass-nav {
-            background: rgba(244, 251, 247, 0.65);
+            background: rgba(245, 252, 248, 0.65);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
@@ -107,12 +107,12 @@
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 8px; /* 自然で優しい丸み */
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px; /* 自然で優しい丸み */
+            border: 1px solid rgba(255, 255, 255, 0.6);
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
             box-shadow: 
                 0 15px 35px -5px rgba(34, 58, 38, 0.05),
-                0 5px 15px -5px rgba(0, 0, 0, 0.03);
+                0 5px 15px -5px rgba(0, 0, 0, 0.02);
             transform: translateY(0px) rotate(0deg);
         }
 
@@ -122,12 +122,12 @@
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 
                 0 30px 60px -10px rgba(34, 58, 38, 0.12),
-                0 10px 25px -5px rgba(0, 0, 0, 0.05);
+                0 10px 25px -5px rgba(0, 0, 0, 0.04);
         }
 
         /* ない（準備中）プリント：半透明の透けたペーパー */
         .card-unavailable {
-            opacity: 0.45;
+            opacity: 0.5;
         }
         .card-unavailable .print-sheet {
             border-style: dashed;
@@ -135,7 +135,7 @@
             box-shadow: none;
         }
         .card-unavailable:hover {
-            opacity: 0.8;
+            opacity: 0.85;
         }
         .card-unavailable:hover .print-sheet {
             transform: translateY(-4px);
@@ -152,6 +152,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         .pdf-canvas {
@@ -664,7 +665,7 @@
                         </select>
                     </div>
 
-                    <!-- 教科書設定（各教科で設定可能・任意） -->
+                    <!-- 教科書設定 -->
                     <div>
                         <label class="text-[10px] font-black text-[var(--text-muted)] block mb-2">4. お使いの教科書会社（任意・各教科で設定可能）</label>
                         <div class="space-y-3 bg-white/20 p-4 rounded-2xl border border-white/30">
@@ -744,6 +745,7 @@
                 </button>
             </div>
 
+            <!-- 現在の進捗状況 -->
             <div class="glass-panel p-6 md:p-8 mb-8">
                 <h3 class="font-black text-xs tracking-wider mb-6 flex items-center gap-1.5"><i data-lucide="line-chart" class="w-4 h-4 text-[var(--accent-main)]"></i>現在の学習状況</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -777,6 +779,7 @@
                 </div>
             </div>
 
+            <!-- お気に入り教材 & 動画 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div class="glass-panel p-6">
                     <h3 class="font-black text-xs mb-4 flex items-center gap-1.5"><i data-lucide="heart" class="text-rose-400 w-4 h-4"></i>お気に入りの教材</h3>
@@ -792,6 +795,7 @@
                 </div>
             </div>
 
+            <!-- あなたにぴったりの教材 -->
             <div class="glass-panel p-6">
                 <h3 class="font-black text-xs mb-6">あなたにぴったりの教材</h3>
                 <div id="mypage-personalized-materials" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -809,6 +813,7 @@
                 <p class="text-[10px] text-[var(--text-muted)]">小学校から高校（普通科・工業科・商業科対応）まですべての教材を網羅</p>
             </div>
 
+            <!-- カテゴリタブ -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
                 <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">小学校</button>
                 <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">中学校</button>
@@ -818,6 +823,7 @@
                 <button onclick="switchSubjectCategory('other')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">その他</button>
             </div>
 
+            <!-- 各カテゴリの教科リスト -->
             <div class="glass-panel p-6 md:p-8">
                 <!-- 小学校 -->
                 <div id="scat-elem" class="scat-block grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -949,7 +955,7 @@
         let currentTab = 'elementary';
         let currentSubCat = 'elem';
         let activeSubjectFilter = null; 
-        let isLoaded = false; // ルーターの競合を解消する読み込み完了フラグ [1]
+        let isLoaded = false; // データの準備ができるまでルーティングをロックするフラグ [1]
 
         let userStats = {
             viewCount: 0,
@@ -975,7 +981,7 @@
             }
         };
 
-        // タイマー（学習時間をカウント）
+        // タイマー
         setInterval(() => {
             userStats.learningSeconds++;
             if (userStats.learningSeconds % 10 === 0) { 
@@ -1002,9 +1008,17 @@
                     { id: 8, tab: 'junior', subject: '理科', grade: '中学2年生', title: '化学変化と分子', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' }
                 ];
             }
-            isLoaded = true; // 読み込み完了 [1]
+
+            // 補正：IDが存在しない、または不完全な場合に強制的に連番IDを採番するバグ対策 [1]
+            MATERIAL_DATA.forEach((item, index) => {
+                if (item.id === undefined || item.id === null || isNaN(Number(item.id))) {
+                    item.id = index + 1; 
+                }
+            });
+
+            isLoaded = true; // 補正後にフラグを解放 [1]
             buildSubjectChips();
-            handleHashChange(); // ロード直後に正確にハッシュを解析して遷移 [1]
+            handleHashChange(); // 確実にハッシュルーティングを解禁 [1]
         }
 
         function buildSubjectChips() {
@@ -1097,7 +1111,7 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                // A4プリント風フロートデザイン
+                // 浮かび上がるペーパー調A4カード
                 card.className = `cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
                 
                 card.innerHTML = `
@@ -1156,7 +1170,7 @@
             lucide.createIcons();
         }
 
-        // 詳細ページの展開
+        // 詳細ページの描画
         function openDetail(item, hasAnyMaterial) {
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
@@ -1170,7 +1184,7 @@
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
                     <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
                          <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02]">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-white/30 text-[var(--text-light)]"><i data-lucide="hammer" class="w-10 h-10 opacity-50"></i><span class="font-bold text-xs">一生懸命作っています！</span></div>`}
                          </div>
                     </div>
                     
@@ -1332,7 +1346,7 @@
                 favMatContainer.innerHTML = `<p class="text-xs text-[var(--text-muted)]">お気に入りの教材がありません。</p>`;
             } else {
                 userStats.favMaterials.forEach(id => {
-                    const item = MATERIAL_DATA.find(m => m.id === id);
+                    const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id));
                     if (item) {
                         const row = document.createElement('div');
                         row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
@@ -1354,7 +1368,7 @@
                 favVidContainer.innerHTML = `<p class="text-xs text-[var(--text-muted)]">お気に入りの動画がありません。</p>`;
             } else {
                 userStats.favVideos.forEach(id => {
-                    const item = MATERIAL_DATA.find(m => m.id === id);
+                    const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id));
                     if (item) {
                         const row = document.createElement('div');
                         row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
@@ -1538,7 +1552,7 @@
         }
 
         function handleHashChange() {
-            // データロード前のリダイレクト競合をガード [1]
+            // データロード前のリダイレクト競合を防止するガード [1]
             if (!isLoaded) return; 
 
             const hash = window.location.hash || '#home';
@@ -1550,7 +1564,7 @@
                 if (el) el.classList.add('hidden');
             });
 
-            // 固有リンク判定 (型ミスマッチバグを解決するため Number に変換して判定) [1]
+            // 固有リンク判定 (データのID型不一致バグを防ぐため、厳格にNumber型にキャストして照合) [1]
             if (hash.startsWith('#detail-')) {
                 const id = parseInt(hash.replace('#detail-', ''));
                 const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id)); 
@@ -1559,7 +1573,7 @@
                     const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     openDetail(item, hasAnyMaterial);
                 } else {
-                    navigate('#home');
+                    navigate('#home'); // 見つからないIDの場合はホームへ安全にリダイレクト
                 }
             } else {
                 let targetView = 'view-home';
