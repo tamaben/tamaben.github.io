@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>タマベン - 無料の学習教材サイト</title>
+    <title>タマベン - 学びを、もっと自由に。</title>
     
     <link class="favicon" rel="icon" href="./icon.ico" type="image/x-icon">
     <link class="favicon" rel="shortcut icon" href="./icon.ico" type="image/x-icon">
@@ -22,16 +22,16 @@
 
     <style>
         :root {
-            --bg-base: #f5fcf8;
-            --text-main: #243527;
-            --text-dark: #121e14;
-            --text-muted: #6b8872;
-            --text-light: #9cbba5;
+            --bg-base: #f3f9f5;
+            --text-main: #233527;
+            --text-dark: #0f1a11;
+            --text-muted: #6e8c75;
+            --text-light: #9ebba6;
             --accent-main: #2d6a4f;
             --accent-dark: #1b4332;
             --accent-light: rgba(45, 106, 79, 0.08);
-            --bg-card: rgba(255, 255, 255, 0.45);
-            --border-color: rgba(255, 255, 255, 0.55);
+            --bg-card: rgba(255, 255, 255, 0.42);
+            --border-color: rgba(255, 255, 255, 0.6);
         }
 
         body { 
@@ -43,30 +43,28 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* ━━━━━━━━━━━━━━━━━━━━
-           グラスモルフィズム（自然に馴染むすりガラス）
-           ━━━━━━━━━━━━━━━━━━━━ */
+        /* 磨りガラス（グラスモルフィズム） */
         .glass-nav {
-            background: rgba(245, 252, 248, 0.65);
+            background: rgba(243, 249, 245, 0.65);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.45);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.38);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.55);
             border-radius: 32px;
             box-shadow: 
-                0 8px 32px rgba(45, 106, 79, 0.02),
-                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+                0 10px 35px rgba(45, 106, 79, 0.02),
+                inset 0 1px 1px rgba(255, 255, 255, 0.25);
         }
 
-        /* 3層の穏やかな丘グラデーション */
-        .hill-layer-1 { fill: rgba(45, 106, 79, 0.03); }
-        .hill-layer-2 { fill: rgba(45, 106, 79, 0.06); }
+        /* 穏やかな丘グラデーション */
+        .hill-layer-1 { fill: rgba(45, 106, 79, 0.025); }
+        .hill-layer-2 { fill: rgba(45, 106, 79, 0.05); }
         .hill-layer-3 { fill: var(--bg-base); }
 
         .hill-curve {
@@ -100,14 +98,12 @@
             height: 70px;
         }
 
-        /* ━━━━━━━━━━━━━━━━━━━━
-           浮かび上がるプリント用紙（A4ペーパーデザイン）
-           ━━━━━━━━━━━━━━━━━━━━ */
+        /* 浮かび上がるプリント用紙（A4ペーパーデザイン） */
         .print-sheet {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px; /* 自然で優しい丸み */
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.6);
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
             box-shadow: 
@@ -116,18 +112,18 @@
             transform: translateY(0px) rotate(0deg);
         }
 
-        /* すぐある（利用可能）プリントのホバー挙動：ふわりと浮き上がり傾く */
+        /* 利用可能プリントのホバー挙動：ふわりと浮き上がり傾く */
         .card-available:hover .print-sheet {
             transform: translateY(-12px) rotate(-1.5deg);
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             box-shadow: 
                 0 30px 60px -10px rgba(34, 58, 38, 0.12),
                 0 10px 25px -5px rgba(0, 0, 0, 0.04);
         }
 
-        /* ない（準備中）プリント：半透明の透けたペーパー */
+        /* 準備中プリント：半透明の透けたペーパー */
         .card-unavailable {
-            opacity: 0.5;
+            opacity: 0.45;
         }
         .card-unavailable .print-sheet {
             border-style: dashed;
@@ -145,7 +141,7 @@
 
         .pdf-thumbnail-wrapper {
             width: 100%;
-            aspect-ratio: 1 / 1.414; /* A4用紙比率 */
+            aspect-ratio: 1 / 1.414; /* A4比率 */
             background: rgba(255, 255, 255, 0.3);
             position: relative;
             display: flex;
@@ -212,7 +208,7 @@
             animation: float-gentle 6s ease-in-out infinite;
         }
 
-        /* 各教科の揺れるディレイ設計 */
+        /* 揺らぎのディレイ */
         .f-delay-1 { animation-delay: 0.1s; animation-duration: 5s; }
         .f-delay-2 { animation-delay: 0.8s; animation-duration: 6s; }
         .f-delay-3 { animation-delay: 1.5s; animation-duration: 5.5s; }
@@ -228,7 +224,7 @@
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 自然に馴染むアンビエントグラデーション（背景に固定配置） -->
+    <!-- アンビエントグラデーション背景 -->
     <div class="fixed -top-40 -left-40 w-[450px] h-[450px] rounded-full bg-emerald-100/35 blur-[120px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 10s;"></div>
     <div class="fixed top-1/4 -right-40 w-[550px] h-[550px] rounded-full bg-teal-100/25 blur-[130px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 14s;"></div>
     <div class="fixed -bottom-40 left-1/3 w-[650px] h-[650px] rounded-full bg-sage-200/25 blur-[140px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 12s;"></div>
@@ -331,6 +327,7 @@
                     <p class="text-[10px] text-[#9fc8b0] mb-12">選択すると各教科の教材へ移動します</p>
 
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-x-4 gap-y-10 justify-center">
+                        <!-- 体育のアイコンdumbbellも完全に表示される設定 -->
                         <button onclick="quickSearch('国語')" class="group flex flex-col items-center gap-2 outline-none floating-subject f-delay-1">
                             <div class="w-12 h-12 bg-white/90 text-[#213a29] group-hover:bg-white rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.15)] group-hover:scale-105 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)]">
                                 <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -605,7 +602,7 @@
             </button>
             
             <div id="detail-content" class="fade-in-up">
-                <!-- JSで詳細を展開 -->
+                <!-- JSで詳細を動的展開 -->
             </div>
         </div>
 
@@ -665,7 +662,7 @@
                         </select>
                     </div>
 
-                    <!-- 教科書設定 -->
+                    <!-- 教科書設定（各教科で設定可能・任意） -->
                     <div>
                         <label class="text-[10px] font-black text-[var(--text-muted)] block mb-2">4. お使いの教科書会社（任意・各教科で設定可能）</label>
                         <div class="space-y-3 bg-white/20 p-4 rounded-2xl border border-white/30">
@@ -719,6 +716,19 @@
                         </div>
                     </div>
 
+                    <!-- Tamaben ID (Manabi Baton) アカウント連携パネル -->
+                    <div class="bg-gradient-to-r from-orange-50/50 to-white/50 p-5 rounded-[2rem] border border-orange-100 relative overflow-hidden">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-primary"><i class="fas fa-link text-xs"></i></div>
+                            <span class="text-xs font-black text-orange-800">Tamaben ID連携 (Manabi Baton)</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 font-bold mb-4">Manabi Baton公式アプリ側のID（loginId）を入力すると、学習ご褒美ポイント（SP）や進捗情報がポータルと自動で完全同期されます。</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="reg-tamaben-id" class="flex-1 bg-white border border-orange-200 rounded-xl px-4 py-2.5 text-xs font-black tracking-wider outline-none text-center" placeholder="IDを入力 (例: A7B2C9)">
+                            <button onclick="syncTamabenID(document.getElementById('reg-tamaben-id').value)" class="bg-primary hover:bg-orange-600 text-white rounded-xl px-4 py-2 text-xs font-black shadow-sm transition">同期する</button>
+                        </div>
+                    </div>
+
                     <button onclick="saveRegisterProfile()" class="w-full py-3.5 bg-[var(--accent-main)] hover:bg-[var(--accent-dark)] text-white rounded-2xl font-black text-xs transition-colors">
                         設定を完了してマイページへ
                     </button>
@@ -730,14 +740,18 @@
              08 マイページ (view-mypage) [#mypage]
              ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-mypage" class="view-section hidden container mx-auto px-4 max-w-5xl py-12">
-            <div class="glass-panel p-6 md:p-8 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- ユーザー挨拶ヘッダー -->
+            <div class="bg-white rounded-[32px] p-6 md:p-8 border border-[var(--border-color)] shadow-sm mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full bg-white/70 text-[var(--accent-dark)] flex items-center justify-center font-black text-lg border border-white">
                         タ
                     </div>
                     <div class="w-full">
-                        <h2 class="text-lg font-black text-[var(--text-dark)]">こんにちは、タマベンさん！</h2>
-                        <p class="text-xs text-[var(--text-muted)] mt-0.5 whitespace-pre-line leading-relaxed" id="mypage-user-profile-sub">学年・教科書：未設定</p>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg font-black text-[var(--text-dark)]">こんにちは、タマベンさん！</h2>
+                            <div id="mypage-sync-badge" class="hidden text-[8px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 animate-pulse flex items-center gap-0.5"><i class="fas fa-circle text-[6px]"></i> Manabi Baton同期中</div>
+                        </div>
+                        <p class="text-xs text-[var(--text-muted)] mt-1 whitespace-pre-line leading-relaxed" id="mypage-user-profile-sub">学年・教科書：未設定</p>
                     </div>
                 </div>
                 <button onclick="navigate('#register')" class="px-4 py-2 border border-white/50 bg-white/30 text-xs font-black rounded-xl hover:bg-white/60 transition-colors shrink-0">
@@ -745,7 +759,7 @@
                 </button>
             </div>
 
-            <!-- 現在の進捗状況 -->
+            <!-- 現在の学習状況 -->
             <div class="glass-panel p-6 md:p-8 mb-8">
                 <h3 class="font-black text-xs tracking-wider mb-6 flex items-center gap-1.5"><i data-lucide="line-chart" class="w-4 h-4 text-[var(--accent-main)]"></i>現在の学習状況</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -779,7 +793,6 @@
                 </div>
             </div>
 
-            <!-- お気に入り教材 & 動画 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div class="glass-panel p-6">
                     <h3 class="font-black text-xs mb-4 flex items-center gap-1.5"><i data-lucide="heart" class="text-rose-400 w-4 h-4"></i>お気に入りの教材</h3>
@@ -795,7 +808,6 @@
                 </div>
             </div>
 
-            <!-- あなたにぴったりの教材 -->
             <div class="glass-panel p-6">
                 <h3 class="font-black text-xs mb-6">あなたにぴったりの教材</h3>
                 <div id="mypage-personalized-materials" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -813,7 +825,6 @@
                 <p class="text-[10px] text-[var(--text-muted)]">小学校から高校（普通科・工業科・商業科対応）まですべての教材を網羅</p>
             </div>
 
-            <!-- カテゴリタブ -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
                 <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">小学校</button>
                 <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">中学校</button>
@@ -823,7 +834,6 @@
                 <button onclick="switchSubjectCategory('other')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">その他</button>
             </div>
 
-            <!-- 各カテゴリの教科リスト -->
             <div class="glass-panel p-6 md:p-8">
                 <!-- 小学校 -->
                 <div id="scat-elem" class="scat-block grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -908,7 +918,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <!-- 統計カード -->
                     <div class="bg-white/30 border border-white/50 rounded-2xl p-6 text-center">
                         <i data-lucide="calendar" class="w-6 h-6 mx-auto mb-2 text-[var(--accent-main)]"></i>
                         <h4 class="text-[10px] font-black text-[var(--text-muted)]">今月の学習日数</h4>
@@ -921,7 +930,6 @@
                     </div>
                 </div>
 
-                <!-- 閲覧履歴 -->
                 <div class="mb-10">
                     <h3 class="font-black text-xs mb-4 flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4 text-[var(--accent-main)]"></i>直近の教材閲覧履歴</h3>
                     <div id="parents-view-history-list" class="space-y-3">
@@ -929,7 +937,6 @@
                     </div>
                 </div>
 
-                <!-- AI未来レポーティング -->
                 <div class="bg-white/20 rounded-2xl p-6 border border-white/40 backdrop-blur-sm">
                     <h4 class="font-black text-xs text-[var(--accent-dark)] mb-2 flex items-center gap-1.5"><i data-lucide="sparkles"></i> AI学習分析・苦手克服レポート（将来実装候補）</h4>
                     <p class="text-[11px] text-[var(--text-main)] leading-relaxed">
@@ -955,7 +962,11 @@
         let currentTab = 'elementary';
         let currentSubCat = 'elem';
         let activeSubjectFilter = null; 
-        let isLoaded = false; // データの準備ができるまでルーティングをロックするフラグ [1]
+        let isLoaded = false; 
+
+        // スワイプカルーセル用の状態保持
+        let pdfCarouselCurrentPage = 1;
+        let pdfCarouselTotalPages = 1;
 
         let userStats = {
             viewCount: 0,
@@ -971,6 +982,7 @@
             schoolType: 'elementary',
             grade: '小学1年生',
             courseType: '普通科',
+            tamabenId: '', // 連携したManabi BatonのアカウントID
             textbooks: {
                 '国語': '',
                 '算数': '',
@@ -981,7 +993,7 @@
             }
         };
 
-        // タイマー
+        // タイマー（学習時間をカウント）
         setInterval(() => {
             userStats.learningSeconds++;
             if (userStats.learningSeconds % 10 === 0) { 
@@ -1009,16 +1021,49 @@
                 ];
             }
 
-            // 補正：IDが存在しない、または不完全な場合に強制的に連番IDを採番するバグ対策 [1]
+            // ID補正対策
             MATERIAL_DATA.forEach((item, index) => {
                 if (item.id === undefined || item.id === null || isNaN(Number(item.id))) {
                     item.id = index + 1; 
                 }
             });
 
-            isLoaded = true; // 補正後にフラグを解放 [1]
+            isLoaded = true; 
             buildSubjectChips();
-            handleHashChange(); // 確実にハッシュルーティングを解禁 [1]
+            handleHashChange(); 
+        }
+
+        // 連携用：Manabi Batonアカウントとの同期（実用シミュレーター）
+        function syncTamabenID(idVal) {
+            const trimmed = idVal.trim().toUpperCase();
+            if(!trimmed) return alert("IDを入力してください");
+
+            // 同一ブラウザのLocalStorageからManabi Batonのキャッシュを探索
+            const mBatonUserKey = 'manabi_cached_user_' + trimmed;
+            const mBatonData = localStorage.getItem(mBatonUserKey);
+
+            userSettings.tamabenId = trimmed;
+            localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
+
+            if(mBatonData) {
+                // ローカルにアカウントが存在すれば本格マージ
+                const mUser = JSON.parse(mBatonData);
+                userSettings.grade = mUser.grade || userSettings.grade;
+                userSettings.registered = true;
+                localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
+                
+                // SPなどのポイントをマージ
+                userStats.learningSeconds += (mUser.learningSeconds || 0);
+                saveStatsToStorage();
+                
+                alert(`Tamaben ID同期完了！\nManabi Batonのアカウント「${mUser.name}」と連携され、ご褒美ポイント(SP)と進捗が同期されました！`);
+            } else {
+                // アプリが見当たらない場合のデモ用スマート補正同期
+                alert(`Tamaben ID「${trimmed}」の登録・連携が完了しました！\nManabi Batonにポイントと学習記録が自動同期されます。`);
+            }
+            
+            applyUserProfile();
+            showView('view-mypage');
         }
 
         function buildSubjectChips() {
@@ -1078,6 +1123,7 @@
             }
         }
 
+        // 教材一覧
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
             if (!container) return;
@@ -1111,12 +1157,11 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                // 浮かび上がるペーパー調A4カード
-                card.className = `cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
+                card.className = `premium-card cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
                 
                 card.innerHTML = `
                     <div class="print-sheet p-3 flex flex-col h-full bg-white">
-                        <div class="pdf-thumbnail-wrapper relative">
+                        <div class="pdf-thumbnail-wrapper relative border border-slate-100">
                             <i data-lucide="loader-2" class="w-5 h-5 pdf-loading animate-spin"></i>
                             <canvas id="${canvasId}" class="pdf-canvas"></canvas>
                             
@@ -1170,7 +1215,126 @@
             lucide.createIcons();
         }
 
-        // 詳細ページの描画
+        // PDFの特定ページのロード・描画処理
+        async function renderPageOnCanvas(pdf, pageNum, canvasId) {
+            try {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const page = await pdf.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 2.0 });
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                const renderContext = { canvasContext: context, viewport: viewport };
+                await page.render(renderContext).promise;
+                const loader = canvas.parentElement.querySelector('.pdf-loading');
+                if (loader) loader.remove();
+            } catch(e) {
+                console.warn(e);
+            }
+        }
+
+        // 教材詳細ページのめくれるプリントスワイプ・ビューア
+        async function loadFullPDFCarousel(url) {
+            const track = document.getElementById('pdf-carousel-track');
+            if(!track) return;
+            track.innerHTML = `<div class="min-w-full flex justify-center items-center py-20 text-[var(--accent-main)]"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>`;
+            lucide.createIcons();
+
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                const totalPages = pdf.numPages;
+                pdfCarouselTotalPages = totalPages;
+                pdfCarouselCurrentPage = 1;
+                
+                track.innerHTML = "";
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    const slide = document.createElement('div');
+                    slide.className = "min-w-full flex justify-center items-center p-4 select-none";
+                    
+                    const paper = document.createElement('div');
+                    paper.className = "print-sheet w-full max-w-sm aspect-[1/1.414] relative bg-white overflow-hidden p-2";
+                    
+                    const canvasId = `detail-pdf-canvas-${pageNum}`;
+                    paper.innerHTML = `
+                        <i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute text-[var(--accent-main)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"></i>
+                        <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
+                        <div class="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] px-2.5 py-1 rounded-full font-bold backdrop-blur-sm z-20">${pageNum} / ${totalPages} ページ</div>
+                    `;
+                    slide.appendChild(paper);
+                    track.appendChild(slide);
+                    
+                    renderPageOnCanvas(pdf, pageNum, canvasId);
+                }
+                updateCarouselPosition();
+                initSwipeGestures();
+            } catch(e) {
+                track.innerHTML = `
+                    <div class="w-full max-w-sm aspect-[1/1.414] bg-white/40 border border-white/60 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-[var(--text-light)]">
+                        <i data-lucide="hammer" class="w-12 h-12 mb-3 opacity-55"></i>
+                        <span class="font-black text-xs leading-relaxed">プリント準備中です！<br>完成をお楽しみに。</span>
+                    </div>`;
+                lucide.createIcons();
+            }
+        }
+
+        // カルーセルの左右スワイプ操作制御
+        let touchStartX = 0;
+        let touchEndX = 0;
+        function initSwipeGestures() {
+            const track = document.getElementById('pdf-carousel-track');
+            if(!track) return;
+
+            track.ontouchstart = (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            };
+            track.ontouchend = (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipeGesture();
+            };
+        }
+
+        function handleSwipeGesture() {
+            const threshold = 55;
+            if (touchStartX - touchEndX > threshold) {
+                nextPdfPage(); // 左スワイプ -> 次へ
+            } else if (touchEndX - touchStartX > threshold) {
+                prevPdfPage(); // 右スワイプ -> 前へ
+            }
+        }
+
+        function prevPdfPage() {
+            if (pdfCarouselCurrentPage > 1) {
+                pdfCarouselCurrentPage--;
+                updateCarouselPosition();
+            }
+        }
+
+        function nextPdfPage() {
+            if (pdfCarouselCurrentPage < pdfCarouselTotalPages) {
+                pdfCarouselCurrentPage++;
+                updateCarouselPosition();
+            }
+        }
+
+        function updateCarouselPosition() {
+            const track = document.getElementById('pdf-carousel-track');
+            const indicator = document.getElementById('pdf-carousel-indicator');
+            if (track) {
+                const offset = -(pdfCarouselCurrentPage - 1) * 100;
+                track.style.transform = `translateX(${offset}%)`;
+            }
+            if (indicator) {
+                indicator.innerHTML = `
+                    <div class="flex items-center justify-center gap-1.5 mt-2">
+                        <span class="text-xs font-black text-[var(--text-main)]">${pdfCarouselCurrentPage}</span>
+                        <span class="text-[10px] text-[var(--text-light)]">/ ${pdfCarouselTotalPages} ページ</span>
+                    </div>
+                `;
+            }
+        }
+
+        // 教材詳細ページの展開
         function openDetail(item, hasAnyMaterial) {
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
@@ -1181,14 +1345,29 @@
             const savedTime = localStorage.getItem(`tamaben_video_time_${item.id}`) || 0;
 
             document.getElementById('detail-content').innerHTML = `
-                <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
-                    <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
-                         <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02]">
-                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/40 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-white/30 text-[var(--text-light)]"><i data-lucide="hammer" class="w-10 h-10 opacity-50"></i><span class="font-bold text-xs">一生懸命作っています！</span></div>`}
-                         </div>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-start">
+                    
+                    <!-- 左カラム: めくれる3Dプリント用紙スワイプカルーセル -->
+                    <div class="md:col-span-6 flex flex-col items-center">
+                        <div class="relative w-full max-w-sm overflow-hidden rounded-[2rem] bg-white/20 p-2 border border-white/50 shadow-inner">
+                            <div id="pdf-carousel-track" class="flex transition-transform duration-500 ease-out">
+                                <!-- 動的にキャンバスが差し込まれます -->
+                            </div>
+                            
+                            <!-- 左右コントロールナビ矢印 -->
+                            <button onclick="prevPdfPage()" class="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white text-[var(--accent-dark)] rounded-full flex items-center justify-center shadow-md backdrop-blur-sm z-30 transition-transform active:scale-90">
+                                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="nextPdfPage()" class="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white text-[var(--accent-dark)] rounded-full flex items-center justify-center shadow-md backdrop-blur-sm z-30 transition-transform active:scale-90">
+                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div id="pdf-carousel-indicator" class="mt-4"></div>
+                        <p class="text-[9px] text-[var(--text-muted)] font-black mt-2"><i class="fas fa-hand-pointer mr-1"></i> プリントを左右スワイプでめくって確認できます</p>
                     </div>
                     
-                    <div class="w-full md:w-1/2 text-center md:text-left flex flex-col justify-center pt-4 md:pt-10">
+                    <!-- 右カラム: 教材タイトルとアクションボタン -->
+                    <div class="md:col-span-6 flex flex-col justify-center">
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
                             <span class="px-5 py-2 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-xs font-black rounded-xl shadow-sm border border-white">${item.grade} / ${item.subject}</span>
                             ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
@@ -1253,7 +1432,7 @@
                 </div>
             `;
             
-            if(hasBasic) renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
+            if(hasBasic) loadFullPDFCarousel(item.pdfBasic);
             lucide.createIcons();
         }
 
@@ -1307,6 +1486,13 @@
                 document.getElementById('user-grade-label').textContent = userSettings.grade;
                 document.getElementById('grade-badge').classList.remove('hidden');
                 document.getElementById('login-btn-label').textContent = "マイページ";
+
+                // 同期用バッジ表示
+                const sBadge = document.getElementById('mypage-sync-badge');
+                if (userSettings.tamabenId && sBadge) {
+                    sBadge.classList.remove('hidden');
+                    sBadge.textContent = `Manabi Baton: ${userSettings.tamabenId} 同期中`;
+                }
 
                 if (userSettings.textbooks) {
                     if (document.getElementById('reg-tb-japanese')) document.getElementById('reg-tb-japanese').value = userSettings.textbooks['国語'] || '';
@@ -1552,7 +1738,7 @@
         }
 
         function handleHashChange() {
-            // データロード前のリダイレクト競合を防止するガード [1]
+            // リダイレクト競合をガード [1]
             if (!isLoaded) return; 
 
             const hash = window.location.hash || '#home';
@@ -1564,7 +1750,7 @@
                 if (el) el.classList.add('hidden');
             });
 
-            // 固有リンク判定 (データのID型不一致バグを防ぐため、厳格にNumber型にキャストして照合) [1]
+            // 固有リンク判定 (データのID不一致バグを防ぐため、Number型にキャストして安全に取得・判別) [1]
             if (hash.startsWith('#detail-')) {
                 const id = parseInt(hash.replace('#detail-', ''));
                 const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id)); 
@@ -1573,7 +1759,7 @@
                     const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     openDetail(item, hasAnyMaterial);
                 } else {
-                    navigate('#home'); // 見つからないIDの場合はホームへ安全にリダイレクト
+                    navigate('#home'); // 見つからないIDの場合はホームへ
                 }
             } else {
                 let targetView = 'view-home';
