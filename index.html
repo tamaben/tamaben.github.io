@@ -9,19 +9,8 @@
     <link class="favicon" rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
-    <meta name="description" content="タマベンは、小学生・中学生向けの学習教材サイト。漢字、計算、歴史など、学びを自由にする教材をインストール不要ですぐに利用できます。Manabi Baton（まなびバトン）公式アプリも提供中。">
-    <meta name="keywords" content="タマベン, タマベンアプリ, 教材サイト, 無料プリント, 小学生, 中学生, 学習管理, インストール不要">
-
-    <meta property="og:title" content="タマベン - 学びを、もっと自由に。">
-    <meta property="og:description" content="小学生・中学生向けの無料教材・プリントサイト。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tamaben.github.io/">
-    <meta property="og:image" content="https://tamaben.github.io/icon.png">
-    <meta property="og:site_name" content="タマベン">
-
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="タマベン - 学びを、もっと自由に。">
-    <meta name="twitter:description" content="インストール不要で使える学習教材サイト。">
+    <meta name="description" content="タマベンは、小学生・中学生向けの学習教材サイト。学びを自由にする教材をインストール不要ですぐに利用できます。">
+    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習管理, インストール不要">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +21,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        /* テーマカラー変数 */
         :root {
             --bg-base: #f4f8f4;
             --text-main: #2e3d30;
@@ -44,8 +32,6 @@
             --bg-sub: #e6f0e7;
             --bg-card: #ffffff;
             --border-color: #d1e2d3;
-            --blob-1: #aed581;
-            --blob-2: #81c784;
         }
 
         body { 
@@ -56,7 +42,18 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* 自然な丘の起伏を表現するカーブ */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-bg {
+            background: linear-gradient(180deg, #e4f3e8 0%, #ccead4 100%);
+        }
+
+        /* 丘の背景カーブ */
         .hill-curve {
             position: absolute;
             bottom: 0;
@@ -69,7 +66,7 @@
             position: relative;
             display: block;
             width: calc(140% + 1.3px);
-            height: 120px;
+            height: 100px;
         }
 
         .hill-curve-top {
@@ -85,100 +82,45 @@
             position: relative;
             display: block;
             width: calc(140% + 1.3px);
-            height: 80px;
+            height: 60px;
         }
 
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
-            padding-top: env(safe-area-inset-top);
-        }
-
-        .hero-bg {
-            background: linear-gradient(180deg, #e4f3e8 0%, #ccead4 100%);
-        }
-
-        .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-appear {
-            opacity: 0;
-            transform: scale(0.95) translateY(20px);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .card-appear.show {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        /* カードコンテナ */
         .premium-card {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: visible;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(46, 61, 48, 0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(46, 61, 48, 0.08);
+            border-color: var(--accent-main);
         }
 
-        /* プレビューラッパー */
         .pdf-thumbnail-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1.414;
-            background: transparent;
+            background: #ffffff;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: visible;
         }
 
-        /* PDFキャンバス（そのままの画像として表示） */
         .pdf-canvas {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background-color: #ffffff;
-            border-radius: 0; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-        }
-        
-        .premium-card:hover .pdf-canvas { 
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
-        /* テキストエリアのアニメーション */
-        .card-text-area {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .premium-card:hover .card-text-area {
-            transform: translateY(-2px);
-        }
-
-        .pdf-loading { position: absolute; color: var(--accent-main); animation: pulse 2s infinite; z-index: -1; }
-
-        .search-field { background: var(--bg-card); border: 2px solid var(--border-color); transition: all 0.4s ease; }
-        .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: scale(1.01); }
+        .search-field { background: var(--bg-card); border: 2px solid var(--border-color); transition: all 0.3s ease; }
+        .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 8px 24px rgba(76, 175, 80, 0.15); }
 
         .tab-pill { transition: all 0.4s ease; color: var(--text-muted); }
-        .tab-pill.active { background: var(--accent-main); color: #ffffff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); }
+        .tab-pill.active { background: var(--accent-main); color: #ffffff; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2); }
 
-        .loading-pulse { animation: pulse 2s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-        #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
-        #settings-modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content { max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
-
-        /* 元のボタン・バッジ無効化クラスを完全復元 */
         .btn-disabled {
             opacity: 0.5;
             pointer-events: none;
@@ -195,77 +137,63 @@
             border: 1px dashed #cbd5e1;
         }
 
-        .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
+        .custom-player {
+            background: #141f16;
+            border-radius: 20px;
+            position: relative;
+        }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
-
-    <!-- ナビゲーションバー (画像01参考) -->
+    <!-- ナビゲーションバー -->
     <header class="sticky top-0 z-[100] glass-nav">
         <div class="container mx-auto px-4 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-7xl">
-            <button onclick="goHome()" class="active:scale-95 transition-all outline-none">
+            <button onclick="showView('view-home')" class="active:scale-95 transition-all outline-none">
                 <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 w-auto" onerror="this.outerHTML='<span class=\'font-black text-[var(--text-main)] text-xl\'>タマベン</span>'">
             </button>
             
-            <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-bold text-[var(--text-muted)]">
-                <button onclick="scrollToSection('subject-zone')" class="hover:text-[var(--text-main)] transition-colors">教科一覧</button>
-                <button onclick="openSettingsModal()" class="hover:text-[var(--text-main)] transition-colors">学年設定</button>
-                <a href="#movies" class="hover:text-[var(--text-main)] transition-colors">動画</a>
-                <a href="#parents" class="hover:text-[var(--text-main)] transition-colors">保護者の方へ</a>
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-black text-[var(--text-muted)]">
+                <button onclick="showView('view-subjects')" class="hover:text-[var(--text-main)] transition-colors">教科一覧</button>
+                <button onclick="showView('view-search')" class="hover:text-[var(--text-main)] transition-colors">教材を検索</button>
+                <button onclick="showView('view-parents-report')" class="hover:text-[var(--text-main)] transition-colors">保護者の方へ</button>
             </nav>
 
             <div class="flex items-center gap-3">
-                <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-2">
-                    <span class="text-[8px] font-black text-[var(--text-muted)] tracking-wider">学習モード</span>
+                <div id="grade-badge" class="hidden sm:flex flex-col items-end mr-1">
                     <span id="user-grade-label" class="text-xs font-black text-[var(--text-main)]">未設定</span>
                 </div>
-                <button onclick="openSettingsModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--bg-sub)] text-[var(--text-main)] hover:scale-105 transition-all outline-none" title="学年設定">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+                <!-- 未ログイン/ログイン後（マイページ）遷移ボタン -->
+                <button onclick="handleUserMenu()" class="px-4 py-2 text-xs font-black rounded-full bg-[var(--accent-light)] text-[var(--accent-dark)] hover:scale-105 transition-all outline-none border border-[var(--border-color)]">
+                    <span id="login-btn-label">マイページ / 登録</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="relative">
+    <main class="min-h-screen">
         
-        <!-- メイン表示エリア (Home) -->
-        <div id="view-home">
-            
-            <!-- ヒーローセクション (画像01) -->
-            <section class="hero-bg relative pt-12 pb-28 md:pt-20 md:pb-36 text-center overflow-hidden">
-                <div class="container mx-auto px-4 max-w-4xl relative z-10 fade-in-up">
-                    <span class="inline-block px-4 py-1.5 bg-white/80 text-[var(--accent-dark)] text-xs md:text-sm font-extrabold rounded-full shadow-sm mb-4">無料で学べるオリジナル教材サイト</span>
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             01 トップページ (view-home)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-home" class="view-section">
+            <section class="hero-bg relative pt-12 pb-24 md:pt-20 md:pb-36 text-center overflow-hidden">
+                <div class="container mx-auto px-4 max-w-4xl relative z-10">
+                    <span class="inline-block px-4 py-1.5 bg-white/80 text-[var(--accent-dark)] text-xs md:text-sm font-black rounded-full shadow-sm mb-4">無料で学べるオリジナル教材サイト</span>
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-dark)] leading-tight mb-4">
-                        今のあなたにぴったりの教材が、<br class="hidden sm:inline" />きっと見つかる。
+                        今のあなたにぴったりの教材が、<br class="hidden sm:inline"/>きっと見つかる。
                     </h1>
                     
-                    <!-- 検索窓 -->
-                    <div class="w-full max-w-2xl mx-auto mt-8 px-2 flex flex-col sm:flex-row gap-3">
-                        <div class="search-field flex-grow flex items-center rounded-full px-5 py-3.5 bg-white shadow-md">
+                    <!-- 検索バー（フォーカスで検索トップへ遷移） -->
+                    <div class="w-full max-w-xl mx-auto mt-8 px-2">
+                        <div onclick="showView('view-search')" class="search-field cursor-pointer flex items-center rounded-full px-5 py-3.5 bg-white shadow-md hover:scale-[1.01] transition-transform">
                             <i data-lucide="search" class="w-5 h-5 text-[var(--text-light)] mr-3"></i>
-                            <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
-                        </div>
-                        
-                        <!-- フィルター選択 (前の仕様を復元) -->
-                        <div class="search-field flex items-center rounded-full px-4 py-3 sm:w-48 shrink-0 relative bg-white shadow-md">
-                            <i data-lucide="filter" class="w-5 h-5 text-[var(--text-light)] mr-2"></i>
-                            <select id="material-filter" class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] text-sm cursor-pointer appearance-none" onchange="renderMaterials()">
-                                <option value="all">すべて表示</option>
-                                <option value="available">教材あり</option>
-                                <option value="unavailable">準備中のみ</option>
-                            </select>
-                            <div class="absolute right-4 pointer-events-none text-[var(--text-light)]">
-                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                            </div>
+                            <span class="text-slate-400 font-bold text-sm md:text-base text-left flex-grow">教科、単元、学年で教材を探す...</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 自然な丘のカーブ背景 (SVG) -->
+                <!-- 丘のグラフィック -->
                 <div class="hill-curve">
                     <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                         <path d="M0,0 C300,90 900,20 1200,80 L1200,120 L0,120 Z" fill="var(--bg-base)"></path>
@@ -273,40 +201,39 @@
                 </div>
             </section>
 
-            <!-- いま、あなたにおすすめ (画像01) -->
+            <!-- おすすめセクション -->
             <section class="container mx-auto px-4 max-w-7xl -mt-12 md:-mt-20 relative z-20 mb-16">
-                <div class="bg-white/80 backdrop-blur-md rounded-[32px] p-6 md:p-8 shadow-lg border border-white/60">
-                    <div class="flex items-center gap-2 mb-6">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-[var(--accent-main)]"></i>
-                        <h2 class="text-base md:text-lg font-black text-[var(--text-dark)]">いま、あなたにおすすめ</h2>
+                <div class="bg-white/90 backdrop-blur-md rounded-[32px] p-6 md:p-8 shadow-lg border border-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-[var(--accent-main)]"></i>
+                            <h2 class="text-base md:text-lg font-black text-[var(--text-dark)]">いま、あなたにおすすめ</h2>
+                        </div>
+                        <span class="text-[10px] bg-[var(--bg-sub)] px-2.5 py-1 rounded-full text-[var(--text-main)] font-black">学習設定から自動マッチ</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- 最近やったところ -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('一次関数')">
-                            <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">最近やったところから</span>
-                            <h3 class="font-black text-base text-[var(--text-main)] mb-1">一次関数</h3>
-                            <p class="text-xs text-[var(--text-muted)]">数学 | 中学2年生</p>
+                        <div onclick="quickSearch('一次関数')" class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-all cursor-pointer">
+                            <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">最近習った内容</span>
+                            <h3 class="font-black text-base text-[var(--text-dark)] mb-1">一次関数</h3>
+                            <p class="text-xs text-[var(--text-muted)]">教材 12件 | 動画 4件</p>
                         </div>
-                        <!-- つぎに学ぶところ -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('連立方程式')">
-                            <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">つぎに学ぶところ</span>
-                            <h3 class="font-black text-base text-[var(--text-main)] mb-1">連立方程式</h3>
-                            <p class="text-xs text-[var(--text-muted)]">数学 | 中学2年生</p>
+                        <div onclick="quickSearch('連立方程式')" class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-all cursor-pointer">
+                            <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">次に学ぶ内容</span>
+                            <h3 class="font-black text-base text-[var(--text-dark)] mb-1">連立方程式</h3>
+                            <p class="text-xs text-[var(--text-muted)]">教材 10件 | 動画 3件</p>
                         </div>
-                        <!-- おすすめ動画 -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('化学変化')">
+                        <div onclick="quickSearch('化学変化')" class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-all cursor-pointer">
                             <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">おすすめ動画</span>
-                            <h3 class="font-black text-base text-[var(--text-main)] mb-1">化学変化と原子・分子</h3>
-                            <p class="text-xs text-[var(--text-muted)]">理科 | 中学2年生</p>
+                            <h3 class="font-black text-base text-[var(--text-dark)] mb-1">化学変化と原子・分子</h3>
+                            <p class="text-xs text-[var(--text-muted)]">教材 9件 | 動画 5件</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 教科一覧セクション (画像01・緑の丘背景) -->
-            <section id="subject-zone" class="bg-[#245031] text-white py-16 md:py-24 relative overflow-hidden mb-16">
-                <!-- 上部逆カーブ -->
+            <!-- 教科一覧(簡易ナビ) (画像01) -->
+            <section class="bg-[#245031] text-white py-16 md:py-24 relative overflow-hidden mb-16">
                 <div class="hill-curve-top">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                         <path d="M0,0 C300,80 900,30 1200,70 L1200,120 L0,120 Z" fill="var(--bg-base)"></path>
@@ -315,81 +242,82 @@
 
                 <div class="container mx-auto px-4 max-w-6xl relative z-10 text-center">
                     <h2 class="text-xl md:text-2xl font-black mb-2 tracking-tight">教科一覧</h2>
-                    <p class="text-xs text-[#a3c9ae] mb-10">クリックすると該当の教材一覧へ移動します</p>
+                    <p class="text-xs text-[#a3c9ae] mb-10">クリックすると各教科の教材へ移動します</p>
 
-                    <!-- 教科丸形ボタンのグリッド -->
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-4 justify-center">
-                        <button onclick="filterBySubject('国語')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('国語')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="book-open" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">国語</span>
+                            <span class="text-xs font-bold text-slate-100">国語</span>
                         </button>
-                        <button onclick="filterBySubject('数学')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('数学')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="calculator" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">数学</span>
+                            <span class="text-xs font-bold text-slate-100">数学</span>
                         </button>
-                        <button onclick="filterBySubject('英語')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('英語')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="languages" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">英語</span>
+                            <span class="text-xs font-bold text-slate-100">英語</span>
                         </button>
-                        <button onclick="filterBySubject('理科')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('理科')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="flask-conical" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">理科</span>
+                            <span class="text-xs font-bold text-slate-100">理科</span>
                         </button>
-                        <button onclick="filterBySubject('社会')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('社会')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="globe" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">社会</span>
+                            <span class="text-xs font-bold text-slate-100">社会</span>
                         </button>
-                        <button onclick="filterBySubject('情報')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('情報')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="laptop" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">情報</span>
+                            <span class="text-xs font-bold text-slate-100">情報</span>
                         </button>
-                        <button onclick="filterBySubject('音楽')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('音楽')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="music" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">音楽</span>
+                            <span class="text-xs font-bold text-slate-100">音楽</span>
                         </button>
-                        <button onclick="filterBySubject('美術')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('美術')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="palette" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">美術</span>
+                            <span class="text-xs font-bold text-slate-100">美術</span>
                         </button>
-                        <button onclick="filterBySubject('家庭')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('家庭')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="home" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">家庭</span>
+                            <span class="text-xs font-bold text-slate-100">家庭</span>
                         </button>
-                        <button onclick="filterBySubject('技術')" class="group flex flex-col items-center gap-2 outline-none">
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('技術')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="wrench" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">技術</span>
+                            <span class="text-xs font-bold text-slate-100">技術</span>
                         </button>
-                        <button onclick="filterBySubject('体育')" class="group flex flex-col items-center gap-2 outline-none">
-                            <!-- 体育のアイコンを確実に出る「dumbbell」へ差し替え -->
-                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
+                        <button onclick="quickSearch('体育')" class="group flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all">
                                 <i data-lucide="dumbbell" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-xs font-bold text-slate-100 group-hover:text-white">体育</span>
+                            <span class="text-xs font-bold text-slate-100">体育</span>
                         </button>
                     </div>
+
+                    <button onclick="showView('view-subjects')" class="mt-12 px-8 py-3 bg-white text-[var(--accent-dark)] font-black text-xs rounded-full hover:shadow-lg transition-shadow">
+                        すべての教科を見る
+                    </button>
                 </div>
 
-                <!-- 下部カーブ -->
                 <div class="hill-curve">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                         <path d="M0,80 C300,10 900,90 1200,30 L1200,120 L0,120 Z" fill="var(--bg-base)"></path>
@@ -397,96 +325,135 @@
                 </div>
             </section>
 
-            <!-- メイン教材エリア -->
-            <section id="materials-section" class="container mx-auto px-4 max-w-7xl pb-20">
-                
-                <!-- 小学生・中学生 切り替えタブ -->
-                <div class="flex justify-center mb-10">
-                    <div class="flex bg-white p-1.5 rounded-full border border-[var(--border-color)] shadow-sm max-w-xs w-full">
-                        <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-pill active flex-1 py-3 rounded-full text-sm font-black">小学生</button>
-                        <button onclick="switchTab('junior')" id="tab-junior" class="tab-pill flex-1 py-3 rounded-full text-sm font-black">中学生</button>
-                    </div>
-                </div>
-
-                <!-- 教材カードのグリッド表示 -->
-                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[40vh]">
-                    <!-- JSにて動的に表示 -->
-                </div>
-            </section>
-
-            <!-- タマベンのアプリ一覧 -->
-            <section class="container mx-auto px-4 max-w-5xl py-12 border-t-2 border-dashed border-[var(--border-color)] mb-16">
-                <div class="text-center mb-8">
-                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)]">タマベンのアプリ一覧</h2>
-                </div>
-                <div class="flex justify-center">
-                    <a href="manabi.html" class="group flex items-center gap-4 p-5 bg-white rounded-3xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-[var(--accent-main)] transition-all max-w-md w-full">
-                        <div class="w-14 h-14 rounded-2xl bg-[var(--bg-sub)] flex items-center justify-center shrink-0">
-                            <i data-lucide="layers" class="w-7 h-7 text-[var(--accent-dark)]"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="font-black text-[var(--text-main)] text-base">Manabi Baton</h3>
-                            <p class="text-xs text-[var(--text-muted)]">学びのバトンを繋ごう</p>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-[var(--text-light)] group-hover:translate-x-1 transition-transform"></i>
-                    </a>
-                </div>
-            </section>
-
-            <!-- 公式メディア -->
-            <section class="container mx-auto px-4 max-w-5xl py-12 border-t-2 border-dashed border-[var(--border-color)] mb-16">
-                <div class="text-center mb-8">
-                    <h2 class="text-lg md:text-xl font-black text-[var(--text-main)]">公式メディア</h2>
-                </div>
-                <div class="flex justify-center gap-4">
-                    <a href="https://youtube.com/@tamaben-tama" target="_blank" class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-rose-600 shadow-sm border border-[var(--border-color)] hover:scale-105 transition-transform">
-                        <i data-lucide="youtube" class="w-6 h-6"></i>
-                    </a>
-                    <a href="https://www.instagram.com/" target="_blank" class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-pink-600 shadow-sm border border-[var(--border-color)] hover:scale-105 transition-transform">
-                        <i data-lucide="instagram" class="w-6 h-6"></i>
-                    </a>
-                </div>
-            </section>
-
-            <!-- 保護者の方へ (画像10) -->
-            <section id="parents" class="bg-white border-t border-[var(--border-color)] py-16">
-                <div class="container mx-auto px-4 max-w-4xl text-center">
-                    <span class="text-xs font-black text-[var(--accent-dark)] tracking-wider uppercase mb-2 block">For Parents</span>
-                    <h2 class="text-xl md:text-2xl font-black text-[var(--text-dark)] mb-6">保護者の方へ</h2>
-                    <p class="text-sm md:text-base text-[var(--text-muted)] leading-relaxed max-w-2xl mx-auto mb-10">
-                        タマベンは、お子様の「自立した学習」をサポートする無料の学習教材サイトです。安心してお使いいただける設計を心がけています。
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="p-6 bg-[var(--bg-base)] rounded-2xl">
-                            <div class="w-10 h-10 bg-white text-[var(--accent-main)] rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            <!-- タマベンのアプリ・公式メディア -->
+            <section class="container mx-auto px-4 max-w-5xl py-12 text-center">
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-[var(--border-color)]">
+                    <h3 class="font-black mb-6 text-[var(--text-dark)]">タマベン公式アプリ & 公式メディア</h3>
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                        <a href="manabi.html" class="flex items-center gap-4 p-4 bg-[var(--bg-base)] rounded-2xl w-full max-w-xs text-left">
+                            <div class="w-12 h-12 rounded-xl bg-green-200 flex items-center justify-center text-green-700 shrink-0">
+                                <i data-lucide="layers" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="font-black text-sm mb-1">安心して使える</h3>
-                            <p class="text-xs text-[var(--text-muted)]">過度な広告表示を控え、お子様が集中できる環境を提供します。</p>
-                        </div>
-                        <div class="p-6 bg-[var(--bg-base)] rounded-2xl">
-                            <div class="w-10 h-10 bg-white text-[var(--accent-main)] rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                                <i data-lucide="piggy-bank" class="w-5 h-5"></i>
+                            <div>
+                                <h4 class="font-black text-sm">Manabi Baton</h4>
+                                <p class="text-[10px] text-[var(--text-muted)]">学習状況をシームレスに同期</p>
                             </div>
-                            <h3 class="font-black text-sm mb-1">完全無料</h3>
-                            <p class="text-xs text-[var(--text-muted)]">会員登録・ログインなしでも、全プリントを即座に利用可能です。</p>
-                        </div>
-                        <div class="p-6 bg-[var(--bg-base)] rounded-2xl">
-                            <div class="w-10 h-10 bg-white text-[var(--accent-main)] rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-                            </div>
-                            <h3 class="font-black text-sm mb-1">学習をサポート</h3>
-                            <p class="text-xs text-[var(--text-muted)]">教科書に基づいた学習カリキュラムに沿った教材構成です。</p>
+                        </a>
+
+                        <div class="flex gap-4">
+                            <!-- YouTube (直接SVGで描画して完全表示) -->
+                            <a href="https://youtube.com/@tamaben-tama" target="_blank" aria-label="YouTube" class="group flex items-center justify-center w-14 h-14 bg-[var(--bg-base)] rounded-full hover:bg-red-50 hover:text-red-600 border border-[var(--border-color)] transition-all">
+                                <svg viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
+                                    <path d="M21.582 6.186a2.665 2.665 0 0 0-1.87-1.884C18.062 3.86 12 3.86 12 3.86s-6.062 0-7.712.442a2.665 2.665 0 0 0-1.87 1.884C2 7.846 2 12 2 12s0 4.154.448 5.814a2.665 2.665 0 0 0 1.87 1.884c1.65.442 7.712.442 7.712.442s6.062 0 7.712-.442a2.665 2.665 0 0 0 1.87-1.884C22 16.154 22 12 22 12s0-4.154-.418-5.814zM9.99 15.474v-6.948l6.19 3.474-6.19 3.474z"/>
+                                </svg>
+                            </a>
+                            
+                            <!-- Instagram (直接SVGで描画して完全表示) -->
+                            <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram" class="group flex items-center justify-center w-14 h-14 bg-[var(--bg-base)] rounded-full hover:bg-pink-50 hover:text-pink-600 border border-[var(--border-color)] transition-all">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>
             </section>
+        </div>
 
-        </div> <!-- /view-home -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             03 検索トップページ (view-search)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-search" class="view-section hidden container mx-auto px-4 max-w-4xl py-12">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-black text-[var(--text-dark)] mb-2">何を学びたいですか？</h2>
+                <p class="text-xs text-[var(--text-muted)]">教科・学年・教科書会社で最適なプリントを抽出します</p>
+            </div>
 
+            <!-- 検索フィルターパネル -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 border border-[var(--border-color)] shadow-sm mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-1">学年</label>
+                        <select id="search-grade" class="w-full bg-[var(--bg-base)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm font-bold text-[var(--text-main)] outline-none">
+                            <option value="">学年を選ぶ (すべて)</option>
+                            <option value="小学1年生">小学1年生</option>
+                            <option value="小学2年生">小学2年生</option>
+                            <option value="小学3年生">小学3年生</option>
+                            <option value="中学1年生">中学1年生</option>
+                            <option value="中学2年生">中学2年生</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-1">教科</label>
+                        <select id="search-subject" class="w-full bg-[var(--bg-base)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm font-bold text-[var(--text-main)] outline-none">
+                            <option value="">教科を選ぶ (すべて)</option>
+                            <option value="国語">国語</option>
+                            <option value="算数">算数 / 数学</option>
+                            <option value="理科">理科</option>
+                            <option value="英語">英語</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- 詳細ページ表示エリア (Detail - 画像05) -->
-        <div id="view-detail" class="hidden container mx-auto px-4 max-w-7xl py-12">
+                <div class="search-field flex items-center rounded-full px-5 py-3.5 bg-white mb-6">
+                    <i data-lucide="search" class="w-5 h-5 text-[var(--text-light)] mr-3"></i>
+                    <input type="text" id="search-keyword" placeholder="キーワードを入力（例：連立方程式、漢字など）" class="w-full bg-transparent outline-none font-bold text-sm md:text-base text-[var(--text-main)]">
+                </div>
+
+                <button onclick="executeSearch()" class="w-full py-4 bg-[var(--accent-main)] hover:bg-[var(--accent-dark)] text-white rounded-2xl font-black text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="search" class="w-4 h-4"></i> 教材を検索する
+                </button>
+            </div>
+
+            <!-- 人気の検索キーワード & 最近の学習履歴 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-black text-sm mb-4 flex items-center gap-2 text-[var(--text-dark)]"><i data-lucide="trending-up" class="w-4 h-4 text-orange-500"></i>人気の検索ワード</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="quickSearch('連立方程式')" class="px-3 py-1.5 bg-white border border-[var(--border-color)] hover:border-[var(--accent-main)] text-xs font-bold rounded-lg transition-colors">連立方程式</button>
+                        <button onclick="quickSearch('一次関数')" class="px-3 py-1.5 bg-white border border-[var(--border-color)] hover:border-[var(--accent-main)] text-xs font-bold rounded-lg transition-colors">一次関数</button>
+                        <button onclick="quickSearch('化学変化')" class="px-3 py-1.5 bg-white border border-[var(--border-color)] hover:border-[var(--accent-main)] text-xs font-bold rounded-lg transition-colors">化学変化</button>
+                        <button onclick="quickSearch('電気回路')" class="px-3 py-1.5 bg-white border border-[var(--border-color)] hover:border-[var(--accent-main)] text-xs font-bold rounded-lg transition-colors">電気回路</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-black text-sm mb-4 flex items-center gap-2 text-[var(--text-dark)]"><i data-lucide="history" class="w-4 h-4 text-blue-500"></i>最近の学習からおすすめ</h3>
+                    <div class="space-y-2" id="recent-search-history">
+                        <p class="text-xs text-[var(--text-muted)]">履歴がまだありません。プリントを閲覧するとここに表示されます。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             04 検索結果ページ (view-search-results)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-search-results" class="view-section hidden container mx-auto px-4 max-w-7xl py-12">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[var(--border-color)] pb-6 mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-black text-[var(--text-muted)]" id="search-query-label">検索結果</span>
+                    <h2 class="text-xl md:text-2xl font-black text-[var(--text-dark)] flex items-center gap-2 mt-1">
+                        <i data-lucide="search" class="w-5 h-5 text-[var(--accent-main)]"></i>
+                        <span id="search-results-title">検索中...</span>
+                    </h2>
+                </div>
+                <button onclick="showView('view-search')" class="px-4 py-2 border border-[var(--border-color)] bg-white rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">
+                    条件を変更する
+                </button>
+            </div>
+
+            <!-- 検索結果のグリッド -->
+            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- 動的に描画 -->
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             05 教材詳細ページ (view-detail)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-detail" class="view-section hidden container mx-auto px-4 max-w-7xl py-12">
             <button onclick="goHome()" class="flex items-center gap-2 text-[var(--text-muted)] font-black hover:text-[var(--text-main)] mb-8 transition-colors bg-white px-4 py-2.5 rounded-full border border-[var(--border-color)] shadow-sm w-fit text-sm">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> 一覧に戻る
             </button>
@@ -496,44 +463,337 @@
             </div>
         </div>
 
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             07 新規登録ページ (view-register)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-register" class="view-section hidden container mx-auto px-4 max-w-xl py-12">
+            <div class="bg-white rounded-[32px] p-8 border border-[var(--border-color)] shadow-md">
+                <div class="text-center mb-8">
+                    <span class="text-xs font-black text-[var(--accent-dark)] tracking-wider">TAMA BEN ID</span>
+                    <h2 class="text-xl font-black text-[var(--text-dark)] mt-1">無料学習設定・タマベンID登録</h2>
+                    <p class="text-xs text-[var(--text-muted)] mt-1">学校区分・学年・教科書を設定して最適化</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- 学校区分 -->
+                    <div>
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-2">1. 学校区分</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setRegSchoolType('elementary')" id="reg-st-elementary" class="reg-st-btn py-3 border border-[var(--border-color)] rounded-xl font-black text-xs bg-slate-50 hover:bg-white transition-colors">小学校</button>
+                            <button onclick="setRegSchoolType('junior')" id="reg-st-junior" class="reg-st-btn py-3 border border-[var(--border-color)] rounded-xl font-black text-xs bg-slate-50 hover:bg-white transition-colors">中学校</button>
+                            <button onclick="setRegSchoolType('high')" id="reg-st-high" class="reg-st-btn py-3 border border-[var(--border-color)] rounded-xl font-black text-xs bg-slate-50 hover:bg-white transition-colors">高校</button>
+                        </div>
+                    </div>
+
+                    <!-- 学年設定 -->
+                    <div>
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-2">2. 学年設定</label>
+                        <select id="reg-grade" class="w-full bg-[var(--bg-base)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm font-black text-[var(--text-main)] outline-none">
+                            <option value="小学1年生">小学1年生</option>
+                            <option value="小学2年生">小学2年生</option>
+                            <option value="小学3年生">小学3年生</option>
+                            <option value="小学4年生">小学4年生</option>
+                            <option value="小学5年生">小学5年生</option>
+                            <option value="小学6年生">小学6年生</option>
+                            <option value="中学1年生">中学1年生</option>
+                            <option value="中学2年生">中学2年生</option>
+                            <option value="中学3年生">中学3年生</option>
+                            <option value="高校1年生">高校1年生</option>
+                            <option value="高校2年生">高校2年生</option>
+                            <option value="高校3年生">高校3年生</option>
+                        </select>
+                    </div>
+
+                    <!-- 学校種別設定 -->
+                    <div id="reg-high-special-block" class="hidden">
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-2">3. 学校の種類（高校生のみ）</label>
+                        <select id="reg-course-type" class="w-full bg-[var(--bg-base)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm font-black text-[var(--text-main)] outline-none">
+                            <option value="普通科">普通科</option>
+                            <option value="工業科">工業科</option>
+                            <option value="商業科">商業科</option>
+                            <option value="農業科">農業科</option>
+                            <option value="水産科">水産科</option>
+                            <option value="看護科">看護科</option>
+                            <option value="総合学科">総合学科</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+
+                    <!-- 教科書設定 -->
+                    <div>
+                        <label class="text-xs font-black text-[var(--text-muted)] block mb-2">4. お使いの教科書会社</label>
+                        <select id="reg-textbook" class="w-full bg-[var(--bg-base)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm font-black text-[var(--text-main)] outline-none">
+                            <option value="東京書籍">東京書籍</option>
+                            <option value="教育出版">教育出版</option>
+                            <option value="啓林館">啓林館</option>
+                            <option value="数研出版">数研出版</option>
+                            <option value="第一学習社">第一学習社</option>
+                        </select>
+                    </div>
+
+                    <button onclick="saveRegisterProfile()" class="w-full py-4 bg-[var(--accent-main)] hover:bg-[var(--accent-dark)] text-white rounded-2xl font-black text-sm shadow-md transition-colors">
+                        設定を完了してマイページへ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             08 マイページ (view-mypage)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-mypage" class="view-section hidden container mx-auto px-4 max-w-5xl py-12">
+            <!-- ユーザー挨拶ヘッダー -->
+            <div class="bg-white rounded-[32px] p-6 md:p-8 border border-[var(--border-color)] shadow-sm mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-[var(--accent-light)] text-[var(--accent-dark)] flex items-center justify-center font-black text-xl">
+                        タ
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-[var(--text-dark)]">こんにちは、タマベンさん！</h2>
+                        <p class="text-xs text-[var(--text-muted)] mt-0.5" id="mypage-user-profile-sub">学年・教科書：未設定</p>
+                    </div>
+                </div>
+                <button onclick="showView('view-register')" class="px-4 py-2 border border-[var(--border-color)] bg-slate-50 text-xs font-black rounded-xl hover:bg-slate-100 transition-colors">
+                    学習設定を編集
+                </button>
+            </div>
+
+            <!-- 現在の進捗状況 (ダミー進捗シミュレーター) -->
+            <div class="bg-white rounded-[32px] p-6 md:p-8 border border-[var(--border-color)] shadow-sm mb-8">
+                <h3 class="font-black text-sm mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-[var(--accent-main)]"></i>現在の学習状況</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <div class="flex justify-between text-xs font-black mb-1">
+                            <span>数学: 連立方程式</span>
+                            <span class="text-[var(--accent-dark)]">75%</span>
+                        </div>
+                        <div class="w-full bg-[var(--bg-sub)] h-2 rounded-full overflow-hidden">
+                            <div class="bg-[var(--accent-main)] h-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-black mb-1">
+                            <span>理科: 化学変化</span>
+                            <span class="text-orange-500">40%</span>
+                        </div>
+                        <div class="w-full bg-[var(--bg-sub)] h-2 rounded-full overflow-hidden">
+                            <div class="bg-orange-400 h-full" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-black mb-1">
+                            <span>英語: 現在完了形</span>
+                            <span class="text-blue-500">10%</span>
+                        </div>
+                        <div class="w-full bg-[var(--bg-sub)] h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-400 h-full" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- お気に入り教材 & 動画 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-[32px] p-6 border border-[var(--border-color)]">
+                    <h3 class="font-black text-sm mb-4 flex items-center gap-2"><i data-lucide="heart" class="text-rose-500 w-4 h-4"></i>お気に入りの教材</h3>
+                    <div id="mypage-fav-materials" class="space-y-3">
+                        <p class="text-xs text-[var(--text-muted)]">お気に入りの教材がありません。教材詳細から追加できます。</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[32px] p-6 border border-[var(--border-color)]">
+                    <h3 class="font-black text-sm mb-4 flex items-center gap-2"><i data-lucide="video" class="text-blue-500 w-4 h-4"></i>お気に入りの動画</h3>
+                    <div id="mypage-fav-videos" class="space-y-3">
+                        <p class="text-xs text-[var(--text-muted)]">お気に入りの動画がありません。教材詳細の動画から追加できます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- あなたにぴったりの教材 -->
+            <div class="bg-white rounded-[32px] p-6 border border-[var(--border-color)]">
+                <h3 class="font-black text-sm mb-6">あなたにぴったりの教材</h3>
+                <div id="mypage-personalized-materials" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <!-- 設定とマッチした内容を描画 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             09 教科一覧ページ (全教科) (view-subjects)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-subjects" class="view-section hidden container mx-auto px-4 max-w-6xl py-12">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-black text-[var(--text-dark)] mb-2">すべての教科</h2>
+                <p class="text-xs text-[var(--text-muted)]">小学校から高校（普通科・工業科・商業科対応）まですべての教材を網羅</p>
+            </div>
+
+            <!-- カテゴリタブ -->
+            <div class="flex flex-wrap justify-center gap-2 mb-10">
+                <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">小学校</button>
+                <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">中学校</button>
+                <button onclick="switchSubjectCategory('hs_gen')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">高校（普通科）</button>
+                <button onclick="switchSubjectCategory('hs_tech')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">工業高校対応</button>
+                <button onclick="switchSubjectCategory('hs_comm')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">商業高校対応</button>
+                <button onclick="switchSubjectCategory('other')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-[var(--border-color)] hover:bg-slate-50 bg-white">その他</button>
+            </div>
+
+            <!-- 各カテゴリの教科リスト -->
+            <div class="bg-white rounded-3xl p-8 border border-[var(--border-color)] shadow-sm">
+                <!-- 小学校 -->
+                <div id="scat-elem" class="scat-block grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('国語')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">国語</button>
+                    <button onclick="quickSearch('算数')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">算数</button>
+                    <button onclick="quickSearch('理科')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">理科</button>
+                    <button onclick="quickSearch('社会')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">社会</button>
+                    <button onclick="quickSearch('生活')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">生活</button>
+                    <button onclick="quickSearch('音楽')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">音楽</button>
+                    <button onclick="quickSearch('図画工作')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">図画工作</button>
+                    <button onclick="quickSearch('家庭')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">家庭</button>
+                    <button onclick="quickSearch('体育')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">体育</button>
+                    <button onclick="quickSearch('外国語')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">外国語</button>
+                    <button onclick="quickSearch('道徳')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">道徳</button>
+                </div>
+
+                <!-- 中学校 -->
+                <div id="scat-jhs" class="scat-block hidden grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('国語')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">国語</button>
+                    <button onclick="quickSearch('数学')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">数学</button>
+                    <button onclick="quickSearch('理科')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">理科</button>
+                    <button onclick="quickSearch('社会')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">社会</button>
+                    <button onclick="quickSearch('英語')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">英語</button>
+                    <button onclick="quickSearch('音楽')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">音楽</button>
+                    <button onclick="quickSearch('美術')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">美術</button>
+                    <button onclick="quickSearch('技術')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">技術</button>
+                    <button onclick="quickSearch('家庭')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">家庭</button>
+                    <button onclick="quickSearch('保健体育')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">保健体育</button>
+                    <button onclick="quickSearch('道徳')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">道徳</button>
+                </div>
+
+                <!-- 高校普通科 -->
+                <div id="scat-hs_gen" class="scat-block hidden grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('現代の国語')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">現代の国語</button>
+                    <button onclick="quickSearch('言語文化')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">言語文化</button>
+                    <button onclick="quickSearch('数学Ⅰ')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">数学Ⅰ</button>
+                    <button onclick="quickSearch('物理基礎')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">物理基礎</button>
+                    <button onclick="quickSearch('化学基礎')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">化学基礎</button>
+                    <button onclick="quickSearch('生物基礎')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">生物基礎</button>
+                    <button onclick="quickSearch('歴史総合')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">歴史総合</button>
+                    <button onclick="quickSearch('情報Ⅰ')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">情報Ⅰ</button>
+                </div>
+
+                <!-- 工業高校 -->
+                <div id="scat-hs_tech" class="scat-block hidden grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('電気回路')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">電気回路</button>
+                    <button onclick="quickSearch('電子回路')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">電子回路</button>
+                    <button onclick="quickSearch('プログラミング技術')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">プログラミング技術</button>
+                    <button onclick="quickSearch('工業情報数理')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">工業情報数理</button>
+                    <button onclick="quickSearch('建築構造')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">建築構造</button>
+                    <button onclick="quickSearch('機械設計')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">機械設計</button>
+                </div>
+
+                <!-- 商業高校 -->
+                <div id="scat-hs_comm" class="scat-block hidden grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('簿記')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">簿記</button>
+                    <button onclick="quickSearch('原価計算')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">原価計算</button>
+                    <button onclick="quickSearch('マーケティング')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">マーケティング</button>
+                    <button onclick="quickSearch('情報処理')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">情報処理</button>
+                </div>
+
+                <!-- その他 -->
+                <div id="scat-other" class="scat-block hidden grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="quickSearch('農業')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">農業</button>
+                    <button onclick="quickSearch('水産')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">水産</button>
+                    <button onclick="quickSearch('福祉')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">福祉</button>
+                    <button onclick="quickSearch('看護')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">看護</button>
+                    <button onclick="quickSearch('探求')" class="p-4 bg-[var(--bg-base)] rounded-xl font-bold text-sm text-left hover:bg-[var(--bg-sub)]">探求</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             10 保護者向け・レポート (view-parents-report)
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-parents-report" class="view-section hidden container mx-auto px-4 max-w-4xl py-12">
+            <div class="bg-white rounded-[32px] p-6 md:p-10 border border-[var(--border-color)] shadow-sm">
+                <div class="text-center mb-10">
+                    <span class="text-xs font-black text-[var(--accent-dark)] tracking-wider">PARENTAL DASHBOARD</span>
+                    <h2 class="text-2xl font-black text-[var(--text-dark)] mt-1">保護者向け学習サポート</h2>
+                    <p class="text-xs text-[var(--text-muted)]">お子様の学習日数、学習時間、閲覧した教材をリアルタイムで確認</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- 統計カード -->
+                    <div class="bg-[var(--bg-base)] rounded-2xl p-6 text-center">
+                        <i data-lucide="calendar" class="w-8 h-8 mx-auto mb-2 text-[var(--accent-main)]"></i>
+                        <h4 class="text-xs font-black text-[var(--text-muted)]">今月の学習日数</h4>
+                        <p class="text-3xl font-black text-[var(--text-dark)] mt-1"><span id="p-stat-days">1</span> 日</p>
+                    </div>
+                    <div class="bg-[var(--bg-base)] rounded-2xl p-6 text-center">
+                        <i data-lucide="clock" class="w-8 h-8 mx-auto mb-2 text-blue-500"></i>
+                        <h4 class="text-xs font-black text-[var(--text-muted)]">累計学習時間</h4>
+                        <p class="text-3xl font-black text-[var(--text-dark)] mt-1"><span id="p-stat-time">0</span> 分</p>
+                    </div>
+                </div>
+
+                <!-- 閲覧履歴 -->
+                <div class="mb-10">
+                    <h3 class="font-black text-sm mb-4 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4 text-[var(--accent-main)]"></i>直近の教材閲覧履歴</h3>
+                    <div id="parents-view-history-list" class="space-y-3">
+                        <p class="text-xs text-[var(--text-muted)]">学習履歴がありません。プリントを閲覧するとここに記録されます。</p>
+                    </div>
+                </div>
+
+                <!-- 学習レポートと将来AI機能 -->
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-emerald-100">
+                    <h4 class="font-black text-sm text-[var(--accent-dark)] mb-2 flex items-center gap-1.5"><i data-lucide="sparkles"></i> AI学習分析・苦手克服レポート（将来実装候補）</h4>
+                    <p class="text-xs text-[var(--text-main)] leading-relaxed">
+                        タマベンAIが、閲覧履歴や動画の視聴割合から「つまずきポイント」を自動分析します。次回以降のバージョンで「パーソナライズ学習計画」がリリース予定です。
+                    </p>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- フッター -->
-    <footer class="bg-[var(--text-dark)] text-[#86a58d] py-12 text-center text-xs">
+    <footer class="bg-[var(--text-dark)] text-[#86a58d] py-12 text-center text-xs border-t border-[var(--border-color)]">
         <div class="container mx-auto px-4">
             <p class="font-black tracking-widest uppercase mb-2">TAMABEN</p>
             <p>&copy; 2026 Tamaben. Dedicated to every learner.</p>
         </div>
     </footer>
 
-    <!-- 学年設定モーダル -->
-    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-[32px] p-6 md:p-10 w-full max-w-sm shadow-2xl relative">
-            <button onclick="closeSettingsModal()" class="absolute top-5 right-5 text-[var(--text-light)] hover:text-[var(--text-main)] transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            
-            <div class="text-center">
-                <div class="w-12 h-12 bg-[var(--bg-sub)] text-[var(--text-main)] rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="sparkles" class="w-6 h-6"></i>
-                </div>
-                <h3 class="text-lg font-black text-[var(--text-dark)] mb-2">学年を設定しよう</h3>
-                <p class="text-xs text-[var(--text-muted)] mb-6">生年月日を設定すると、あなたに合った学年の教材が自動で優先表示されます。</p>
-                
-                <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-2xl bg-[var(--bg-sub)] border border-[var(--border-color)] outline-none font-black text-[var(--text-main)] text-center mb-6 focus:border-[var(--accent-main)] transition-colors text-sm">
-                
-                <div class="space-y-2">
-                    <button onclick="saveBirthDate()" class="w-full py-3 bg-[var(--accent-main)] text-white rounded-2xl font-black hover:bg-[var(--accent-dark)] transition-colors shadow-lg shadow-green-600/10 text-sm">設定を保存する</button>
-                    <button onclick="clearBirthDate()" class="w-full py-2 text-xs font-bold text-red-500 hover:underline">設定をリセット</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- スクリプト -->
     <script>
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
+        let currentSubCat = 'elem';
+
+        // 仮想データベース（ローカルストレージと連動）
+        let userStats = {
+            viewCount: 0,
+            views: [], // [{title, time, date}]
+            favMaterials: [], // [id]
+            favVideos: [], // [id]
+            learningDays: [], // ['YYYY-MM-DD']
+            learningSeconds: 0
+        };
+
+        let userSettings = {
+            registered: false,
+            schoolType: 'elementary',
+            grade: '小学1年生',
+            courseType: '普通科',
+            textbook: '東京書籍'
+        };
+
+        // タイマー（学習時間をカウント）
+        setInterval(() => {
+            userStats.learningSeconds++;
+            if (userStats.learningSeconds % 10 === 0) { // 10秒毎にセーブ
+                saveStatsToStorage();
+                updateParentsDashboard();
+            }
+        }, 1000);
 
         // 教材の取得：以前の元のコードをそのまま定義
         async function loadMaterials() {
@@ -546,10 +806,16 @@
                     { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
                     { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#' },
                     { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベット (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' }
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベット (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' },
+                    // デモ用の追加データ
+                    { id: 5, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式① 基礎', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 6, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式② 代入法', pdfBasic: 'sample.pdf', pdfAdv: 'sample.pdf', pdfAns: 'sample.pdf' },
+                    { id: 7, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式③ 加減法', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 8, tab: 'junior', subject: '理科', grade: '中学2年生', title: '化学変化と分子', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' }
                 ];
             }
             renderMaterials();
+            renderMyPagePersonalized();
         }
 
         async function renderPDFThumbnail(url, canvasId) {
@@ -581,27 +847,12 @@
         // 完全に機能を統合した教材一覧レンダリング
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            const filterValue = document.getElementById('material-filter').value;
-            
             if (!container) return;
 
-            const filtered = MATERIAL_DATA.filter(item => {
-                const matchTab = item.tab === currentTab;
-                const matchText = item.title.toLowerCase().includes(query) || item.subject.toLowerCase().includes(query) || item.grade.includes(query);
-                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || 
-                                       (item.pdfAdv && item.pdfAdv !== "#") || 
-                                       (item.pdfAns && item.pdfAns !== "#");
-                
-                let matchFilter = true;
-                if (filterValue === 'available') matchFilter = hasAnyMaterial;
-                if (filterValue === 'unavailable') matchFilter = !hasAnyMaterial;
-
-                return matchTab && (query === "" || matchText) && matchFilter;
-            });
+            const filtered = MATERIAL_DATA.filter(item => item.tab === currentTab);
 
             if(filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm flex flex-col items-center"><i data-lucide="compass" class="w-10 h-10 mb-4 opacity-50"></i>条件に一致する教材が見つかりません。</div>`;
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm flex flex-col items-center"><i data-lucide="compass" class="w-10 h-10 mb-4 opacity-50"></i>教材が見つかりません。</div>`;
                 lucide.createIcons();
                 return;
             }
@@ -648,14 +899,91 @@
             lucide.createIcons();
         }
 
-        // 元のボタンの活性・非活性定義に沿った教材詳細ページの展開
-        function openDetail(item, hasAnyMaterial) {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-detail').classList.remove('hidden');
+        // SPAルーティング
+        function showView(viewId) {
+            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-parents-report'];
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             
+            // 履歴の更新
+            if (viewId === 'view-parents-report') updateParentsDashboard();
+            if (viewId === 'view-mypage') renderMyPage();
+        }
+
+        // クイック検索
+        function quickSearch(keyword) {
+            document.getElementById('search-keyword').value = keyword;
+            executeSearch();
+        }
+
+        // 検索実行
+        function executeSearch() {
+            const grade = document.getElementById('search-grade').value;
+            const subject = document.getElementById('search-subject').value;
+            const keyword = document.getElementById('search-keyword').value.toLowerCase().trim();
+
+            document.getElementById('search-results-title').textContent = keyword ? `「${keyword}」の検索結果` : '検索結果一覧';
+            
+            const resultsGrid = document.getElementById('search-results-grid');
+            if (!resultsGrid) return;
+
+            const filtered = MATERIAL_DATA.filter(item => {
+                const matchGrade = grade ? item.grade === grade : true;
+                const matchSubject = subject ? item.subject.includes(subject) : true;
+                const matchKeyword = keyword ? (item.title.toLowerCase().includes(keyword) || item.subject.toLowerCase().includes(keyword)) : true;
+                return matchGrade && matchSubject && matchKeyword;
+            });
+
+            resultsGrid.innerHTML = "";
+            if (filtered.length === 0) {
+                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-[var(--text-muted)] font-black text-sm">条件に一致する教材がありません。</div>`;
+            } else {
+                filtered.forEach((item, index) => {
+                    const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    const card = document.createElement('div');
+                    const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
+                    card.className = "premium-card cursor-pointer group flex flex-col p-4 bg-white";
+                    card.innerHTML = `
+                        <div class="pdf-thumbnail-wrapper mb-3">
+                            <canvas id="${canvasId}" class="pdf-canvas"></canvas>
+                        </div>
+                        <span class="text-[10px] font-black text-[var(--accent-dark)] bg-[var(--bg-sub)] px-2 py-0.5 rounded-md w-fit mb-2">${item.subject}</span>
+                        <h3 class="text-sm font-black text-[var(--text-main)] group-hover:text-[var(--accent-dark)] transition-colors leading-snug mb-1">${item.title}</h3>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-auto">${item.grade}</p>
+                    `;
+                    card.onclick = () => openDetail(item, hasAnyMaterial);
+                    resultsGrid.appendChild(card);
+                    if (item.pdfBasic && item.pdfBasic !== "#") {
+                        renderPDFThumbnail(item.pdfBasic, canvasId);
+                    }
+                });
+            }
+
+            showView('view-search-results');
+            lucide.createIcons();
+        }
+
+        // 教材詳細ページの展開 (動画続き再生/お気に入り等のシミュレータ付き)
+        function openDetail(item, hasAnyMaterial) {
+            showView('view-detail');
+            
+            // 閲覧履歴に保存
+            recordViewHistory(item.title);
+
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
+
+            const isFav = userStats.favMaterials.includes(item.id);
+            const isVideoFav = userStats.favVideos.includes(item.id);
+
+            // 続きから再生用のシミュレーション再生時間
+            const savedTime = localStorage.getItem(`tamaben_video_time_${item.id}`) || 0;
 
             document.getElementById('detail-content').innerHTML = `
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
@@ -673,7 +1001,6 @@
                         <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-main)] mb-8 md:mb-12 leading-tight tracking-tight">${item.title}</h2>
                         
                         <div class="flex flex-col gap-4 max-w-sm mx-auto md:mx-0 w-full">
-                            <!-- 前のコードのdisabled制御、文言を完全にそのまま継承 -->
                             <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)] hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-[0_10px_25px_rgba(76,175,80,0.15)] hover:-translate-y-1">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                                 ${hasBasic ? '基本問題をひらく' : '準備中'}
@@ -689,101 +1016,320 @@
                                 ${hasAns ? '解答・解説を確認する' : '準備中'}
                             </button>
                         </div>
+
+                        <!-- お気に入りとお気に入り動画 -->
+                        <div class="flex gap-2 mt-6 max-w-sm">
+                            <button onclick="toggleFavoriteMaterial(${item.id})" class="flex-1 py-3 px-4 border border-[var(--border-color)] rounded-xl font-bold text-xs bg-white text-[var(--text-main)] hover:bg-slate-50 flex items-center justify-center gap-2">
+                                <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : ''}"></i>
+                                ${isFav ? 'お気に入り解除' : 'お気に入り保存'}
+                            </button>
+                            <button onclick="toggleFavoriteVideo(${item.id})" class="flex-1 py-3 px-4 border border-[var(--border-color)] rounded-xl font-bold text-xs bg-white text-[var(--text-main)] hover:bg-slate-50 flex items-center justify-center gap-2">
+                                <i data-lucide="video" class="w-4 h-4 ${isVideoFav ? 'text-blue-500 fill-blue-500' : ''}"></i>
+                                ${isVideoFav ? '動画保存中' : '動画を保存'}
+                            </button>
+                        </div>
                     </div>
-                </div>`;
+                </div>
+
+                <!-- 解説動画セクション (続きから再生可能) -->
+                <div class="mt-16 pt-12 border-t border-[var(--border-color)]">
+                    <h3 class="text-lg font-black text-[var(--text-dark)] mb-4">この教材の解説動画</h3>
+                    
+                    <div class="bg-white rounded-3xl p-6 border border-[var(--border-color)] max-w-3xl">
+                        <!-- 仮想プレイヤー -->
+                        <div class="custom-player aspect-video flex flex-col justify-between p-6 text-white mb-4 relative overflow-hidden">
+                            <div class="z-10 flex justify-between items-center w-full">
+                                <span class="bg-[var(--accent-main)] text-[10px] font-black px-2 py-0.5 rounded-full">タマベン授業動画</span>
+                                <span class="text-xs text-slate-400">解説時間: 12分</span>
+                            </div>
+                            
+                            <div class="text-center z-10 my-auto">
+                                <h4 class="font-black text-xl mb-1">${item.title} のポイント</h4>
+                                <p class="text-xs text-slate-300">つまずきやすい点に絞って徹底講義</p>
+                                ${savedTime > 0 ? `<p class="text-[10px] text-emerald-400 mt-2 font-bold"><i data-lucide="play" class="w-3 h-3 inline"></i> 前回は ${savedTime}秒 まで再生しました（続きから再生可能）</p>` : ''}
+                            </div>
+
+                            <div class="z-10 flex items-center gap-4 w-full">
+                                <button onclick="startVideoSim(${item.id})" class="px-4 py-2 bg-[var(--accent-main)] text-white text-xs font-black rounded-lg flex items-center gap-1">
+                                    <i data-lucide="play" class="w-4 h-4"></i> 再生シミュレーション
+                                </button>
+                                <span class="text-xs text-slate-400" id="video-timer-label-${item.id}">現在の位置: ${savedTime}秒</span>
+                            </div>
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
             
             if(hasBasic) renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
 
-        // ホーム画面に戻る
         function goHome() { 
-            document.getElementById('view-home').classList.remove('hidden'); 
-            document.getElementById('view-detail').classList.add('hidden'); 
-            renderMaterials(); 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            showView('view-home');
         }
 
-        // おすすめカードなどの検索連動
-        function setSearchTerm(term) {
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.value = term;
-                renderMaterials();
-                scrollToSection('materials-section');
+        // 仮想動画再生ロジック（続きから再生をシミュレート）
+        let videoInterval = null;
+        function startVideoSim(itemId) {
+            if (videoInterval) clearInterval(videoInterval);
+            let curTime = parseInt(localStorage.getItem(`tamaben_video_time_${itemId}`) || 0);
+            
+            videoInterval = setInterval(() => {
+                curTime += 5;
+                localStorage.setItem(`tamaben_video_time_${itemId}`, curTime);
+                const lbl = document.getElementById(`video-timer-label-${itemId}`);
+                if (lbl) lbl.textContent = `現在の位置: ${curTime}秒 (自動保存中)`;
+                
+                if (curTime >= 720) { // 12分終了
+                    clearInterval(videoInterval);
+                    alert("動画の視聴が完了しました！学習時間に12分追加されました。");
+                    userStats.learningSeconds += 720;
+                    saveStatsToStorage();
+                }
+            }, 1000);
+        }
+
+        // お気に入り教材切替
+        function toggleFavoriteMaterial(id) {
+            const index = userStats.favMaterials.indexOf(id);
+            if (index > -1) {
+                userStats.favMaterials.splice(index, 1);
+            } else {
+                userStats.favMaterials.push(id);
+            }
+            saveStatsToStorage();
+            // 詳細ビューのリロード
+            const item = MATERIAL_DATA.find(m => m.id === id);
+            openDetail(item, true);
+        }
+
+        // お気に入り動画切替
+        function toggleFavoriteVideo(id) {
+            const index = userStats.favVideos.indexOf(id);
+            if (index > -1) {
+                userStats.favVideos.splice(index, 1);
+            } else {
+                userStats.favVideos.push(id);
+            }
+            saveStatsToStorage();
+            const item = MATERIAL_DATA.find(m => m.id === id);
+            openDetail(item, true);
+        }
+
+        // 学年・プロフィールの設定保存
+        let selectedRegSchoolType = 'elementary';
+        function setRegSchoolType(type) {
+            selectedRegSchoolType = type;
+            document.querySelectorAll('.reg-st-btn').forEach(b => {
+                b.classList.remove('bg-[var(--accent-main)]', 'text-white');
+                b.classList.add('bg-slate-50', 'text-[var(--text-main)]');
+            });
+            const activeBtn = document.getElementById(`reg-st-${type}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-50');
+                activeBtn.classList.add('bg-[var(--accent-main)]', 'text-white');
+            }
+
+            // 高校生のみ追加ブロックを表示
+            const block = document.getElementById('reg-high-special-block');
+            if (type === 'high') {
+                block.classList.remove('hidden');
+            } else {
+                block.classList.add('hidden');
             }
         }
 
-        // 教科アイコンフィルター
-        function filterBySubject(subj) {
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.value = subj;
-                renderMaterials();
-                scrollToSection('materials-section');
+        function saveRegisterProfile() {
+            userSettings.registered = true;
+            userSettings.schoolType = selectedRegSchoolType;
+            userSettings.grade = document.getElementById('reg-grade').value;
+            userSettings.courseType = document.getElementById('reg-course-type').value;
+            userSettings.textbook = document.getElementById('reg-textbook').value;
+
+            localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
+            
+            // 今日の日付を学習日に登録
+            recordDay();
+
+            applyUserProfile();
+            showView('view-mypage');
+        }
+
+        function applyUserProfile() {
+            const saved = localStorage.getItem('tamaben_user_settings');
+            if (saved) {
+                userSettings = JSON.parse(saved);
+                document.getElementById('user-grade-label').textContent = userSettings.grade;
+                document.getElementById('grade-badge').classList.remove('hidden');
+                document.getElementById('login-btn-label').textContent = "マイページ";
             }
         }
 
-        function scrollToSection(id) {
-            const target = document.getElementById(id);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-        
-        // 学年・生年月日判定：以前の判定方法を完全適用
-        function saveBirthDate() {
-            const val = document.getElementById('birthdate-input').value;
-            if (!val) return;
-            localStorage.setItem('tamaben_birthdate', val);
-            applySettings(val);
-            closeSettingsModal();
-        }
-
-        function clearBirthDate() { 
-            localStorage.removeItem('tamaben_birthdate'); 
-            location.reload(); 
-        }
-        
-        function applySettings(dateStr) {
-            const today = new Date();
-            const birth = new Date(dateStr);
-            let schoolYear = today.getFullYear() - (today.getMonth() + 1 < 4 ? 1 : 0);
-            let birthYear = birth.getFullYear() - (birth.getMonth() + 1 < 4 || (birth.getMonth() + 1 === 4 && birth.getDate() === 1) ? 1 : 0);
-            const age = schoolYear - birthYear;
-            const badge = document.getElementById('grade-badge');
-            const label = document.getElementById('user-grade-label');
-            if (age >= 6 && age <= 11) { 
-                label.textContent = `小学${age - 5}年生`; 
-                badge.classList.remove('hidden'); 
-                switchTab('elementary'); 
-            }
-            else if (age >= 12 && age <= 14) { 
-                label.textContent = `中学${age - 11}年生`; 
-                badge.classList.remove('hidden'); 
-                switchTab('junior'); 
+        function handleUserMenu() {
+            if (userSettings.registered) {
+                showView('view-mypage');
+            } else {
+                showView('view-register');
             }
         }
 
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
-            document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
-            renderMaterials();
+        // マイページの描画
+        function renderMyPage() {
+            document.getElementById('mypage-user-profile-sub').textContent = `${userSettings.grade} (${userSettings.courseType}) | 教科書: ${userSettings.textbook}`;
+            
+            // お気に入り教材の描画
+            const favMatContainer = document.getElementById('mypage-fav-materials');
+            favMatContainer.innerHTML = "";
+            if (userStats.favMaterials.length === 0) {
+                favMatContainer.innerHTML = `<p class="text-xs text-[var(--text-muted)]">お気に入りの教材がありません。</p>`;
+            } else {
+                userStats.favMaterials.forEach(id => {
+                    const item = MATERIAL_DATA.find(m => m.id === id);
+                    if (item) {
+                        const row = document.createElement('div');
+                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                        row.innerHTML = `
+                            <div>
+                                <h4 class="font-black text-xs text-[var(--text-main)]">${item.title}</h4>
+                                <p class="text-[9px] text-[var(--text-muted)]">${item.grade} | ${item.subject}</p>
+                            </div>
+                            <button onclick="openDetailByKey(${item.id})" class="text-xs font-black text-[var(--accent-dark)] hover:underline">開く</button>
+                        `;
+                        favMatContainer.appendChild(row);
+                    }
+                });
+            }
+
+            // お気に入り動画の描画
+            const favVidContainer = document.getElementById('mypage-fav-videos');
+            favVidContainer.innerHTML = "";
+            if (userStats.favVideos.length === 0) {
+                favVidContainer.innerHTML = `<p class="text-xs text-[var(--text-muted)]">お気に入りの動画がありません。</p>`;
+            } else {
+                userStats.favVideos.forEach(id => {
+                    const item = MATERIAL_DATA.find(m => m.id === id);
+                    if (item) {
+                        const row = document.createElement('div');
+                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                        row.innerHTML = `
+                            <div>
+                                <h4 class="font-black text-xs text-[var(--text-main)]">${item.title} の解説動画</h4>
+                                <p class="text-[9px] text-[var(--text-muted)]">${item.grade} | ${item.subject}</p>
+                            </div>
+                            <button onclick="openDetailByKey(${item.id})" class="text-xs font-black text-[var(--accent-dark)] hover:underline">再生</button>
+                        `;
+                        favVidContainer.appendChild(row);
+                    }
+                });
+            }
+
+            renderMyPagePersonalized();
         }
 
-        function openSettingsModal() { document.getElementById('settings-modal').classList.add('active'); }
-        function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
+        function openDetailByKey(id) {
+            const item = MATERIAL_DATA.find(m => m.id === id);
+            if (item) openDetail(item, true);
+        }
+
+        // あなたにぴったり表示ロジック (学年、教科書、学校種別でマッチング)
+        function renderMyPagePersonalized() {
+            const container = document.getElementById('mypage-personalized-materials');
+            if (!container) return;
+
+            const matched = MATERIAL_DATA.filter(item => {
+                // 学年をマッチング
+                return item.grade === userSettings.grade;
+            });
+
+            container.innerHTML = "";
+            const targets = matched.length > 0 ? matched : MATERIAL_DATA.slice(0, 4);
+
+            targets.forEach(item => {
+                const col = document.createElement('div');
+                col.className = "p-3 bg-[var(--bg-base)] rounded-xl flex flex-col justify-between cursor-pointer hover:border-[var(--accent-main)] border border-transparent transition-all";
+                col.innerHTML = `
+                    <div>
+                        <span class="text-[9px] font-black text-[var(--accent-dark)]">${item.subject}</span>
+                        <h4 class="font-black text-xs text-[var(--text-main)] line-clamp-2 mt-1">${item.title}</h4>
+                    </div>
+                    <p class="text-[9px] text-[var(--text-muted)] mt-2">${item.grade}</p>
+                `;
+                col.onclick = () => openDetail(item, true);
+                container.appendChild(col);
+            });
+        }
+
+        // 全教科カテゴリースイッチ
+        function switchSubjectCategory(catId) {
+            document.querySelectorAll('.subj-cat-tab').forEach(b => {
+                b.classList.remove('active', 'bg-[var(--accent-main)]', 'text-white');
+                b.classList.add('bg-white', 'text-[var(--text-muted)]');
+            });
+            event.target.classList.add('active');
+            event.target.classList.remove('bg-white');
+
+            document.querySelectorAll('.scat-block').forEach(block => {
+                block.classList.add('hidden');
+            });
+            document.getElementById(`scat-${catId}`).classList.remove('hidden');
+        }
+
+        // 保護者向けサポート・学習履歴ロジック
+        function updateParentsDashboard() {
+            document.getElementById('p-stat-days').textContent = userStats.learningDays.length || 1;
+            document.getElementById('p-stat-time').textContent = Math.round(userStats.learningSeconds / 60);
+
+            const histList = document.getElementById('parents-view-history-list');
+            histList.innerHTML = "";
+            if (userStats.views.length === 0) {
+                histList.innerHTML = `<p class="text-xs text-[var(--text-muted)]">直近の閲覧履歴はありません。</p>`;
+            } else {
+                userStats.views.slice(-5).reverse().forEach(v => {
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                    row.innerHTML = `
+                        <span class="font-black text-xs text-[var(--text-main)]">${v.title}</span>
+                        <span class="text-[10px] text-[var(--text-muted)]">${v.time}</span>
+                    `;
+                    histList.appendChild(row);
+                });
+            }
+        }
+
+        function recordViewHistory(title) {
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            userStats.views.push({ title: title, time: timeStr });
+            if (userStats.views.length > 50) userStats.views.shift(); // 50件まで保持
+            saveStatsToStorage();
+        }
+
+        function recordDay() {
+            const todayStr = (new Date()).toISOString().split('T')[0];
+            if (!userStats.learningDays.includes(todayStr)) {
+                userStats.learningDays.push(todayStr);
+                saveStatsToStorage();
+            }
+        }
+
+        function saveStatsToStorage() {
+            localStorage.setItem('tamaben_user_stats', JSON.stringify(userStats));
+        }
+
+        function loadStatsFromStorage() {
+            const saved = localStorage.getItem('tamaben_user_stats');
+            if (saved) {
+                userStats = JSON.parse(saved);
+            }
+            recordDay();
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            document.getElementById('search-input').oninput = renderMaterials;
-            const saved = localStorage.getItem('tamaben_birthdate');
-            if (saved){ 
-                document.getElementById('birthdate-input').value = saved; 
-                applySettings(saved); 
-            }
+            loadStatsFromStorage();
+            applyUserProfile();
             loadMaterials();
         });
     </script>
