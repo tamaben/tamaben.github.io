@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ページが見つかりません - タマベン</title>
+    
+    <link class="favicon" rel="icon" href="./icon.ico" type="image/x-icon">
+    <link class="favicon" rel="shortcut icon" href="./icon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="./icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-base: #f4f8f4;
+            --text-main: #2e3d30;
+            --text-dark: #1b261c;
+            --text-muted: #84a589;
+            --text-light: #b5ccb8;
+            --accent-main: #4CAF50;
+            --accent-dark: #388E3C;
+            --bg-sub: #e6f0e7;
+            --bg-card: #ffffff;
+            --border-color: #d1e2d3;
+        }
+
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            overflow-x: hidden;
+            font-feature-settings: "palt";
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .hero-bg {
+            background: linear-gradient(180deg, #e4f3e8 0%, #ccead4 100%);
+        }
+
+        /* 丘の背景カーブ */
+        .hill-curve {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        .hill-curve svg {
+            position: relative;
+            display: block;
+            width: calc(140% + 1.3px);
+            height: 100px;
+        }
+
+        .search-field { background: var(--bg-card); border: 2px solid var(--border-color); transition: all 0.3s ease; }
+        .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 8px 24px rgba(76, 175, 80, 0.15); }
+    </style>
+</head>
+<body class="font-['Zen_Maru_Gothic'] flex flex-col min-h-screen">
+
+    <!-- ヘッダー（ロゴのみのシンプルなスタイル） -->
+    <header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-md border-b border-[var(--border-color)]">
+        <div class="container mx-auto px-4 lg:px-8 h-16 md:h-20 flex items-center justify-between max-w-7xl">
+            <a href="index.html" class="active:scale-95 transition-all outline-none">
+                <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 w-auto" onerror="this.outerHTML='<span class=\'font-black text-[var(--text-main)] text-xl\'>タマベン</span>'">
+            </a>
+            <a href="index.html" class="px-4 py-2 text-xs font-black rounded-full bg-[var(--bg-sub)] text-[var(--text-main)] hover:scale-105 transition-all outline-none border border-[var(--border-color)]">
+                トップページへ戻る
+            </a>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="flex-grow flex flex-col justify-between">
+        
+        <!-- 404ビジュアルエリア -->
+        <section class="hero-bg relative pt-16 pb-32 text-center overflow-hidden flex-grow flex flex-col justify-center items-center">
+            <div class="container mx-auto px-4 max-w-xl relative z-10 my-auto">
+                
+                <!-- イラスト代わりのグラフィックアイコン -->
+                <div class="w-20 h-20 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-white">
+                    <i data-lucide="compass" class="w-10 h-10 text-[var(--accent-dark)] animate-pulse"></i>
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-black text-[var(--text-dark)] leading-tight mb-4">
+                    404
+                </h1>
+                <h2 class="text-lg md:text-xl font-black text-[var(--text-dark)] mb-3">
+                    ページが見つかりませんでした
+                </h2>
+                <p class="text-xs md:text-sm text-[var(--text-muted)] leading-relaxed max-w-md mx-auto mb-8">
+                    お探しのページは、移動されたか削除された可能性があります。<br/>
+                    お手数ですが、以下の検索窓から教材を探すか、トップページにお戻りください。
+                </p>
+                
+                <!-- 検索キーワード入力（入力してエンターキーまたはボタンで検索へ遷移する仕掛け） -->
+                <div class="w-full max-w-md mx-auto px-2 mb-6">
+                    <form onsubmit="redirectToSearch(event)" class="search-field flex items-center rounded-full px-5 py-3.5 bg-white shadow-md">
+                        <i data-lucide="search" class="w-5 h-5 text-[var(--text-light)] mr-3"></i>
+                        <input type="text" id="error-search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-sm text-[var(--text-main)]">
+                        <button type="submit" class="text-xs font-black text-[var(--accent-dark)] hover:underline shrink-0 ml-2">検索</button>
+                    </form>
+                </div>
+
+                <div class="flex justify-center gap-3">
+                    <a href="index.html" class="px-6 py-3 bg-[var(--accent-main)] hover:bg-[var(--accent-dark)] text-white rounded-full font-black text-xs shadow-md transition-all flex items-center gap-1.5">
+                        <i data-lucide="home" class="w-4 h-4"></i> ホームへ戻る
+                    </a>
+                </div>
+            </div>
+
+            <!-- 丘のグラフィック -->
+            <div class="hill-curve">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,0 C300,90 900,20 1200,80 L1200,120 L0,120 Z" fill="var(--bg-base)"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 公式メディアリンクの統合（確実な表示を保証するインラインSVG） -->
+        <section class="container mx-auto px-4 py-8 text-center bg-[var(--bg-base)]">
+            <p class="text-xs font-black text-[var(--text-muted)] mb-4">タマベン公式メディア</p>
+            <div class="flex justify-center gap-4">
+                <!-- YouTube -->
+                <a href="https://youtube.com/@tamaben-tama" target="_blank" aria-label="YouTube" class="group flex items-center justify-center w-12 h-12 bg-white rounded-full hover:bg-red-50 hover:text-red-600 border border-[var(--border-color)] shadow-sm transition-all">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M21.582 6.186a2.665 2.665 0 0 0-1.87-1.884C18.062 3.86 12 3.86 12 3.86s-6.062 0-7.712.442a2.665 2.665 0 0 0-1.87 1.884C2 7.846 2 12 2 12s0 4.154.448 5.814a2.665 2.665 0 0 0 1.87 1.884c1.65.442 7.712.442 7.712.442s6.062 0 7.712-.442a2.665 2.665 0 0 0 1.87-1.884C22 16.154 22 12 22 12s0-4.154-.418-5.814zM9.99 15.474v-6.948l6.19 3.474-6.19 3.474z"/>
+                    </svg>
+                </a>
+                
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram" class="group flex items-center justify-center w-12 h-12 bg-white rounded-full hover:bg-pink-50 hover:text-pink-600 border border-[var(--border-color)] shadow-sm transition-all">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-[var(--text-dark)] text-[#86a58d] py-8 text-center text-xs border-t border-[var(--border-color)]">
+        <div class="container mx-auto px-4">
+            <p class="font-black tracking-widest uppercase mb-1">TAMABEN</p>
+            <p>&copy; 2026 Tamaben. Dedicated to every learner.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+        // 検索ワードを伴ってトップページへリダイレクト
+        function redirectToSearch(event) {
+            event.preventDefault();
+            const keyword = document.getElementById('error-search-input').value.trim();
+            if (keyword) {
+                // クエリパラメータ付きでホームへ遷移
+                window.location.href = `index.html?search=${encodeURIComponent(keyword)}`;
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
