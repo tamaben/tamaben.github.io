@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>タマベン - 無料で学べるオリジナル教材サイト</title>
+    <title>タマベン - 学びを、もっと自由に。</title>
     
-    <link rel="icon" href="./icon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="./icon.ico" type="image/x-icon">
+    <link class="favicon" rel="icon" href="./icon.ico" type="image/x-icon">
+    <link class="favicon" rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
-    <meta name="description" content="タマベンは、小学生・中学生向けの学習教材サイト。漢字、計算、歴史など、学びを自由にする教材をインストール不要ですぐに利用できます。">
-    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 小学生, 中学生, 学習管理, インストール不要">
+    <meta name="description" content="タマベンは、小学生・中学生向けの学習教材サイト。漢字、計算、歴史など、学びを自由にする教材をインストール不要ですぐに利用できます。Manabi Baton（まなびバトン）公式アプリも提供中。">
+    <meta name="keywords" content="タマベン, タマベンアプリ, 教材サイト, 無料プリント, 小学生, 中学生, 学習管理, インストール不要">
 
-    <meta property="og:title" content="タマベン - 無料で学べるオリジナル教材サイト">
+    <meta property="og:title" content="タマベン - 学びを、もっと自由に。">
     <meta property="og:description" content="小学生・中学生向けの無料教材・プリントサイト。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tamaben.github.io/">
     <meta property="og:image" content="https://tamaben.github.io/icon.png">
     <meta property="og:site_name" content="タマベン">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="タマベン - 学びを、もっと自由に。">
+    <meta name="twitter:description" content="インストール不要で使える学習教材サイト。">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,35 +32,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
+        /* テーマカラー変数 */
         :root {
-            --bg-base: #f5f9f6;
-            --text-main: #223a26;
-            --text-dark: #142417;
-            --text-muted: #6e8e74;
-            --text-light: #a4c2ab;
-            --accent-main: #34a853;
-            --accent-dark: #23853d;
-            --accent-light: #e8f5e9;
+            --bg-base: #f4f8f4;
+            --text-main: #2e3d30;
+            --text-dark: #1b261c;
+            --text-muted: #84a589;
+            --text-light: #b5ccb8;
+            --accent-main: #4CAF50;
+            --accent-dark: #388E3C;
+            --bg-sub: #e6f0e7;
             --bg-card: #ffffff;
-            --border-color: #e0ece3;
+            --border-color: #d1e2d3;
+            --blob-1: #aed581;
+            --blob-2: #81c784;
         }
 
         body { 
             background-color: var(--bg-base); 
             color: var(--text-main); 
+            overflow-x: hidden;
             font-feature-settings: "palt";
             padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .hero-bg {
-            background: linear-gradient(180deg, #e4f3e8 0%, #ccead4 100%);
         }
 
         /* 自然な丘の起伏を表現するカーブ */
@@ -73,7 +70,6 @@
             display: block;
             width: calc(140% + 1.3px);
             height: 120px;
-            transform: scroll-behavior;
         }
 
         .hill-curve-top {
@@ -92,77 +88,114 @@
             height: 80px;
         }
 
-        .premium-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .premium-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(34, 58, 38, 0.08);
-            border-color: var(--accent-main);
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding-top: env(safe-area-inset-top);
         }
 
+        .hero-bg {
+            background: linear-gradient(180deg, #e4f3e8 0%, #ccead4 100%);
+        }
+
+        .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-appear {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-appear.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* カードコンテナ */
+        .premium-card {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* プレビューラッパー */
         .pdf-thumbnail-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1.414;
-            background: #ffffff;
+            background: transparent;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid var(--border-color);
+            overflow: visible;
         }
 
+        /* PDFキャンバス（そのままの画像として表示） */
         .pdf-canvas {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            background-color: #ffffff;
+            border-radius: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+        
+        .premium-card:hover .pdf-canvas { 
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
-        .search-field {
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            transition: all 0.3s ease;
+        /* テキストエリアのアニメーション */
+        .card-text-area {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .search-field:focus-within {
-            border-color: var(--accent-main);
-            box-shadow: 0 8px 20px rgba(52, 168, 83, 0.15);
+        .premium-card:hover .card-text-area {
+            transform: translateY(-2px);
         }
 
-        .tab-pill {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            color: var(--text-muted);
-        }
-        .tab-pill.active {
-            background: var(--accent-main);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
-        }
+        .pdf-loading { position: absolute; color: var(--accent-main); animation: pulse 2s infinite; z-index: -1; }
 
-        /* アニメーション用クラス */
-        .fade-in-up {
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .search-field { background: var(--bg-card); border: 2px solid var(--border-color); transition: all 0.4s ease; }
+        .search-field:focus-within { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: scale(1.01); }
 
-        #settings-modal {
-            opacity: 0;
+        .tab-pill { transition: all 0.4s ease; color: var(--text-muted); }
+        .tab-pill.active { background: var(--accent-main); color: #ffffff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); }
+
+        .loading-pulse { animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        #settings-modal { opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 200; }
+        #settings-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
+
+        /* 元のボタン・バッジ無効化クラスを完全復元 */
+        .btn-disabled {
+            opacity: 0.5;
             pointer-events: none;
-            transition: all 0.3s ease;
-            z-index: 200;
+            background: var(--bg-sub) !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border-color) !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
         }
-        #settings-modal.active {
-            opacity: 1;
-            pointer-events: auto;
+
+        .badge-disabled {
+            background-color: transparent;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e1;
         }
+
+        .fluid-title { font-size: clamp(1.8rem, 6vw, 4.5rem); leading-trim: both; text-edge: cap; }
     </style>
 </head>
 <body class="font-['Zen_Maru_Gothic']">
@@ -190,7 +223,7 @@
                     <span class="text-[8px] font-black text-[var(--text-muted)] tracking-wider">学習モード</span>
                     <span id="user-grade-label" class="text-xs font-black text-[var(--text-main)]">未設定</span>
                 </div>
-                <button onclick="openSettingsModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--accent-light)] text-[var(--accent-dark)] hover:scale-105 transition-all outline-none" title="学年設定">
+                <button onclick="openSettingsModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--bg-sub)] text-[var(--text-main)] hover:scale-105 transition-all outline-none" title="学年設定">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -211,10 +244,23 @@
                     </h1>
                     
                     <!-- 検索窓 -->
-                    <div class="w-full max-w-2xl mx-auto mt-8 px-2">
-                        <div class="search-field flex items-center rounded-full px-5 py-3.5 bg-white shadow-md">
+                    <div class="w-full max-w-2xl mx-auto mt-8 px-2 flex flex-col sm:flex-row gap-3">
+                        <div class="search-field flex-grow flex items-center rounded-full px-5 py-3.5 bg-white shadow-md">
                             <i data-lucide="search" class="w-5 h-5 text-[var(--text-light)] mr-3"></i>
-                            <input type="text" id="search-input" placeholder="キーワードを入力（例：連立方程式、漢字、電気回路...）" class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
+                            <input type="text" id="search-input" placeholder="漢字、計算、歴史、1年生..." class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] placeholder:text-[var(--text-light)] text-sm md:text-base">
+                        </div>
+                        
+                        <!-- フィルター選択 (前の仕様を復元) -->
+                        <div class="search-field flex items-center rounded-full px-4 py-3 sm:w-48 shrink-0 relative bg-white shadow-md">
+                            <i data-lucide="filter" class="w-5 h-5 text-[var(--text-light)] mr-2"></i>
+                            <select id="material-filter" class="w-full bg-transparent outline-none font-bold text-[var(--text-main)] text-sm cursor-pointer appearance-none" onchange="renderMaterials()">
+                                <option value="all">すべて表示</option>
+                                <option value="available">教材あり</option>
+                                <option value="unavailable">準備中のみ</option>
+                            </select>
+                            <div class="absolute right-4 pointer-events-none text-[var(--text-light)]">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -237,19 +283,19 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- 最近やったところ -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('一次関数')">
+                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('一次関数')">
                             <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">最近やったところから</span>
                             <h3 class="font-black text-base text-[var(--text-main)] mb-1">一次関数</h3>
                             <p class="text-xs text-[var(--text-muted)]">数学 | 中学2年生</p>
                         </div>
                         <!-- つぎに学ぶところ -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('連立方程式')">
+                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('連立方程式')">
                             <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">つぎに学ぶところ</span>
                             <h3 class="font-black text-base text-[var(--text-main)] mb-1">連立方程式</h3>
                             <p class="text-xs text-[var(--text-muted)]">数学 | 中学2年生</p>
                         </div>
                         <!-- おすすめ動画 -->
-                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('化学変化')">
+                        <div class="bg-[var(--bg-base)] p-5 rounded-2xl border border border-[var(--border-color)] hover:border-[var(--accent-main)] transition-colors cursor-pointer" onclick="setSearchTerm('化学変化')">
                             <span class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">おすすめ動画</span>
                             <h3 class="font-black text-base text-[var(--text-main)] mb-1">化学変化と原子・分子</h3>
                             <p class="text-xs text-[var(--text-muted)]">理科 | 中学2年生</p>
@@ -334,8 +380,9 @@
                             <span class="text-xs font-bold text-slate-100 group-hover:text-white">技術</span>
                         </button>
                         <button onclick="filterBySubject('体育')" class="group flex flex-col items-center gap-2 outline-none">
+                            <!-- 体育のアイコンを確実に出る「dumbbell」へ差し替え -->
                             <div class="w-14 h-14 bg-white/10 group-hover:bg-white group-hover:text-[#245031] rounded-full flex items-center justify-center transition-all duration-300">
-                                <i data-lucide="dribbble" class="w-6 h-6"></i>
+                                <i data-lucide="dumbbell" class="w-6 h-6"></i>
                             </div>
                             <span class="text-xs font-bold text-slate-100 group-hover:text-white">体育</span>
                         </button>
@@ -361,17 +408,8 @@
                     </div>
                 </div>
 
-                <!-- フィルターオプション -->
-                <div class="flex justify-end gap-3 mb-6 max-w-xs ml-auto">
-                    <select id="material-filter" class="w-full bg-white border border-[var(--border-color)] rounded-2xl px-4 py-2.5 font-bold text-sm text-[var(--text-main)] cursor-pointer outline-none shadow-sm" onchange="renderMaterials()">
-                        <option value="all">すべての教材</option>
-                        <option value="available">今すぐダウンロード可能</option>
-                        <option value="unavailable">準備中</option>
-                    </select>
-                </div>
-
                 <!-- 教材カードのグリッド表示 -->
-                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[30vh]">
+                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[40vh]">
                     <!-- JSにて動的に表示 -->
                 </div>
             </section>
@@ -383,7 +421,7 @@
                 </div>
                 <div class="flex justify-center">
                     <a href="manabi.html" class="group flex items-center gap-4 p-5 bg-white rounded-3xl shadow-sm border border-[var(--border-color)] hover:shadow-md hover:border-[var(--accent-main)] transition-all max-w-md w-full">
-                        <div class="w-14 h-14 rounded-2xl bg-[var(--accent-light)] flex items-center justify-center shrink-0">
+                        <div class="w-14 h-14 rounded-2xl bg-[var(--bg-sub)] flex items-center justify-center shrink-0">
                             <i data-lucide="layers" class="w-7 h-7 text-[var(--accent-dark)]"></i>
                         </div>
                         <div class="flex-grow">
@@ -476,13 +514,13 @@
             </button>
             
             <div class="text-center">
-                <div class="w-12 h-12 bg-[var(--accent-light)] text-[var(--accent-dark)] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="w-12 h-12 bg-[var(--bg-sub)] text-[var(--text-main)] rounded-full flex items-center justify-center mx-auto mb-4">
                     <i data-lucide="sparkles" class="w-6 h-6"></i>
                 </div>
                 <h3 class="text-lg font-black text-[var(--text-dark)] mb-2">学年を設定しよう</h3>
                 <p class="text-xs text-[var(--text-muted)] mb-6">生年月日を設定すると、あなたに合った学年の教材が自動で優先表示されます。</p>
                 
-                <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-2xl bg-[var(--bg-base)] border border-[var(--border-color)] outline-none font-black text-[var(--text-main)] text-center mb-6 focus:border-[var(--accent-main)] transition-colors text-sm">
+                <input type="date" id="birthdate-input" class="w-full px-4 py-3 rounded-2xl bg-[var(--bg-sub)] border border-[var(--border-color)] outline-none font-black text-[var(--text-main)] text-center mb-6 focus:border-[var(--accent-main)] transition-colors text-sm">
                 
                 <div class="space-y-2">
                     <button onclick="saveBirthDate()" class="w-full py-3 bg-[var(--accent-main)] text-white rounded-2xl font-black hover:bg-[var(--accent-dark)] transition-colors shadow-lg shadow-green-600/10 text-sm">設定を保存する</button>
@@ -497,29 +535,23 @@
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
 
-        // サンプルデータ（画像01、04、05に対応した内容）
-        const fallbackData = [
-            { id: 1, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式① 基礎', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-            { id: 2, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式② 代入法', pdfBasic: 'sample.pdf', pdfAdv: 'sample_adv.pdf', pdfAns: 'sample_ans.pdf' },
-            { id: 3, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式③ 加減法', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-            { id: 4, tab: 'junior', subject: '理科', grade: '中学2年生', title: '化学変化と原子・分子', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
-            { id: 5, tab: 'junior', subject: '英語', grade: '中学2年生', title: '英語 現在完了形 (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' },
-            { id: 6, tab: 'elementary', subject: '国語', grade: '小学2年生', title: '漢字のれんしゅう (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' },
-            { id: 7, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' }
-        ];
-
+        // 教材の取得：以前の元のコードをそのまま定義
         async function loadMaterials() {
             try {
                 const response = await fetch('data.json');
-                if(!response.ok) throw new Error('data.json not found');
+                if(!response.ok) throw new Error('Network response was not ok');
                 MATERIAL_DATA = await response.json();
             } catch (e) {
-                MATERIAL_DATA = fallbackData;
+                MATERIAL_DATA = [
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字のれんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#' },
+                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかた', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '' },
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベット (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '' }
+                ];
             }
             renderMaterials();
         }
 
-        // PDFの1ページ目をキャンバスに描画
         async function renderPDFThumbnail(url, canvasId) {
             try {
                 const canvas = document.getElementById(canvasId);
@@ -527,7 +559,7 @@
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
                 const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 1.5 });
+                const viewport = page.getViewport({ scale: 2.0 });
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
@@ -540,17 +572,13 @@
                 const canvas = document.getElementById(canvasId);
                 if(canvas) {
                     const wrapper = canvas.parentElement;
-                    wrapper.innerHTML = `
-                        <div class="text-[var(--text-light)] flex flex-col items-center gap-1">
-                            <i data-lucide="file-text" class="w-8 h-8 opacity-40"></i>
-                            <span class="text-[10px] font-bold">No Preview</span>
-                        </div>`;
+                    wrapper.innerHTML = `<div class="text-[var(--text-light)] flex flex-col items-center gap-1"><i data-lucide="file-question" class="w-6 h-6"></i><span class="text-[9px] font-bold">No Preview</span></div>`;
                     lucide.createIcons();
                 }
             }
         }
 
-        // 教材一覧の描画
+        // 完全に機能を統合した教材一覧レンダリング
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
             const query = document.getElementById('search-input').value.toLowerCase().trim();
@@ -573,11 +601,7 @@
             });
 
             if(filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-16 text-center text-[var(--text-muted)] font-bold text-sm flex flex-col items-center gap-2">
-                        <i data-lucide="search-code" class="w-8 h-8 opacity-40"></i>
-                        該当する教材が見つかりません。
-                    </div>`;
+                container.innerHTML = `<div class="col-span-full py-20 text-center text-[var(--text-light)] font-black text-sm flex flex-col items-center"><i data-lucide="compass" class="w-10 h-10 mb-4 opacity-50"></i>条件に一致する教材が見つかりません。</div>`;
                 lucide.createIcons();
                 return;
             }
@@ -585,30 +609,24 @@
             container.innerHTML = "";
             filtered.forEach((item, index) => {
                 const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                card.className = "premium-card cursor-pointer flex flex-col";
+                card.className = "premium-card cursor-pointer group card-appear flex flex-col";
                 card.innerHTML = `
                     <div class="pdf-thumbnail-wrapper">
-                        <i data-lucide="loader-2" class="w-6 h-6 pdf-loading animate-spin text-[var(--accent-main)]"></i>
+                        <i data-lucide="loader-2" class="w-6 h-6 pdf-loading animate-spin"></i>
                         <canvas id="${canvasId}" class="pdf-canvas"></canvas>
                     </div>
                     
-                    <div class="p-4 flex-grow flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-1.5 mb-2 flex-wrap">
-                                <span class="px-2 py-0.5 bg-[var(--accent-light)] text-[var(--accent-dark)] text-[10px] font-black rounded-md">${item.subject}</span>
-                                <span class="text-[10px] font-bold text-[var(--text-muted)]">${item.grade}</span>
-                            </div>
-                            <h3 class="text-sm font-black text-[var(--text-main)] leading-snug line-clamp-2">${item.title}</h3>
+                    <div class="py-4 px-1 flex-grow flex flex-col bg-transparent relative z-10 card-text-area">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="px-2 py-1 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-[9px] sm:text-[10px] font-black rounded-lg border border-white">${item.subject}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-[var(--text-muted)]">${item.grade}</span>
+                            ${!hasAnyMaterial ? `<span class="badge-disabled px-2 py-1 text-[9px] sm:text-[10px] font-black rounded-lg">準備中</span>` : ''}
                         </div>
-                        <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
-                            <span class="text-[10px] font-bold ${hasAnyMaterial ? 'text-[var(--accent-dark)]' : 'text-slate-400'}">
-                                ${hasAnyMaterial ? 'ダウンロード可能' : '只今準備中'}
-                            </span>
-                            <i data-lucide="arrow-right" class="w-4 h-4 text-[var(--text-light)]"></i>
-                        </div>
+                        <h3 class="text-sm sm:text-base font-black text-[var(--text-main)] group-hover:text-[var(--accent-dark)] transition-colors leading-snug flex-grow drop-shadow-sm">${item.title}</h3>
                     </div>
                 `;
                 
@@ -618,18 +636,19 @@
                 if (item.pdfBasic && item.pdfBasic !== "#") { 
                     renderPDFThumbnail(item.pdfBasic, canvasId); 
                 } else { 
-                    const wrapper = document.getElementById(canvasId).parentElement;
-                    wrapper.innerHTML = `
-                        <div class="w-full h-full bg-slate-50 flex flex-col items-center justify-center gap-2 text-[var(--text-light)] p-4">
-                            <i data-lucide="wrench" class="w-6 h-6 opacity-40"></i>
-                            <span class="text-[10px] font-bold">教材作成中です！</span>
+                    document.getElementById(canvasId).parentElement.innerHTML = `
+                        <div class="w-full h-full bg-white shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--text-light)] border-2 border-dashed border-[var(--border-color)]">
+                            <i data-lucide="hammer" class="w-8 h-8 opacity-50 mb-1"></i>
+                            <span class="text-[10px] font-bold">教材つくってます！</span>
                         </div>`; 
                 }
+
+                setTimeout(() => { card.classList.add('show'); }, index * 50); 
             });
             lucide.createIcons();
         }
 
-        // 詳細ページの描画 (画像05)
+        // 元のボタンの活性・非活性定義に沿った教材詳細ページの展開
         function openDetail(item, hasAnyMaterial) {
             document.getElementById('view-home').classList.add('hidden');
             document.getElementById('view-detail').classList.remove('hidden');
@@ -639,87 +658,39 @@
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
 
             document.getElementById('detail-content').innerHTML = `
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-                    
-                    <!-- 左カラム: プレビュー画面 -->
-                    <div class="lg:col-span-7 flex flex-col items-center">
-                        <div class="w-full max-w-md aspect-[1/1.414] bg-white rounded-2xl shadow-lg border border-[var(--border-color)] overflow-hidden relative flex items-center justify-center">
-                            ${hasBasic ? `
-                                <i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin text-[var(--accent-main)] absolute"></i>
-                                <canvas id="detail-pdf-canvas" class="w-full h-full object-cover"></canvas>
-                            ` : `
-                                <div class="text-center p-6 text-[var(--text-light)] flex flex-col items-center gap-3">
-                                    <i data-lucide="wrench" class="w-12 h-12 opacity-40"></i>
-                                    <span class="font-bold text-sm">一生懸命教材をつくっています！</span>
-                                </div>
-                            `}
-                        </div>
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
+                    <div class="w-full md:w-1/2 flex items-center justify-center relative overflow-visible group">
+                         <div class="w-full max-w-sm aspect-[1/1.414] bg-transparent flex items-center justify-center relative transition-transform duration-700 ease-out group-hover:scale-[1.02]">
+                             ${hasBasic ? `<i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute"></i><canvas id="detail-pdf-canvas" class="w-full h-full object-cover bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 relative z-10 transition-transform duration-500"></canvas>` : `<div class="w-full h-full bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[var(--border-color)] text-[var(--text-light)]"><i data-lucide="hammer" class="w-12 h-12 opacity-50"></i><span class="font-bold text-sm">一生懸命作っています！</span></div>`}
+                         </div>
                     </div>
                     
-                    <!-- 右カラム: 教材タイトルとアクションボタン -->
-                    <div class="lg:col-span-5">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="px-3 py-1 bg-[var(--accent-light)] text-[var(--accent-dark)] text-xs font-black rounded-lg">${item.subject}</span>
-                            <span class="text-xs font-bold text-[var(--text-muted)]">${item.grade}</span>
+                    <div class="w-full md:w-1/2 text-center md:text-left flex flex-col justify-center pt-4 md:pt-10">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
+                            <span class="px-5 py-2 bg-white/80 backdrop-blur-md text-[var(--accent-dark)] text-xs font-black rounded-xl shadow-sm border border-white">${item.grade} / ${item.subject}</span>
+                            ${!hasAnyMaterial ? `<span class="badge-disabled px-4 py-1.5 text-[11px] font-black rounded-lg">現在準備中です</span>` : ''}
                         </div>
-                        <h2 class="text-2xl md:text-3xl font-black text-[var(--text-dark)] mb-6 leading-tight">${item.title}</h2>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-main)] mb-8 md:mb-12 leading-tight tracking-tight">${item.title}</h2>
                         
-                        <!-- アクションボタン群 -->
-                        <div class="space-y-3 mb-8">
-                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white border-[var(--accent-main)] text-[var(--accent-dark)] hover:bg-[var(--accent-light)]' : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'} transition-colors">
-                                <i data-lucide="download" class="w-5 h-5"></i>
-                                ${hasBasic ? '基本プリントをダウンロード (PDF)' : '只今準備中'}
+                        <div class="flex flex-col gap-4 max-w-sm mx-auto md:mx-0 w-full">
+                            <!-- 前のコードのdisabled制御、文言を完全にそのまま継承 -->
+                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasBasic ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-main)] hover:text-[var(--accent-main)] hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-[0_10px_25px_rgba(76,175,80,0.15)] hover:-translate-y-1">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                                ${hasBasic ? '基本問題をひらく' : '準備中'}
                             </button>
                             
-                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasAdv ? 'bg-white border-orange-400 text-orange-700 hover:bg-orange-50' : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'} transition-colors">
+                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm border-2 ${hasAdv ? 'bg-white/90 backdrop-blur-sm border-[var(--border-color)] text-[var(--text-main)] hover:border-orange-400 hover:text-orange-500 hover:bg-white' : 'btn-disabled'} transition-all hover:shadow-[0_10px_25px_rgba(251,146,60,0.15)] hover:-translate-y-1">
                                 <i data-lucide="zap" class="w-5 h-5"></i>
-                                ${hasAdv ? '練習問題をダウンロード (PDF)' : '練習問題は現在準備中'}
+                                ${hasAdv ? '練習問題に挑戦' : '準備中'}
                             </button>
                             
-                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="w-full flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm ${hasAns ? 'bg-[var(--accent-main)] text-white hover:bg-[var(--accent-dark)]' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} transition-colors">
-                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                                ${hasAns ? '解答・解説をダウンロード (PDF)' : '解答・解説は現在準備中'}
-                            </button>
-                        </div>
-
-                        <!-- お気に入り・シェア (画像05) -->
-                        <div class="flex gap-2 border-t border-[var(--border-color)] pt-6">
-                            <button class="flex-1 py-3 px-4 rounded-xl border border-[var(--border-color)] bg-white text-[var(--text-main)] font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
-                                <i data-lucide="heart" class="w-4 h-4"></i> お気に入り
-                            </button>
-                            <button class="flex-1 py-3 px-4 rounded-xl border border-[var(--border-color)] bg-white text-[var(--text-main)] font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
-                                <i data-lucide="share-2" class="w-4 h-4"></i> シェア
+                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex items-center justify-center gap-3 p-4 rounded-2xl font-black text-sm mt-2 ${hasAns ? 'bg-[var(--text-main)] text-white shadow-[0_10px_20px_rgba(46,61,48,0.2)] hover:bg-[var(--text-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(46,61,48,0.3)]' : 'btn-disabled'} transition-all">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                ${hasAns ? '解答・解説を確認する' : '準備中'}
                             </button>
                         </div>
                     </div>
-
-                </div>
-
-                <!-- 解説動画エリア (画像05) -->
-                <div class="mt-16 pt-12 border-t border-[var(--border-color)]">
-                    <h3 class="text-lg font-black text-[var(--text-dark)] mb-6">この教材の解説動画</h3>
-                    <div class="bg-white rounded-3xl p-6 border border-[var(--border-color)] max-w-3xl flex flex-col md:flex-row gap-6 items-center">
-                        <div class="w-full md:w-1/2 aspect-video bg-slate-100 rounded-2xl relative overflow-hidden flex items-center justify-center">
-                            <i data-lucide="play" class="w-12 h-12 text-[var(--accent-main)] absolute z-10 cursor-pointer"></i>
-                            <div class="absolute inset-0 bg-black/10"></div>
-                            <!-- 仮の黒板画像のような雰囲気 -->
-                            <div class="w-full h-full bg-slate-800 flex items-center justify-center text-slate-300 font-serif p-4 text-center">
-                                ${item.title} <br/> わかりやすく解説！
-                            </div>
-                        </div>
-                        <div class="w-full md:w-1/2">
-                            <span class="text-[10px] font-black text-rose-500 bg-rose-50 px-2 py-1 rounded-md mb-2 inline-block">授業動画</span>
-                            <h4 class="font-black text-base mb-2">${item.title} のポイント</h4>
-                            <p class="text-xs text-[var(--text-muted)] leading-relaxed mb-4">
-                                つまずきやすいポイントを短時間でスッキリ解説。プリントを解く前に観ると効果的です。
-                            </p>
-                            <button class="px-4 py-2 bg-[var(--accent-main)] hover:bg-[var(--accent-dark)] text-white text-xs font-black rounded-lg transition-colors flex items-center gap-1.5">
-                                <i data-lucide="youtube" class="w-4 h-4"></i> 動画を再生
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
+                </div>`;
             
             if(hasBasic) renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -761,7 +732,7 @@
             }
         }
         
-        // 学年・生年月日自動判定
+        // 学年・生年月日判定：以前の判定方法を完全適用
         function saveBirthDate() {
             const val = document.getElementById('birthdate-input').value;
             if (!val) return;
