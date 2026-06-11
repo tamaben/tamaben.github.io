@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>タマベン - 学びを、もっと自由に。</title>
+    <title>タマベン - 無料学習教材サイト</title>
     
     <link class="favicon" rel="icon" href="./icon.ico" type="image/x-icon">
     <link class="favicon" rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
-    <meta name="description" content="タマベンは、小学生・中学生向けの学習教材サイト。学びを自由にする教材をインストール不要ですぐに利用できます。">
-    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習管理, インストール不要">
+    <meta name="description" content="タマベンは、小学生・中学生・高校生向けの無料学習教材サイト。教科書に準拠したプリントをインストール不要ですぐに利用、印刷できます。">
+    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習教材サイト, 宿題プリント">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,16 +22,16 @@
 
     <style>
         :root {
-            --bg-base: #f3f9f5;
-            --text-main: #233527;
-            --text-dark: #0f1a11;
-            --text-muted: #6e8c75;
-            --text-light: #9ebba6;
+            --bg-base: #f4fbf7;
+            --text-main: #233627;
+            --text-dark: #121f15;
+            --text-muted: #6b8a74;
+            --text-light: #9dbda7;
             --accent-main: #2d6a4f;
             --accent-dark: #1b4332;
             --accent-light: rgba(45, 106, 79, 0.08);
-            --bg-card: rgba(255, 255, 255, 0.42);
-            --border-color: rgba(255, 255, 255, 0.6);
+            --bg-card: rgba(255, 255, 255, 0.45);
+            --border-color: rgba(255, 255, 255, 0.55);
         }
 
         body { 
@@ -45,26 +45,26 @@
 
         /* 磨りガラス（グラスモルフィズム） */
         .glass-nav {
-            background: rgba(243, 249, 245, 0.65);
+            background: rgba(244, 251, 247, 0.65);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.38);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             border-radius: 32px;
             box-shadow: 
-                0 10px 35px rgba(45, 106, 79, 0.02),
-                inset 0 1px 1px rgba(255, 255, 255, 0.25);
+                0 8px 32px rgba(45, 106, 79, 0.02),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
-        /* 穏やかな丘グラデーション */
-        .hill-layer-1 { fill: rgba(45, 106, 79, 0.025); }
-        .hill-layer-2 { fill: rgba(45, 106, 79, 0.05); }
+        /* 3層のなだらかな丘グラデーション */
+        .hill-layer-1 { fill: rgba(45, 106, 79, 0.03); }
+        .hill-layer-2 { fill: rgba(45, 106, 79, 0.06); }
         .hill-layer-3 { fill: var(--bg-base); }
 
         .hill-curve {
@@ -100,28 +100,28 @@
 
         /* 浮かび上がるプリント用紙（A4ペーパーデザイン） */
         .print-sheet {
-            background: rgba(255, 255, 255, 0.88);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 8px; /* 紙らしい自然な角 */
+            border: 1px solid rgba(255, 255, 255, 0.5);
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
             box-shadow: 
                 0 15px 35px -5px rgba(34, 58, 38, 0.05),
-                0 5px 15px -5px rgba(0, 0, 0, 0.02);
+                0 5px 15px -5px rgba(0, 0, 0, 0.03);
             transform: translateY(0px) rotate(0deg);
         }
 
-        /* 利用可能プリントのホバー挙動：ふわりと浮き上がり傾く */
+        /* すぐある（利用可能）プリントのホバー挙動：ふわりと浮き上がり傾く */
         .card-available:hover .print-sheet {
             transform: translateY(-12px) rotate(-1.5deg);
-            background: rgba(255, 255, 255, 0.96);
+            background: rgba(255, 255, 255, 0.95);
             box-shadow: 
                 0 30px 60px -10px rgba(34, 58, 38, 0.12),
-                0 10px 25px -5px rgba(0, 0, 0, 0.04);
+                0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
-        /* 準備中プリント：半透明の透けたペーパー */
+        /* ない（準備中）プリント：半透明の透けたペーパー */
         .card-unavailable {
             opacity: 0.45;
         }
@@ -131,7 +131,7 @@
             box-shadow: none;
         }
         .card-unavailable:hover {
-            opacity: 0.85;
+            opacity: 0.8;
         }
         .card-unavailable:hover .print-sheet {
             transform: translateY(-4px);
@@ -141,14 +141,13 @@
 
         .pdf-thumbnail-wrapper {
             width: 100%;
-            aspect-ratio: 1 / 1.414; /* A4比率 */
+            aspect-ratio: 1 / 1.414; /* A4用紙比率 */
             background: rgba(255, 255, 255, 0.3);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border-radius: 8px;
         }
 
         .pdf-canvas {
@@ -208,7 +207,7 @@
             animation: float-gentle 6s ease-in-out infinite;
         }
 
-        /* 揺らぎのディレイ */
+        /* 各教科の揺れるディレイ設計 */
         .f-delay-1 { animation-delay: 0.1s; animation-duration: 5s; }
         .f-delay-2 { animation-delay: 0.8s; animation-duration: 6s; }
         .f-delay-3 { animation-delay: 1.5s; animation-duration: 5.5s; }
@@ -224,7 +223,7 @@
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- アンビエントグラデーション背景 -->
+    <!-- 自然に馴染むアンビエントグラデーション背景 -->
     <div class="fixed -top-40 -left-40 w-[450px] h-[450px] rounded-full bg-emerald-100/35 blur-[120px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 10s;"></div>
     <div class="fixed top-1/4 -right-40 w-[550px] h-[550px] rounded-full bg-teal-100/25 blur-[130px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 14s;"></div>
     <div class="fixed -bottom-40 left-1/3 w-[650px] h-[650px] rounded-full bg-sage-200/25 blur-[140px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 12s;"></div>
@@ -261,7 +260,7 @@
         <div id="view-home" class="view-section">
             <section class="relative pt-12 pb-24 md:pt-20 md:pb-36 text-center overflow-hidden">
                 <div class="container mx-auto px-4 max-w-4xl relative z-10">
-                    <span class="inline-block px-3.5 py-1 bg-white/50 text-[var(--accent-dark)] text-xs font-bold rounded-full mb-5 border border-white/60">無料で学べる学習プリントポータル</span>
+                    <span class="inline-block px-3.5 py-1 bg-white/50 text-[var(--accent-dark)] text-xs font-bold rounded-full mb-5 border border-white/60">無料で学べるオリジナル教材ポータル</span>
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-dark)] leading-tight mb-5 tracking-tight">
                         今のあなたにぴったりの教材が、<br class="hidden sm:inline"/>きっと見つかる。
                     </h1>
@@ -327,7 +326,6 @@
                     <p class="text-[10px] text-[#9fc8b0] mb-12">選択すると各教科の教材へ移動します</p>
 
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-x-4 gap-y-10 justify-center">
-                        <!-- 体育のアイコンdumbbellも完全に表示される設定 -->
                         <button onclick="quickSearch('国語')" class="group flex flex-col items-center gap-2 outline-none floating-subject f-delay-1">
                             <div class="w-12 h-12 bg-white/90 text-[#213a29] group-hover:bg-white rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.15)] group-hover:scale-105 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)]">
                                 <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -722,9 +720,9 @@
                             <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-primary"><i class="fas fa-link text-xs"></i></div>
                             <span class="text-xs font-black text-orange-800">Tamaben ID連携 (Manabi Baton)</span>
                         </div>
-                        <p class="text-[10px] text-gray-500 font-bold mb-4">Manabi Baton公式アプリ側のID（loginId）を入力すると、学習ご褒美ポイント（SP）や進捗情報がポータルと自動で完全同期されます。</p>
+                        <p class="text-[10px] text-gray-500 font-bold mb-4">Manabi Batonの「学習ID (6桁)」または「システム内部ID」を入力すると、貯まった学習ご褒美ポイント(SP)が完全同期されます。</p>
                         <div class="flex gap-2">
-                            <input type="text" id="reg-tamaben-id" class="flex-1 bg-white border border-orange-200 rounded-xl px-4 py-2.5 text-xs font-black tracking-wider outline-none text-center" placeholder="IDを入力 (例: A7B2C9)">
+                            <input type="text" id="reg-tamaben-id" class="flex-1 bg-white border border-orange-200 rounded-xl px-4 py-2.5 text-xs font-black tracking-wider outline-none text-center" placeholder="IDを入力 (例: A7B2C9 または UID)">
                             <button onclick="syncTamabenID(document.getElementById('reg-tamaben-id').value)" class="bg-primary hover:bg-orange-600 text-white rounded-xl px-4 py-2 text-xs font-black shadow-sm transition">同期する</button>
                         </div>
                     </div>
@@ -825,6 +823,7 @@
                 <p class="text-[10px] text-[var(--text-muted)]">小学校から高校（普通科・工業科・商業科対応）まですべての教材を網羅</p>
             </div>
 
+            <!-- カテゴリタブ -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
                 <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">小学校</button>
                 <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">中学校</button>
@@ -834,6 +833,7 @@
                 <button onclick="switchSubjectCategory('other')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">その他</button>
             </div>
 
+            <!-- 各カテゴリの教科リスト -->
             <div class="glass-panel p-6 md:p-8">
                 <!-- 小学校 -->
                 <div id="scat-elem" class="scat-block grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -918,6 +918,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- 統計カード -->
                     <div class="bg-white/30 border border-white/50 rounded-2xl p-6 text-center">
                         <i data-lucide="calendar" class="w-6 h-6 mx-auto mb-2 text-[var(--accent-main)]"></i>
                         <h4 class="text-[10px] font-black text-[var(--text-muted)]">今月の学習日数</h4>
@@ -930,6 +931,7 @@
                     </div>
                 </div>
 
+                <!-- 閲覧履歴 -->
                 <div class="mb-10">
                     <h3 class="font-black text-xs mb-4 flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4 text-[var(--accent-main)]"></i>直近の教材閲覧履歴</h3>
                     <div id="parents-view-history-list" class="space-y-3">
@@ -937,10 +939,11 @@
                     </div>
                 </div>
 
+                <!-- AI未来レポーティング -->
                 <div class="bg-white/20 rounded-2xl p-6 border border-white/40 backdrop-blur-sm">
                     <h4 class="font-black text-xs text-[var(--accent-dark)] mb-2 flex items-center gap-1.5"><i data-lucide="sparkles"></i> AI学習分析・苦手克服レポート（将来実装候補）</h4>
                     <p class="text-[11px] text-[var(--text-main)] leading-relaxed">
-                        タマベンAIが、閲覧履歴や動画の視聴割合から「つまずきポイント」を自動分析します。次回以降のバージョンで「パーソナライズ学習計画」がリリース予定です。
+                        タマベンAIが、閲覧履歴や動画 of 視聴割合から「つまずきポイント」を自動分析します。次回以降のバージョンで「パーソナライズ学習計画」がリリース予定です。
                     </p>
                 </div>
             </div>
@@ -982,7 +985,7 @@
             schoolType: 'elementary',
             grade: '小学1年生',
             courseType: '普通科',
-            tamabenId: '', // 連携したManabi BatonのアカウントID
+            tamabenId: '', // 連携したManabi BatonのID [1]
             textbooks: {
                 '国語': '',
                 '算数': '',
@@ -1021,7 +1024,7 @@
                 ];
             }
 
-            // ID補正対策
+            // IDの強制補正処理
             MATERIAL_DATA.forEach((item, index) => {
                 if (item.id === undefined || item.id === null || isNaN(Number(item.id))) {
                     item.id = index + 1; 
@@ -1033,37 +1036,50 @@
             handleHashChange(); 
         }
 
-        // 連携用：Manabi Batonアカウントとの同期（実用シミュレーター）
+        // 連携用：Manabi Batonアカウントとの同期（実用シミュレーター・loginID未設定救済策含む） [1]
         function syncTamabenID(idVal) {
             const trimmed = idVal.trim().toUpperCase();
             if(!trimmed) return alert("IDを入力してください");
 
-            // 同一ブラウザのLocalStorageからManabi Batonのキャッシュを探索
-            const mBatonUserKey = 'manabi_cached_user_' + trimmed;
-            const mBatonData = localStorage.getItem(mBatonUserKey);
+            let mBatonUserKey = 'manabi_cached_user_' + trimmed;
+            let mBatonData = localStorage.getItem(mBatonUserKey);
+
+            // loginIdが未設定の古いアカウントに対する自動検出・救済 [1]
+            if (!mBatonData) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('manabi_cached_user_')) {
+                        try {
+                            const parsed = JSON.parse(localStorage.getItem(key));
+                            if (parsed.id === trimmed || parsed.loginId === trimmed) {
+                                mBatonData = localStorage.getItem(key);
+                                break;
+                            }
+                        } catch(e) {}
+                    }
+                }
+            }
 
             userSettings.tamabenId = trimmed;
             localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
 
             if(mBatonData) {
-                // ローカルにアカウントが存在すれば本格マージ
                 const mUser = JSON.parse(mBatonData);
                 userSettings.grade = mUser.grade || userSettings.grade;
                 userSettings.registered = true;
                 localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
                 
-                // SPなどのポイントをマージ
+                // ポイントや学習時間の同期マージ [1]
                 userStats.learningSeconds += (mUser.learningSeconds || 0);
                 saveStatsToStorage();
                 
-                alert(`Tamaben ID同期完了！\nManabi Batonのアカウント「${mUser.name}」と連携され、ご褒美ポイント(SP)と進捗が同期されました！`);
+                alert(`Tamaben ID同期完了！\nManabi Batonのアカウント「${mUser.name}」と正常に連携され、ご褒美ポイント(SP)と進捗が同期されました！`);
             } else {
-                // アプリが見当たらない場合のデモ用スマート補正同期
                 alert(`Tamaben ID「${trimmed}」の登録・連携が完了しました！\nManabi Batonにポイントと学習記録が自動同期されます。`);
             }
             
             applyUserProfile();
-            showView('view-mypage');
+            navigate('#mypage');
         }
 
         function buildSubjectChips() {
@@ -1123,7 +1139,6 @@
             }
         }
 
-        // 教材一覧
         function renderMaterials() {
             const container = document.getElementById('learning-materials-container');
             if (!container) return;
@@ -1157,7 +1172,8 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                card.className = `premium-card cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
+                // 浮かび上がるペーパー調A4カード
+                card.className = `cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
                 
                 card.innerHTML = `
                     <div class="print-sheet p-3 flex flex-col h-full bg-white">
@@ -1234,7 +1250,7 @@
             }
         }
 
-        // 教材詳細ページのめくれるプリントスワイプ・ビューア
+        // 教材詳細ページのめくれるプリントスワイプ・ビューア [1]
         async function loadFullPDFCarousel(url) {
             const track = document.getElementById('pdf-carousel-track');
             if(!track) return;
@@ -1278,7 +1294,7 @@
             }
         }
 
-        // カルーセルの左右スワイプ操作制御
+        // カルーセルの左右スワイプ操作制御 [1]
         let touchStartX = 0;
         let touchEndX = 0;
         function initSwipeGestures() {
@@ -1487,7 +1503,6 @@
                 document.getElementById('grade-badge').classList.remove('hidden');
                 document.getElementById('login-btn-label').textContent = "マイページ";
 
-                // 同期用バッジ表示
                 const sBadge = document.getElementById('mypage-sync-badge');
                 if (userSettings.tamabenId && sBadge) {
                     sBadge.classList.remove('hidden');
@@ -1738,7 +1753,7 @@
         }
 
         function handleHashChange() {
-            // リダイレクト競合をガード [1]
+            // リダイレクト競合をガード
             if (!isLoaded) return; 
 
             const hash = window.location.hash || '#home';
@@ -1750,7 +1765,7 @@
                 if (el) el.classList.add('hidden');
             });
 
-            // 固有リンク判定 (データのID不一致バグを防ぐため、Number型にキャストして安全に取得・判別) [1]
+            // 固有リンク判定 (Numberキャストにより型不一致バグを解消) [1]
             if (hash.startsWith('#detail-')) {
                 const id = parseInt(hash.replace('#detail-', ''));
                 const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id)); 
