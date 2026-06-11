@@ -22,14 +22,14 @@
 
     <style>
         :root {
-            --bg-base: #f7faf8;
-            --text-main: #2b3a2e;
-            --text-dark: #121c14;
-            --text-muted: #79967e;
-            --text-light: #adc7b1;
-            --accent-main: #3b7c53;
-            --accent-dark: #245434;
-            --accent-light: rgba(59, 124, 83, 0.08);
+            --bg-base: #f5f9f6;
+            --text-main: #233326;
+            --text-dark: #0f1a11;
+            --text-muted: #6e8c75;
+            --text-light: #a3c4ae;
+            --accent-main: #2d6a3d;
+            --accent-dark: #1b4324;
+            --accent-light: rgba(45, 106, 61, 0.06);
             --bg-card: rgba(255, 255, 255, 0.45);
             --border-color: rgba(255, 255, 255, 0.5);
         }
@@ -39,113 +39,76 @@
             color: var(--text-main); 
             overflow-x: hidden;
             font-feature-settings: "palt";
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* グラスモルフィズム（背景が透けて見える効果） */
+        /* ━━━━━━━━━━━━━━━━━━━━
+           美しく透き通るグラスモルフィズム
+           ━━━━━━━━━━━━━━━━━━━━ */
         .glass-nav {
-            background: rgba(247, 250, 248, 0.65);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(245, 249, 246, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 32px;
         }
 
-        /* 3層のなだらかな丘グラデーション */
-        .hill-layer-1 { fill: rgba(46, 122, 71, 0.03); }
-        .hill-layer-2 { fill: rgba(46, 122, 71, 0.06); }
-        .hill-layer-3 { fill: var(--bg-base); }
-
-        .hill-curve {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-        }
-        .hill-curve svg {
-            position: relative;
-            display: block;
-            width: calc(150% + 1.3px);
-            height: 100px;
-        }
-
-        .hill-curve-top {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-            transform: rotate(180deg);
-        }
-        .hill-curve-top svg {
-            position: relative;
-            display: block;
-            width: calc(150% + 1.3px);
-            height: 70px;
-        }
-
-        /* ━━━━━━━━━━━━━━━━━━━━
-           浮かび上がるプリント用紙（A4ペーパーデザイン）
-           ━━━━━━━━━━━━━━━━━━━━ */
+        /* 3D 浮遊ペーパー（アート並みの紙質感） */
         .print-sheet {
             background: #ffffff;
-            border-radius: 4px; /* 紙のシャープな角を表現 */
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
             box-shadow: 
-                0 1px 3px rgba(0, 0, 0, 0.02),
-                0 8px 20px -4px rgba(46, 122, 71, 0.05),
-                0 16px 36px -8px rgba(46, 122, 71, 0.03);
-            transform: translateY(0px) rotate(0deg);
+                0 2px 4px rgba(0, 0, 0, 0.01),
+                0 10px 25px -4px rgba(35, 51, 38, 0.04),
+                0 20px 48px -12px rgba(35, 51, 38, 0.02);
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px);
         }
 
-        /* すぐある（利用可能）プリントのホバー挙動：ふわりと浮き上がり傾く */
+        /* ホバー：微かに傾きながらふわりと持ち上がる */
         .card-available:hover .print-sheet {
-            transform: translateY(-10px) rotate(-1.2deg);
+            transform: perspective(1000px) rotateX(3deg) rotateY(-1.5deg) translateY(-10px);
             box-shadow: 
-                0 2px 6px rgba(0, 0, 0, 0.04),
-                0 24px 45px -5px rgba(46, 122, 71, 0.08),
-                0 36px 65px -10px rgba(46, 122, 71, 0.12);
+                0 4px 12px rgba(0, 0, 0, 0.02),
+                0 30px 60px -8px rgba(35, 51, 38, 0.08),
+                0 48px 80px -15px rgba(35, 51, 38, 0.12);
         }
 
-        /* ない（準備中）プリント：半透明の透けたペーパー */
         .card-unavailable {
-            opacity: 0.45;
+            opacity: 0.4;
         }
         .card-unavailable .print-sheet {
-            border-style: dashed;
+            border: 1px dashed rgba(35, 51, 38, 0.15);
             background: rgba(255, 255, 255, 0.15);
             box-shadow: none;
         }
         .card-unavailable:hover {
-            opacity: 0.8;
+            opacity: 0.75;
         }
         .card-unavailable:hover .print-sheet {
             transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+            background: rgba(255, 255, 255, 0.45);
         }
 
         .pdf-thumbnail-wrapper {
             width: 100%;
-            aspect-ratio: 1 / 1.414; /* A4用紙比率 */
+            aspect-ratio: 1 / 1.414;
             background: rgba(255, 255, 255, 0.3);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
         }
 
         .pdf-canvas {
@@ -158,26 +121,26 @@
         .search-field { 
             background: rgba(255, 255, 255, 0.45); 
             border: 1px solid rgba(255, 255, 255, 0.6); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         .search-field:focus-within { 
-            border-color: rgba(59, 124, 83, 0.5); 
-            box-shadow: 0 12px 30px rgba(46, 122, 71, 0.06); 
+            border-color: rgba(45, 106, 61, 0.4); 
+            box-shadow: 0 16px 40px rgba(45, 106, 61, 0.06); 
             transform: scale(1.005);
             background: rgba(255, 255, 255, 0.65);
         }
 
-        .tab-pill { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); color: var(--text-muted); }
-        .tab-pill.active { background: var(--accent-main); color: #ffffff; box-shadow: 0 4px 15px rgba(59, 124, 83, 0.2); }
+        .tab-pill { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); color: var(--text-muted); }
+        .tab-pill.active { background: var(--accent-main); color: #ffffff; box-shadow: 0 4px 15px rgba(45, 106, 61, 0.25); }
 
         .btn-disabled {
-            opacity: 0.35;
+            opacity: 0.3;
             pointer-events: none;
             background: rgba(255, 255, 255, 0.1) !important;
             color: var(--text-muted) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(0, 0, 0, 0.05) !important;
             cursor: not-allowed;
             box-shadow: none !important;
         }
@@ -189,23 +152,43 @@
         }
 
         .custom-player {
-            background: #111a13;
+            background: #0f1611;
             border-radius: 24px;
             position: relative;
         }
 
-        /* 教科アイコンの浮遊（浮かんでいる）アニメーション */
-        @keyframes float-gentle {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(0.8deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+        /* ━━━━━━━━━━━━━━━━━━━━
+           背景に漂う動的な光の玉（オーロラアニメーション）
+           ━━━━━━━━━━━━━━━━━━━━ */
+        @keyframes blob-movement-1 {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(40px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 30px) scale(0.95); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes blob-movement-2 {
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(-50px, 40px) scale(1.05); }
+            100% { transform: translate(0px, 0px) scale(1); }
         }
 
+        .aurora-blob-1 {
+            animation: blob-movement-1 25s infinite ease-in-out;
+        }
+        .aurora-blob-2 {
+            animation: blob-movement-2 30s infinite ease-in-out;
+        }
+
+        /* 教科のゆらゆら動く浮遊 */
+        @keyframes float-gentle {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-7px) rotate(0.6deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
         .floating-subject {
             animation: float-gentle 6s ease-in-out infinite;
         }
 
-        /* 各教科の揺れるディレイ設計 */
         .f-delay-1 { animation-delay: 0.1s; animation-duration: 5s; }
         .f-delay-2 { animation-delay: 0.8s; animation-duration: 6s; }
         .f-delay-3 { animation-delay: 1.5s; animation-duration: 5.5s; }
@@ -221,10 +204,10 @@
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 背景のアンビエントグラデーション -->
-    <div class="fixed -top-40 -left-40 w-[400px] h-[400px] rounded-full bg-emerald-100/30 blur-[110px] pointer-events-none -z-10"></div>
-    <div class="fixed top-1/3 -right-40 w-[500px] h-[500px] rounded-full bg-teal-100/20 blur-[130px] pointer-events-none -z-10"></div>
-    <div class="fixed -bottom-40 left-1/3 w-[600px] h-[600px] rounded-full bg-sage-200/20 blur-[140px] pointer-events-none -z-10"></div>
+    <!-- 動的な光の玉（オーロラエフェクト） -->
+    <div class="fixed -top-40 -left-40 w-[450px] h-[450px] rounded-full bg-emerald-100/35 blur-[120px] pointer-events-none -z-10 aurora-blob-1"></div>
+    <div class="fixed top-1/3 -right-40 w-[550px] h-[550px] rounded-full bg-teal-100/25 blur-[140px] pointer-events-none -z-10 aurora-blob-2"></div>
+    <div class="fixed -bottom-40 left-1/3 w-[600px] h-[600px] rounded-full bg-sage-200/25 blur-[140px] pointer-events-none -z-10 aurora-blob-1"></div>
 
     <!-- ナビゲーションバー -->
     <header class="sticky top-0 z-[100] glass-nav">
@@ -311,8 +294,8 @@
                 </div>
             </section>
 
-            <!-- 教科一覧 -->
-            <section class="bg-[#213a29]/80 backdrop-blur-md text-white py-16 md:py-24 relative overflow-hidden mb-16 border-t border-b border-white/10">
+            <!-- 教科一覧(簡易ナビ) -->
+            <section class="bg-[#1c3621]/80 backdrop-blur-md text-white py-16 md:py-24 relative overflow-hidden mb-16 border-t border-b border-white/10">
                 <div class="hill-curve-top">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                         <path d="M0,0 C300,80 900,30 1200,70 L1200,120 L0,120 Z" fill="var(--bg-base)"></path>
@@ -885,9 +868,7 @@
             </div>
         </div>
 
-        <!-- ━━━━━━━━━━━━━━━━━━━━
-             10 保護者向け・レポート (view-parents-report) [#parents]
-             ━━━━━━━━━━━━━━━━━━━━ -->
+        <!-- 10 保護者向け・レポート -->
         <div id="view-parents-report" class="view-section hidden container mx-auto px-4 max-w-4xl py-12">
             <div class="bg-white rounded-[32px] p-6 md:p-10 border border-[var(--border-color)] shadow-sm">
                 <div class="text-center mb-10">
@@ -975,7 +956,7 @@
             }
         }, 1000);
 
-        // 教材の取得：以前の元のコードをそのまま定義
+        // 教材の取得
         async function loadMaterials() {
             try {
                 const response = await fetch('data.json');
@@ -994,7 +975,7 @@
                 ];
             }
             buildSubjectChips();
-            // ハッシュ遷移を初回ロード時にも処理
+            // データロード完了後に一度ハッシュの状態を確認（直リンクバグ対策）
             handleHashChange();
         }
 
@@ -1088,18 +1069,18 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                // 「浮き上がるプリント用紙（A4ペーパーデザイン）」を適用
+                // ペーパーがふわっと浮き上がるアート紙デザインを適用
                 card.className = `cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
                 
                 card.innerHTML = `
                     <div class="print-sheet p-3 flex flex-col h-full bg-white">
                         <div class="pdf-thumbnail-wrapper relative">
-                            <i data-lucide="loader-2" class="w-6 h-6 pdf-loading animate-spin"></i>
+                            <i data-lucide="loader-2" class="w-5 h-5 pdf-loading animate-spin"></i>
                             <canvas id="${canvasId}" class="pdf-canvas"></canvas>
                             
                             ${hasAnyMaterial ? `
                                 <span class="absolute top-2 right-2 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded shadow-sm z-20 flex items-center gap-0.5 border border-white/20">
-                                    <i data-lucide="check-circle" class="w-2.5 h-2.5"></i> 今すぐ印刷OK
+                                    <i data-lucide="check-circle" class="w-2.5 h-2.5"></i> 印刷OK
                                 </span>
                             ` : `
                                 <span class="absolute top-2 right-2 bg-slate-400 text-white text-[8px] font-black px-2 py-0.5 rounded shadow-sm z-20 border border-white/10">
@@ -1122,8 +1103,8 @@
                                     ${hasAnyMaterial ? '基本・練習プリントあり' : '現在作成中'}
                                 </span>
                                 ${hasAnyMaterial ? `
-                                    <div class="w-5 h-5 bg-slate-50 group-hover:bg-[var(--accent-main)] border border-slate-200 rounded flex items-center justify-center text-[var(--accent-dark)] group-hover:text-white transition-all shadow-sm">
-                                        <i data-lucide="arrow-down-to-line" class="w-3 h-3"></i>
+                                    <div class="w-5.5 h-5.5 bg-slate-50 group-hover:bg-[var(--accent-main)] border border-slate-200 rounded flex items-center justify-center text-[var(--accent-dark)] group-hover:text-white transition-all shadow-sm">
+                                        <i data-lucide="arrow-down-to-line" class="w-3.5 h-3.5"></i>
                                     </div>
                                 ` : ''}
                             </div>
@@ -1147,7 +1128,7 @@
             lucide.createIcons();
         }
 
-        // 教材詳細ページの展開 (動画続き再生/お気に入り等のシミュレータ付き)
+        // 教材詳細ページの展開
         function openDetail(item, hasAnyMaterial) {
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
@@ -1191,7 +1172,7 @@
 
                         <div class="flex gap-2 mt-6 max-w-sm">
                             <button onclick="toggleFavoriteMaterial(${item.id})" class="flex-1 py-3 px-4 border border-[var(--border-color)] rounded-xl font-bold text-xs bg-white text-[var(--text-main)] hover:bg-slate-50 flex items-center justify-center gap-2">
-                                <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : ''}"></i>
+                                <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500 border-none' : ''}"></i>
                                 ${isFav ? 'お気に入り解除' : 'お気に入り保存'}
                             </button>
                             <button onclick="toggleFavoriteVideo(${item.id})" class="flex-1 py-3 px-4 border border-[var(--border-color)] rounded-xl font-bold text-xs bg-white text-[var(--text-main)] hover:bg-slate-50 flex items-center justify-center gap-2">
@@ -1232,53 +1213,6 @@
             
             if(hasBasic) renderPDFThumbnail(item.pdfBasic, 'detail-pdf-canvas');
             lucide.createIcons();
-        }
-
-        // 仮想動画再生ロジック
-        let videoInterval = null;
-        function startVideoSim(itemId) {
-            if (videoInterval) clearInterval(videoInterval);
-            let curTime = parseInt(localStorage.getItem(`tamaben_video_time_${itemId}`) || 0);
-            
-            videoInterval = setInterval(() => {
-                curTime += 5;
-                localStorage.setItem(`tamaben_video_time_${itemId}`, curTime);
-                const lbl = document.getElementById(`video-timer-label-${itemId}`);
-                if (lbl) lbl.textContent = `現在の位置: ${curTime}秒 (自動保存中)`;
-                
-                if (curTime >= 720) { 
-                    clearInterval(videoInterval);
-                    alert("動画の視聴が完了しました！学習時間に12分追加されました。");
-                    userStats.learningSeconds += 720;
-                    saveStatsToStorage();
-                }
-            }, 1000);
-        }
-
-        // お気に入り教材切替
-        function toggleFavoriteMaterial(id) {
-            const index = userStats.favMaterials.indexOf(id);
-            if (index > -1) {
-                userStats.favMaterials.splice(index, 1);
-            } else {
-                userStats.favMaterials.push(id);
-            }
-            saveStatsToStorage();
-            const item = MATERIAL_DATA.find(m => m.id === id);
-            openDetail(item, true);
-        }
-
-        // お気に入り動画切替
-        function toggleFavoriteVideo(id) {
-            const index = userStats.favVideos.indexOf(id);
-            if (index > -1) {
-                userStats.favVideos.splice(index, 1);
-            } else {
-                userStats.favVideos.push(id);
-            }
-            saveStatsToStorage();
-            const item = MATERIAL_DATA.find(m => m.id === id);
-            openDetail(item, true);
         }
 
         // プロフィールの設定
@@ -1373,7 +1307,7 @@
                     const item = MATERIAL_DATA.find(m => m.id === id);
                     if (item) {
                         const row = document.createElement('div');
-                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl border border-white/40";
                         row.innerHTML = `
                             <div>
                                 <h4 class="font-black text-xs text-[var(--text-main)]">${item.title}</h4>
@@ -1395,7 +1329,7 @@
                     const item = MATERIAL_DATA.find(m => m.id === id);
                     if (item) {
                         const row = document.createElement('div');
-                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                        row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl border border-white/40";
                         row.innerHTML = `
                             <div>
                                 <h4 class="font-black text-xs text-[var(--text-main)]">${item.title} の解説動画</h4>
@@ -1411,6 +1345,7 @@
             renderMyPagePersonalized();
         }
 
+        // あなたにぴったり抽出
         function renderMyPagePersonalized() {
             const container = document.getElementById('mypage-personalized-materials');
             if (!container) return;
@@ -1482,7 +1417,7 @@
             } else {
                 userStats.views.slice(-5).reverse().forEach(v => {
                     const row = document.createElement('div');
-                    row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl";
+                    row.className = "flex justify-between items-center p-3 bg-[var(--bg-base)] rounded-xl border border-white/40";
                     row.innerHTML = `
                         <span class="font-black text-xs text-[var(--text-main)]">${v.title}</span>
                         <span class="text-[10px] text-[var(--text-muted)]">${v.time}</span>
@@ -1520,83 +1455,37 @@
             recordDay();
         }
 
-        function quickSearch(keyword) {
-            document.getElementById('search-keyword').value = keyword;
-            executeSearch();
-        }
-
-        function executeSearch() {
-            const grade = document.getElementById('search-grade').value;
-            const subject = document.getElementById('search-subject').value;
-            const keyword = document.getElementById('search-keyword').value.toLowerCase().trim();
-
-            document.getElementById('search-results-title').textContent = keyword ? `「${keyword}」の検索結果` : '検索結果一覧';
-            
-            const resultsGrid = document.getElementById('search-results-grid');
-            if (!resultsGrid) return;
-
-            const filtered = MATERIAL_DATA.filter(item => {
-                const matchGrade = grade ? item.grade === grade : true;
-                const matchSubject = subject ? item.subject.includes(subject) : true;
-                const matchKeyword = keyword ? (item.title.toLowerCase().includes(keyword) || item.subject.toLowerCase().includes(keyword)) : true;
-                return matchGrade && matchSubject && matchKeyword;
-            });
-
-            resultsGrid.innerHTML = "";
-            if (filtered.length === 0) {
-                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-[var(--text-muted)] font-black text-sm">条件に一致する教材がありません。</div>`;
-            } else {
-                filtered.forEach((item, index) => {
-                    const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
-                    const card = document.createElement('div');
-                    const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
-                    card.className = "print-sheet p-3 flex flex-col h-full bg-white cursor-pointer hover:-translate-y-2 transition-transform";
-                    card.innerHTML = `
-                        <div class="pdf-thumbnail-wrapper mb-3 relative">
-                            <canvas id="${canvasId}" class="pdf-canvas"></canvas>
-                        </div>
-                        <span class="text-[10px] font-black text-[var(--accent-dark)] bg-[var(--bg-sub)] px-2 py-0.5 rounded-md w-fit mb-2">${item.subject}</span>
-                        <h3 class="text-xs font-black text-[var(--text-main)] group-hover:text-[var(--accent-dark)] transition-colors leading-snug mb-1 line-clamp-2">${item.title}</h3>
-                        <p class="text-[9px] text-[var(--text-muted)] mt-auto">${item.grade}</p>
-                    `;
-                    card.onclick = () => navigate(`#detail-${item.id}`);
-                    resultsGrid.appendChild(card);
-                    if (item.pdfBasic && item.pdfBasic !== "#") {
-                        renderPDFThumbnail(item.pdfBasic, canvasId);
-                    }
-                });
-            }
-            navigate('#results');
-            lucide.createIcons();
-        }
-
-        // ━━━━━━━━━━━━━━━━━━━━
-        // ハッシュ遷移コントロール機能 (ルーター)
-        // ━━━━━━━━━━━━━━━━━━━━
         function navigate(hash) {
             window.location.hash = hash;
         }
 
+        // ハッシュコントロールルーター（ロード順の競合対策・バグ修正版）
         function handleHashChange() {
             const hash = window.location.hash || '#home';
             
-            // ビューの初期クリア
+            // 全画面をいったん隠す
             const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-parents-report'];
             views.forEach(v => {
                 const el = document.getElementById(v);
                 if (el) el.classList.add('hidden');
             });
 
-            // 固有リンク判定
+            // 詳細ページへの直リンク遷移コントロール
             if (hash.startsWith('#detail-')) {
                 const id = parseInt(hash.replace('#detail-', ''));
+                
+                // データが空（ロード中）の場合、リダイレクトさせずデータのロード完了を待つ
+                if (MATERIAL_DATA.length === 0) {
+                    return; 
+                }
+
                 const item = MATERIAL_DATA.find(m => m.id === id);
                 if (item) {
                     document.getElementById('view-detail').classList.remove('hidden');
                     const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     openDetail(item, hasAnyMaterial);
                 } else {
-                    navigate('#home');
+                    navigate('#home'); // 存在しないIDの場合はホームへ
                 }
             } else {
                 let targetView = 'view-home';
@@ -1610,9 +1499,9 @@
                 const targetEl = document.getElementById(targetView);
                 if (targetEl) targetEl.classList.remove('hidden');
 
-                // 各種詳細ビュー開いたときのリフレッシュ
                 if (hash === '#mypage') renderMyPage();
                 if (hash === '#parents') updateParentsDashboard();
+                if (hash === '#home') renderMaterials();
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
