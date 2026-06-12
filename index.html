@@ -43,7 +43,9 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* 磨りガラス（グラスモルフィズム） */
+        /* ━━━━━━━━━━━━━━━━━━━━
+           磨りガラス（グラスモルフィズム）
+           ━━━━━━━━━━━━━━━━━━━━ */
         .glass-nav {
             background: rgba(244, 251, 247, 0.65);
             backdrop-filter: blur(24px);
@@ -62,7 +64,7 @@
                 inset 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
-        /* 3層のなだらかな丘グラデーション */
+        /* 3層の穏やかな丘グラデーション */
         .hill-layer-1 { fill: rgba(45, 106, 79, 0.03); }
         .hill-layer-2 { fill: rgba(45, 106, 79, 0.06); }
         .hill-layer-3 { fill: var(--bg-base); }
@@ -98,7 +100,9 @@
             height: 70px;
         }
 
-        /* 浮かび上がるプリント用紙（A4ペーパーデザイン） */
+        /* ━━━━━━━━━━━━━━━━━━━━
+           浮かび上がるプリント用紙（A4ペーパーデザイン）
+           ━━━━━━━━━━━━━━━━━━━━ */
         .print-sheet {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
@@ -148,6 +152,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         .pdf-canvas {
@@ -223,7 +228,7 @@
 </head>
 <body class="font-['Zen_Maru_Gothic']">
 
-    <!-- 自然に馴染むアンビエントグラデーション背景 -->
+    <!-- 自然に馴染むアンビエントグラデーション背景（背景に固定配置） -->
     <div class="fixed -top-40 -left-40 w-[450px] h-[450px] rounded-full bg-emerald-100/35 blur-[120px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 10s;"></div>
     <div class="fixed top-1/4 -right-40 w-[550px] h-[550px] rounded-full bg-teal-100/25 blur-[130px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 14s;"></div>
     <div class="fixed -bottom-40 left-1/3 w-[650px] h-[650px] rounded-full bg-sage-200/25 blur-[140px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 12s;"></div>
@@ -600,7 +605,7 @@
             </button>
             
             <div id="detail-content" class="fade-in-up">
-                <!-- JSで詳細を動的展開 -->
+                <!-- JSで詳細を展開 -->
             </div>
         </div>
 
@@ -714,13 +719,13 @@
                         </div>
                     </div>
 
-                    <!-- Tamaben ID (Manabi Baton) アカウント連携パネル -->
+                    <!-- Tamaben ID (Manabi Baton) アカウント連携パネル (UID/loginId双方同期対応の安全救済策付) -->
                     <div class="bg-gradient-to-r from-orange-50/50 to-white/50 p-5 rounded-[2rem] border border-orange-100 relative overflow-hidden">
                         <div class="flex items-center gap-2 mb-3">
                             <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-primary"><i class="fas fa-link text-xs"></i></div>
                             <span class="text-xs font-black text-orange-800">Tamaben ID連携 (Manabi Baton)</span>
                         </div>
-                        <p class="text-[10px] text-gray-500 font-bold mb-4">Manabi Batonの「学習ID (6桁)」または「システム内部ID」を入力すると、貯まった学習ご褒美ポイント(SP)が完全同期されます。</p>
+                        <p class="text-[10px] text-gray-500 font-bold mb-4">Manabi Batonの「学習ID (6桁)」または「システム内部UID」を入力すると、貯まった学習ご褒美ポイント(SP)が完全同期されます。</p>
                         <div class="flex gap-2">
                             <input type="text" id="reg-tamaben-id" class="flex-1 bg-white border border-orange-200 rounded-xl px-4 py-2.5 text-xs font-black tracking-wider outline-none text-center" placeholder="IDを入力 (例: A7B2C9 または UID)">
                             <button onclick="syncTamabenID(document.getElementById('reg-tamaben-id').value)" class="bg-primary hover:bg-orange-600 text-white rounded-xl px-4 py-2 text-xs font-black shadow-sm transition">同期する</button>
@@ -823,7 +828,6 @@
                 <p class="text-[10px] text-[var(--text-muted)]">小学校から高校（普通科・工業科・商業科対応）まですべての教材を網羅</p>
             </div>
 
-            <!-- カテゴリタブ -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
                 <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">小学校</button>
                 <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">中学校</button>
@@ -833,7 +837,6 @@
                 <button onclick="switchSubjectCategory('other')" class="subj-cat-tab px-4 py-2 text-xs font-black rounded-full border border-white/50 hover:bg-white/60 bg-white/30">その他</button>
             </div>
 
-            <!-- 各カテゴリの教科リスト -->
             <div class="glass-panel p-6 md:p-8">
                 <!-- 小学校 -->
                 <div id="scat-elem" class="scat-block grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -943,7 +946,7 @@
                 <div class="bg-white/20 rounded-2xl p-6 border border-white/40 backdrop-blur-sm">
                     <h4 class="font-black text-xs text-[var(--accent-dark)] mb-2 flex items-center gap-1.5"><i data-lucide="sparkles"></i> AI学習分析・苦手克服レポート（将来実装候補）</h4>
                     <p class="text-[11px] text-[var(--text-main)] leading-relaxed">
-                        タマベンAIが、閲覧履歴や動画 of 視聴割合から「つまずきポイント」を自動分析します。次回以降のバージョンで「パーソナライズ学習計画」がリリース予定です。
+                        タマベンAIが、閲覧履歴や動画の視聴割合から「つまずきポイント」を自動分析します。次回以降のバージョンで「パーソナライズ学習計画」がリリース予定です。
                     </p>
                 </div>
             </div>
@@ -985,7 +988,7 @@
             schoolType: 'elementary',
             grade: '小学1年生',
             courseType: '普通科',
-            tamabenId: '', // 連携したManabi BatonのID [1]
+            tamabenId: '', 
             textbooks: {
                 '国語': '',
                 '算数': '',
@@ -1036,7 +1039,7 @@
             handleHashChange(); 
         }
 
-        // 連携用：Manabi Batonアカウントとの同期（実用シミュレーター・loginID未設定救済策含む） [1]
+        // 連携用：Manabi Batonアカウントとの同期（実用シミュレーター・loginId未設定救済策含む） [1]
         function syncTamabenID(idVal) {
             const trimmed = idVal.trim().toUpperCase();
             if(!trimmed) return alert("IDを入力してください");
@@ -1172,8 +1175,7 @@
                 const card = document.createElement('div');
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 
-                // 浮かび上がるペーパー調A4カード
-                card.className = `cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
+                card.className = `premium-card cursor-pointer group flex flex-col relative transition-all duration-300 ${hasAnyMaterial ? 'card-available' : 'card-unavailable'}`;
                 
                 card.innerHTML = `
                     <div class="print-sheet p-3 flex flex-col h-full bg-white">
@@ -1326,6 +1328,7 @@
             }
         }
 
+        // 次のPDFページへ
         function nextPdfPage() {
             if (pdfCarouselCurrentPage < pdfCarouselTotalPages) {
                 pdfCarouselCurrentPage++;
@@ -1623,6 +1626,7 @@
             });
         }
 
+        // 全教科カテゴリースイッチ
         function switchSubjectCategory(catId) {
             document.querySelectorAll('.subj-cat-tab').forEach(b => {
                 b.classList.remove('active', 'bg-[var(--accent-main)]', 'text-white');
@@ -1646,6 +1650,7 @@
             renderMaterials();
         }
 
+        // 保護者向けサポート・学習履歴ロジック
         function updateParentsDashboard() {
             document.getElementById('p-stat-days').textContent = userStats.learningDays.length || 1;
             document.getElementById('p-stat-time').textContent = Math.round(userStats.learningSeconds / 60);
@@ -1765,7 +1770,7 @@
                 if (el) el.classList.add('hidden');
             });
 
-            // 固有リンク判定 (Numberキャストにより型不一致バグを解消) [1]
+            // 固有リンク判定 (データのID不一致バグを防ぐため、Number型にキャストして安全に取得・判別) [1]
             if (hash.startsWith('#detail-')) {
                 const id = parseInt(hash.replace('#detail-', ''));
                 const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id)); 
