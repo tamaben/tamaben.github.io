@@ -745,11 +745,18 @@
             try {
                 // 1. CORSプリフライト（OPTIONSリクエスト）の発生を防ぐためカスタムヘッダーは使わない
                 // 2. 環境差（GitHub Pages、サブディレクトリ、CDN）を吸収するため、安全な複数のURL候補を順に試行
-                const candidateUrls = [
-                    'data.json',
-                    './data.json',
-                    `data.json?t=${Date.now()}`
-                ];
+                // 厳密なベースURL/data.json を生成（現在のオリジンやGitHub PagesのURLを網羅）
+                const originUrl = (window.location.origin && window.location.origin !== 'null') ? `${window.location.origin}/data.json` : '';
+                const currentBaseUrl = (window.location.href && !window.location.href.startsWith('file:')) ? new URL('data.json', window.location.href).href : '';
+
+                const candidateUrls = [...new Set([
+                    originUrl,                                // 厳密な URL/data.json (例: https://tamaben.github.io/data.json)
+                    currentBaseUrl,                           // カレントURL基準の絶対パス
+                    'https://tamaben.github.io/data.json',    // 公開本番ドメインの data.json
+                    '/data.json',                             // ルートパス
+                    'data.json',                              // 相対パス
+                    './data.json'
+                ])].filter(u => u && u.trim() !== '');
 
                 let loadedData = null;
                 let fetchError = null;
