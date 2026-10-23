@@ -286,7 +286,7 @@
                 <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
                 <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
                 <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
-                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">利用者の方へ</button>
+                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">学習者・保護者の方へ</button>
             </nav>
 
             <!-- 右側アクション（学年バッジ・マイページ） -->
@@ -717,13 +717,13 @@
             </div>
         </div>
 
-        <!-- 08 利用者の方へ -->
+        <!-- 08 学習者・保護者の方へ -->
         <div id="view-users-info" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
             <!-- ページヘッダー -->
             <div class="border-b border-ink-border pb-6 mb-8">
-                <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">For Learners & Users</span>
-                <h2 class="text-2xl font-black text-ink mt-0.5">利用者の方へ</h2>
-                <p class="text-xs text-ink-muted mt-1">タマベンをご利用いただいているみなさまへ</p>
+                <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">For Learners & Parents</span>
+                <h2 class="text-2xl font-black text-ink mt-0.5">学習者・保護者の方へ</h2>
+                <p class="text-xs text-ink-muted mt-1">タマベンをご利用いただいている学習者・保護者のみなさまへ</p>
             </div>
 
             <!-- 感謝とお知らせメッセージカード -->
@@ -749,6 +749,71 @@
                         </p>
                         <p class="text-xs text-ink-muted leading-relaxed">
                             個人で作成しているため教材数は少ないですがご了承ください。日々のおうち学習や復習に少しでもお役立ていただけるよう、順次新しい単元のプリントを追加・改善してまいります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ご褒美シール枠のご案内カード（4:3 画像対応） -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6 flex-wrap gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200 shadow-xs">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        </span>
+                        <div>
+                            <h3 class="font-black text-base sm:text-lg text-ink">教材のご褒美シール枠について</h3>
+                            <p class="text-[11px] font-bold text-ink-muted">がんばった証を残して、毎日の学習をもっと楽しく</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-900 rounded-full text-[10px] font-bold flex items-center gap-1">
+                        <i data-lucide="check" class="w-3 h-3"></i> 2cm × 2cm 正方形サイズ
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <!-- 4:3 アスペクト比の画像領域 -->
+                    <div class="md:col-span-6">
+                        <div class="aspect-[4/3] w-full rounded-xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-sm relative group">
+                            <img src="gohoubi-sticker.png" alt="教材の名前欄の右側にある2cm×2cmのご褒美シール枠" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('sticker-fallback-card').style.display='flex';">
+                            
+                            <!-- 画像読み込みエラー時のフォールバック用図解カード -->
+                            <div id="sticker-fallback-card" class="hidden w-full h-full p-6 flex-col justify-between bg-canvas text-ink border border-neutral-200">
+                                <div class="flex justify-between items-center pb-2 border-b border-neutral-200">
+                                    <span class="text-xs font-bold text-ink">タマベン学習プリント</span>
+                                    <span class="text-[10px] text-ink-muted">名前欄</span>
+                                </div>
+                                <div class="my-auto flex items-center justify-center gap-4 py-4">
+                                    <div class="px-4 py-2 border border-neutral-300 rounded bg-white text-xs font-bold text-ink-light">
+                                        なまえ: <span class="inline-block w-20 border-b border-neutral-400"></span>
+                                    </div>
+                                    <div class="w-14 h-14 border-2 border-dashed border-amber-400 bg-amber-50/50 rounded-lg flex flex-col items-center justify-center text-amber-700">
+                                        <i data-lucide="star" class="w-5 h-5 fill-amber-400 text-amber-500 mb-0.5"></i>
+                                        <span class="text-[8px] font-bold">2cm×2cm</span>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-ink-muted text-center">名前の右側の枠にご褒美シールを貼っていただけます</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-ink-muted text-center block mt-2 font-medium">▲ 教材上部・名前の右側にあるご褒美シール枠イメージ（4:3）</span>
+                    </div>
+
+                    <!-- 解説文テキスト -->
+                    <div class="md:col-span-6 space-y-3.5 text-xs sm:text-sm text-ink leading-relaxed">
+                        <p class="font-bold text-ink">
+                            一部教材についている名前の右側にあるこちらの枠は、ご褒美シールを貼ることが可能です。
+                        </p>
+                        <div class="bg-canvas p-4 rounded-xl border border-neutral-200 space-y-1.5">
+                            <div class="flex items-center gap-1.5 text-xs font-black text-ink">
+                                <i data-lucide="ruler" class="w-3.5 h-3.5 text-amber-600"></i>
+                                <span>対応シールの仕様</span>
+                            </div>
+                            <p class="text-xs text-ink-light font-medium">
+                                サイズは <span class="font-extrabold text-ink underline decoration-amber-400 decoration-2">2cm * 2cm の正方形</span> のシールが可能です。
+                            </p>
+                        </div>
+                        <p class="text-xs text-ink-muted leading-relaxed font-medium">
+                            市販の「がんばったねシール」や「よくできましたシール」がちょうど収まるサイズです。毎日の学習のモチベーションアップにぜひご活用ください。
                         </p>
                     </div>
                 </div>
@@ -1772,20 +1837,23 @@
                             isReady: true
                         });
                     }
-                } else {
-                    // まだ準備中のセクションも1つのプレビューとして見通せるようカードとして格納
-                    pdfCarouselSlides.push({
-                        type: 'mock',
-                        key: sec.key,
-                        label: sec.label,
-                        badgeBg: 'bg-neutral-200 text-neutral-600',
-                        icon: sec.icon,
-                        url: null,
-                        pageNum: 1,
-                        pageTotal: 1,
-                        isReady: false
-                    });
                 }
+                // ※ ユーザー指示により、練習問題など存在しないものはプレビューに表示しない・含めない
+            }
+
+            // 万一、登録されている教材PDFが1つもない場合のみ案内スライドを1枚表示
+            if (pdfCarouselSlides.length === 0) {
+                pdfCarouselSlides.push({
+                    type: 'mock',
+                    key: 'empty',
+                    label: '準備中',
+                    badgeBg: 'bg-neutral-200 text-neutral-600',
+                    icon: 'file-text',
+                    url: null,
+                    pageNum: 1,
+                    pageTotal: 1,
+                    isReady: false
+                });
             }
 
             pdfCarouselCurrentIndex = 0;
@@ -2048,9 +2116,11 @@
                                     <span class="flex items-center gap-2.5"><i data-lucide="printer" class="w-4 h-4"></i> 基本問題を印刷・開く</span>
                                     <span class="text-[10px] opacity-75">PDF</span>
                                 </button>
-                                <button onclick="jumpToSection('basic')" title="プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                ${hasBasic ? `
+                                <button onclick="jumpToSection('basic')" title="基本問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
+                                ` : ''}
                             </div>
 
                             <div class="flex items-center gap-2">
@@ -2058,9 +2128,11 @@
                                     <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4 text-amber-600"></i> 練習問題に挑戦</span>
                                     <span class="text-[10px] opacity-75">${hasAdv ? 'PDF' : '準備中'}</span>
                                 </button>
-                                <button onclick="jumpToSection('adv')" title="プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                ${hasAdv ? `
+                                <button onclick="jumpToSection('adv')" title="練習問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
+                                ` : ''}
                             </div>
 
                             <div class="flex items-center gap-2">
@@ -2068,9 +2140,11 @@
                                     <span class="flex items-center gap-2.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> 解答・くわしい解説</span>
                                     <span class="text-[10px] text-ink-muted">${hasAns ? 'PDF' : '準備中'}</span>
                                 </button>
-                                <button onclick="jumpToSection('ans')" title="プレビューを表示" class="p-3 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                ${hasAns ? `
+                                <button onclick="jumpToSection('ans')" title="解答プレビューを表示" class="p-3 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
+                                ` : ''}
                             </div>
                         </div>
 
