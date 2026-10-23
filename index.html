@@ -70,24 +70,24 @@
         }
 
         /* ━━━━━━━━━━━━━━━━━━━━
-           開いた時にすーっと引かれるインクマーカーアニメーション
+           開いた時に大事な部分だけにすーっと引かれるインクマーカー
            ━━━━━━━━━━━━━━━━━━━━ */
         .ink-marker {
             display: inline-block;
             position: relative;
             background: #0f172a;
             color: #ffffff;
-            padding: 0.08em 0.35em;
+            padding: 0.04em 0.3em;
+            margin: 0 0.08em;
             border-radius: 2px;
+            white-space: nowrap;
             clip-path: inset(0 100% 0 0);
-            animation: drawMarker 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.15s;
-            box-decoration-break: clone;
-            -webkit-box-decoration-break: clone;
+            animation: drawMarker 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
         }
 
         .ink-marker-2 {
-            animation-delay: 0.5s;
+            animation-delay: 0.6s;
         }
 
         @keyframes drawMarker {
@@ -221,14 +221,10 @@
             <section class="border-b border-ink-border bg-white paper-grid-pattern relative py-14 md:py-20">
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
                     
-                    <!-- 新キャッチコピー: 学習を楽しく & マーカーアニメーション演出 -->
-                    <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight md:leading-tight mb-5 flex flex-col items-center gap-2">
-                        <div>
-                            <span class="ink-marker">学ぶことは、もっと楽しく。</span>
-                        </div>
-                        <div>
-                            <span class="ink-marker ink-marker-2">「できた！」に出会える、毎日の無料プリント。</span>
-                        </div>
+                    <!-- 新キャッチコピー: 学習を楽しく & 大事なキーワードだけマーカー演出 -->
+                    <h1 class="text-2xl sm:text-3xl md:text-5xl font-black text-ink tracking-tight leading-snug md:leading-snug mb-5">
+                        <span class="inline-block">学ぶことは、もっと<span class="ink-marker">楽しく</span>。</span><br class="hidden sm:inline"/>
+                        <span class="inline-block">「できた！」に出会える、毎日の<span class="ink-marker ink-marker-2">無料プリント</span>。</span>
                     </h1>
 
                     <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed">
@@ -736,20 +732,54 @@
                 MATERIAL_DATA = await response.json();
             } catch (e) {
                 MATERIAL_DATA = [
-                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', unit: 'たしざん・ひきざん', title: 'たしざん・ひきざんのきほん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
-                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', unit: 'かん字のれんしゅう', title: 'かん字の書き順れんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#', textbook: '教育出版' },
-                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', unit: '植物のそだちかた', title: '植物のそだちかたと観察', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
-                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', unit: 'アルファベット', title: 'アルファベット・身の回りの単語 (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '', textbook: '数研出版' },
-                    { id: 5, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式① 基本概念と解き方', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
-                    { id: 6, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式② 代入法の実践問題', pdfBasic: 'sample.pdf', pdfAdv: 'sample.pdf', pdfAns: 'sample.pdf', textbook: '東京書籍' },
-                    { id: 7, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式③ 加減法の徹底演習', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
-                    { id: 8, tab: 'junior', subject: '理科', grade: '中学2年生', unit: '化学変化と原子・分子', title: '化学変化と原子・分子の結合', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' }
+                    {
+                        id: "chu1-su1",
+                        tab: "junior",
+                        grade: "中学1年生",
+                        subject: "数学",
+                        unit: "正の数・負の数",
+                        title: "1. 正の数・負の数（基本と四則計算）",
+                        tags: ["中1", "数学", "正の数", "負の数", "絶対値", "加法", "減法", "乗法", "除法"],
+                        pdfBasic: "print/chu1-su1.pdf",
+                        pdfAdv: "#",
+                        pdfAns: "print/chu1-su1-cota.pdf",
+                        textbook: "東京書籍"
+                    },
+                    {
+                        id: "j3-e-01",
+                        tab: "junior",
+                        grade: "中学3年生",
+                        subject: "英語",
+                        unit: "受動態",
+                        title: "Unit 1 受動態",
+                        tags: ["中3", "英語", "文法", "受動態", "過去分詞", "be動詞"],
+                        pdfBasic: "print/chu3-en1.pdf",
+                        pdfAdv: "#",
+                        pdfAns: "print/chu3-en1-cota.pdf",
+                        textbook: "東京書籍"
+                    },
+                    {
+                        id: "j3-e-02",
+                        tab: "junior",
+                        grade: "中学3年生",
+                        subject: "英語",
+                        unit: "現在完了形",
+                        title: "Unit 2 現在完了形",
+                        tags: ["中3", "英語", "文法", "現在完了", "過去分詞", "have"],
+                        pdfBasic: "print/chu3-en2.pdf",
+                        pdfAdv: "#",
+                        pdfAns: "print/chu3-en2-cota.pdf",
+                        textbook: "東京書籍"
+                    },
+                    { id: "e1-m-01", tab: "elementary", subject: "算数", grade: "小学1年生", unit: "たしざん・ひきざん", title: "たしざん・ひきざんのきほん", tags: ["小1", "算数"], pdfBasic: "sample.pdf", pdfAdv: "", pdfAns: "", textbook: "東京書籍" },
+                    { id: "e2-j-01", tab: "elementary", subject: "国語", grade: "小学2年生", unit: "かん字のれんしゅう", title: "かん字の書き順れんしゅう (準備中)", tags: ["小2", "国語"], pdfBasic: "#", pdfAdv: "#", pdfAns: "#", textbook: "教育出版" },
+                    { id: "e3-s-01", tab: "elementary", subject: "理科", grade: "小学3年生", unit: "植物のそだちかた", title: "植物のそだちかたと観察", tags: ["小3", "理科"], pdfBasic: "sample.pdf", pdfAdv: "", pdfAns: "", textbook: "啓林館" }
                 ];
             }
 
             MATERIAL_DATA.forEach((item, index) => {
-                if (item.id === undefined || item.id === null || isNaN(Number(item.id))) {
-                    item.id = index + 1; 
+                if (!item.id) {
+                    item.id = `item-${index + 1}`; 
                 }
                 if (!item.unit) {
                     item.unit = item.title;
@@ -1266,10 +1296,12 @@
                 const matchGrade = grade ? item.grade === grade : true;
                 const matchSubject = subject ? item.subject.includes(subject.replace(' / 数学', '')) : true;
                 const matchUnit = unit ? (item.unit === unit || item.title.includes(unit)) : true;
+                const matchTags = item.tags && Array.isArray(item.tags) ? item.tags.some(t => t.toLowerCase().includes(keyword)) : false;
                 const matchKeyword = keyword ? (
                     item.title.toLowerCase().includes(keyword) || 
                     item.subject.toLowerCase().includes(keyword) || 
-                    (item.unit && item.unit.toLowerCase().includes(keyword))
+                    (item.unit && item.unit.toLowerCase().includes(keyword)) ||
+                    matchTags
                 ) : true;
                 return matchGrade && matchSubject && matchUnit && matchKeyword;
             });
@@ -1312,8 +1344,8 @@
             views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
 
             if (hash.startsWith('#detail-')) {
-                const id = parseInt(hash.replace('#detail-', ''));
-                const item = MATERIAL_DATA.find(m => Number(m.id) === Number(id)); 
+                const id = decodeURIComponent(hash.replace('#detail-', ''));
+                const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
                 if (item) {
                     document.getElementById('view-detail').classList.remove('hidden');
                     const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
