@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>タマベン - 無料学習教材サイト</title>
+    <title>タマベン - 無料学習教材・プリントプラットフォーム</title>
     
     <link rel="icon" href="./icon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
-    <meta name="description" content="タマベンは、小学生・中学生・高校生向けの無料学習教材サイト。教科書準拠プリントをインストール不要ですぐに利用・印刷できます。">
-    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習教材サイト, 宿題プリント, PDFプリント">
+    <meta name="description" content="タマベンは、小学生・中学生・高校生向けの無料学習教材サイト。教科書準拠プリントをインストール不要ですぐに利用・印刷できます。テーマは「学習を楽しく」。">
+    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習教材サイト, 宿題プリント, PDFプリント, 単元別プリント">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,26 +33,12 @@
                     colors: {
                         canvas: '#f8fafc',
                         surface: '#ffffff',
-                        paper: {
-                            50: '#fcfdfd',
-                            100: '#f4f6f8',
-                            200: '#e5e9ee',
-                            300: '#cbd4e1',
-                            400: '#94a3b8',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                        },
                         ink: {
                             DEFAULT: '#0f172a',
                             light: '#334155',
                             muted: '#64748b',
                             subtle: '#94a3b8',
                             border: '#e2e8f0',
-                        },
-                        accent: {
-                            DEFAULT: '#0f172a',
-                            primary: '#059669',
-                            subtle: '#ecfdf5',
                         }
                     }
                 }
@@ -80,6 +66,36 @@
         @media (min-width: 768px) {
             body {
                 padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━
+           開いた時にすーっと引かれるインクマーカーアニメーション
+           ━━━━━━━━━━━━━━━━━━━━ */
+        .ink-marker {
+            display: inline-block;
+            position: relative;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.08em 0.35em;
+            border-radius: 2px;
+            clip-path: inset(0 100% 0 0);
+            animation: drawMarker 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.15s;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+
+        .ink-marker-2 {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes drawMarker {
+            0% {
+                clip-path: inset(0 100% 0 0);
+            }
+            100% {
+                clip-path: inset(0 0 0 0);
             }
         }
 
@@ -160,19 +176,18 @@
 </head>
 <body class="font-sans antialiased text-ink selection:bg-neutral-900 selection:text-white">
 
-    <!-- PC/タブレット ヘッダー -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━
+         PC / タブレット用ヘッダー（logo.svg 対応）
+         ━━━━━━━━━━━━━━━━━━━━ -->
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-ink-border transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <button onclick="navigate('#home')" class="flex items-center gap-2.5 outline-none group text-left">
-                <div class="w-8 h-8 bg-ink text-white rounded flex items-center justify-center font-black text-sm tracking-tight shadow-sm group-hover:bg-neutral-800 transition-colors">
-                    TB
-                </div>
-                <div>
-                    <span class="font-extrabold text-base tracking-tight text-ink block leading-none">タマベン</span>
-                    <span class="text-[9px] font-semibold text-ink-muted uppercase tracking-wider block mt-0.5">Free Learning Sheets</span>
-                </div>
+            
+            <!-- ロゴ（logo.svg） -->
+            <button onclick="navigate('#home')" class="active:scale-95 transition-all outline-none flex items-center">
+                <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 w-auto" onerror="this.outerHTML='<span class=\'font-black text-ink text-lg tracking-tight\'>タマベン</span>'">
             </button>
 
+            <!-- デスクトップナビ -->
             <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-light">
                 <button onclick="navigate('#home')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">教材トップ</button>
                 <button onclick="navigate('#subjects')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">全教科一覧</button>
@@ -180,6 +195,7 @@
                 <button onclick="navigate('#parents')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">保護者の方へ</button>
             </nav>
 
+            <!-- 右側アクション（学年バッジ・マイページ） -->
             <div class="flex items-center gap-3">
                 <div id="grade-badge" class="hidden sm:flex items-center gap-2 border border-neutral-200 px-3 py-1 rounded-full bg-neutral-50">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -195,22 +211,32 @@
     </header>
 
     <main class="min-h-screen">
-        <!-- 01 トップページ -->
+        
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             01 トップページ (view-home) [#home]
+             ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-home" class="view-section">
-            <section class="border-b border-ink-border bg-white paper-grid-pattern relative py-12 md:py-16">
+            
+            <!-- ヒーローセクション（学習を楽しく × マーカー線アニメーション） -->
+            <section class="border-b border-ink-border bg-white paper-grid-pattern relative py-14 md:py-20">
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-[11px] font-bold text-ink-light mb-6">
-                        <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                        会員登録不要・全プリント完全無料・即印刷
-                    </div>
-                    <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-ink tracking-tight leading-tight md:leading-tight mb-4">
-                        学びに、本当に必要なプリントを。<br class="hidden sm:inline"/>
-                        探して、開いて、すぐ印刷。
+                    
+                    <!-- 新キャッチコピー: 学習を楽しく & マーカーアニメーション演出 -->
+                    <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight md:leading-tight mb-5 flex flex-col items-center gap-2">
+                        <div>
+                            <span class="ink-marker">学ぶことは、もっと楽しく。</span>
+                        </div>
+                        <div>
+                            <span class="ink-marker ink-marker-2">「できた！」に出会える、毎日の無料プリント。</span>
+                        </div>
                     </h1>
+
                     <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed">
-                        小・中・高校の教科書カリキュラムに準拠した高品質な学習プリント。余計な手続きなしですぐに手に入ります。
+                        タマベンチームの願いは、すべての子どもたちに「わかる楽しさ」を届けること。<br class="hidden sm:inline"/>
+                        教科書カリキュラムに準拠したプリントを、インストール不要ですぐに利用できます。
                     </p>
 
+                    <!-- クイック検索バー（単元直行リンク付） -->
                     <div class="max-w-xl mx-auto px-2">
                         <div onclick="navigate('#search')" class="cursor-pointer flex items-center justify-between rounded-xl p-2.5 sm:p-3 bg-white border-2 border-neutral-200 hover:border-ink transition-all shadow-sm group">
                             <div class="flex items-center gap-3 pl-2">
@@ -223,55 +249,122 @@
                         </div>
                     </div>
 
+                    <!-- 人気の単元クイックリンク -->
                     <div class="flex items-center justify-center gap-1.5 flex-wrap mt-4 text-[11px]">
-                        <span class="text-ink-subtle font-semibold mr-1">注目:</span>
-                        <button onclick="quickSearch('連立方程式')" class="text-ink-light hover:text-ink underline decoration-neutral-300">連立方程式</button>
+                        <span class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
+                        <button onclick="quickSearchByUnit('連立方程式')" class="text-ink-light hover:text-ink underline decoration-neutral-300">連立方程式</button>
                         <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearch('一次関数')" class="text-ink-light hover:text-ink underline decoration-neutral-300">一次関数</button>
+                        <button onclick="quickSearchByUnit('一次関数')" class="text-ink-light hover:text-ink underline decoration-neutral-300">一次関数</button>
                         <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearch('化学変化')" class="text-ink-light hover:text-ink underline decoration-neutral-300">化学変化</button>
+                        <button onclick="quickSearchByUnit('化学変化')" class="text-ink-light hover:text-ink underline decoration-neutral-300">化学変化と分子</button>
                         <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearch('たしざん')" class="text-ink-light hover:text-ink underline decoration-neutral-300">たしざん・ひきざん</button>
+                        <button onclick="quickSearchByUnit('たしざん')" class="text-ink-light hover:text-ink underline decoration-neutral-300">たしざん・ひきざん</button>
+                        <span class="text-neutral-300">•</span>
+                        <button onclick="quickSearchByUnit('植物')" class="text-ink-light hover:text-ink underline decoration-neutral-300">植物のそだち</button>
                     </div>
+
                 </div>
             </section>
 
-            <!-- カタログセクション -->
+            <!-- メイン教材カタログエリア -->
             <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                
+                <!-- コントロールバー（学年区分タブ・教科水平スクロール・単元連動フィルター） -->
                 <div class="space-y-4 mb-8">
+                    
+                    <!-- 上段: 学年セグメント＆フィルター切替 -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ink-border">
+                        <!-- 小学生 / 中学生 切り替えセグメント -->
                         <div class="inline-flex bg-neutral-200/80 p-1 rounded-xl self-start">
                             <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-5 py-2 rounded-lg text-xs font-black">小学生プリント</button>
                             <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-5 py-2 rounded-lg text-xs font-black">中学生プリント</button>
                         </div>
-                        <div class="flex items-center gap-2 self-end sm:self-auto">
-                            <label for="material-filter" class="text-xs font-semibold text-ink-muted">表示:</label>
-                            <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="renderMaterials()">
-                                <option value="all">すべてのプリント (準備中を含む)</option>
-                                <option value="available" selected>今すぐ印刷・ダウンロード可能のみ</option>
-                                <option value="unavailable">準備中のみ</option>
-                            </select>
+
+                        <!-- 右側コントロール: 単元セレクト & 状態フィルター -->
+                        <div class="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+                            <!-- 単元ドロップダウン（教科に連動して自動調節） -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="catalog-unit-select" class="text-xs font-semibold text-ink-muted">単元:</label>
+                                <select id="catalog-unit-select" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm max-w-[160px] truncate" onchange="onCatalogUnitChange()">
+                                    <option value="">すべての単元</option>
+                                </select>
+                            </div>
+
+                            <!-- 状態フィルター -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="material-filter" class="text-xs font-semibold text-ink-muted">表示:</label>
+                                <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="renderMaterials()">
+                                    <option value="all">すべて (準備中含む)</option>
+                                    <option value="available" selected>今すぐ印刷可能のみ</option>
+                                    <option value="unavailable">準備中のみ</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 scroll-smooth" id="has-material-subjects-chips"></div>
+
+                    <!-- 下段: 教科の水平スクロールチップス -->
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 scroll-smooth" id="has-material-subjects-chips">
+                        <!-- JSで動的生成 -->
+                    </div>
+
+                    <!-- 単元のクイックピル（教科選択時に自動展開） -->
+                    <div id="catalog-unit-pills-bar" class="hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <!-- JSで自動挿入 -->
+                    </div>
                 </div>
 
-                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[40vh]"></div>
+                <!-- プリント用紙カードグリッド -->
+                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[40vh]">
+                    <!-- JSにて動的に描画 -->
+                </div>
+            </section>
+
+            <!-- 保護者・先生向け 信頼のポイント -->
+            <section class="border-t border-ink-border bg-white py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 border border-neutral-200 rounded-xl bg-canvas">
+                            <div class="w-8 h-8 rounded-lg bg-ink text-white flex items-center justify-center mb-3">
+                                <i data-lucide="printer" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-ink mb-1">A4そのまま印刷最適化</h3>
+                            <p class="text-xs text-ink-muted leading-relaxed">ご家庭のプリンターやコンビニ印刷（A4用紙）で最も読みやすく解きやすい余白設計を行っています。</p>
+                        </div>
+                        <div class="p-6 border border-neutral-200 rounded-xl bg-canvas">
+                            <div class="w-8 h-8 rounded-lg bg-ink text-white flex items-center justify-center mb-3">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-ink mb-1">自発的な「解ける喜び」</h3>
+                            <p class="text-xs text-ink-muted leading-relaxed">基礎から無理なくステップアップ。解けた達成感を実感しながら、前向きに学習を続けられます。</p>
+                        </div>
+                        <div class="p-6 border border-neutral-200 rounded-xl bg-canvas">
+                            <div class="w-8 h-8 rounded-lg bg-ink text-white flex items-center justify-center mb-3">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-ink mb-1">完全無料・広告の最小化</h3>
+                            <p class="text-xs text-ink-muted leading-relaxed">学習中の誤タップを防ぐため、邪魔なポップアップや過剰な広告を徹底排除しています。</p>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
 
-        <!-- 02 検索ページ -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             02 検索トップページ (view-search) [#search]
+             ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-search" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
             <div class="border-b border-ink-border pb-6 mb-8">
                 <h2 class="text-xl sm:text-2xl font-black text-ink mb-1">プリントを探す</h2>
-                <p class="text-xs text-ink-muted">学年・教科・単元のキーワードから最適な学習プリントを絞り込みます。</p>
+                <p class="text-xs text-ink-muted">学年・教科を選択すると、対応する単元が自動で調節・表示されます。</p>
             </div>
 
+            <!-- 検索フィルターカード -->
             <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <!-- 1. 学年選択 -->
                     <div>
-                        <label class="text-xs font-bold text-ink-light block mb-2">学年を選択</label>
-                        <select id="search-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                        <label class="text-xs font-bold text-ink-light block mb-2">1. 学年を選択</label>
+                        <select id="search-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
                             <option value="">すべての学年</option>
                             <option value="小学1年生">小学1年生</option>
                             <option value="小学2年生">小学2年生</option>
@@ -284,53 +377,102 @@
                             <option value="中学3年生">中学3年生</option>
                         </select>
                     </div>
+
+                    <!-- 2. 教科選択 -->
                     <div>
-                        <label class="text-xs font-bold text-ink-light block mb-2">教科を選択</label>
-                        <select id="search-subject" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                        <label class="text-xs font-bold text-ink-light block mb-2">2. 教科を選択</label>
+                        <select id="search-subject" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
                             <option value="">すべての教科</option>
-                            <option value="国語">国語</option>
                             <option value="算数">算数 / 数学</option>
+                            <option value="国語">国語</option>
                             <option value="理科">理科</option>
                             <option value="英語">英語</option>
                             <option value="社会">社会</option>
                         </select>
                     </div>
+
+                    <!-- 3. 単元選択（学年・教科に合わせて自動調節） -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-ink-light block">3. 単元を選択</label>
+                            <span id="unit-sync-status" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">自動調節中</span>
+                        </div>
+                        <select id="search-unit" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <option value="">すべての単元</option>
+                        </select>
+                    </div>
                 </div>
 
+                <!-- キーワード入力 -->
                 <div class="flex items-center rounded-xl px-4 py-3 bg-canvas border border-neutral-300 mb-6 focus-within:border-ink transition-colors">
                     <i data-lucide="search" class="w-4 h-4 text-ink-subtle mr-3"></i>
-                    <input type="text" id="search-keyword" placeholder="キーワード（例：一次関数、たしざん、化学変化）" class="w-full bg-transparent outline-none font-bold text-xs text-ink placeholder:text-neutral-400">
+                    <input type="text" id="search-keyword" placeholder="自由キーワード（例：代入法、分数、光の反射など）" class="w-full bg-transparent outline-none font-bold text-xs text-ink placeholder:text-neutral-400">
                 </div>
 
                 <button onclick="executeSearch()" class="w-full py-3 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.99]">
                     <i data-lucide="search" class="w-4 h-4"></i> この条件でプリントを検索
                 </button>
             </div>
+
+            <!-- 単元早見タグ & 閲覧履歴 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-neutral-200">
+                    <h3 class="font-bold text-xs mb-3 flex items-center gap-2 text-ink">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        代表的な単元からすぐ探す
+                    </h3>
+                    <div class="flex flex-wrap gap-2" id="popular-units-container">
+                        <!-- JSで動的生成 -->
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-neutral-200">
+                    <h3 class="font-bold text-xs mb-3 flex items-center gap-2 text-ink">
+                        <i data-lucide="history" class="w-3.5 h-3.5 text-blue-600"></i>
+                        最近閲覧したプリント
+                    </h3>
+                    <div class="space-y-2" id="recent-search-history">
+                        <p class="text-xs text-ink-muted">まだ閲覧履歴がありません。</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 03 検索結果ページ -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             03 検索結果ページ (view-search-results) [#results]
+             ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-search-results" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-ink-border pb-6 mb-8 gap-4">
                 <div>
-                    <span class="text-xs font-bold text-ink-muted uppercase tracking-wider">Search Results</span>
+                    <span class="text-xs font-bold text-ink-muted uppercase tracking-wider" id="search-result-tag">Search Results</span>
                     <h2 class="text-xl sm:text-2xl font-black text-ink mt-0.5" id="search-results-title">検索結果一覧</h2>
                 </div>
                 <button onclick="navigate('#search')" class="px-4 py-2 border border-neutral-300 bg-white rounded-lg text-xs font-bold hover:bg-neutral-50 transition-colors">
                     条件を変更して再検索
                 </button>
             </div>
-            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+
+            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- 動的に描画 -->
+            </div>
         </div>
 
-        <!-- 04 教材詳細ページ（めくれるスワイプ・ビューア） -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             04 教材詳細ページ（めくれるスワイプ・プレビュー） (view-detail) [#detail-{ID}]
+             ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-detail" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <button onclick="navigate('#home')" class="inline-flex items-center gap-2 text-ink-muted hover:text-ink font-bold text-xs mb-6 transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 一覧に戻る
             </button>
-            <div id="detail-content"></div>
+            
+            <div id="detail-content">
+                <!-- JSで動的展開 -->
+            </div>
         </div>
 
-        <!-- 05 全教科一覧 -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             05 全教科一覧ページ (view-subjects) [#subjects]
+             ━━━━━━━━━━━━━━━━━━━━ -->
         <div id="view-subjects" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="border-b border-ink-border pb-6 mb-8 text-center sm:text-left">
                 <h2 class="text-xl sm:text-2xl font-black text-ink mb-1">すべての教科・科目</h2>
@@ -346,17 +488,55 @@
             </div>
 
             <div class="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200">
+                <!-- 小学校 -->
                 <div id="scat-elem" class="scat-block grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="quickSearch('国語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
-                    <button onclick="quickSearch('算数')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">算数</button>
-                    <button onclick="quickSearch('理科')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
-                    <button onclick="quickSearch('社会')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">社会</button>
+                    <button onclick="quickSearchBySubject('国語', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
+                    <button onclick="quickSearchBySubject('算数', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">算数</button>
+                    <button onclick="quickSearchBySubject('理科', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
+                    <button onclick="quickSearchBySubject('社会', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">社会</button>
+                    <button onclick="quickSearchBySubject('生活', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生活</button>
+                    <button onclick="quickSearchBySubject('音楽', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">音楽</button>
+                    <button onclick="quickSearchBySubject('図画工作', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">図画工作</button>
+                    <button onclick="quickSearchBySubject('外国語', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">外国語</button>
                 </div>
+
+                <!-- 中学校 -->
                 <div id="scat-jhs" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="quickSearch('国語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
-                    <button onclick="quickSearch('数学')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学</button>
-                    <button onclick="quickSearch('理科')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
-                    <button onclick="quickSearch('英語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">英語</button>
+                    <button onclick="quickSearchBySubject('国語', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
+                    <button onclick="quickSearchBySubject('数学', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学</button>
+                    <button onclick="quickSearchBySubject('理科', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
+                    <button onclick="quickSearchBySubject('社会', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">社会</button>
+                    <button onclick="quickSearchBySubject('英語', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">英語</button>
+                    <button onclick="quickSearchBySubject('技術', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">技術</button>
+                    <button onclick="quickSearchBySubject('家庭', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">家庭</button>
+                    <button onclick="quickSearchBySubject('保健体育', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">保健体育</button>
+                </div>
+
+                <!-- 高校普通科 -->
+                <div id="scat-hs_gen" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('現代の国語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">現代の国語</button>
+                    <button onclick="quickSearch('言語文化')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">言語文化</button>
+                    <button onclick="quickSearch('数学Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学Ⅰ</button>
+                    <button onclick="quickSearch('物理基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">物理基礎</button>
+                    <button onclick="quickSearch('化学基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">化学基礎</button>
+                    <button onclick="quickSearch('生物基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生物基礎</button>
+                    <button onclick="quickSearch('情報Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報Ⅰ</button>
+                </div>
+
+                <!-- 工業高校 -->
+                <div id="scat-hs_tech" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('電気回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電気回路</button>
+                    <button onclick="quickSearch('電子回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電子回路</button>
+                    <button onclick="quickSearch('プログラミング技術')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">プログラミング技術</button>
+                    <button onclick="quickSearch('機械設計')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">機械設計</button>
+                </div>
+
+                <!-- 商業高校 -->
+                <div id="scat-hs_comm" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('簿記')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">簿記</button>
+                    <button onclick="quickSearch('原価計算')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">原価計算</button>
+                    <button onclick="quickSearch('マーケティング')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">マーケティング</button>
+                    <button onclick="quickSearch('情報処理')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報処理</button>
                 </div>
             </div>
         </div>
@@ -433,6 +613,7 @@
                 <div id="parents-view-history-list" class="space-y-2"></div>
             </div>
         </div>
+
     </main>
 
     <!-- スマホ専用固定ボトムナビ -->
@@ -457,15 +638,69 @@
 
     <!-- PCフッター -->
     <footer class="hidden md:block bg-white border-t border-ink-border py-8 text-center text-xs text-ink-muted">
-        <p class="font-bold text-ink mb-1">TAMABEN — Minimal Paper Platform</p>
-        <p>&copy; 2026 Tamaben. All printable materials are free for learners.</p>
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-center items-center mb-2">
+                <img src="logo.svg" alt="タマベン" class="h-5 w-auto opacity-70" onerror="this.outerHTML='<span class=\'font-bold text-ink\'>タマベン</span>'">
+            </div>
+            <p>&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
+        </div>
     </footer>
 
-    <!-- スクリプト部（完全連動） -->
+    <!-- スクリプト（単元マスター＆自動連動システム搭載） -->
     <script>
+        const UNIT_MASTER = {
+            '算数': {
+                '小学1年生': ['たしざん・ひきざん', '10よりおおきいかず', 'かたちあそび', 'とけいのよみかた'],
+                '小学2年生': ['たし算とひき算の筆算', 'かけ算九九', '長さとかさ', '三角形と四角形'],
+                '小学3年生': ['わり算のきほん', 'かけ算の筆算', '小数と分数', '円と球', '重さのたんい'],
+                '小学4年生': ['大きな数', '小数の計算', '面積（平方センチ・メートル）', '直方体と立方体', '折れ線グラフ'],
+                '小学5年生': ['小数のわり算', '分数のたし算・ひき算', '図形の合同と角', '四角形と三角形の面積', '割合と百分率'],
+                '小学6年生': ['分数のかけ算・わり算', '比とその利用', '円の面積', '対称な図形', '文字を使った式']
+            },
+            '数学': {
+                '中学1年生': ['正の数・負の数', '文字と式', '一元一次方程式', '比例と反比例', '平面図形・空間図形', 'データの活用'],
+                '中学2年生': ['式の計算', '連立方程式', '一次関数', '平行線と合同', '三角形と四角形', '確率'],
+                '中学3年生': ['多項式の展開と因数分解', '平方根', '二次方程式', '関数 y=ax²', '相似な図形', '円周角の定理', '三平方の定理']
+            },
+            '国語': {
+                '小学1年生': ['ひらがな・カタカナ', 'かん字のきほん', 'ことばあそび'],
+                '小学2年生': ['かん字のれんしゅう', '物語の読解', '主語と述語'],
+                '小学3年生': ['漢字の音と訓', '説明文の組み立て', 'ローマ字'],
+                '中学1年生': ['現代文読解', '文法の基礎（品詞）', '故事成語・漢文入門'],
+                '中学2年生': ['用言の活用', '古典の世界（竹取物語・平家物語）', '短歌・俳句'],
+                '中学3年生': ['論理的文章の読解', '和歌・古典文学', '言葉の歴史と変遷']
+            },
+            '理科': {
+                '小学3年生': ['植物のそだちかた', 'チョウの育ち方', '光と音の性質', 'じしゃくのふしぎ'],
+                '小学4年生': ['天気の変化と気温', '月と星の動き', '人の体のつくり', '金属・水・空気のあたたまり方'],
+                '小学5年生': ['植物の発芽と成長', 'メダカのたん生', '台風と天気の変化', 'もののとけ方', '電磁石のはたらき'],
+                '小学6年生': ['ものの燃え方と空気', 'ヒトや動物の体', '植物の養分と水', '水溶液の性質', 'てこの規則性', '地層と火山'],
+                '中学1年生': ['植物の生活と種類', '身の回りの物質と気体', '光・音・力', '大地の成り立ちと地震'],
+                '中学2年生': ['化学変化と原子・分子', '動物の生活と生物の変遷', '天気とその変化', '電流と磁界'],
+                '中学3年生': ['化学変化とイオン・酸とアルカリ', '生命の連続性・生殖', '物体の運動と力学的エネルギー', '地球と宇宙']
+            },
+            '英語': {
+                '小学5年生': ['アルファベット', '身の回りの単語', '簡単な自己紹介'],
+                '小学6年生': ['日課や季節の表現', '過去の出来事', '中学校の行事案内'],
+                '中学1年生': ['be動詞と一般動詞', '助動詞 can', '複数形・人称代名詞', '現在進行形', '疑問詞 (what/where/when)'],
+                '中学2年生': ['過去形・過去進行形', '未来の表現 (will / be going to)', '助動詞 (must/may/should)', '不定詞・動名詞', '比較表現'],
+                '中学3年生': ['受動態', '現在完了形', '関係代名詞', '間接疑問文', '分詞の後置修飾']
+            },
+            '社会': {
+                '小学3年生': ['わたしたちのまち', 'はたらく人とくらし'],
+                '小学4年生': ['水やごみの処理', '地域の安全を守る', '都道府県の特色'],
+                '小学5年生': ['日本の地形と気候', '米づくりと農業', '水産業と工業生産'],
+                '小学6年生': ['日本の歴史（古代〜近代）', '政治のしくみと日本国憲法', '国際社会と日本'],
+                '中学1年生': ['世界の諸地域（アジア・ヨーロッパ等）', '古代文明〜中世の日本と世界'],
+                '中学2年生': ['日本の諸地域（地理）', '近世〜近代の日本と世界'],
+                '中学3年生': ['現代社会と日本国憲法', '政治の仕組み', '市場経済と暮らし', '国際社会と平和']
+            }
+        };
+
         let MATERIAL_DATA = [];
         let currentTab = 'elementary';
         let activeSubjectFilter = null; 
+        let activeUnitFilter = null; 
         let isLoaded = false; 
         let pdfCarouselCurrentPage = 1;
         let pdfCarouselTotalPages = 1;
@@ -501,14 +736,14 @@
                 MATERIAL_DATA = await response.json();
             } catch (e) {
                 MATERIAL_DATA = [
-                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', title: 'たしざん・ひきざんのきほん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
-                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', title: 'かん字の書き順れんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#', textbook: '教育出版' },
-                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', title: '植物のそだちかたと観察', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
-                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', title: 'アルファベット・身の回りの単語 (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '', textbook: '数研出版' },
-                    { id: 5, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式① 基本概念と解き方', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
-                    { id: 6, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式② 代入法の実践問題', pdfBasic: 'sample.pdf', pdfAdv: 'sample.pdf', pdfAns: 'sample.pdf', textbook: '東京書籍' },
-                    { id: 7, tab: 'junior', subject: '数学', grade: '中学2年生', title: '連立方程式③ 加減法の徹底演習', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
-                    { id: 8, tab: 'junior', subject: '理科', grade: '中学2年生', title: '化学変化と原子・分子の結合', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' }
+                    { id: 1, tab: 'elementary', subject: '算数', grade: '小学1年生', unit: 'たしざん・ひきざん', title: 'たしざん・ひきざんのきほん', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
+                    { id: 2, tab: 'elementary', subject: '国語', grade: '小学2年生', unit: 'かん字のれんしゅう', title: 'かん字の書き順れんしゅう (準備中)', pdfBasic: '#', pdfAdv: '#', pdfAns: '#', textbook: '教育出版' },
+                    { id: 3, tab: 'elementary', subject: '理科', grade: '小学3年生', unit: '植物のそだちかた', title: '植物のそだちかたと観察', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
+                    { id: 4, tab: 'junior', subject: '英語', grade: '中学1年生', unit: 'アルファベット', title: 'アルファベット・身の回りの単語 (準備中)', pdfBasic: '', pdfAdv: '', pdfAns: '', textbook: '数研出版' },
+                    { id: 5, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式① 基本概念と解き方', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' },
+                    { id: 6, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式② 代入法の実践問題', pdfBasic: 'sample.pdf', pdfAdv: 'sample.pdf', pdfAns: 'sample.pdf', textbook: '東京書籍' },
+                    { id: 7, tab: 'junior', subject: '数学', grade: '中学2年生', unit: '連立方程式', title: '連立方程式③ 加減法の徹底演習', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '啓林館' },
+                    { id: 8, tab: 'junior', subject: '理科', grade: '中学2年生', unit: '化学変化と原子・分子', title: '化学変化と原子・分子の結合', pdfBasic: 'sample.pdf', pdfAdv: '', pdfAns: '', textbook: '東京書籍' }
                 ];
             }
 
@@ -516,11 +751,149 @@
                 if (item.id === undefined || item.id === null || isNaN(Number(item.id))) {
                     item.id = index + 1; 
                 }
+                if (!item.unit) {
+                    item.unit = item.title;
+                }
             });
 
             isLoaded = true; 
             buildSubjectChips();
+            syncSearchUnits();
+            renderPopularUnits();
             handleHashChange(); 
+        }
+
+        function getUnitsFor(subject, grade) {
+            let units = [];
+            let targetSub = subject;
+            if (subject === '算数 / 数学' || subject === '数学') {
+                targetSub = (grade && grade.includes('小学')) ? '算数' : '数学';
+            }
+
+            if (targetSub && UNIT_MASTER[targetSub]) {
+                const subObj = UNIT_MASTER[targetSub];
+                if (grade && subObj[grade]) {
+                    units = [...subObj[grade]];
+                } else {
+                    for (let g in subObj) units.push(...subObj[g]);
+                }
+            } else if (!targetSub && grade) {
+                for (let s in UNIT_MASTER) {
+                    if (UNIT_MASTER[s][grade]) units.push(...UNIT_MASTER[s][grade]);
+                }
+            } else if (!targetSub && !grade) {
+                for (let s in UNIT_MASTER) {
+                    for (let g in UNIT_MASTER[s]) units.push(...UNIT_MASTER[s][g]);
+                }
+            }
+
+            return [...new Set(units)];
+        }
+
+        function syncSearchUnits() {
+            const grade = document.getElementById('search-grade').value;
+            const subject = document.getElementById('search-subject').value;
+            const unitSelect = document.getElementById('search-unit');
+            const statusLabel = document.getElementById('unit-sync-status');
+            if (!unitSelect) return;
+
+            const units = getUnitsFor(subject, grade);
+            unitSelect.innerHTML = `<option value="">すべての単元 (${units.length}件)</option>`;
+            
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                unitSelect.appendChild(opt);
+            });
+
+            if (statusLabel) {
+                statusLabel.textContent = (grade || subject) ? '条件に自動連動中' : '全単元';
+            }
+        }
+
+        function updateCatalogUnits() {
+            const unitSelect = document.getElementById('catalog-unit-select');
+            const pillsBar = document.getElementById('catalog-unit-pills-bar');
+            if (!unitSelect) return;
+
+            const units = getUnitsFor(activeSubjectFilter, null);
+
+            unitSelect.innerHTML = `<option value="">すべての単元</option>`;
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                if (activeUnitFilter === u) opt.selected = true;
+                unitSelect.appendChild(opt);
+            });
+
+            if (activeSubjectFilter && units.length > 0 && pillsBar) {
+                pillsBar.classList.remove('hidden');
+                pillsBar.innerHTML = `<span class="text-[10px] font-bold text-ink-muted shrink-0 mr-1">単元:</span>`;
+                
+                const allPill = document.createElement('button');
+                allPill.className = `px-2.5 py-1 text-[11px] font-bold rounded-md shrink-0 transition-colors ${!activeUnitFilter ? 'bg-ink text-white' : 'bg-neutral-100 text-ink-light hover:bg-neutral-200'}`;
+                allPill.textContent = 'すべて';
+                allPill.onclick = () => {
+                    activeUnitFilter = null;
+                    updateCatalogUnits();
+                    renderMaterials();
+                };
+                pillsBar.appendChild(allPill);
+
+                units.slice(0, 8).forEach(u => {
+                    const pill = document.createElement('button');
+                    const isActive = activeUnitFilter === u;
+                    pill.className = `px-2.5 py-1 text-[11px] font-bold rounded-md shrink-0 transition-colors ${isActive ? 'bg-ink text-white' : 'bg-white border border-neutral-200 text-ink-light hover:bg-neutral-50'}`;
+                    pill.textContent = u;
+                    pill.onclick = () => {
+                        activeUnitFilter = u;
+                        updateCatalogUnits();
+                        renderMaterials();
+                    };
+                    pillsBar.appendChild(pill);
+                });
+            } else if (pillsBar) {
+                pillsBar.classList.add('hidden');
+            }
+        }
+
+        function onCatalogUnitChange() {
+            activeUnitFilter = document.getElementById('catalog-unit-select').value || null;
+            updateCatalogUnits();
+            renderMaterials();
+        }
+
+        function renderPopularUnits() {
+            const container = document.getElementById('popular-units-container');
+            if(!container) return;
+            const samples = ['連立方程式', '一次関数', '化学変化と原子・分子', 'たしざん・ひきざん', '植物のそだちかた', '分数のかけ算', 'be動詞と一般動詞', '円周角の定理'];
+            container.innerHTML = '';
+            samples.forEach(unit => {
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1.5 bg-canvas border border-neutral-200 hover:border-ink text-xs font-medium rounded-lg text-ink transition-colors";
+                btn.textContent = unit;
+                btn.onclick = () => quickSearchByUnit(unit);
+                container.appendChild(btn);
+            });
+        }
+
+        function quickSearchByUnit(unitName) {
+            document.getElementById('search-keyword').value = unitName;
+            executeSearch();
+        }
+
+        function quickSearchBySubject(subjectName, schoolType) {
+            if (schoolType) {
+                currentTab = schoolType;
+                document.getElementById('tab-elementary').classList.toggle('active', currentTab === 'elementary');
+                document.getElementById('tab-junior').classList.toggle('active', currentTab === 'junior');
+            }
+            activeSubjectFilter = subjectName;
+            buildSubjectChips();
+            navigate('#home');
+            renderMaterials();
         }
 
         function buildSubjectChips() {
@@ -538,7 +911,9 @@
             allBtn.textContent = 'すべての教科';
             allBtn.onclick = () => {
                 activeSubjectFilter = null;
+                activeUnitFilter = null;
                 buildSubjectChips();
+                updateCatalogUnits();
                 renderMaterials();
             };
             chipContainer.appendChild(allBtn);
@@ -550,11 +925,15 @@
                 btn.textContent = subj;
                 btn.onclick = () => {
                     activeSubjectFilter = subj;
+                    activeUnitFilter = null;
                     buildSubjectChips();
+                    updateCatalogUnits();
                     renderMaterials();
                 };
                 chipContainer.appendChild(btn);
             });
+
+            updateCatalogUnits();
         }
 
         async function renderPDFThumbnail(url, canvasId) {
@@ -591,13 +970,15 @@
             const filtered = MATERIAL_DATA.filter(item => {
                 const matchTab = item.tab === currentTab;
                 const matchSubjectChip = activeSubjectFilter ? item.subject === activeSubjectFilter : true;
+                const matchUnitChip = activeUnitFilter ? (item.unit === activeUnitFilter || item.title.includes(activeUnitFilter)) : true;
+                
                 const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || 
                                        (item.pdfAdv && item.pdfAdv !== "#") || 
                                        (item.pdfAns && item.pdfAns !== "#");
                 let matchFilter = true;
                 if (filterValue === 'available') matchFilter = hasAnyMaterial;
                 if (filterValue === 'unavailable') matchFilter = !hasAnyMaterial;
-                return matchTab && matchSubjectChip && matchFilter;
+                return matchTab && matchSubjectChip && matchUnitChip && matchFilter;
             });
 
             if(filtered.length === 0) {
@@ -641,10 +1022,11 @@
 
                     <div class="p-3.5 flex flex-col flex-grow justify-between bg-white">
                         <div>
-                            <div class="flex items-center gap-1.5 mb-1.5 text-[10px] font-bold text-ink-muted">
+                            <div class="flex items-center gap-1.5 mb-1.5 text-[10px] font-bold text-ink-muted flex-wrap">
                                 <span class="text-ink font-bold">${item.subject}</span>
                                 <span>•</span>
                                 <span>${item.grade}</span>
+                                ${item.unit ? `<span class="bg-neutral-100 px-1.5 py-0.5 rounded text-[9px] text-ink-light">${item.unit}</span>` : ''}
                             </div>
                             <h3 class="text-xs font-bold text-ink leading-snug line-clamp-2 group-hover:text-neutral-700 transition-colors">
                                 ${item.title}
@@ -793,10 +1175,11 @@
                     </div>
                     
                     <div class="md:col-span-6 flex flex-col">
-                        <div class="flex items-center gap-2 mb-3">
+                        <div class="flex items-center gap-2 mb-3 flex-wrap">
                             <span class="px-2.5 py-1 bg-neutral-100 text-ink text-xs font-bold rounded border border-neutral-200">
                                 ${item.grade} • ${item.subject}
                             </span>
+                            ${item.unit ? `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded border border-emerald-200">単元: ${item.unit}</span>` : ''}
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
 
@@ -846,6 +1229,7 @@
             document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
             document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
             activeSubjectFilter = null; 
+            activeUnitFilter = null; 
             buildSubjectChips();
             renderMaterials();
         }
@@ -869,22 +1253,30 @@
         function executeSearch() {
             const grade = document.getElementById('search-grade').value;
             const subject = document.getElementById('search-subject').value;
+            const unit = document.getElementById('search-unit').value;
             const keyword = document.getElementById('search-keyword').value.toLowerCase().trim();
-            document.getElementById('search-results-title').textContent = keyword ? `「${keyword}」の検索結果` : '検索結果一覧';
+            
+            let queryText = keyword || unit || subject || grade || 'すべてのプリント';
+            document.getElementById('search-results-title').textContent = `「${queryText}」の検索結果`;
             
             const resultsGrid = document.getElementById('search-results-grid');
             if (!resultsGrid) return;
 
             const filtered = MATERIAL_DATA.filter(item => {
                 const matchGrade = grade ? item.grade === grade : true;
-                const matchSubject = subject ? item.subject.includes(subject) : true;
-                const matchKeyword = keyword ? (item.title.toLowerCase().includes(keyword) || item.subject.toLowerCase().includes(keyword)) : true;
-                return matchGrade && matchSubject && matchKeyword;
+                const matchSubject = subject ? item.subject.includes(subject.replace(' / 数学', '')) : true;
+                const matchUnit = unit ? (item.unit === unit || item.title.includes(unit)) : true;
+                const matchKeyword = keyword ? (
+                    item.title.toLowerCase().includes(keyword) || 
+                    item.subject.toLowerCase().includes(keyword) || 
+                    (item.unit && item.unit.toLowerCase().includes(keyword))
+                ) : true;
+                return matchGrade && matchSubject && matchUnit && matchKeyword;
             });
 
             resultsGrid.innerHTML = "";
             if (filtered.length === 0) {
-                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs">該当する教材プリントがありません。</div>`;
+                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs">条件に一致する教材プリントが見つかりませんでした。<br>キーワードを変更して再度お試しください。</div>`;
             } else {
                 filtered.forEach((item, index) => {
                     const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
@@ -895,8 +1287,11 @@
                             <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
                         </div>
                         <div class="p-3">
-                            <span class="text-[10px] font-bold text-ink-muted">${item.subject} • ${item.grade}</span>
-                            <h3 class="text-xs font-bold text-ink mt-0.5 line-clamp-2">${item.title}</h3>
+                            <div class="flex items-center gap-1 text-[10px] font-bold text-ink-muted mb-0.5">
+                                <span>${item.subject} • ${item.grade}</span>
+                            </div>
+                            <h3 class="text-xs font-bold text-ink line-clamp-2">${item.title}</h3>
+                            ${item.unit ? `<span class="inline-block mt-2 px-1.5 py-0.5 bg-neutral-100 rounded text-[9px] font-medium text-ink-muted">${item.unit}</span>` : ''}
                         </div>
                     `;
                     card.onclick = () => navigate(`#detail-${item.id}`);
