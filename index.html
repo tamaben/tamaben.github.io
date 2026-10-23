@@ -322,8 +322,8 @@
                     </h1>
 
                     <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed" style="text-wrap: pretty;">
-                        <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという願いを込めて作成しています。</span><br class="hidden sm:inline"/>
-                        <span class="inline-block">個人で作成しているため、</span><span class="inline-block">教材数は少ないですがご了承ください。</span>
+                        <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという</span><span class="inline-block">願いを込めて</span><span class="inline-block">作成しています。</span><br class="hidden sm:inline"/>
+                        <span class="inline-block">個人で作成しているため、</span><span class="inline-block">教材数は少ないですが</span><span class="inline-block">ご了承ください。</span>
                     </p>
 
                     <!-- クイック検索バー（単元直行リンク付） -->
@@ -1705,65 +1705,234 @@
             lucide.createIcons();
         }
 
-        async function loadFullPDFCarousel(url) {
+        let pdfCarouselSlides = [];
+        let pdfCarouselCurrentIndex = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        async function loadFullPDFCarousel(item) {
             const track = document.getElementById('pdf-carousel-track');
+            const tabsContainer = document.getElementById('pdf-carousel-tabs');
+            const indicator = document.getElementById('pdf-carousel-indicator');
             if(!track) return;
+
             track.innerHTML = `<div class="min-w-full flex justify-center items-center py-24 text-ink"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>`;
+            if (tabsContainer) tabsContainer.innerHTML = '';
             lucide.createIcons();
 
             if (window.pdfjsLib && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
 
-            try {
-                const pdf = await pdfjsLib.getDocument(url).promise;
-                const totalPages = pdf.numPages;
-                pdfCarouselTotalPages = totalPages;
-                pdfCarouselCurrentPage = 1;
-                
-                track.innerHTML = "";
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    const slide = document.createElement('div');
-                    slide.className = "min-w-full flex justify-center items-center p-2 sm:p-4 select-none";
-                    
-                    const paper = document.createElement('div');
-                    paper.className = "paper-card w-full max-w-sm aspect-[1/1.414] relative bg-white overflow-hidden";
-                    
-                    const canvasId = `detail-pdf-canvas-${pageNum}`;
+            // 基本問題・練習問題・答えの3セクションを定義
+            const sections = [
+                { key: 'basic', label: '基本問題', url: item.pdfBasic, badgeBg: 'bg-neutral-900 text-white', icon: 'printer' },
+                { key: 'adv', label: '練習問題', url: item.pdfAdv, badgeBg: 'bg-amber-600 text-white', icon: 'zap' },
+                { key: 'ans', label: '答え・解説', url: item.pdfAns, badgeBg: 'bg-emerald-600 text-white', icon: 'check-circle-2' }
+            ];
+
+            pdfCarouselSlides = [];
+
+            for (const sec of sections) {
+                const hasUrl = sec.url && sec.url !== '#' && sec.url.trim() !== '';
+                if (hasUrl) {
+                    let loaded = false;
+                    try {
+                        const pdf = await pdfjsLib.getDocument(sec.url).promise;
+                        const totalPages = pdf.numPages;
+                        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                            pdfCarouselSlides.push({
+                                type: 'pdf',
+                                key: sec.key,
+                                label: sec.label,
+                                badgeBg: sec.badgeBg,
+                                icon: sec.icon,
+                                url: sec.url,
+                                pdfDoc: pdf,
+                                pageNum: pageNum,
+                                pageTotal: totalPages,
+                                isReady: true
+                            });
+                        }
+                        loaded = true;
+                    } catch (err) {
+                        console.warn(`[Tamaben] Could not render PDF for ${sec.label}:`, err);
+                    }
+                    if (!loaded) {
+                        // PDFファイル未ロード時（ローカル環境等）の美しい模擬A4用紙プレビュー
+                        pdfCarouselSlides.push({
+                            type: 'mock',
+                            key: sec.key,
+                            label: sec.label,
+                            badgeBg: sec.badgeBg,
+                            icon: sec.icon,
+                            url: sec.url,
+                            pageNum: 1,
+                            pageTotal: 1,
+                            isReady: true
+                        });
+                    }
+                } else {
+                    // まだ準備中のセクションも1つのプレビューとして見通せるようカードとして格納
+                    pdfCarouselSlides.push({
+                        type: 'mock',
+                        key: sec.key,
+                        label: sec.label,
+                        badgeBg: 'bg-neutral-200 text-neutral-600',
+                        icon: sec.icon,
+                        url: null,
+                        pageNum: 1,
+                        pageTotal: 1,
+                        isReady: false
+                    });
+                }
+            }
+
+            pdfCarouselCurrentIndex = 0;
+            renderCarouselSlides(item);
+            initSwipeGestures();
+        }
+
+        function renderCarouselSlides(item) {
+            const track = document.getElementById('pdf-carousel-track');
+            const tabsContainer = document.getElementById('pdf-carousel-tabs');
+            if (!track) return;
+
+            track.innerHTML = '';
+
+            // セクション切り替えタブの動的生成
+            if (tabsContainer) {
+                tabsContainer.innerHTML = '';
+                const seenKeys = new Set();
+                pdfCarouselSlides.forEach((slide, idx) => {
+                    if (!seenKeys.has(slide.key)) {
+                        seenKeys.add(slide.key);
+                        const count = pdfCarouselSlides.filter(s => s.key === slide.key).length;
+                        const btn = document.createElement('button');
+                        btn.id = `tab-sec-${slide.key}`;
+                        btn.className = `px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 active:scale-95 border ${
+                            slide.isReady ? 'bg-white hover:bg-neutral-100 text-ink border-neutral-200' : 'bg-neutral-100 text-neutral-400 border-neutral-200'
+                        }`;
+                        btn.innerHTML = `
+                            <span>${slide.label}</span>
+                            ${slide.isReady ? `<span class="text-[10px] px-1.5 py-0.2 bg-neutral-100 text-neutral-700 rounded-full font-bold">${count}P</span>` : '<span class="text-[10px] text-neutral-400">準備中</span>'}
+                        `;
+                        btn.onclick = () => jumpToSlide(idx);
+                        tabsContainer.appendChild(btn);
+                    }
+                });
+            }
+
+            // スライドの生成と連続配置
+            pdfCarouselSlides.forEach((slide, index) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = "min-w-full flex justify-center items-center p-2 sm:p-4 select-none";
+
+                const paper = document.createElement('div');
+                paper.className = "paper-card w-full max-w-sm aspect-[1/1.414] relative bg-white overflow-hidden flex flex-col justify-between";
+
+                if (slide.type === 'pdf') {
+                    const canvasId = `unified-pdf-canvas-${index}`;
                     paper.innerHTML = `
+                        <!-- セクションバッジ（基本問題 / 練習問題 / 答え） -->
+                        <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 shadow-sm">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${slide.badgeBg}">${slide.label}</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-neutral-900/80 text-white backdrop-blur-sm">${slide.pageNum} / ${slide.pageTotal}</span>
+                        </div>
                         <i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute text-neutral-400 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"></i>
                         <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
-                        <div class="absolute bottom-3 right-3 bg-neutral-900/80 text-white text-[10px] px-2.5 py-0.5 rounded font-bold backdrop-blur-sm z-20">${pageNum} / ${totalPages}</div>
+                        <div class="absolute bottom-3 right-3 bg-neutral-900/80 text-white text-[10px] px-2.5 py-0.5 rounded font-bold backdrop-blur-sm z-20">${index + 1} / ${pdfCarouselSlides.length}</div>
                     `;
-                    slide.appendChild(paper);
-                    track.appendChild(slide);
-                    
-                    const page = await pdf.getPage(pageNum);
-                    const viewport = page.getViewport({ scale: 2.0 });
-                    const canvas = document.getElementById(canvasId);
-                    if(canvas) {
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-                        await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-                        const l = canvas.parentElement.querySelector('.pdf-loading');
-                        if (l) l.remove();
+                    slideEl.appendChild(paper);
+                    track.appendChild(slideEl);
+
+                    // 非同期でCanvasレンダリング
+                    (async () => {
+                        try {
+                            const page = await slide.pdfDoc.getPage(slide.pageNum);
+                            const viewport = page.getViewport({ scale: 2.0 });
+                            const canvas = document.getElementById(canvasId);
+                            if (canvas) {
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                                const loader = canvas.parentElement.querySelector('.pdf-loading');
+                                if (loader) loader.remove();
+                            }
+                        } catch (e) {
+                            console.warn('[Tamaben] Canvas render error:', e);
+                        }
+                    })();
+                } else {
+                    // モック用紙カード（準備中 または 実PDF未ロード時）
+                    if (slide.isReady) {
+                        paper.innerHTML = `
+                            <div class="p-6 flex flex-col justify-between h-full bg-white relative">
+                                <div class="flex items-center justify-between sheet-divider pb-3">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${slide.badgeBg}">${slide.label}</span>
+                                        <span class="text-[10px] font-bold text-ink-muted">A4 プリント</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-ink-muted border border-neutral-200 px-2 py-0.5 rounded bg-canvas">${item.grade}</span>
+                                </div>
+                                <div class="my-auto text-center py-6">
+                                    <div class="inline-flex p-3 bg-canvas rounded-2xl border border-neutral-200 mb-3 text-ink">
+                                        <i data-lucide="${slide.icon}" class="w-6 h-6 stroke-1"></i>
+                                    </div>
+                                    <span class="block text-xs font-bold text-ink-muted mb-1">${item.subject}${item.unit ? ` • ${item.unit}` : ''}</span>
+                                    <h4 class="text-sm font-black text-ink mb-3 leading-snug px-2">${item.title}</h4>
+                                    <span class="inline-block px-3 py-1 bg-neutral-100 text-ink text-xs font-bold rounded-lg border border-neutral-200">${slide.label} プレビュー</span>
+                                </div>
+                                <div class="border-t border-neutral-100 pt-3 flex justify-between items-center text-[10px] text-ink-subtle">
+                                    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> タマベン教材</span>
+                                    <span class="font-bold bg-neutral-900 text-white px-2 py-0.5 rounded">${index + 1} / ${pdfCarouselSlides.length}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        paper.innerHTML = `
+                            <div class="p-6 flex flex-col justify-between h-full bg-neutral-50/70 border-2 border-dashed border-neutral-200 relative">
+                                <div class="flex items-center justify-between pb-3">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-200 text-neutral-600">${slide.label}</span>
+                                    <span class="text-[10px] font-bold text-neutral-400">作成準備中</span>
+                                </div>
+                                <div class="my-auto text-center py-6">
+                                    <div class="inline-flex p-3 bg-white rounded-2xl border border-neutral-200 mb-3 text-neutral-400 shadow-sm">
+                                        <i data-lucide="lock" class="w-6 h-6 stroke-1"></i>
+                                    </div>
+                                    <h4 class="text-xs font-bold text-neutral-700 mb-1">${slide.label}は準備中です</h4>
+                                    <p class="text-[10px] text-neutral-400 max-w-[200px] mx-auto leading-relaxed">基本問題や解答・解説プリントを先にご利用いただけます。</p>
+                                </div>
+                                <div class="pt-3 flex justify-between items-center text-[10px] text-neutral-400 border-t border-neutral-200/50">
+                                    <span>順次追加予定</span>
+                                    <span class="font-bold bg-neutral-300 text-neutral-700 px-2 py-0.5 rounded">${index + 1} / ${pdfCarouselSlides.length}</span>
+                                </div>
+                            </div>
+                        `;
                     }
+                    slideEl.appendChild(paper);
+                    track.appendChild(slideEl);
                 }
+            });
+
+            updateCarouselPosition();
+            lucide.createIcons();
+        }
+
+        function jumpToSlide(idx) {
+            if (idx >= 0 && idx < pdfCarouselSlides.length) {
+                pdfCarouselCurrentIndex = idx;
                 updateCarouselPosition();
-                initSwipeGestures();
-            } catch(e) {
-                console.warn('[Tamaben] PDF preview load failed:', e);
-                track.innerHTML = `
-                    <div class="w-full max-w-sm aspect-[1/1.414] bg-canvas border border-dashed border-neutral-300 rounded-xl flex flex-col items-center justify-center p-6 text-center text-ink-muted">
-                        <i data-lucide="file-text" class="w-10 h-10 mb-2 stroke-1"></i>
-                        <span class="font-bold text-xs">プリント準備中です。<br>公開をお待ちください。</span>
-                    </div>`;
-                lucide.createIcons();
             }
         }
 
-        let touchStartX = 0;
-        let touchEndX = 0;
+        function jumpToSection(sectionKey) {
+            const idx = pdfCarouselSlides.findIndex(s => s.key === sectionKey);
+            if (idx !== -1) {
+                jumpToSlide(idx);
+            }
+        }
+
         function initSwipeGestures() {
             const track = document.getElementById('pdf-carousel-track');
             if(!track) return;
@@ -1776,23 +1945,48 @@
         }
 
         function prevPdfPage() {
-            if (pdfCarouselCurrentPage > 1) {
-                pdfCarouselCurrentPage--;
+            if (pdfCarouselCurrentIndex > 0) {
+                pdfCarouselCurrentIndex--;
                 updateCarouselPosition();
             }
         }
+
         function nextPdfPage() {
-            if (pdfCarouselCurrentPage < pdfCarouselTotalPages) {
-                pdfCarouselCurrentPage++;
+            if (pdfCarouselCurrentIndex < pdfCarouselSlides.length - 1) {
+                pdfCarouselCurrentIndex++;
                 updateCarouselPosition();
             }
         }
+
         function updateCarouselPosition() {
             const track = document.getElementById('pdf-carousel-track');
             const indicator = document.getElementById('pdf-carousel-indicator');
-            if (track) track.style.transform = `translateX(${-(pdfCarouselCurrentPage - 1) * 100}%)`;
-            if (indicator) {
-                indicator.innerHTML = `<span class="text-xs font-bold text-ink">${pdfCarouselCurrentPage} <span class="text-neutral-400">/ ${pdfCarouselTotalPages} ページ</span></span>`;
+            if (!track || pdfCarouselSlides.length === 0) return;
+
+            track.style.transform = `translateX(${-(pdfCarouselCurrentIndex) * 100}%)`;
+
+            const currentSlide = pdfCarouselSlides[pdfCarouselCurrentIndex];
+            if (indicator && currentSlide) {
+                indicator.innerHTML = `
+                    <div class="flex items-center gap-2 flex-wrap justify-center text-xs">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${currentSlide.badgeBg}">${currentSlide.label}</span>
+                        <span class="font-bold text-ink">${currentSlide.pageNum} <span class="text-neutral-400">/ ${currentSlide.pageTotal} P</span></span>
+                        <span class="text-[10px] text-ink-muted">（全 ${pdfCarouselCurrentIndex + 1} / ${pdfCarouselSlides.length} ページ）</span>
+                    </div>
+                `;
+            }
+
+            // タブのアクティブ表示切替
+            if (currentSlide) {
+                document.querySelectorAll('[id^="tab-sec-"]').forEach(btn => {
+                    btn.classList.remove('bg-ink', 'text-white', 'shadow-sm', 'border-transparent');
+                    btn.classList.add('bg-white', 'text-ink');
+                });
+                const activeTab = document.getElementById(`tab-sec-${currentSlide.key}`);
+                if (activeTab) {
+                    activeTab.classList.remove('bg-white', 'text-ink');
+                    activeTab.classList.add('bg-ink', 'text-white', 'shadow-sm', 'border-transparent');
+                }
             }
         }
 
@@ -1806,22 +2000,33 @@
 
             document.getElementById('detail-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-                    <div class="md:col-span-6 flex flex-col items-center">
+                    <!-- 左カラム: 一括統合プレビュー（基本問題・練習問題・答えが通しでめくれる） -->
+                    <div class="md:col-span-6 flex flex-col items-center w-full">
+                        
+                        <!-- セクション一発ジャンプタブ -->
+                        <div id="pdf-carousel-tabs" class="flex items-center gap-1.5 mb-3 w-full max-w-sm justify-center flex-wrap">
+                            <!-- JSで動的生成 -->
+                        </div>
+
+                        <!-- カルーセル用紙枠 -->
                         <div class="relative w-full max-w-sm overflow-hidden rounded-xl bg-canvas p-1 border border-neutral-200">
                             <div id="pdf-carousel-track" class="carousel-track flex transition-transform duration-300 ease-out"></div>
-                            <button onclick="prevPdfPage()" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 text-ink rounded-full flex items-center justify-center shadow border border-neutral-200 active:scale-90">
+                            <button onclick="prevPdfPage()" aria-label="前のページ" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/95 text-ink rounded-full flex items-center justify-center shadow-md border border-neutral-200 active:scale-90 z-30 transition-all hover:bg-neutral-100">
                                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="nextPdfPage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 text-ink rounded-full flex items-center justify-center shadow border border-neutral-200 active:scale-90">
+                            <button onclick="nextPdfPage()" aria-label="次のページ" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/95 text-ink rounded-full flex items-center justify-center shadow-md border border-neutral-200 active:scale-90 z-30 transition-all hover:bg-neutral-100">
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <div class="mt-3 flex flex-col items-center gap-1">
+                        
+                        <!-- ページ番号＆スワイプヒント -->
+                        <div class="mt-3.5 flex flex-col items-center gap-1.5 text-center">
                             <div id="pdf-carousel-indicator"></div>
-                            <span class="text-[10px] text-ink-muted">← 左右スワイプでページをめくれます →</span>
+                            <span class="text-[10px] text-ink-muted">← 左右スワイプで基本問題・練習問題・答えを通しでめくれます →</span>
                         </div>
                     </div>
                     
+                    <!-- 右カラム: 教材メタ情報＆アクションボタン -->
                     <div class="md:col-span-6 flex flex-col">
                         <div class="flex items-center justify-between gap-2 mb-3 flex-wrap">
                             <div class="flex items-center gap-2 flex-wrap">
@@ -1838,23 +2043,44 @@
                         <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
 
                         <div class="space-y-3 max-w-md w-full">
-                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="w-full py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                <span class="flex items-center gap-2.5"><i data-lucide="printer" class="w-4 h-4"></i> 基本問題を印刷・開く</span>
-                                <span class="text-[10px] opacity-75">PDF</span>
-                            </button>
-                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="w-full py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4"></i> 練習問題に挑戦</span>
-                                <span class="text-[10px] opacity-75">${hasAdv ? 'PDF' : '準備中'}</span>
-                            </button>
-                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="w-full py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${hasAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                <span class="flex items-center gap-2.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> 解答・くわしい解説</span>
-                                <span class="text-[10px] text-ink-muted">${hasAns ? 'PDF' : '準備中'}</span>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                    <span class="flex items-center gap-2.5"><i data-lucide="printer" class="w-4 h-4"></i> 基本問題を印刷・開く</span>
+                                    <span class="text-[10px] opacity-75">PDF</span>
+                                </button>
+                                <button onclick="jumpToSection('basic')" title="プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                    <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4 text-amber-600"></i> 練習問題に挑戦</span>
+                                    <span class="text-[10px] opacity-75">${hasAdv ? 'PDF' : '準備中'}</span>
+                                </button>
+                                <button onclick="jumpToSection('adv')" title="プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex-grow py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${hasAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                    <span class="flex items-center gap-2.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> 解答・くわしい解説</span>
+                                    <span class="text-[10px] text-ink-muted">${hasAns ? 'PDF' : '準備中'}</span>
+                                </button>
+                                <button onclick="jumpToSection('ans')" title="プレビューを表示" class="p-3 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-5 border-t border-neutral-100 text-[11px] text-ink-muted leading-relaxed">
+                            <span class="font-bold text-ink">💡 プレビューの使い方:</span> 左側のプレビュー画面をスワイプするか矢印を押すことで、基本問題・練習問題・答えをすべてひと続きで確認できます。右の目のアイコンを押すと該当ページへ直接ジャンプします。
                         </div>
                     </div>
                 </div>
             `;
-            if(hasBasic) loadFullPDFCarousel(item.pdfBasic);
+            loadFullPDFCarousel(item);
             lucide.createIcons();
         }
 
