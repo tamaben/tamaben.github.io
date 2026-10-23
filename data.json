@@ -23,7 +23,7 @@
     "pdfBasic": "print/chu3-en1.pdf",
     "pdfAdv": "#",
     "pdfAns": "print/chu3-en1-cota.pdf",
-    "textbook": "東京書籍"
+    "textbook": ""
   },
   {
     "id": "j3-e-02",
@@ -36,6 +36,6 @@
     "pdfBasic": "print/chu3-en2.pdf",
     "pdfAdv": "#",
     "pdfAns": "print/chu3-en2-cota.pdf",
-    "textbook": "東京書籍"
+    "textbook": ""
   }
 ]
