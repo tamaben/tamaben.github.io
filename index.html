@@ -241,8 +241,8 @@
                     </h1>
 
                     <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed">
-                        タマベンチームの願いは、すべての子どもたちに「わかる楽しさ」を届けること。<br class="hidden sm:inline"/>
-                        教科書カリキュラムに準拠したプリントを、インストール不要ですぐに利用できます。
+                        タマベンチームの教材は、楽しく学んでほしいという願いを込めて作成しています。<br class="hidden sm:inline"/>
+                        教科書カリキュラムに準拠した無料プリントを、インストール不要ですぐにご利用いただけます。
                     </p>
 
                     <!-- クイック検索バー（単元直行リンク付） -->
@@ -521,57 +521,123 @@
             </div>
         </div>
 
-        <!-- 06 設定・登録 -->
+        <!-- 06 設定・登録 (マイページへ統合・エイリアス) -->
         <div id="view-register" class="view-section hidden max-w-xl mx-auto px-4 sm:px-6 py-10">
-            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <div class="border-b border-ink-border pb-6 mb-6">
-                    <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">Settings</span>
-                    <h2 class="text-xl font-black text-ink mt-0.5">学習設定 / タマベンID</h2>
-                </div>
-                <div class="space-y-6">
-                    <div>
-                        <label class="text-xs font-bold text-ink-light block mb-2">1. 学校区分</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick="setRegSchoolType('elementary')" id="reg-st-elementary" class="reg-st-btn py-2.5 border border-neutral-300 rounded-xl font-bold text-xs bg-ink text-white">小学校</button>
-                            <button onclick="setRegSchoolType('junior')" id="reg-st-junior" class="reg-st-btn py-2.5 border border-neutral-300 rounded-xl font-bold text-xs bg-canvas text-ink">中学校</button>
-                            <button onclick="setRegSchoolType('high')" id="reg-st-high" class="reg-st-btn py-2.5 border border-neutral-300 rounded-xl font-bold text-xs bg-canvas text-ink">高校</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-ink-light block mb-2">2. 学年</label>
-                        <select id="reg-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none">
-                            <option value="小学1年生">小学1年生</option>
-                            <option value="小学2年生">小学2年生</option>
-                            <option value="小学3年生">小学3年生</option>
-                            <option value="中学1年生">中学1年生</option>
-                            <option value="中学2年生">中学2年生</option>
-                            <option value="中学3年生">中学3年生</option>
-                        </select>
-                    </div>
-                    <button onclick="saveRegisterProfile()" class="w-full py-3.5 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs transition-colors">
-                        設定を保存してマイページへ
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!-- 07 マイページ -->
         <div id="view-mypage" class="view-section hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-sm mb-8 flex justify-between items-center">
+            <!-- ページヘッダー -->
+            <div class="border-b border-ink-border pb-6 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h2 class="text-lg font-black text-ink">マイ学習ダッシュボード</h2>
-                    <p class="text-xs text-ink-muted mt-0.5" id="mypage-user-profile-sub">設定済み</p>
+                    <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">My Page</span>
+                    <h2 class="text-2xl font-black text-ink mt-0.5">マイページ</h2>
+                    <p class="text-xs text-ink-muted mt-1">学年や生年月日に合わせたおすすめ教材の確認・学習記録</p>
                 </div>
-                <button onclick="navigate('#register')" class="px-4 py-2 border border-neutral-300 bg-canvas text-xs font-bold rounded-lg hover:bg-white">設定変更</button>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-ink-muted">現在の設定:</span>
+                    <span id="mypage-current-grade-label" class="px-3 py-1 bg-ink text-white text-xs font-bold rounded-full">小学1年生</span>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-neutral-200">
-                    <h3 class="font-bold text-xs mb-4 text-ink">ブックマークしたプリント</h3>
-                    <div id="mypage-fav-materials" class="space-y-2"></div>
+
+            <!-- 学年・生年月日 設定カード -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-10">
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-neutral-100">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="settings" class="w-4 h-4 text-ink"></i>
+                        <h3 class="text-sm font-bold text-ink">学年・生年月日の設定</h3>
+                    </div>
+                    <span id="mypage-save-toast" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full transition-all">✓ 設定を保存しました</span>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-neutral-200">
-                    <h3 class="font-bold text-xs mb-4 text-ink">保存した解説動画</h3>
-                    <div id="mypage-fav-videos" class="space-y-2"></div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+                    <!-- 生年月日（任意・自動計算） -->
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5 flex items-center justify-between">
+                            <span>生年月日（任意）</span>
+                            <span class="text-[10px] font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">学年を自動判定</span>
+                        </label>
+                        <input type="date" id="mypage-birthdate" onchange="handleBirthdateChange()" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all">
+                        <p id="mypage-calc-note" class="hidden text-[10px] font-bold text-emerald-700 mt-1.5"></p>
+                        <p class="text-[10px] text-ink-muted mt-1">※生年月日を入力すると現在の学年が自動計算されます。</p>
+                    </div>
+
+                    <!-- 学年選択（必須） -->
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5">
+                            <span>学年</span>
+                        </label>
+                        <select id="mypage-grade" onchange="handleGradeSelectChange()" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all cursor-pointer">
+                            <optgroup label="小学校">
+                                <option value="小学1年生">小学1年生</option>
+                                <option value="小学2年生">小学2年生</option>
+                                <option value="小学3年生">小学3年生</option>
+                                <option value="小学4年生">小学4年生</option>
+                                <option value="小学5年生">小学5年生</option>
+                                <option value="小学6年生">小学6年生</option>
+                            </optgroup>
+                            <optgroup label="中学校">
+                                <option value="中学1年生">中学1年生</option>
+                                <option value="中学2年生">中学2年生</option>
+                                <option value="中学3年生">中学3年生</option>
+                            </optgroup>
+                            <optgroup label="高校">
+                                <option value="高校1年生">高校1年生</option>
+                                <option value="高校2年生">高校2年生</option>
+                                <option value="高校3年生">高校3年生</option>
+                            </optgroup>
+                        </select>
+                        <p class="text-[10px] text-ink-muted mt-1">直接学年を選んで設定することも可能です。</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-neutral-100 flex justify-end">
+                    <button onclick="saveMyPageSettings()" class="px-6 py-2.5 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs shadow-sm active:scale-95 transition-all">
+                        設定を保存する
+                    </button>
+                </div>
+            </div>
+
+            <!-- あなたにおすすめの教材セクション -->
+            <div class="mb-12">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 mb-6 border-b border-ink-border gap-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                        <h3 class="text-base sm:text-lg font-black text-ink">あなたにおすすめの教材</h3>
+                        <span id="mypage-rec-grade-label" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-ink">小学1年生向け</span>
+                    </div>
+                    <button onclick="navigate('#home')" class="text-xs font-bold text-ink-muted hover:text-ink text-left transition-colors">
+                        すべてのプリントを見る &rarr;
+                    </button>
+                </div>
+
+                <div id="mypage-recommended-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[160px]">
+                    <!-- JSにて学年に連動して動的展開 -->
+                </div>
+            </div>
+
+            <!-- ブックマーク ＆ 閲覧履歴 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ブックマーク -->
+                <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-100">
+                            <i data-lucide="bookmark" class="w-4 h-4 text-ink"></i>
+                            <h3 class="font-bold text-xs text-ink">ブックマークしたプリント</h3>
+                        </div>
+                        <div id="mypage-fav-materials" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- 閲覧履歴 -->
+                <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-100">
+                            <i data-lucide="history" class="w-4 h-4 text-ink"></i>
+                            <h3 class="font-bold text-xs text-ink">最近学習したプリント（閲覧履歴）</h3>
+                        </div>
+                        <div id="mypage-recent-views" class="space-y-2"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -622,6 +688,7 @@
             <div class="flex justify-center items-center mb-2">
                 <img src="logo.svg" alt="タマベン" class="h-5 w-auto opacity-70" onerror="this.outerHTML='<span class=\'font-bold text-ink\'>タマベン</span>'">
             </div>
+            <p class="mb-1 text-ink-subtle">タマベンチームの教材は、楽しく学んでほしいという願いを込めて作成しています。</p>
             <p>&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
         </div>
     </footer>
@@ -698,8 +765,279 @@
             registered: false,
             schoolType: 'elementary',
             grade: '小学1年生',
+            birthdate: '',
             tamabenId: ''
         };
+
+        function handleUserMenu() {
+            navigate('#mypage');
+        }
+
+        function saveSettingsToStorage() {
+            localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
+            updateHeaderGradeBadge();
+        }
+
+        function loadSettingsFromStorage() {
+            const s = localStorage.getItem('tamaben_user_settings');
+            if (s) {
+                try {
+                    const parsed = JSON.parse(s);
+                    userSettings = Object.assign(userSettings, parsed);
+                } catch(e) {}
+            }
+            updateHeaderGradeBadge();
+        }
+
+        function updateHeaderGradeBadge() {
+            const badge = document.getElementById('grade-badge');
+            const label = document.getElementById('user-grade-label');
+            if (badge && label) {
+                if (userSettings.grade) {
+                    label.textContent = userSettings.grade;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function calculateGradeFromBirthdate(birthdateStr) {
+            if (!birthdateStr) return '';
+            const b = new Date(birthdateStr);
+            if (isNaN(b.getTime())) return '';
+            const today = new Date();
+            let fiscalYear = today.getFullYear();
+            if (today.getMonth() < 3) fiscalYear--; // 1〜3月は前年度扱い
+
+            const isEarlyBorn = (b.getMonth() < 3) || (b.getMonth() === 3 && b.getDate() === 1);
+            const cohortBirthYear = isEarlyBorn ? b.getFullYear() - 1 : b.getFullYear();
+            const diff = fiscalYear - cohortBirthYear;
+            const map = {
+                7: '小学1年生',
+                8: '小学2年生',
+                9: '小学3年生',
+                10: '小学4年生',
+                11: '小学5年生',
+                12: '小学6年生',
+                13: '中学1年生',
+                14: '中学2年生',
+                15: '中学3年生',
+                16: '高校1年生',
+                17: '高校2年生',
+                18: '高校3年生'
+            };
+            if (diff < 7) return '小学1年生';
+            if (diff > 18) return '高校3年生';
+            return map[diff] || '';
+        }
+
+        function handleBirthdateChange() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            const noteEl = document.getElementById('mypage-calc-note');
+            if (!bInput || !gSelect) return;
+            const calculated = calculateGradeFromBirthdate(bInput.value);
+            if (calculated) {
+                for (let i = 0; i < gSelect.options.length; i++) {
+                    if (gSelect.options[i].value === calculated) {
+                        gSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                if (noteEl) {
+                    noteEl.textContent = `生年月日から「${calculated}」を自動判定しました`;
+                    noteEl.classList.remove('hidden');
+                }
+            } else if (noteEl) {
+                noteEl.classList.add('hidden');
+            }
+        }
+
+        function handleGradeSelectChange() {
+            const noteEl = document.getElementById('mypage-calc-note');
+            if (noteEl) noteEl.classList.add('hidden');
+        }
+
+        function saveMyPageSettings() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            if (!gSelect) return;
+            
+            userSettings.grade = gSelect.value || '小学1年生';
+            userSettings.birthdate = bInput ? bInput.value : '';
+            userSettings.registered = true;
+            
+            saveSettingsToStorage();
+            
+            const toast = document.getElementById('mypage-save-toast');
+            if (toast) {
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            }
+            renderMyPage();
+        }
+
+        function toggleBookmark(id) {
+            if (!userStats.favMaterials) userStats.favMaterials = [];
+            const idx = userStats.favMaterials.indexOf(id);
+            if (idx > -1) {
+                userStats.favMaterials.splice(idx, 1);
+            } else {
+                userStats.favMaterials.push(id);
+            }
+            saveStatsToStorage();
+            const hash = window.location.hash || '';
+            if (hash.startsWith('#detail-')) {
+                const item = MATERIAL_DATA.find(m => String(m.id) === String(id));
+                if (item) {
+                    const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    openDetail(item, hasAny);
+                }
+            } else if (hash === '#mypage') {
+                renderMyPage();
+            }
+        }
+
+        function renderMyPage() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            const curGradeLabel = document.getElementById('mypage-current-grade-label');
+            const recGradeLabel = document.getElementById('mypage-rec-grade-label');
+            
+            if (bInput && userSettings.birthdate) bInput.value = userSettings.birthdate;
+            if (gSelect && userSettings.grade) gSelect.value = userSettings.grade;
+            if (curGradeLabel) curGradeLabel.textContent = userSettings.grade || '未設定';
+            if (recGradeLabel) recGradeLabel.textContent = userSettings.grade ? `${userSettings.grade}向け` : '全学年向け';
+
+            // 「あなたにおすすめの教材」の描画（今ある公開中・利用可能な教材の中からおすすめ）
+            const recGrid = document.getElementById('mypage-recommended-grid');
+            if (recGrid) {
+                recGrid.innerHTML = "";
+                const targetGrade = userSettings.grade;
+
+                // 今ある（公開中・利用可能な）教材プリントを抽出
+                const availableMaterials = MATERIAL_DATA.filter(item => 
+                    (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
+                    (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
+                    (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
+                );
+
+                let recommended = [];
+                let isFallback = false;
+
+                if (targetGrade) {
+                    // 設定学年に合致する、今ある教材
+                    const matched = availableMaterials.filter(m => m.grade === targetGrade);
+                    if (matched.length > 0) {
+                        recommended = matched;
+                    } else {
+                        // 該当学年のプリントが準備中の場合は、今ある公開教材の中からおすすめを表示
+                        recommended = availableMaterials.slice(0, 4);
+                        isFallback = true;
+                    }
+                } else {
+                    // 学年未設定時も今ある公開教材の中からおすすめを表示
+                    recommended = availableMaterials.slice(0, 4);
+                }
+
+                if (recGradeLabel) {
+                    if (targetGrade) {
+                        recGradeLabel.textContent = isFallback ? `${targetGrade}（今あるおすすめ）` : `${targetGrade}向け`;
+                    } else {
+                        recGradeLabel.textContent = '今あるおすすめプリント';
+                    }
+                }
+
+                if (recommended.length === 0) {
+                    recGrid.innerHTML = `
+                        <div class="col-span-full py-12 px-6 bg-canvas border border-dashed border-neutral-300 rounded-2xl text-center">
+                            <i data-lucide="book-open" class="w-8 h-8 text-ink-muted mx-auto mb-2 stroke-1"></i>
+                            <p class="text-xs font-bold text-ink mb-1">現在教材プリントを準備中です</p>
+                            <p class="text-[11px] text-ink-muted mb-4">まもなく新しいプリントが追加されます。「教材トップ」から公開中の教材をご覧ください。</p>
+                            <button onclick="navigate('#home')" class="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-xs font-bold hover:bg-neutral-50 shadow-sm">すべての教材を見る</button>
+                        </div>
+                    `;
+                } else {
+                    recommended.forEach((item, index) => {
+                        const card = document.createElement('div');
+                        card.className = `paper-card flex flex-col select-none card-available cursor-pointer group`;
+                        card.innerHTML = `
+                            <div class="a4-viewport relative overflow-hidden flex items-center justify-center bg-canvas">
+                                <div class="w-full h-full p-4 flex flex-col justify-between">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-white border border-neutral-200 text-ink">${item.subject}</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    </div>
+                                    <div class="my-auto py-2">
+                                        <span class="text-[9px] font-bold text-ink-muted block mb-0.5">${item.grade} ${item.unit ? '• ' + item.unit : ''}</span>
+                                        <h4 class="text-xs font-bold text-ink line-clamp-2">${item.title}</h4>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[9px] text-ink-muted pt-2 border-t border-neutral-200">
+                                        <span>A4プリント</span>
+                                        <span class="font-bold text-ink group-hover:translate-x-0.5 transition-transform">詳細 &rarr;</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white border-t border-neutral-100 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-ink truncate">${item.title}</span>
+                                <button onclick="event.stopPropagation(); window.open('${item.pdfBasic}');" class="p-1 rounded hover:bg-neutral-100 text-ink-muted hover:text-ink" title="プリントを開く">
+                                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        `;
+                        card.onclick = () => navigate(`#detail-${item.id}`);
+                        recGrid.appendChild(card);
+                    });
+                }
+            }
+
+            // ブックマーク一覧の描画
+            const favContainer = document.getElementById('mypage-fav-materials');
+            if (favContainer) {
+                favContainer.innerHTML = "";
+                const favItems = (userStats.favMaterials || []).map(id => MATERIAL_DATA.find(m => String(m.id) === String(id))).filter(Boolean);
+                if (favItems.length === 0) {
+                    favContainer.innerHTML = `<p class="text-xs text-ink-muted py-4 text-center">まだブックマークしたプリントはありません。<br>教材詳細画面のブックマークボタンから保存できます。</p>`;
+                } else {
+                    favItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between p-3 bg-canvas rounded-xl border border-neutral-200 hover:border-neutral-300 transition-colors cursor-pointer";
+                        row.onclick = () => navigate(`#detail-${item.id}`);
+                        row.innerHTML = `
+                            <div class="flex items-center gap-2.5 truncate mr-2">
+                                <span class="px-2 py-0.5 bg-white border border-neutral-200 rounded text-[10px] font-bold text-ink shrink-0">${item.subject}</span>
+                                <span class="text-xs font-bold text-ink truncate">${item.title}</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-ink-muted shrink-0"></i>
+                        `;
+                        favContainer.appendChild(row);
+                    });
+                }
+            }
+
+            // 閲覧履歴の描画
+            const recentContainer = document.getElementById('mypage-recent-views');
+            if (recentContainer) {
+                recentContainer.innerHTML = "";
+                const views = (userStats.views || []).slice(-6).reverse();
+                if (views.length === 0) {
+                    recentContainer.innerHTML = `<p class="text-xs text-ink-muted py-4 text-center">最近閲覧したプリントはありません。</p>`;
+                } else {
+                    views.forEach(v => {
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between p-2.5 bg-canvas rounded-lg border border-neutral-200 text-xs";
+                        row.innerHTML = `
+                            <span class="font-bold text-ink truncate mr-2">${v.title}</span>
+                            <span class="text-[10px] text-ink-muted shrink-0">${v.time}</span>
+                        `;
+                        recentContainer.appendChild(row);
+                    });
+                }
+            }
+
+            lucide.createIcons();
+        }
 
         function updateParentsDashboard() {
             const daysEl = document.getElementById('p-stat-days');
@@ -1280,11 +1618,17 @@
                     </div>
                     
                     <div class="md:col-span-6 flex flex-col">
-                        <div class="flex items-center gap-2 mb-3 flex-wrap">
-                            <span class="px-2.5 py-1 bg-neutral-100 text-ink text-xs font-bold rounded border border-neutral-200">
-                                ${item.grade} • ${item.subject}
-                            </span>
-                            ${item.unit ? `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded border border-emerald-200">単元: ${item.unit}</span>` : ''}
+                        <div class="flex items-center justify-between gap-2 mb-3 flex-wrap">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2.5 py-1 bg-neutral-100 text-ink text-xs font-bold rounded border border-neutral-200">
+                                    ${item.grade} • ${item.subject}
+                                </span>
+                                ${item.unit ? `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded border border-emerald-200">単元: ${item.unit}</span>` : ''}
+                            </div>
+                            <button onclick="toggleBookmark('${item.id}')" class="px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 ${isFav ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-white border-neutral-200 text-ink-muted hover:text-ink'}">
+                                <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isFav ? 'fill-amber-500 text-amber-500' : ''}"></i>
+                                <span>${isFav ? '保存済み' : 'ブックマーク'}</span>
+                            </button>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
 
@@ -1528,10 +1872,9 @@
                     targetView = 'view-search';
                 } else if (hash === '#results') {
                     targetView = 'view-search-results';
-                } else if (hash === '#register') {
-                    targetView = 'view-register';
-                } else if (hash === '#mypage') {
+                } else if (hash === '#register' || hash === '#mypage') {
                     targetView = 'view-mypage';
+                    renderMyPage();
                 } else if (hash === '#subjects') {
                     targetView = 'view-subjects';
                 } else if (hash === '#parents') {
@@ -1551,6 +1894,7 @@
             }
             lucide.createIcons();
             loadStatsFromStorage();
+            loadSettingsFromStorage();
             await loadMaterials();
         });
     </script>
