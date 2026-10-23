@@ -38,3 +38,16 @@
     "pdfAns": "print/chu3-en2-cota.pdf",
     "textbook": ""
   },
+  {
+    "id": "j2-m-01",
+    "tab": "junior",
+    "grade": "中学2年生",
+    "subject": "数学",
+    "unit": "連立方程式",
+    "title": "連立方程式① 基本概念と解き方",
+    "tags": ["中2", "数学", "連立方程式", "加減法", "代入法"],
+    "pdfBasic": "sample.pdf",
+    "pdfAdv": "sample.pdf",
+    "pdfAns": "sample.pdf",
+    "textbook": ""
+  },
