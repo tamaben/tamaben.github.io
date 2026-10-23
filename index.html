@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>タマベン - 無料学習教材・プリントプラットフォーム</title>
+    <title>タマベン - 無料学習教材サイト</title>
     
     <link rel="icon" href="./icon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="./icon.ico" type="image/x-icon">
@@ -208,13 +208,8 @@
                 <button onclick="navigate('#parents')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">保護者の方へ</button>
             </nav>
 
-            <!-- 右側アクション（リアルタイム同期バッジ・学年バッジ・マイページ） -->
+            <!-- 右側アクション（学年バッジ・マイページ） -->
             <div class="flex items-center gap-3">
-                <!-- 外部 data.json リアルタイム同期インジケーター -->
-                <div id="data-sync-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-neutral-100 text-neutral-600 border border-neutral-200" title="外部 data.json と常時接続中">
-                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-400"></span> 接続中...
-                </div>
-
                 <div id="grade-badge" class="hidden sm:flex items-center gap-2 border border-neutral-200 px-3 py-1 rounded-full bg-neutral-50">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span id="user-grade-label" class="text-xs font-bold text-ink">小学1年生</span>
@@ -744,45 +739,45 @@
         }, 1000);
 
         // ━━━━━━━━━━━━━━━━━━━━
-        // 外部 data.json とのリアルタイム通信（常に最新を取得）
+        // 外部 data.json とのリアルタイム通信（CORSプリフライト回避・多重パス安全取得）
         // ━━━━━━━━━━━━━━━━━━━━
         async function loadMaterials(isSilent = false) {
-            const syncBadge = document.getElementById('data-sync-badge');
             try {
-                // キャッシュを一切使わせないタイムスタンプとヘッダー
-                const timestamp = Date.now();
-                const response = await fetch(`data.json?_t=${timestamp}`, {
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache'
-                    }
-                });
+                // 1. CORSプリフライト（OPTIONSリクエスト）の発生を防ぐためカスタムヘッダーは使わない
+                // 2. 環境差（GitHub Pages、サブディレクトリ、CDN）を吸収するため、安全な複数のURL候補を順に試行
+                const candidateUrls = [
+                    'data.json',
+                    './data.json',
+                    `data.json?t=${Date.now()}`
+                ];
 
-                if(!response.ok) throw new Error(`data.json取得エラー (HTTP status: ${response.status})`);
-                const data = await response.json();
-                
-                if (Array.isArray(data)) {
-                    MATERIAL_DATA = data;
-                    if (syncBadge) {
-                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> data.json 同期中 (${data.length}件)`;
-                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200";
+                let loadedData = null;
+                let fetchError = null;
+
+                for (const url of candidateUrls) {
+                    try {
+                        const response = await fetch(url, { cache: 'no-cache' });
+                        if (response.ok) {
+                            const parsed = await response.json();
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                loadedData = parsed;
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        fetchError = err;
                     }
-                    if (!isSilent) console.log(`[Tamaben] 外部 data.json から ${data.length} 件の最新データを同期完了`);
+                }
+
+                if (loadedData) {
+                    MATERIAL_DATA = loadedData;
+                    if (!isSilent) console.log(`[Tamaben] 外部 data.json から ${loadedData.length} 件のデータを正常に同期しました`);
                 } else {
-                    MATERIAL_DATA = [];
+                    throw fetchError || new Error('data.json の読み込みに失敗しました（404 または CORS制限）');
                 }
             } catch (e) {
-                console.error('[Tamaben] 外部 data.json の取得に失敗しました:', e);
-                if (syncBadge) {
-                    if (window.location.protocol === 'file:') {
-                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> file://制限中（Webサーバーで実行推奨）`;
-                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200";
-                    } else {
-                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> data.json 未接続`;
-                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200";
-                    }
-                }
+                console.error('[Tamaben] 外部 data.json の接続エラー:', e);
+                // エラー時もサイトが壊れないよう安全に空配列で初期化
                 if (!MATERIAL_DATA) MATERIAL_DATA = [];
             }
 
