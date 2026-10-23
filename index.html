@@ -730,6 +730,30 @@
             tamabenId: ''
         };
 
+        function updateParentsDashboard() {
+            const daysEl = document.getElementById('p-stat-days');
+            const timeEl = document.getElementById('p-stat-time');
+            if (daysEl) daysEl.textContent = (userStats.learningDays && userStats.learningDays.length) ? userStats.learningDays.length : 1;
+            if (timeEl) timeEl.textContent = Math.round((userStats.learningSeconds || 0) / 60);
+
+            const histList = document.getElementById('parents-view-history-list');
+            if (!histList) return;
+            if (!userStats.views || userStats.views.length === 0) {
+                histList.innerHTML = `<p class="text-xs text-ink-muted">直近の閲覧履歴はありません。</p>`;
+            } else {
+                histList.innerHTML = "";
+                userStats.views.slice(-5).reverse().forEach(v => {
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center p-3 bg-canvas rounded-lg border border-neutral-200";
+                    row.innerHTML = `
+                        <span class="font-bold text-xs text-ink">${v.title}</span>
+                        <span class="text-[10px] text-ink-muted">${v.time}</span>
+                    `;
+                    histList.appendChild(row);
+                });
+            }
+        }
+
         setInterval(() => {
             userStats.learningSeconds++;
             if (userStats.learningSeconds % 10 === 0) { 
@@ -765,7 +789,28 @@
                     try {
                         const response = await fetch(url, { cache: 'no-cache' });
                         if (response.ok) {
-                            const parsed = await response.json();
+                            let text = await response.text();
+                            if (!text || text.trim() === '') continue;
+
+                            let parsed = null;
+                            try {
+                                parsed = JSON.parse(text);
+                            } catch (parseErr) {
+                                // 万が一サーバー上のJSONが途中で切れていた場合の自己修復（末尾のカンマを除去して ] を閉じる）
+                                const trimmed = text.trim();
+                                if (trimmed.startsWith('[') && !trimmed.endsWith(']')) {
+                                    const cleaned = trimmed.replace(/,\s*$/, '') + '\n]';
+                                    try {
+                                        parsed = JSON.parse(cleaned);
+                                        console.warn(`[Tamaben] ${url} の末尾欠損を自己修復して読み込みました`);
+                                    } catch (_) {}
+                                }
+                                if (!parsed) {
+                                    fetchError = parseErr;
+                                    continue;
+                                }
+                            }
+
                             if (Array.isArray(parsed) && parsed.length > 0) {
                                 loadedData = parsed;
                                 break;
@@ -778,9 +823,19 @@
 
                 if (loadedData) {
                     MATERIAL_DATA = loadedData;
+                    try { localStorage.setItem('tamaben_materials_cache', JSON.stringify(loadedData)); } catch(e) {}
                     if (!isSilent) console.log(`[Tamaben] 外部 data.json から ${loadedData.length} 件のデータを正常に同期しました`);
                 } else {
-                    throw fetchError || new Error('data.json の読み込みに失敗しました（404 または CORS制限）');
+                    const cached = localStorage.getItem('tamaben_materials_cache');
+                    if (cached) {
+                        try {
+                            MATERIAL_DATA = JSON.parse(cached);
+                            console.warn('[Tamaben] 外部 data.json 取得エラーのため直前のキャッシュデータを使用します');
+                        } catch(e) {}
+                    }
+                    if (!MATERIAL_DATA || MATERIAL_DATA.length === 0) {
+                        throw fetchError || new Error('data.json の読み込みに失敗しました（404 または CORS制限）');
+                    }
                 }
             } catch (e) {
                 console.error('[Tamaben] 外部 data.json の接続エラー:', e);
@@ -1299,6 +1354,7 @@
             const s = localStorage.getItem('tamaben_user_stats');
             if (s) userStats = JSON.parse(s);
             recordDay();
+            updateParentsDashboard();
         }
 
         async function switchTab(tab) {
@@ -1488,7 +1544,10 @@
                 else if (hash === '#register') targetView = 'view-register';
                 else if (hash === '#mypage') targetView = 'view-mypage';
                 else if (hash === '#subjects') targetView = 'view-subjects';
-                else if (hash === '#parents') targetView = 'view-parents-report';
+                else if (hash === '#parents') {
+                    targetView = 'view-parents-report';
+                    updateParentsDashboard();
+                }
                 const targetEl = document.getElementById(targetView);
                 if (targetEl) targetEl.classList.remove('hidden');
             }
