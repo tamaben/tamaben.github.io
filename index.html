@@ -172,18 +172,99 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .tab-btn {
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             color: #64748b;
+        }
+        .tab-btn:hover {
+            color: #0f172a;
         }
         .tab-btn.active {
             background: #0f172a;
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+            transform: scale(1.02);
         }
 
         .carousel-track {
             will-change: transform;
             touch-action: pan-y pinch-zoom;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━
+           気持ちのいい画面切り替え（View Transitions & マイクロアニメーション）
+           ━━━━━━━━━━━━━━━━━━━━ */
+        @keyframes viewFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes viewFadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+        }
+
+        .view-section:not(.hidden) {
+            animation: viewFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        ::view-transition-old(root) {
+            animation: viewFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        ::view-transition-new(root) {
+            animation: viewFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* カードの心地よい時間差（スタッガー）登場アニメーション */
+        .card-appear {
+            animation: cardSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.985);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 弾むようなマイクロインタラクション */
+        .bookmark-pop {
+            animation: bookmarkBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bookmarkBounce {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        /* ユーザーのモーション軽減設定への配慮 */
+        @media (prefers-reduced-motion: reduce) {
+            .view-section:not(.hidden),
+            .card-appear,
+            .bookmark-pop,
+            .ink-marker,
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
+                animation: none !important;
+                transition: none !important;
+            }
         }
     </style>
 </head>
@@ -202,10 +283,10 @@
 
             <!-- デスクトップナビ -->
             <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-light">
-                <button onclick="navigate('#home')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">教材トップ</button>
-                <button onclick="navigate('#subjects')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">全教科一覧</button>
-                <button onclick="navigate('#search')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">教材を検索</button>
-                <button onclick="navigate('#parents')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">保護者の方へ</button>
+                <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
+                <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
+                <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
+                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">利用者の方へ</button>
             </nav>
 
             <!-- 右側アクション（学年バッジ・マイページ） -->
@@ -242,7 +323,7 @@
 
                     <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed">
                         タマベンチームの教材は、楽しく学んでほしいという願いを込めて作成しています。<br class="hidden sm:inline"/>
-                        教科書カリキュラムに準拠した無料プリントを、インストール不要ですぐにご利用いただけます。
+                        個人で作成しているため教材数は少ないですがご了承ください。
                     </p>
 
                     <!-- クイック検索バー（単元直行リンク付） -->
@@ -258,18 +339,12 @@
                         </div>
                     </div>
 
-                    <!-- 人気の単元クイックリンク -->
-                    <div class="flex items-center justify-center gap-1.5 flex-wrap mt-4 text-[11px]">
-                        <span class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
-                        <button onclick="quickSearchByUnit('連立方程式')" class="text-ink-light hover:text-ink underline decoration-neutral-300">連立方程式</button>
-                        <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearchByUnit('一次関数')" class="text-ink-light hover:text-ink underline decoration-neutral-300">一次関数</button>
-                        <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearchByUnit('化学変化')" class="text-ink-light hover:text-ink underline decoration-neutral-300">化学変化と分子</button>
-                        <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearchByUnit('たしざん')" class="text-ink-light hover:text-ink underline decoration-neutral-300">たしざん・ひきざん</button>
-                        <span class="text-neutral-300">•</span>
-                        <button onclick="quickSearchByUnit('植物')" class="text-ink-light hover:text-ink underline decoration-neutral-300">植物のそだち</button>
+                    <!-- 人気の単元クイックリンク（学年・年齢連動 × 今ある教材から自動選出） -->
+                    <div class="flex items-center justify-center gap-1.5 flex-wrap mt-4 text-[11px]" id="hero-popular-units-bar">
+                        <span id="hero-popular-units-label" class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
+                        <div id="hero-popular-units-list" class="inline-flex items-center gap-1.5 flex-wrap">
+                            <!-- JSにて学年・年齢に合わせて今ある単元を動的生成 -->
+                        </div>
                     </div>
 
                 </div>
@@ -642,10 +717,49 @@
             </div>
         </div>
 
-        <!-- 08 保護者向け -->
-        <div id="view-parents-report" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        <!-- 08 利用者の方へ -->
+        <div id="view-users-info" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
+            <!-- ページヘッダー -->
+            <div class="border-b border-ink-border pb-6 mb-8">
+                <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">For Learners & Users</span>
+                <h2 class="text-2xl font-black text-ink mt-0.5">利用者の方へ</h2>
+                <p class="text-xs text-ink-muted mt-1">タマベンをご利用いただいているみなさまへ</p>
+            </div>
+
+            <!-- 感謝とお知らせメッセージカード -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                        <i data-lucide="heart" class="w-5 h-5 text-rose-400 fill-rose-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-ink leading-snug">タマベンチームの教材をご利用いただきありがとうございます。</h3>
+                        <p class="text-xs font-bold text-ink-muted mt-1">楽しく学んでほしいという願いを込めて</p>
+                    </div>
+                </div>
+
+                <div class="text-xs sm:text-sm text-ink-light space-y-3 leading-relaxed border-t border-neutral-100 pt-5">
+                    <p>
+                        当サイトの教材プリントは、「学ぶことはもっと楽しく」をテーマに、子どもたちが自発的に「解けた！」「わかった！」と学習を楽しめるきっかけになることを願って作成しています。
+                    </p>
+                    <div class="bg-canvas p-4 rounded-xl border border-neutral-200 text-ink">
+                        <p class="font-bold text-xs text-ink mb-1 flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-ink-muted"></i>
+                            教材についてのお願い
+                        </p>
+                        <p class="text-xs text-ink-muted leading-relaxed">
+                            個人で作成しているため教材数は少ないですがご了承ください。日々のおうち学習や復習に少しでもお役立ていただけるよう、順次新しい単元のプリントを追加・改善してまいります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- あなたの学習記録 -->
             <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <h2 class="text-xl font-black text-ink mb-6">保護者・指導者向け学習レポート</h2>
+                <div class="flex items-center gap-2 mb-6 pb-3 border-b border-neutral-100">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-ink"></i>
+                    <h3 class="font-bold text-sm text-ink">あなたの学習記録</h3>
+                </div>
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div class="bg-canvas border border-neutral-200 rounded-xl p-5 text-center">
                         <span class="text-xs font-bold text-ink-muted block mb-1">今月の学習日数</span>
@@ -656,7 +770,10 @@
                         <p class="text-3xl font-black text-ink"><span id="p-stat-time">0</span><span class="text-sm font-bold text-ink-muted ml-1">分</span></p>
                     </div>
                 </div>
-                <div id="parents-view-history-list" class="space-y-2"></div>
+                <div>
+                    <h4 class="text-xs font-bold text-ink mb-3">最近閲覧した教材</h4>
+                    <div id="parents-view-history-list" class="space-y-2"></div>
+                </div>
             </div>
         </div>
 
@@ -664,20 +781,20 @@
 
     <!-- スマホ専用固定ボトムナビ -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-border px-6 py-2 flex items-center justify-between" style="padding-bottom: max(env(safe-area-inset-bottom), 8px);">
-        <button onclick="navigate('#home')" class="flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-95 transition-all outline-none">
-            <i data-lucide="home" class="w-5 h-5"></i>
+        <button id="bnav-btn-home" onclick="navigate('#home')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="home" class="w-5 h-5 transition-transform"></i>
             <span class="text-[10px] font-bold">ホーム</span>
         </button>
-        <button onclick="navigate('#subjects')" class="flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-95 transition-all outline-none">
-            <i data-lucide="layers" class="w-5 h-5"></i>
+        <button id="bnav-btn-subjects" onclick="navigate('#subjects')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="layers" class="w-5 h-5 transition-transform"></i>
             <span class="text-[10px] font-bold">教科</span>
         </button>
-        <button onclick="navigate('#search')" class="flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-95 transition-all outline-none">
-            <i data-lucide="search" class="w-5 h-5"></i>
+        <button id="bnav-btn-search" onclick="navigate('#search')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="search" class="w-5 h-5 transition-transform"></i>
             <span class="text-[10px] font-bold">検索</span>
         </button>
-        <button onclick="handleUserMenu()" class="flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-95 transition-all outline-none">
-            <i data-lucide="user" class="w-5 h-5"></i>
+        <button id="bnav-btn-mypage" onclick="handleUserMenu()" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="user" class="w-5 h-5 transition-transform"></i>
             <span class="text-[10px] font-bold">マイページ</span>
         </button>
     </nav>
@@ -776,6 +893,7 @@
         function saveSettingsToStorage() {
             localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
             updateHeaderGradeBadge();
+            renderPopularUnits();
         }
 
         function loadSettingsFromStorage() {
@@ -787,6 +905,7 @@
                 } catch(e) {}
             }
             updateHeaderGradeBadge();
+            renderPopularUnits();
         }
 
         function updateHeaderGradeBadge() {
@@ -893,6 +1012,8 @@
                 if (item) {
                     const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     openDetail(item, hasAny);
+                    const bIcon = document.querySelector('#detail-content [data-lucide="bookmark"]');
+                    if (bIcon) bIcon.classList.add('bookmark-pop');
                 }
             } else if (hash === '#mypage') {
                 renderMyPage();
@@ -1295,22 +1416,103 @@
         }
 
         function renderPopularUnits() {
-            const container = document.getElementById('popular-units-container');
-            if(!container) return;
-            const samples = ['連立方程式', '一次関数', '化学変化と原子・分子', 'たしざん・ひきざん', '植物のそだちかた', '分数のかけ算', 'be動詞と一般動詞', '円周角の定理'];
-            container.innerHTML = '';
-            samples.forEach(unit => {
-                const btn = document.createElement('button');
-                btn.className = "px-3 py-1.5 bg-canvas border border-neutral-200 hover:border-ink text-xs font-medium rounded-lg text-ink transition-colors";
-                btn.textContent = unit;
-                btn.onclick = () => quickSearchByUnit(unit);
-                container.appendChild(btn);
+            // 今ある（実際に教材PDFが存在・公開されている）教材のみを抽出
+            const availableMaterials = MATERIAL_DATA.filter(item => 
+                (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
+                (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
+                (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
+            );
+
+            if (availableMaterials.length === 0) return;
+
+            const targetGrade = userSettings.grade; // 設定された学年（生年月日から判定または手動選択）
+            let selectedUnits = [];
+
+            if (targetGrade) {
+                // 1. まず現在の学年で今ある単元を優先抽出
+                const sameGradeMaterials = availableMaterials.filter(m => m.grade === targetGrade);
+                sameGradeMaterials.forEach(m => {
+                    if (m.unit && !selectedUnits.includes(m.unit)) {
+                        selectedUnits.push(m.unit);
+                    }
+                });
+
+                // 2. 該当学年の単元だけでは少ない場合、同じ学校区分（小学校/中学校）の今ある単元を補完
+                const isJunior = targetGrade.startsWith('中学');
+                const stageMaterials = availableMaterials.filter(m => isJunior ? m.tab === 'junior' : m.tab === 'elementary');
+                stageMaterials.forEach(m => {
+                    if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 5) {
+                        selectedUnits.push(m.unit);
+                    }
+                });
+            }
+
+            // 3. 学年未設定または不足している場合は、今ある公開教材から代表的な単元を追加
+            availableMaterials.forEach(m => {
+                if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 6) {
+                    selectedUnits.push(m.unit);
+                }
             });
+
+            // ヒーローセクションの人気単元バーの更新
+            const heroList = document.getElementById('hero-popular-units-list');
+            const heroLabel = document.getElementById('hero-popular-units-label');
+            if (heroList) {
+                heroList.innerHTML = '';
+                if (heroLabel) {
+                    heroLabel.textContent = targetGrade ? `${targetGrade}のおすすめ単元:` : '人気の単元:';
+                }
+                selectedUnits.forEach((unit, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "text-ink-light hover:text-ink font-medium underline decoration-neutral-300 hover:decoration-ink transition-colors";
+                    btn.textContent = unit;
+                    btn.onclick = () => quickSearchByUnit(unit);
+                    heroList.appendChild(btn);
+
+                    if (idx < selectedUnits.length - 1) {
+                        const dot = document.createElement('span');
+                        dot.className = "text-neutral-300";
+                        dot.textContent = "•";
+                        heroList.appendChild(dot);
+                    }
+                });
+            }
+
+            // 検索ページ（#search）の代表単元ボタン群の更新
+            const searchContainer = document.getElementById('popular-units-container');
+            if (searchContainer) {
+                searchContainer.innerHTML = '';
+                selectedUnits.forEach(unit => {
+                    const btn = document.createElement('button');
+                    btn.className = "px-3 py-1.5 bg-canvas border border-neutral-200 hover:border-ink text-xs font-bold rounded-lg text-ink transition-colors flex items-center gap-1.5 active:scale-95";
+                    btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${unit}`;
+                    btn.onclick = () => quickSearchByUnit(unit);
+                    searchContainer.appendChild(btn);
+                });
+            }
         }
 
         function quickSearchByUnit(unitName) {
-            document.getElementById('search-keyword').value = unitName;
-            executeSearch();
+            // カタログ側の該当タブ・教科・単元を連動させてホームへ遷移
+            const unitItem = MATERIAL_DATA.find(m => m.unit === unitName);
+            if (unitItem && unitItem.tab) {
+                currentTab = unitItem.tab;
+                const elemBtn = document.getElementById('tab-elementary');
+                const jnrBtn = document.getElementById('tab-junior');
+                if (elemBtn) elemBtn.classList.toggle('active', currentTab === 'elementary');
+                if (jnrBtn) jnrBtn.classList.toggle('active', currentTab === 'junior');
+                activeSubjectFilter = unitItem.subject || null;
+                activeUnitFilter = unitName;
+            }
+            navigate('#home');
+            buildSubjectChips();
+            updateCatalogUnits();
+            renderMaterials();
+
+            const catalogEl = document.getElementById('learning-materials-container');
+            if (catalogEl) {
+                catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         function quickSearchBySubject(subjectName, schoolType) {
@@ -1425,7 +1627,8 @@
                 const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 const card = document.createElement('div');
-                card.className = `paper-card flex flex-col select-none ${hasAnyMaterial ? 'card-available cursor-pointer group' : 'card-unavailable'}`;
+                card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
+                card.style.animationDelay = `${Math.min(index * 0.035, 0.35)}s`;
                 
                 card.innerHTML = `
                     <div class="a4-viewport relative overflow-hidden flex items-center justify-center ${!hasAnyMaterial ? 'bg-neutral-100/70' : ''}">
@@ -1793,7 +1996,8 @@
                     const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
                     const card = document.createElement('div');
-                    card.className = `paper-card flex flex-col select-none ${hasAnyMaterial ? 'card-available cursor-pointer hover:border-ink transition-colors' : 'card-unavailable'}`;
+                    card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
+                    card.style.animationDelay = `${Math.min(index * 0.035, 0.35)}s`;
                     card.innerHTML = `
                         <div class="a4-viewport relative overflow-hidden flex items-center justify-center ${!hasAnyMaterial ? 'bg-neutral-100/70' : ''}">
                             <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
@@ -1836,6 +2040,38 @@
 
         function navigate(hash) { window.location.hash = hash; }
 
+        function updateNavActiveState(hash) {
+            // デスクトップナビのアクティブ状態
+            document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black'));
+            let activeId = 'nav-btn-home';
+            if (hash === '#subjects') activeId = 'nav-btn-subjects';
+            else if (hash === '#search' || hash === '#results') activeId = 'nav-btn-search';
+            else if (hash === '#users' || hash === '#parents') activeId = 'nav-btn-users';
+            
+            const activeNav = document.getElementById(activeId);
+            if (activeNav) activeNav.classList.add('bg-neutral-100', 'text-ink', 'font-black');
+
+            // ボトムナビのアクティブ状態
+            document.querySelectorAll('.bnav-item-btn').forEach(b => {
+                b.classList.remove('text-ink');
+                b.classList.add('text-ink-muted');
+                const icon = b.querySelector('i');
+                if (icon) icon.classList.remove('scale-110');
+            });
+            let bActiveId = 'bnav-btn-home';
+            if (hash === '#subjects') bActiveId = 'bnav-btn-subjects';
+            else if (hash === '#search' || hash === '#results') bActiveId = 'bnav-btn-search';
+            else if (hash === '#mypage' || hash === '#register') bActiveId = 'bnav-btn-mypage';
+            
+            const activeBNav = document.getElementById(bActiveId);
+            if (activeBNav) {
+                activeBNav.classList.remove('text-ink-muted');
+                activeBNav.classList.add('text-ink');
+                const icon = activeBNav.querySelector('i');
+                if (icon) icon.classList.add('scale-110');
+            }
+        }
+
         async function handleHashChange(shouldReloadData = false) {
             if (!isLoaded) {
                 // 初回読み込み完了前は loadMaterials 完了時の自動呼び出しを待機
@@ -1848,43 +2084,54 @@
             }
 
             const hash = window.location.hash || '#home';
-            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-parents-report'];
-            views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
+            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-users-info', 'view-parents-report'];
 
-            if (hash.startsWith('#detail-')) {
-                const id = decodeURIComponent(hash.replace('#detail-', ''));
-                const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
-                if (item) {
-                    const detailEl = document.getElementById('view-detail');
-                    if (detailEl) detailEl.classList.remove('hidden');
-                    const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
-                    openDetail(item, hasAny);
+            const updateDOM = () => {
+                views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
+
+                if (hash.startsWith('#detail-')) {
+                    const id = decodeURIComponent(hash.replace('#detail-', ''));
+                    const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
+                    if (item) {
+                        const detailEl = document.getElementById('view-detail');
+                        if (detailEl) detailEl.classList.remove('hidden');
+                        const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                        openDetail(item, hasAny);
+                    } else {
+                        // IDが見つからない場合のみホームへフォールバック
+                        navigate('#home');
+                    }
                 } else {
-                    // IDが見つからない場合のみホームへフォールバック
-                    navigate('#home');
+                    let targetView = 'view-home';
+                    if (hash === '#home' || hash === '') {
+                        targetView = 'view-home';
+                        renderMaterials();
+                    } else if (hash === '#search') {
+                        targetView = 'view-search';
+                    } else if (hash === '#results') {
+                        targetView = 'view-search-results';
+                    } else if (hash === '#register' || hash === '#mypage') {
+                        targetView = 'view-mypage';
+                        renderMyPage();
+                    } else if (hash === '#subjects') {
+                        targetView = 'view-subjects';
+                    } else if (hash === '#users' || hash === '#parents') {
+                        targetView = 'view-users-info';
+                        updateParentsDashboard();
+                    }
+                    const targetEl = document.getElementById(targetView);
+                    if (targetEl) targetEl.classList.remove('hidden');
                 }
+                updateNavActiveState(hash);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // ブラウザの View Transition API が利用可能な場合はシームレスな画面遷移を実行
+            if (document.startViewTransition && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+                document.startViewTransition(updateDOM);
             } else {
-                let targetView = 'view-home';
-                if (hash === '#home' || hash === '') {
-                    targetView = 'view-home';
-                    renderMaterials();
-                } else if (hash === '#search') {
-                    targetView = 'view-search';
-                } else if (hash === '#results') {
-                    targetView = 'view-search-results';
-                } else if (hash === '#register' || hash === '#mypage') {
-                    targetView = 'view-mypage';
-                    renderMyPage();
-                } else if (hash === '#subjects') {
-                    targetView = 'view-subjects';
-                } else if (hash === '#parents') {
-                    targetView = 'view-parents-report';
-                    updateParentsDashboard();
-                }
-                const targetEl = document.getElementById(targetView);
-                if (targetEl) targetEl.classList.remove('hidden');
+                updateDOM();
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         window.addEventListener('hashchange', () => handleHashChange(true));
