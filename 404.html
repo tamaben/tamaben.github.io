@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>404 - ページが見つかりません | タマベン</title>
+    <title>タマベン - 無料学習教材サイト</title>
     
     <link rel="icon" href="./icon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
+    <meta name="description" content="タマベンは、小学生・中学生・高校生向けの無料学習教材サイト。教科書準拠プリントをインストール不要ですぐに利用・印刷できます。テーマは「学習を楽しく」。">
+    <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習教材サイト, 宿題プリント, PDFプリント, 単元別プリント">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind & Lucide Icons -->
+    <!-- Scripts & Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -52,60 +56,22 @@
         body { 
             background-color: var(--bg-canvas); 
             color: var(--text-ink); 
+            overflow-x: hidden;
             font-feature-settings: "palt";
             letter-spacing: -0.01em;
+            padding-bottom: calc(env(safe-area-inset-bottom) + 72px);
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* リアル・ペーパーデザイン（A4用紙モチーフ） */
-        .paper-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            box-shadow: 
-                0 1px 3px rgba(15, 23, 42, 0.04),
-                0 16px 36px -6px rgba(15, 23, 42, 0.09);
-            position: relative;
-            animation: cardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .paper-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #f1f5f9;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        @keyframes cardSlideUp {
-            0% {
-                opacity: 0;
-                transform: translateY(12px) scale(0.985);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: env(safe-area-inset-bottom);
             }
         }
 
-        /* 方眼ノートパターン */
-        .paper-grid-pattern {
-            background-size: 24px 24px;
-            background-image: 
-                linear-gradient(to right, rgba(226, 232, 240, 0.45) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(226, 232, 240, 0.45) 1px, transparent 1px);
-        }
-
-        /* テストプリント風の破線 */
-        .sheet-divider {
-            border-bottom: 2px dashed #e2e8f0;
-        }
-
-        /* インクマーカー演出 */
+        /* ━━━━━━━━━━━━━━━━━━━━
+           開いた時に大事な部分だけにすーっと引かれるインクマーカー
+           ━━━━━━━━━━━━━━━━━━━━ */
         .ink-marker {
             display: inline-block;
             position: relative;
@@ -116,129 +82,2069 @@
             border-radius: 2px;
             white-space: nowrap;
             clip-path: inset(0 100% 0 0);
-            animation: drawMarker 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.15s;
+            animation: drawMarker 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+        }
+
+        .ink-marker-2 {
+            animation-delay: 0.6s;
         }
 
         @keyframes drawMarker {
-            to {
+            0% {
+                clip-path: inset(0 100% 0 0);
+            }
+            100% {
                 clip-path: inset(0 0 0 0);
             }
         }
 
+        /* リアル・ペーパーデザイン（A4比率＆繊細な紙シャドウ） */
+        .paper-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 
+                0 1px 3px rgba(15, 23, 42, 0.04),
+                0 4px 12px -2px rgba(15, 23, 42, 0.06);
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+        }
+
+        .paper-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #f1f5f9;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            opacity: 0.8;
+        }
+
+        .card-available:hover {
+            transform: translateY(-5px);
+            border-color: #cbd5e1;
+            box-shadow: 
+                0 3px 6px rgba(15, 23, 42, 0.05),
+                0 18px 30px -6px rgba(15, 23, 42, 0.12);
+        }
+
+        /* 文字教材（プリント実体）がない場合は視覚的にも操作的にも選択不可に */
+        .card-unavailable {
+            background: #f1f5f9 !important;
+            border: 1px dashed #cbd5e1 !important;
+            opacity: 0.55 !important;
+            cursor: not-allowed !important;
+            filter: grayscale(80%);
+            box-shadow: none !important;
+            transform: none !important;
+            pointer-events: auto;
+            user-select: none;
+        }
+        .card-unavailable:hover {
+            opacity: 0.55 !important;
+            transform: none !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: none !important;
+        }
+        .card-unavailable::before {
+            background: #cbd5e1 !important;
+            opacity: 0.4;
+        }
+
+        .a4-viewport {
+            aspect-ratio: 1 / 1.414;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .paper-grid-pattern {
+            background-size: 24px 24px;
+            background-image: 
+                linear-gradient(to right, rgba(226, 232, 240, 0.45) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(226, 232, 240, 0.45) 1px, transparent 1px);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .tab-btn {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #64748b;
+        }
+        .tab-btn:hover {
+            color: #0f172a;
+        }
+        .tab-btn.active {
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+            transform: scale(1.02);
+        }
+
+        .carousel-track {
+            will-change: transform;
+            touch-action: pan-y pinch-zoom;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━
+           気持ちのいい画面切り替え（View Transitions & マイクロアニメーション）
+           ━━━━━━━━━━━━━━━━━━━━ */
+        @keyframes viewFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes viewFadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+        }
+
+        .view-section:not(.hidden) {
+            animation: viewFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        ::view-transition-old(root) {
+            animation: viewFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        ::view-transition-new(root) {
+            animation: viewFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* カードの心地よい時間差（スタッガー）登場アニメーション */
+        .card-appear {
+            animation: cardSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.985);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 弾むようなマイクロインタラクション */
+        .bookmark-pop {
+            animation: bookmarkBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bookmarkBounce {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        /* ユーザーのモーション軽減設定への配慮 */
         @media (prefers-reduced-motion: reduce) {
-            .paper-card,
-            .ink-marker {
+            .view-section:not(.hidden),
+            .card-appear,
+            .bookmark-pop,
+            .ink-marker,
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
                 animation: none !important;
                 transition: none !important;
             }
         }
     </style>
 </head>
-<body class="font-sans antialiased text-ink min-h-screen flex flex-col justify-between paper-grid-pattern">
+<body class="font-sans antialiased text-ink selection:bg-neutral-900 selection:text-white">
 
-    <!-- ヘッダー（logo.svg 対応 & ナビゲーション統一） -->
-    <header class="bg-white/95 backdrop-blur-md border-b border-ink-border sticky top-0 z-50 transition-all">
+    <!-- ━━━━━━━━━━━━━━━━━━━━
+         PC / タブレット用ヘッダー（logo.svg 対応）
+         ━━━━━━━━━━━━━━━━━━━━ -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-ink-border transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="/" class="active:scale-95 transition-all outline-none flex items-center">
+            
+            <!-- ロゴ（logo.svg） -->
+            <button onclick="navigate('#home')" class="active:scale-95 transition-all outline-none flex items-center">
                 <img src="logo.svg" alt="タマベン" class="h-6 md:h-8 w-auto" onerror="this.outerHTML='<span class=\'font-black text-ink text-lg tracking-tight\'>タマベン</span>'">
-            </a>
+            </button>
 
-            <div class="flex items-center gap-2">
-                <a href="/" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all flex items-center gap-1.5 active:scale-95">
-                    <i data-lucide="home" class="w-3.5 h-3.5"></i> 教材トップ
-                </a>
-                <a href="/#search" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all flex items-center gap-1.5 active:scale-95">
-                    <i data-lucide="search" class="w-3.5 h-3.5"></i> 教材を検索
-                </a>
-                <a href="/#users" class="hidden sm:inline-flex px-3.5 py-1.5 rounded-lg text-xs font-bold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">
-                    利用者の方へ
-                </a>
+            <!-- デスクトップナビ -->
+            <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-light">
+                <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
+                <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
+                <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
+                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">利用者の方へ</button>
+            </nav>
+
+            <!-- 右側アクション（学年バッジ・マイページ） -->
+            <div class="flex items-center gap-3">
+                <div id="grade-badge" class="hidden sm:flex items-center gap-2 border border-neutral-200 px-3 py-1 rounded-full bg-neutral-50">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span id="user-grade-label" class="text-xs font-bold text-ink">小学1年生</span>
+                </div>
+
+                <button onclick="handleUserMenu()" class="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg bg-ink text-white hover:bg-neutral-800 transition-all shadow-sm active:scale-95">
+                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                    <span id="login-btn-label">マイページ</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- メインコンテンツ: 404 問題用紙モチーフ -->
-    <main class="flex-grow flex items-center justify-center px-4 py-12 md:py-16">
-        <div class="w-full max-w-lg">
+    <main class="min-h-screen">
+        
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             01 トップページ (view-home) [#home]
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-home" class="view-section">
             
-            <!-- A4問題用紙風カード -->
-            <div class="paper-card p-6 sm:p-10 text-center relative overflow-hidden">
+            <!-- ヒーローセクション（学習を楽しく × マーカー線アニメーション） -->
+            <section class="border-b border-ink-border bg-white paper-grid-pattern relative py-14 md:py-20">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+                    
+                    <!-- 新キャッチコピー: 学習を楽しく & 大事なキーワードだけマーカー演出 -->
+                    <h1 class="text-2xl sm:text-3xl md:text-5xl font-black text-ink tracking-tight leading-snug md:leading-snug mb-5">
+                        <span class="inline-block">学ぶことは、もっと<span class="ink-marker">楽しく</span>。</span><br class="hidden sm:inline"/>
+                        <span class="inline-block">「できた！」に出会える、毎日の<span class="ink-marker ink-marker-2">無料プリント</span>。</span>
+                    </h1>
+
+                    <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed" style="text-wrap: pretty;">
+                        <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという願いを込めて作成しています。</span><br class="hidden sm:inline"/>
+                        <span class="inline-block">個人で作成しているため、</span><span class="inline-block">教材数は少ないですがご了承ください。</span>
+                    </p>
+
+                    <!-- クイック検索バー（単元直行リンク付） -->
+                    <div class="max-w-xl mx-auto px-2">
+                        <div onclick="navigate('#search')" class="cursor-pointer flex items-center justify-between rounded-xl p-2.5 sm:p-3 bg-white border-2 border-neutral-200 hover:border-ink transition-all shadow-sm group">
+                            <div class="flex items-center gap-3 pl-2">
+                                <i data-lucide="search" class="w-4 h-4 text-ink-subtle group-hover:text-ink transition-colors"></i>
+                                <span class="text-xs sm:text-sm text-ink-subtle font-medium text-left">教科、単元名、学年で教材を探す...</span>
+                            </div>
+                            <span class="px-3 py-1.5 bg-neutral-100 group-hover:bg-ink group-hover:text-white rounded-lg text-xs font-bold text-ink-light transition-all">
+                                検索する
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 人気の単元クイックリンク（学年・年齢連動 × 今ある教材から自動選出） -->
+                    <div class="flex items-center justify-center gap-1.5 flex-wrap mt-4 text-[11px]" id="hero-popular-units-bar">
+                        <span id="hero-popular-units-label" class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
+                        <div id="hero-popular-units-list" class="inline-flex items-center gap-1.5 flex-wrap">
+                            <!-- JSにて学年・年齢に合わせて今ある単元を動的生成 -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- メイン教材カタログエリア -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 
-                <!-- プリントヘッダー風メタ表示 -->
-                <div class="flex items-center justify-between text-[11px] font-bold text-ink-muted sheet-divider pb-4 mb-8">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 bg-neutral-100 rounded text-ink font-bold">教材番号: 404</span>
-                        <span>確認問題</span>
+                <!-- コントロールバー（学年区分タブ・教科水平スクロール・単元連動フィルター） -->
+                <div class="space-y-4 mb-8">
+                    
+                    <!-- 上段: 学年セグメント＆フィルター切替 -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ink-border">
+                        <!-- 小学生 / 中学生 切り替えセグメント -->
+                        <div class="inline-flex bg-neutral-200/80 p-1 rounded-xl self-start">
+                            <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-5 py-2 rounded-lg text-xs font-black">小学生プリント</button>
+                            <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-5 py-2 rounded-lg text-xs font-black">中学生プリント</button>
+                        </div>
+
+                        <!-- 右側コントロール: 単元セレクト & 状態フィルター -->
+                        <div class="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+                            <!-- 単元ドロップダウン（教科に連動して自動調節） -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="catalog-unit-select" class="text-xs font-semibold text-ink-muted">単元:</label>
+                                <select id="catalog-unit-select" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm max-w-[160px] truncate" onchange="onCatalogUnitChange()">
+                                    <option value="">すべての単元</option>
+                                </select>
+                            </div>
+
+                            <!-- 状態フィルター -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="material-filter" class="text-xs font-semibold text-ink-muted">表示:</label>
+                                <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="renderMaterials()">
+                                    <option value="all">すべて (準備中含む)</option>
+                                    <option value="available" selected>今すぐ印刷可能のみ</option>
+                                    <option value="unavailable">準備中のみ</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="border border-neutral-300 px-3 py-1 rounded text-ink-light bg-canvas">
-                        学年: <span class="inline-block w-14 border-b border-neutral-400"></span>
+
+                    <!-- 下段: 教科の水平スクロールチップス -->
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 scroll-smooth" id="has-material-subjects-chips">
+                        <!-- JSで動的生成 -->
                     </div>
-                </div>
 
-                <!-- 404 ビッグタイポグラフィ -->
-                <div class="mb-6">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-neutral-100 rounded-2xl mb-4 text-ink shadow-sm">
-                        <i data-lucide="file-question" class="w-8 h-8 stroke-1"></i>
-                    </div>
-                    <h1 class="text-5xl sm:text-6xl font-black text-ink tracking-tight mb-2">404</h1>
-                    <p class="text-sm sm:text-base font-extrabold text-ink tracking-tight">
-                        お探しの<span class="ink-marker">プリント</span>が見つかりませんでした
-                    </p>
-                </div>
-
-                <!-- 案内・メッセージ文 -->
-                <p class="text-xs text-ink-muted leading-relaxed max-w-sm mx-auto mb-4 font-medium">
-                    指定されたページや教材プリントは、移動または削除されたか、URLが正しくない可能性があります。
-                </p>
-
-                <div class="bg-canvas p-3.5 rounded-xl border border-neutral-200 text-left mb-8 max-w-md mx-auto">
-                    <p class="text-[11px] text-ink-muted leading-relaxed">
-                        タマベンチームの教材は、楽しく学んでほしいという願いを込めて作成しています。<br/>
-                        個人で作成しているため教材数は少ないですがご了承ください。
-                    </p>
-                </div>
-
-                <!-- アクションボタン群 -->
-                <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-                    <a href="/" class="px-5 py-3 bg-ink hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
-                        <i data-lucide="home" class="w-4 h-4"></i> トップページに戻る
-                    </a>
-                    <a href="/#search" class="px-5 py-3 bg-white hover:bg-neutral-50 border border-neutral-300 text-ink rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm">
-                        <i data-lucide="search" class="w-4 h-4 text-ink-muted"></i> 教材を検索する
-                    </a>
-                </div>
-
-                <!-- クイックジャンプリンク -->
-                <div class="border-t border-neutral-100 pt-6">
-                    <span class="text-[11px] font-bold text-ink-muted block mb-3">今ある教科から探す</span>
-                    <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
-                        <a href="/#home" class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg font-bold text-ink transition-colors active:scale-95">算数・数学</a>
-                        <a href="/#home" class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg font-bold text-ink transition-colors active:scale-95">英語</a>
-                        <a href="/#home" class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg font-bold text-ink transition-colors active:scale-95">理科</a>
-                        <a href="/#home" class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-lg font-bold text-ink transition-colors active:scale-95">国語</a>
+                    <!-- 単元のクイックピル（教科選択時に自動展開） -->
+                    <div id="catalog-unit-pills-bar" class="hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <!-- JSで自動挿入 -->
                     </div>
                 </div>
 
+                <!-- プリント用紙カードグリッド -->
+                <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[40vh]">
+                    <!-- JSにて動的に描画 -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             02 検索トップページ (view-search) [#search]
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-search" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
+            <div class="border-b border-ink-border pb-6 mb-8">
+                <h2 class="text-xl sm:text-2xl font-black text-ink mb-1">プリントを探す</h2>
+                <p class="text-xs text-ink-muted">学年・教科を選択すると、対応する単元が自動で調節・表示されます。</p>
             </div>
 
+            <!-- 検索フィルターカード -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <!-- 1. 学年選択 -->
+                    <div>
+                        <label class="text-xs font-bold text-ink-light block mb-2">1. 学年を選択</label>
+                        <select id="search-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
+                            <option value="">すべての学年</option>
+                            <option value="小学1年生">小学1年生</option>
+                            <option value="小学2年生">小学2年生</option>
+                            <option value="小学3年生">小学3年生</option>
+                            <option value="小学4年生">小学4年生</option>
+                            <option value="小学5年生">小学5年生</option>
+                            <option value="小学6年生">小学6年生</option>
+                            <option value="中学1年生">中学1年生</option>
+                            <option value="中学2年生">中学2年生</option>
+                            <option value="中学3年生">中学3年生</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. 教科選択 -->
+                    <div>
+                        <label class="text-xs font-bold text-ink-light block mb-2">2. 教科を選択</label>
+                        <select id="search-subject" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
+                            <option value="">すべての教科</option>
+                            <option value="算数・数学">算数 / 数学</option>
+                            <option value="国語">国語</option>
+                            <option value="理科">理科</option>
+                            <option value="英語">英語</option>
+                            <option value="社会">社会</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. 単元選択（学年・教科に合わせて自動調節） -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-ink-light block">3. 単元を選択</label>
+                            <span id="unit-sync-status" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">自動調節中</span>
+                        </div>
+                        <select id="search-unit" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <option value="">すべての単元</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- キーワード入力 -->
+                <div class="flex items-center rounded-xl px-4 py-3 bg-canvas border border-neutral-300 mb-6 focus-within:border-ink transition-colors">
+                    <i data-lucide="search" class="w-4 h-4 text-ink-subtle mr-3"></i>
+                    <input type="text" id="search-keyword" placeholder="自由キーワード（例：代入法、分数、光の反射など）" class="w-full bg-transparent outline-none font-bold text-xs text-ink placeholder:text-neutral-400">
+                </div>
+
+                <button onclick="executeSearch()" class="w-full py-3 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.99]">
+                    <i data-lucide="search" class="w-4 h-4"></i> この条件でプリントを検索
+                </button>
+            </div>
+
+            <!-- 単元早見タグ & 閲覧履歴 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-neutral-200">
+                    <h3 class="font-bold text-xs mb-3 flex items-center gap-2 text-ink">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        代表的な単元からすぐ探す
+                    </h3>
+                    <div class="flex flex-wrap gap-2" id="popular-units-container">
+                        <!-- JSで動的生成 -->
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-neutral-200">
+                    <h3 class="font-bold text-xs mb-3 flex items-center gap-2 text-ink">
+                        <i data-lucide="history" class="w-3.5 h-3.5 text-blue-600"></i>
+                        最近閲覧したプリント
+                    </h3>
+                    <div class="space-y-2" id="recent-search-history">
+                        <p class="text-xs text-ink-muted">まだ閲覧履歴がありません。</p>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             03 検索結果ページ (view-search-results) [#results]
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-search-results" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-ink-border pb-6 mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-bold text-ink-muted uppercase tracking-wider" id="search-result-tag">Search Results</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-ink mt-0.5" id="search-results-title">検索結果一覧</h2>
+                </div>
+                <button onclick="navigate('#search')" class="px-4 py-2 border border-neutral-300 bg-white rounded-lg text-xs font-bold hover:bg-neutral-50 transition-colors">
+                    条件を変更して再検索
+                </button>
+            </div>
+
+            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- 動的に描画 -->
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             04 教材詳細ページ（めくれるスワイプ・プレビュー） (view-detail) [#detail-{ID}]
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-detail" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <button onclick="navigate('#home')" class="inline-flex items-center gap-2 text-ink-muted hover:text-ink font-bold text-xs mb-6 transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 一覧に戻る
+            </button>
+            
+            <div id="detail-content">
+                <!-- JSで動的展開 -->
+            </div>
+        </div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━
+             05 全教科一覧ページ (view-subjects) [#subjects]
+             ━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="view-subjects" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="border-b border-ink-border pb-6 mb-8 text-center sm:text-left">
+                <h2 class="text-xl sm:text-2xl font-black text-ink mb-1">すべての教科・科目</h2>
+                <p class="text-xs text-ink-muted">小学校から中学校、高校（普通科・専門学科）まで対応</p>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-8">
+                <button onclick="switchSubjectCategory('elem')" class="subj-cat-tab active px-4 py-2 text-xs font-bold rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 shrink-0">小学校</button>
+                <button onclick="switchSubjectCategory('jhs')" class="subj-cat-tab px-4 py-2 text-xs font-bold rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 shrink-0">中学校</button>
+                <button onclick="switchSubjectCategory('hs_gen')" class="subj-cat-tab px-4 py-2 text-xs font-bold rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 shrink-0">高校（普通科）</button>
+                <button onclick="switchSubjectCategory('hs_tech')" class="subj-cat-tab px-4 py-2 text-xs font-bold rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 shrink-0">工業高校</button>
+                <button onclick="switchSubjectCategory('hs_comm')" class="subj-cat-tab px-4 py-2 text-xs font-bold rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 shrink-0">商業高校</button>
+            </div>
+
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200">
+                <!-- 小学校 -->
+                <div id="scat-elem" class="scat-block grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearchBySubject('国語', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
+                    <button onclick="quickSearchBySubject('算数', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">算数</button>
+                    <button onclick="quickSearchBySubject('理科', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
+                    <button onclick="quickSearchBySubject('社会', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">社会</button>
+                    <button onclick="quickSearchBySubject('生活', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生活</button>
+                    <button onclick="quickSearchBySubject('音楽', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">音楽</button>
+                    <button onclick="quickSearchBySubject('図画工作', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">図画工作</button>
+                    <button onclick="quickSearchBySubject('外国語', 'elementary')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">外国語</button>
+                </div>
+
+                <!-- 中学校 -->
+                <div id="scat-jhs" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearchBySubject('国語', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">国語</button>
+                    <button onclick="quickSearchBySubject('数学', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学</button>
+                    <button onclick="quickSearchBySubject('理科', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">理科</button>
+                    <button onclick="quickSearchBySubject('社会', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">社会</button>
+                    <button onclick="quickSearchBySubject('英語', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">英語</button>
+                    <button onclick="quickSearchBySubject('技術', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">技術</button>
+                    <button onclick="quickSearchBySubject('家庭', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">家庭</button>
+                    <button onclick="quickSearchBySubject('保健体育', 'junior')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">保健体育</button>
+                </div>
+
+                <!-- 高校普通科 -->
+                <div id="scat-hs_gen" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('現代の国語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">現代の国語</button>
+                    <button onclick="quickSearch('言語文化')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">言語文化</button>
+                    <button onclick="quickSearch('数学Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学Ⅰ</button>
+                    <button onclick="quickSearch('物理基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">物理基礎</button>
+                    <button onclick="quickSearch('化学基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">化学基礎</button>
+                    <button onclick="quickSearch('生物基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生物基礎</button>
+                    <button onclick="quickSearch('情報Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報Ⅰ</button>
+                </div>
+
+                <!-- 工業高校 -->
+                <div id="scat-hs_tech" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('電気回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電気回路</button>
+                    <button onclick="quickSearch('電子回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電子回路</button>
+                    <button onclick="quickSearch('プログラミング技術')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">プログラミング技術</button>
+                    <button onclick="quickSearch('機械設計')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">機械設計</button>
+                </div>
+
+                <!-- 商業高校 -->
+                <div id="scat-hs_comm" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="quickSearch('簿記')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">簿記</button>
+                    <button onclick="quickSearch('原価計算')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">原価計算</button>
+                    <button onclick="quickSearch('マーケティング')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">マーケティング</button>
+                    <button onclick="quickSearch('情報処理')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報処理</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 06 設定・登録 (マイページへ統合・エイリアス) -->
+        <div id="view-register" class="view-section hidden max-w-xl mx-auto px-4 sm:px-6 py-10">
+        </div>
+
+        <!-- 07 マイページ -->
+        <div id="view-mypage" class="view-section hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- ページヘッダー -->
+            <div class="border-b border-ink-border pb-6 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">My Page</span>
+                    <h2 class="text-2xl font-black text-ink mt-0.5">マイページ</h2>
+                    <p class="text-xs text-ink-muted mt-1">学年や生年月日に合わせたおすすめ教材の確認・学習記録</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-ink-muted">現在の設定:</span>
+                    <span id="mypage-current-grade-label" class="px-3 py-1 bg-ink text-white text-xs font-bold rounded-full">小学1年生</span>
+                </div>
+            </div>
+
+            <!-- 学年・生年月日 設定カード -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-10">
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-neutral-100">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="settings" class="w-4 h-4 text-ink"></i>
+                        <h3 class="text-sm font-bold text-ink">学年・生年月日の設定</h3>
+                    </div>
+                    <span id="mypage-save-toast" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full transition-all">✓ 設定を保存しました</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+                    <!-- 生年月日（任意・自動計算） -->
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5 flex items-center justify-between">
+                            <span>生年月日（任意）</span>
+                            <span class="text-[10px] font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">学年を自動判定</span>
+                        </label>
+                        <input type="date" id="mypage-birthdate" onchange="handleBirthdateChange()" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all">
+                        <p id="mypage-calc-note" class="hidden text-[10px] font-bold text-emerald-700 mt-1.5"></p>
+                        <p class="text-[10px] text-ink-muted mt-1">※生年月日を入力すると現在の学年が自動計算されます。</p>
+                    </div>
+
+                    <!-- 学年選択（必須） -->
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5">
+                            <span>学年</span>
+                        </label>
+                        <select id="mypage-grade" onchange="handleGradeSelectChange()" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all cursor-pointer">
+                            <optgroup label="小学校">
+                                <option value="小学1年生">小学1年生</option>
+                                <option value="小学2年生">小学2年生</option>
+                                <option value="小学3年生">小学3年生</option>
+                                <option value="小学4年生">小学4年生</option>
+                                <option value="小学5年生">小学5年生</option>
+                                <option value="小学6年生">小学6年生</option>
+                            </optgroup>
+                            <optgroup label="中学校">
+                                <option value="中学1年生">中学1年生</option>
+                                <option value="中学2年生">中学2年生</option>
+                                <option value="中学3年生">中学3年生</option>
+                            </optgroup>
+                            <optgroup label="高校">
+                                <option value="高校1年生">高校1年生</option>
+                                <option value="高校2年生">高校2年生</option>
+                                <option value="高校3年生">高校3年生</option>
+                            </optgroup>
+                        </select>
+                        <p class="text-[10px] text-ink-muted mt-1">直接学年を選んで設定することも可能です。</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-neutral-100 flex justify-end">
+                    <button onclick="saveMyPageSettings()" class="px-6 py-2.5 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs shadow-sm active:scale-95 transition-all">
+                        設定を保存する
+                    </button>
+                </div>
+            </div>
+
+            <!-- あなたにおすすめの教材セクション -->
+            <div class="mb-12">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 mb-6 border-b border-ink-border gap-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                        <h3 class="text-base sm:text-lg font-black text-ink">あなたにおすすめの教材</h3>
+                        <span id="mypage-rec-grade-label" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-ink">小学1年生向け</span>
+                    </div>
+                    <button onclick="navigate('#home')" class="text-xs font-bold text-ink-muted hover:text-ink text-left transition-colors">
+                        すべてのプリントを見る &rarr;
+                    </button>
+                </div>
+
+                <div id="mypage-recommended-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[160px]">
+                    <!-- JSにて学年に連動して動的展開 -->
+                </div>
+            </div>
+
+            <!-- ブックマーク ＆ 閲覧履歴 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ブックマーク -->
+                <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-100">
+                            <i data-lucide="bookmark" class="w-4 h-4 text-ink"></i>
+                            <h3 class="font-bold text-xs text-ink">ブックマークしたプリント</h3>
+                        </div>
+                        <div id="mypage-fav-materials" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- 閲覧履歴 -->
+                <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-neutral-100">
+                            <i data-lucide="history" class="w-4 h-4 text-ink"></i>
+                            <h3 class="font-bold text-xs text-ink">最近学習したプリント（閲覧履歴）</h3>
+                        </div>
+                        <div id="mypage-recent-views" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 08 利用者の方へ -->
+        <div id="view-users-info" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
+            <!-- ページヘッダー -->
+            <div class="border-b border-ink-border pb-6 mb-8">
+                <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">For Learners & Users</span>
+                <h2 class="text-2xl font-black text-ink mt-0.5">利用者の方へ</h2>
+                <p class="text-xs text-ink-muted mt-1">タマベンをご利用いただいているみなさまへ</p>
+            </div>
+
+            <!-- 感謝とお知らせメッセージカード -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                        <i data-lucide="heart" class="w-5 h-5 text-rose-400 fill-rose-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-ink leading-snug">タマベンチームの教材をご利用いただきありがとうございます。</h3>
+                        <p class="text-xs font-bold text-ink-muted mt-1">楽しく学んでほしいという願いを込めて</p>
+                    </div>
+                </div>
+
+                <div class="text-xs sm:text-sm text-ink-light space-y-3 leading-relaxed border-t border-neutral-100 pt-5">
+                    <p>
+                        当サイトの教材プリントは、「学ぶことはもっと楽しく」をテーマに、子どもたちが自発的に「解けた！」「わかった！」と学習を楽しめるきっかけになることを願って作成しています。
+                    </p>
+                    <div class="bg-canvas p-4 rounded-xl border border-neutral-200 text-ink">
+                        <p class="font-bold text-xs text-ink mb-1 flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-ink-muted"></i>
+                            教材についてのお願い
+                        </p>
+                        <p class="text-xs text-ink-muted leading-relaxed">
+                            個人で作成しているため教材数は少ないですがご了承ください。日々のおうち学習や復習に少しでもお役立ていただけるよう、順次新しい単元のプリントを追加・改善してまいります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- あなたの学習記録 -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div class="flex items-center gap-2 mb-6 pb-3 border-b border-neutral-100">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-ink"></i>
+                    <h3 class="font-bold text-sm text-ink">あなたの学習記録</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="bg-canvas border border-neutral-200 rounded-xl p-5 text-center">
+                        <span class="text-xs font-bold text-ink-muted block mb-1">今月の学習日数</span>
+                        <p class="text-3xl font-black text-ink"><span id="p-stat-days">1</span><span class="text-sm font-bold text-ink-muted ml-1">日</span></p>
+                    </div>
+                    <div class="bg-canvas border border-neutral-200 rounded-xl p-5 text-center">
+                        <span class="text-xs font-bold text-ink-muted block mb-1">累計学習時間</span>
+                        <p class="text-3xl font-black text-ink"><span id="p-stat-time">0</span><span class="text-sm font-bold text-ink-muted ml-1">分</span></p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-ink mb-3">最近閲覧した教材</h4>
+                    <div id="parents-view-history-list" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- フッター -->
-    <footer class="bg-white border-t border-ink-border py-8 text-center text-xs text-ink-muted">
+    <!-- スマホ専用固定ボトムナビ -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-border px-6 py-2 flex items-center justify-between" style="padding-bottom: max(env(safe-area-inset-bottom), 8px);">
+        <button id="bnav-btn-home" onclick="navigate('#home')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="home" class="w-5 h-5 transition-transform"></i>
+            <span class="text-[10px] font-bold">ホーム</span>
+        </button>
+        <button id="bnav-btn-subjects" onclick="navigate('#subjects')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="layers" class="w-5 h-5 transition-transform"></i>
+            <span class="text-[10px] font-bold">教科</span>
+        </button>
+        <button id="bnav-btn-search" onclick="navigate('#search')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="search" class="w-5 h-5 transition-transform"></i>
+            <span class="text-[10px] font-bold">検索</span>
+        </button>
+        <button id="bnav-btn-mypage" onclick="handleUserMenu()" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
+            <i data-lucide="user" class="w-5 h-5 transition-transform"></i>
+            <span class="text-[10px] font-bold">マイページ</span>
+        </button>
+    </nav>
+
+    <!-- PCフッター -->
+    <footer class="hidden md:block bg-white border-t border-ink-border py-8 text-center text-xs text-ink-muted">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-center items-center mb-2">
                 <img src="logo.svg" alt="タマベン" class="h-5 w-auto opacity-70" onerror="this.outerHTML='<span class=\'font-bold text-ink\'>タマベン</span>'">
             </div>
-            <p class="mb-1 text-ink-subtle">タマベンチームの教材は、楽しく学んでほしいという願いを込めて作成しています。</p>
-            <p class="text-[11px]">&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
+            <p class="mb-1 text-ink-subtle" style="text-wrap: pretty;">
+                <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという願いを込めて作成しています。</span>
+            </p>
+            <p>&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
         </div>
     </footer>
 
+    <!-- スクリプト（単元マスター＆自動連動システム搭載） -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        const UNIT_MASTER = {
+            '算数': {
+                '小学1年生': ['たしざん・ひきざん', '10よりおおきいかず', 'かたちあそび', 'とけいのよみかた'],
+                '小学2年生': ['たし算とひき算の筆算', 'かけ算九九', '長さとかさ', '三角形と四角形'],
+                '小学3年生': ['わり算のきほん', 'かけ算の筆算', '小数と分数', '円と球', '重さのたんい'],
+                '小学4年生': ['大きな数', '小数の計算', '面積（平方センチ・メートル）', '直方体と立方体', '折れ線グラフ'],
+                '小学5年生': ['小数のわり算', '分数のたし算・ひき算', '図形の合同と角', '四角形と三角形の面積', '割合と百分率'],
+                '小学6年生': ['分数のかけ算・わり算', '比とその利用', '円の面積', '対称な図形', '文字を使った式']
+            },
+            '数学': {
+                '中学1年生': ['正の数・負の数', '文字と式', '一元一次方程式', '比例と反比例', '平面図形・空間図形', 'データの活用'],
+                '中学2年生': ['式の計算', '連立方程式', '一次関数', '平行線と合同', '三角形と四角形', '確率'],
+                '中学3年生': ['多項式の展開と因数分解', '平方根', '二次方程式', '関数 y=ax²', '相似な図形', '円周角の定理', '三平方の定理']
+            },
+            '国語': {
+                '小学1年生': ['ひらがな・カタカナ', 'かん字のきほん', 'ことばあそび'],
+                '小学2年生': ['かん字のれんしゅう', '物語の読解', '主語と述語'],
+                '小学3年生': ['漢字の音と訓', '説明文の組み立て', 'ローマ字'],
+                '中学1年生': ['現代文読解', '文法の基礎（品詞）', '故事成語・漢文入門'],
+                '中学2年生': ['用言の活用', '古典の世界（竹取物語・平家物語）', '短歌・俳句'],
+                '中学3年生': ['論理的文章の読解', '和歌・古典文学', '言葉の歴史と変遷']
+            },
+            '理科': {
+                '小学3年生': ['植物のそだちかた', 'チョウの育ち方', '光と音の性質', 'じしゃくのふしぎ'],
+                '小学4年生': ['天気の変化と気温', '月と星の動き', '人の体のつくり', '金属・水・空気のあたたまり方'],
+                '小学5年生': ['植物の発芽と成長', 'メダカのたん生', '台風と天気の変化', 'もののとけ方', '電磁石のはたらき'],
+                '小学6年生': ['ものの燃え方と空気', 'ヒトや動物の体', '植物の養分と水', '水溶液の性質', 'てこの規則性', '地層と火山'],
+                '中学1年生': ['植物の生活と種類', '身の回りの物質と気体', '光・音・力', '大地の成り立ちと地震'],
+                '中学2年生': ['化学変化と原子・分子', '動物の生活と生物の変遷', '天気とその変化', '電流と磁界'],
+                '中学3年生': ['化学変化とイオン・酸とアルカリ', '生命の連続性・生殖', '物体の運動と力学的エネルギー', '地球と宇宙']
+            },
+            '英語': {
+                '小学5年生': ['アルファベット', '身の回りの単語', '簡単な自己紹介'],
+                '小学6年生': ['日課や季節の表現', '過去の出来事', '中学校の行事案内'],
+                '中学1年生': ['be動詞と一般動詞', '助動詞 can', '複数形・人称代名詞', '現在進行形', '疑問詞 (what/where/when)'],
+                '中学2年生': ['過去形・過去進行形', '未来の表現 (will / be going to)', '助動詞 (must/may/should)', '不定詞・動名詞', '比較表現'],
+                '中学3年生': ['受動態', '現在完了形', '関係代名詞', '間接疑問文', '分詞の後置修飾']
+            },
+            '社会': {
+                '小学3年生': ['わたしたちのまち', 'はたらく人とくらし'],
+                '小学4年生': ['水やごみの処理', '地域の安全を守る', '都道府県の特色'],
+                '小学5年生': ['日本の地形と気候', '米づくりと農業', '水産業と工業生産'],
+                '小学6年生': ['日本の歴史（古代〜近代）', '政治のしくみと日本国憲法', '国際社会と日本'],
+                '中学1年生': ['世界の諸地域（アジア・ヨーロッパ等）', '古代文明〜中世の日本と世界'],
+                '中学2年生': ['日本の諸地域（地理）', '近世〜近代の日本と世界'],
+                '中学3年生': ['現代社会と日本国憲法', '政治の仕組み', '市場経済と暮らし', '国際社会と平和']
+            }
+        };
+
+        let MATERIAL_DATA = [];
+        let currentTab = 'elementary';
+        let activeSubjectFilter = null; 
+        let activeUnitFilter = null; 
+        let isLoaded = false; 
+        let pdfCarouselCurrentPage = 1;
+        let pdfCarouselTotalPages = 1;
+
+        let userStats = {
+            viewCount: 0,
+            views: [], 
+            favMaterials: [], 
+            favVideos: [], 
+            learningDays: [], 
+            learningSeconds: 0
+        };
+
+        let userSettings = {
+            registered: false,
+            schoolType: 'elementary',
+            grade: '小学1年生',
+            birthdate: '',
+            tamabenId: ''
+        };
+
+        function handleUserMenu() {
+            navigate('#mypage');
+        }
+
+        function saveSettingsToStorage() {
+            localStorage.setItem('tamaben_user_settings', JSON.stringify(userSettings));
+            updateHeaderGradeBadge();
+            renderPopularUnits();
+        }
+
+        function loadSettingsFromStorage() {
+            const s = localStorage.getItem('tamaben_user_settings');
+            if (s) {
+                try {
+                    const parsed = JSON.parse(s);
+                    userSettings = Object.assign(userSettings, parsed);
+                } catch(e) {}
+            }
+            updateHeaderGradeBadge();
+            renderPopularUnits();
+        }
+
+        function updateHeaderGradeBadge() {
+            const badge = document.getElementById('grade-badge');
+            const label = document.getElementById('user-grade-label');
+            if (badge && label) {
+                if (userSettings.grade) {
+                    label.textContent = userSettings.grade;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function calculateGradeFromBirthdate(birthdateStr) {
+            if (!birthdateStr) return '';
+            const b = new Date(birthdateStr);
+            if (isNaN(b.getTime())) return '';
+            const today = new Date();
+            let fiscalYear = today.getFullYear();
+            if (today.getMonth() < 3) fiscalYear--; // 1〜3月は前年度扱い
+
+            const isEarlyBorn = (b.getMonth() < 3) || (b.getMonth() === 3 && b.getDate() === 1);
+            const cohortBirthYear = isEarlyBorn ? b.getFullYear() - 1 : b.getFullYear();
+            const diff = fiscalYear - cohortBirthYear;
+            const map = {
+                7: '小学1年生',
+                8: '小学2年生',
+                9: '小学3年生',
+                10: '小学4年生',
+                11: '小学5年生',
+                12: '小学6年生',
+                13: '中学1年生',
+                14: '中学2年生',
+                15: '中学3年生',
+                16: '高校1年生',
+                17: '高校2年生',
+                18: '高校3年生'
+            };
+            if (diff < 7) return '小学1年生';
+            if (diff > 18) return '高校3年生';
+            return map[diff] || '';
+        }
+
+        function handleBirthdateChange() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            const noteEl = document.getElementById('mypage-calc-note');
+            if (!bInput || !gSelect) return;
+            const calculated = calculateGradeFromBirthdate(bInput.value);
+            if (calculated) {
+                for (let i = 0; i < gSelect.options.length; i++) {
+                    if (gSelect.options[i].value === calculated) {
+                        gSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                if (noteEl) {
+                    noteEl.textContent = `生年月日から「${calculated}」を自動判定しました`;
+                    noteEl.classList.remove('hidden');
+                }
+            } else if (noteEl) {
+                noteEl.classList.add('hidden');
+            }
+        }
+
+        function handleGradeSelectChange() {
+            const noteEl = document.getElementById('mypage-calc-note');
+            if (noteEl) noteEl.classList.add('hidden');
+        }
+
+        function saveMyPageSettings() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            if (!gSelect) return;
+            
+            userSettings.grade = gSelect.value || '小学1年生';
+            userSettings.birthdate = bInput ? bInput.value : '';
+            userSettings.registered = true;
+            
+            saveSettingsToStorage();
+            
+            const toast = document.getElementById('mypage-save-toast');
+            if (toast) {
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            }
+            renderMyPage();
+        }
+
+        function toggleBookmark(id) {
+            if (!userStats.favMaterials) userStats.favMaterials = [];
+            const idx = userStats.favMaterials.indexOf(id);
+            if (idx > -1) {
+                userStats.favMaterials.splice(idx, 1);
+            } else {
+                userStats.favMaterials.push(id);
+            }
+            saveStatsToStorage();
+            const hash = window.location.hash || '';
+            if (hash.startsWith('#detail-')) {
+                const item = MATERIAL_DATA.find(m => String(m.id) === String(id));
+                if (item) {
+                    const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    openDetail(item, hasAny);
+                    const bIcon = document.querySelector('#detail-content [data-lucide="bookmark"]');
+                    if (bIcon) bIcon.classList.add('bookmark-pop');
+                }
+            } else if (hash === '#mypage') {
+                renderMyPage();
+            }
+        }
+
+        function renderMyPage() {
+            const bInput = document.getElementById('mypage-birthdate');
+            const gSelect = document.getElementById('mypage-grade');
+            const curGradeLabel = document.getElementById('mypage-current-grade-label');
+            const recGradeLabel = document.getElementById('mypage-rec-grade-label');
+            
+            if (bInput && userSettings.birthdate) bInput.value = userSettings.birthdate;
+            if (gSelect && userSettings.grade) gSelect.value = userSettings.grade;
+            if (curGradeLabel) curGradeLabel.textContent = userSettings.grade || '未設定';
+            if (recGradeLabel) recGradeLabel.textContent = userSettings.grade ? `${userSettings.grade}向け` : '全学年向け';
+
+            // 「あなたにおすすめの教材」の描画（今ある公開中・利用可能な教材の中からおすすめ）
+            const recGrid = document.getElementById('mypage-recommended-grid');
+            if (recGrid) {
+                recGrid.innerHTML = "";
+                const targetGrade = userSettings.grade;
+
+                // 今ある（公開中・利用可能な）教材プリントを抽出
+                const availableMaterials = MATERIAL_DATA.filter(item => 
+                    (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
+                    (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
+                    (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
+                );
+
+                let recommended = [];
+                let isFallback = false;
+
+                if (targetGrade) {
+                    // 設定学年に合致する、今ある教材
+                    const matched = availableMaterials.filter(m => m.grade === targetGrade);
+                    if (matched.length > 0) {
+                        recommended = matched;
+                    } else {
+                        // 該当学年のプリントが準備中の場合は、今ある公開教材の中からおすすめを表示
+                        recommended = availableMaterials.slice(0, 4);
+                        isFallback = true;
+                    }
+                } else {
+                    // 学年未設定時も今ある公開教材の中からおすすめを表示
+                    recommended = availableMaterials.slice(0, 4);
+                }
+
+                if (recGradeLabel) {
+                    if (targetGrade) {
+                        recGradeLabel.textContent = isFallback ? `${targetGrade}（今あるおすすめ）` : `${targetGrade}向け`;
+                    } else {
+                        recGradeLabel.textContent = '今あるおすすめプリント';
+                    }
+                }
+
+                if (recommended.length === 0) {
+                    recGrid.innerHTML = `
+                        <div class="col-span-full py-12 px-6 bg-canvas border border-dashed border-neutral-300 rounded-2xl text-center">
+                            <i data-lucide="book-open" class="w-8 h-8 text-ink-muted mx-auto mb-2 stroke-1"></i>
+                            <p class="text-xs font-bold text-ink mb-1">現在教材プリントを準備中です</p>
+                            <p class="text-[11px] text-ink-muted mb-4">まもなく新しいプリントが追加されます。「教材トップ」から公開中の教材をご覧ください。</p>
+                            <button onclick="navigate('#home')" class="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-xs font-bold hover:bg-neutral-50 shadow-sm">すべての教材を見る</button>
+                        </div>
+                    `;
+                } else {
+                    recommended.forEach((item, index) => {
+                        const card = document.createElement('div');
+                        card.className = `paper-card flex flex-col select-none card-available cursor-pointer group`;
+                        card.innerHTML = `
+                            <div class="a4-viewport relative overflow-hidden flex items-center justify-center bg-canvas">
+                                <div class="w-full h-full p-4 flex flex-col justify-between">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-white border border-neutral-200 text-ink">${item.subject}</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    </div>
+                                    <div class="my-auto py-2">
+                                        <span class="text-[9px] font-bold text-ink-muted block mb-0.5">${item.grade} ${item.unit ? '• ' + item.unit : ''}</span>
+                                        <h4 class="text-xs font-bold text-ink line-clamp-2">${item.title}</h4>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[9px] text-ink-muted pt-2 border-t border-neutral-200">
+                                        <span>A4プリント</span>
+                                        <span class="font-bold text-ink group-hover:translate-x-0.5 transition-transform">詳細 &rarr;</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white border-t border-neutral-100 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-ink truncate">${item.title}</span>
+                                <button onclick="event.stopPropagation(); window.open('${item.pdfBasic}');" class="p-1 rounded hover:bg-neutral-100 text-ink-muted hover:text-ink" title="プリントを開く">
+                                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        `;
+                        card.onclick = () => navigate(`#detail-${item.id}`);
+                        recGrid.appendChild(card);
+                    });
+                }
+            }
+
+            // ブックマーク一覧の描画
+            const favContainer = document.getElementById('mypage-fav-materials');
+            if (favContainer) {
+                favContainer.innerHTML = "";
+                const favItems = (userStats.favMaterials || []).map(id => MATERIAL_DATA.find(m => String(m.id) === String(id))).filter(Boolean);
+                if (favItems.length === 0) {
+                    favContainer.innerHTML = `<p class="text-xs text-ink-muted py-4 text-center">まだブックマークしたプリントはありません。<br>教材詳細画面のブックマークボタンから保存できます。</p>`;
+                } else {
+                    favItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between p-3 bg-canvas rounded-xl border border-neutral-200 hover:border-neutral-300 transition-colors cursor-pointer";
+                        row.onclick = () => navigate(`#detail-${item.id}`);
+                        row.innerHTML = `
+                            <div class="flex items-center gap-2.5 truncate mr-2">
+                                <span class="px-2 py-0.5 bg-white border border-neutral-200 rounded text-[10px] font-bold text-ink shrink-0">${item.subject}</span>
+                                <span class="text-xs font-bold text-ink truncate">${item.title}</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-ink-muted shrink-0"></i>
+                        `;
+                        favContainer.appendChild(row);
+                    });
+                }
+            }
+
+            // 閲覧履歴の描画
+            const recentContainer = document.getElementById('mypage-recent-views');
+            if (recentContainer) {
+                recentContainer.innerHTML = "";
+                const views = (userStats.views || []).slice(-6).reverse();
+                if (views.length === 0) {
+                    recentContainer.innerHTML = `<p class="text-xs text-ink-muted py-4 text-center">最近閲覧したプリントはありません。</p>`;
+                } else {
+                    views.forEach(v => {
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between p-2.5 bg-canvas rounded-lg border border-neutral-200 text-xs";
+                        row.innerHTML = `
+                            <span class="font-bold text-ink truncate mr-2">${v.title}</span>
+                            <span class="text-[10px] text-ink-muted shrink-0">${v.time}</span>
+                        `;
+                        recentContainer.appendChild(row);
+                    });
+                }
+            }
+
             lucide.createIcons();
+        }
+
+        function updateParentsDashboard() {
+            const daysEl = document.getElementById('p-stat-days');
+            const timeEl = document.getElementById('p-stat-time');
+            if (daysEl) daysEl.textContent = (userStats.learningDays && userStats.learningDays.length) ? userStats.learningDays.length : 1;
+            if (timeEl) timeEl.textContent = Math.round((userStats.learningSeconds || 0) / 60);
+
+            const histList = document.getElementById('parents-view-history-list');
+            if (!histList) return;
+            if (!userStats.views || userStats.views.length === 0) {
+                histList.innerHTML = `<p class="text-xs text-ink-muted">直近の閲覧履歴はありません。</p>`;
+            } else {
+                histList.innerHTML = "";
+                userStats.views.slice(-5).reverse().forEach(v => {
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center p-3 bg-canvas rounded-lg border border-neutral-200";
+                    row.innerHTML = `
+                        <span class="font-bold text-xs text-ink">${v.title}</span>
+                        <span class="text-[10px] text-ink-muted">${v.time}</span>
+                    `;
+                    histList.appendChild(row);
+                });
+            }
+        }
+
+        setInterval(() => {
+            userStats.learningSeconds++;
+            if (userStats.learningSeconds % 10 === 0) { 
+                saveStatsToStorage();
+                updateParentsDashboard();
+            }
+        }, 1000);
+
+        // ━━━━━━━━━━━━━━━━━━━━
+        // 外部 data.json とのリアルタイム通信（CORSプリフライト回避・多重パス安全取得）
+        // ━━━━━━━━━━━━━━━━━━━━
+        async function loadMaterials(isSilent = false) {
+            try {
+                // 1. CORSプリフライト（OPTIONSリクエスト）の発生を防ぐためカスタムヘッダーは使わない
+                // 2. 環境差（GitHub Pages、サブディレクトリ、CDN）を吸収するため、安全な複数のURL候補を順に試行
+                // 厳密なベースURL/data.json を生成（現在のオリジンやGitHub PagesのURLを網羅）
+                const originUrl = (window.location.origin && window.location.origin !== 'null') ? `${window.location.origin}/data.json` : '';
+                const currentBaseUrl = (window.location.href && !window.location.href.startsWith('file:')) ? new URL('data.json', window.location.href).href : '';
+
+                const candidateUrls = [...new Set([
+                    originUrl,                                // 厳密な URL/data.json (例: https://tamaben.github.io/data.json)
+                    currentBaseUrl,                           // カレントURL基準の絶対パス
+                    'https://tamaben.github.io/data.json',    // 公開本番ドメインの data.json
+                    '/data.json',                             // ルートパス
+                    'data.json',                              // 相対パス
+                    './data.json'
+                ])].filter(u => u && u.trim() !== '');
+
+                let loadedData = null;
+                let fetchError = null;
+
+                for (const url of candidateUrls) {
+                    try {
+                        const response = await fetch(url, { cache: 'no-cache' });
+                        if (response.ok) {
+                            let text = await response.text();
+                            if (!text || text.trim() === '') continue;
+
+                            let parsed = null;
+                            try {
+                                parsed = JSON.parse(text);
+                            } catch (parseErr) {
+                                // 万が一サーバー上のJSONが途中で切れていた場合の自己修復（末尾のカンマを除去して ] を閉じる）
+                                const trimmed = text.trim();
+                                if (trimmed.startsWith('[') && !trimmed.endsWith(']')) {
+                                    const cleaned = trimmed.replace(/,\s*$/, '') + '\n]';
+                                    try {
+                                        parsed = JSON.parse(cleaned);
+                                        console.warn(`[Tamaben] ${url} の末尾欠損を自己修復して読み込みました`);
+                                    } catch (_) {}
+                                }
+                                if (!parsed) {
+                                    fetchError = parseErr;
+                                    continue;
+                                }
+                            }
+
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                loadedData = parsed;
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        fetchError = err;
+                    }
+                }
+
+                if (loadedData) {
+                    MATERIAL_DATA = loadedData;
+                    try { localStorage.setItem('tamaben_materials_cache', JSON.stringify(loadedData)); } catch(e) {}
+                    if (!isSilent) console.log(`[Tamaben] 外部 data.json から ${loadedData.length} 件のデータを正常に同期しました`);
+                } else {
+                    const cached = localStorage.getItem('tamaben_materials_cache');
+                    if (cached) {
+                        try {
+                            MATERIAL_DATA = JSON.parse(cached);
+                            console.warn('[Tamaben] 外部 data.json 取得エラーのため直前のキャッシュデータを使用します');
+                        } catch(e) {}
+                    }
+                    if (!MATERIAL_DATA || MATERIAL_DATA.length === 0) {
+                        throw fetchError || new Error('data.json の読み込みに失敗しました（404 または CORS制限）');
+                    }
+                }
+            } catch (e) {
+                console.error('[Tamaben] 外部 data.json の接続エラー:', e);
+                // エラー時もサイトが壊れないよう安全に空配列で初期化
+                if (!MATERIAL_DATA) MATERIAL_DATA = [];
+            }
+
+            MATERIAL_DATA.forEach((item, index) => {
+                if (!item.id) {
+                    item.id = `item-${index + 1}`; 
+                }
+                if (!item.unit) {
+                    item.unit = item.title;
+                }
+            });
+
+            isLoaded = true; 
+            buildSubjectChips();
+            syncSearchUnits();
+            renderPopularUnits();
+            
+            // 現在のハッシュURLに応じた画面を描画・ルーティング（初回・更新時共通）
+            handleHashChange(false);
+        }
+
+        // タブフォーカス時にバックグラウンド同期
+        window.addEventListener('focus', () => {
+            loadMaterials(true);
+        });
+
+        // 15秒ごとに外部 data.json と自動同期ポーリング
+        setInterval(() => {
+            loadMaterials(true);
+        }, 15000);
+
+        function getUnitsFor(subject, grade) {
+            let units = [];
+            let targetSub = subject;
+            if (subject === '算数・数学' || subject === '算数 / 数学' || subject === '算数' || subject === '数学') {
+                if (grade && grade.includes('小学')) {
+                    targetSub = '算数';
+                } else if (grade && grade.includes('中学')) {
+                    targetSub = '数学';
+                } else {
+                    targetSub = null;
+                    if (UNIT_MASTER['算数']) {
+                        for (let g in UNIT_MASTER['算数']) units.push(...UNIT_MASTER['算数'][g]);
+                    }
+                    if (UNIT_MASTER['数学']) {
+                        for (let g in UNIT_MASTER['数学']) units.push(...UNIT_MASTER['数学'][g]);
+                    }
+                }
+            }
+
+            if (targetSub && UNIT_MASTER[targetSub]) {
+                const subObj = UNIT_MASTER[targetSub];
+                if (grade && subObj[grade]) {
+                    units = [...subObj[grade]];
+                } else {
+                    for (let g in subObj) units.push(...subObj[g]);
+                }
+            } else if (!targetSub && grade) {
+                for (let s in UNIT_MASTER) {
+                    if (UNIT_MASTER[s][grade]) units.push(...UNIT_MASTER[s][grade]);
+                }
+            } else if (!targetSub && !grade && units.length === 0) {
+                for (let s in UNIT_MASTER) {
+                    for (let g in UNIT_MASTER[s]) units.push(...UNIT_MASTER[s][g]);
+                }
+            }
+
+            return [...new Set(units)];
+        }
+
+        function syncSearchUnits() {
+            const grade = document.getElementById('search-grade').value;
+            const subject = document.getElementById('search-subject').value;
+            const unitSelect = document.getElementById('search-unit');
+            const statusLabel = document.getElementById('unit-sync-status');
+            if (!unitSelect) return;
+
+            const units = getUnitsFor(subject, grade);
+            unitSelect.innerHTML = `<option value="">すべての単元 (${units.length}件)</option>`;
+            
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                unitSelect.appendChild(opt);
+            });
+
+            if (statusLabel) {
+                statusLabel.textContent = (grade || subject) ? '条件に自動連動中' : '全単元';
+            }
+        }
+
+        function updateCatalogUnits() {
+            const unitSelect = document.getElementById('catalog-unit-select');
+            const pillsBar = document.getElementById('catalog-unit-pills-bar');
+            if (!unitSelect) return;
+
+            const units = getUnitsFor(activeSubjectFilter, null);
+
+            unitSelect.innerHTML = `<option value="">すべての単元</option>`;
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                if (activeUnitFilter === u) opt.selected = true;
+                unitSelect.appendChild(opt);
+            });
+
+            if (activeSubjectFilter && units.length > 0 && pillsBar) {
+                pillsBar.classList.remove('hidden');
+                pillsBar.innerHTML = `<span class="text-[10px] font-bold text-ink-muted shrink-0 mr-1">単元:</span>`;
+                
+                const allPill = document.createElement('button');
+                allPill.className = `px-2.5 py-1 text-[11px] font-bold rounded-md shrink-0 transition-colors ${!activeUnitFilter ? 'bg-ink text-white' : 'bg-neutral-100 text-ink-light hover:bg-neutral-200'}`;
+                allPill.textContent = 'すべて';
+                allPill.onclick = () => {
+                    activeUnitFilter = null;
+                    updateCatalogUnits();
+                    renderMaterials();
+                };
+                pillsBar.appendChild(allPill);
+
+                units.slice(0, 8).forEach(u => {
+                    const pill = document.createElement('button');
+                    const isActive = activeUnitFilter === u;
+                    pill.className = `px-2.5 py-1 text-[11px] font-bold rounded-md shrink-0 transition-colors ${isActive ? 'bg-ink text-white' : 'bg-white border border-neutral-200 text-ink-light hover:bg-neutral-50'}`;
+                    pill.textContent = u;
+                    pill.onclick = () => {
+                        activeUnitFilter = u;
+                        updateCatalogUnits();
+                        renderMaterials();
+                    };
+                    pillsBar.appendChild(pill);
+                });
+            } else if (pillsBar) {
+                pillsBar.classList.add('hidden');
+            }
+        }
+
+        function onCatalogUnitChange() {
+            activeUnitFilter = document.getElementById('catalog-unit-select').value || null;
+            updateCatalogUnits();
+            renderMaterials();
+        }
+
+        function renderPopularUnits() {
+            // 今ある（実際に教材PDFが存在・公開されている）教材のみを抽出
+            const availableMaterials = MATERIAL_DATA.filter(item => 
+                (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
+                (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
+                (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
+            );
+
+            if (availableMaterials.length === 0) return;
+
+            const targetGrade = userSettings.grade; // 設定された学年（生年月日から判定または手動選択）
+            let selectedUnits = [];
+
+            if (targetGrade) {
+                // 1. まず現在の学年で今ある単元を優先抽出
+                const sameGradeMaterials = availableMaterials.filter(m => m.grade === targetGrade);
+                sameGradeMaterials.forEach(m => {
+                    if (m.unit && !selectedUnits.includes(m.unit)) {
+                        selectedUnits.push(m.unit);
+                    }
+                });
+
+                // 2. 該当学年の単元だけでは少ない場合、同じ学校区分（小学校/中学校）の今ある単元を補完
+                const isJunior = targetGrade.startsWith('中学');
+                const stageMaterials = availableMaterials.filter(m => isJunior ? m.tab === 'junior' : m.tab === 'elementary');
+                stageMaterials.forEach(m => {
+                    if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 5) {
+                        selectedUnits.push(m.unit);
+                    }
+                });
+            }
+
+            // 3. 学年未設定または不足している場合は、今ある公開教材から代表的な単元を追加
+            availableMaterials.forEach(m => {
+                if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 6) {
+                    selectedUnits.push(m.unit);
+                }
+            });
+
+            // ヒーローセクションの人気単元バーの更新
+            const heroList = document.getElementById('hero-popular-units-list');
+            const heroLabel = document.getElementById('hero-popular-units-label');
+            if (heroList) {
+                heroList.innerHTML = '';
+                if (heroLabel) {
+                    heroLabel.textContent = targetGrade ? `${targetGrade}のおすすめ単元:` : '人気の単元:';
+                }
+                selectedUnits.forEach((unit, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "text-ink-light hover:text-ink font-medium underline decoration-neutral-300 hover:decoration-ink transition-colors";
+                    btn.textContent = unit;
+                    btn.onclick = () => quickSearchByUnit(unit);
+                    heroList.appendChild(btn);
+
+                    if (idx < selectedUnits.length - 1) {
+                        const dot = document.createElement('span');
+                        dot.className = "text-neutral-300";
+                        dot.textContent = "•";
+                        heroList.appendChild(dot);
+                    }
+                });
+            }
+
+            // 検索ページ（#search）の代表単元ボタン群の更新
+            const searchContainer = document.getElementById('popular-units-container');
+            if (searchContainer) {
+                searchContainer.innerHTML = '';
+                selectedUnits.forEach(unit => {
+                    const btn = document.createElement('button');
+                    btn.className = "px-3 py-1.5 bg-canvas border border-neutral-200 hover:border-ink text-xs font-bold rounded-lg text-ink transition-colors flex items-center gap-1.5 active:scale-95";
+                    btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${unit}`;
+                    btn.onclick = () => quickSearchByUnit(unit);
+                    searchContainer.appendChild(btn);
+                });
+            }
+        }
+
+        function quickSearchByUnit(unitName) {
+            // カタログ側の該当タブ・教科・単元を連動させてホームへ遷移
+            const unitItem = MATERIAL_DATA.find(m => m.unit === unitName);
+            if (unitItem && unitItem.tab) {
+                currentTab = unitItem.tab;
+                const elemBtn = document.getElementById('tab-elementary');
+                const jnrBtn = document.getElementById('tab-junior');
+                if (elemBtn) elemBtn.classList.toggle('active', currentTab === 'elementary');
+                if (jnrBtn) jnrBtn.classList.toggle('active', currentTab === 'junior');
+                activeSubjectFilter = unitItem.subject || null;
+                activeUnitFilter = unitName;
+            }
+            navigate('#home');
+            buildSubjectChips();
+            updateCatalogUnits();
+            renderMaterials();
+
+            const catalogEl = document.getElementById('learning-materials-container');
+            if (catalogEl) {
+                catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function quickSearchBySubject(subjectName, schoolType) {
+            if (schoolType) {
+                currentTab = schoolType;
+                document.getElementById('tab-elementary').classList.toggle('active', currentTab === 'elementary');
+                document.getElementById('tab-junior').classList.toggle('active', currentTab === 'junior');
+            }
+            activeSubjectFilter = subjectName;
+            buildSubjectChips();
+            navigate('#home');
+            renderMaterials();
+        }
+
+        function buildSubjectChips() {
+            const chipContainer = document.getElementById('has-material-subjects-chips');
+            if (!chipContainer) return;
+
+            const currentTabMaterials = MATERIAL_DATA.filter(item => item.tab === currentTab);
+            const subjects = [...new Set(currentTabMaterials.map(item => item.subject))];
+            
+            chipContainer.innerHTML = '';
+            
+            const allBtn = document.createElement('button');
+            const isAllActive = !activeSubjectFilter;
+            allBtn.className = `px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors ${isAllActive ? 'bg-ink text-white' : 'bg-white border border-neutral-300 text-ink-light hover:bg-neutral-50'}`;
+            allBtn.textContent = 'すべての教科';
+            allBtn.onclick = () => {
+                activeSubjectFilter = null;
+                activeUnitFilter = null;
+                buildSubjectChips();
+                updateCatalogUnits();
+                renderMaterials();
+            };
+            chipContainer.appendChild(allBtn);
+
+            subjects.forEach(subj => {
+                const btn = document.createElement('button');
+                const isActive = activeSubjectFilter === subj;
+                btn.className = `px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors ${isActive ? 'bg-ink text-white' : 'bg-white border border-neutral-300 text-ink-light hover:bg-neutral-50'}`;
+                btn.textContent = subj;
+                btn.onclick = () => {
+                    activeSubjectFilter = subj;
+                    activeUnitFilter = null;
+                    buildSubjectChips();
+                    updateCatalogUnits();
+                    renderMaterials();
+                };
+                chipContainer.appendChild(btn);
+            });
+
+            updateCatalogUnits();
+        }
+
+        async function renderPDFThumbnail(url, canvasId) {
+            try {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 1.5 });
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                const loader = canvas.parentElement.querySelector('.pdf-loading');
+                if(loader) loader.remove();
+            } catch (error) {
+                const canvas = document.getElementById(canvasId);
+                if(canvas) {
+                    canvas.parentElement.innerHTML = `
+                        <div class="w-full h-full bg-neutral-50 flex flex-col items-center justify-center gap-1 text-ink-subtle p-4">
+                            <i data-lucide="file-text" class="w-6 h-6 stroke-1"></i>
+                            <span class="text-[10px] font-bold">A4 Print</span>
+                        </div>`;
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        function renderMaterials() {
+            const container = document.getElementById('learning-materials-container');
+            if (!container) return;
+            const filterValue = document.getElementById('material-filter').value;
+
+            const filtered = MATERIAL_DATA.filter(item => {
+                const matchTab = item.tab === currentTab;
+                const matchSubjectChip = activeSubjectFilter ? item.subject === activeSubjectFilter : true;
+                const matchUnitChip = activeUnitFilter ? (item.unit === activeUnitFilter || item.title.includes(activeUnitFilter)) : true;
+                
+                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || 
+                                       (item.pdfAdv && item.pdfAdv !== "#") || 
+                                       (item.pdfAns && item.pdfAns !== "#");
+                let matchFilter = true;
+                if (filterValue === 'available') matchFilter = hasAnyMaterial;
+                if (filterValue === 'unavailable') matchFilter = !hasAnyMaterial;
+                return matchTab && matchSubjectChip && matchUnitChip && matchFilter;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs flex flex-col items-center">
+                        <i data-lucide="inbox" class="w-8 h-8 mb-2 stroke-1"></i>
+                        該当する教材プリントがありません。
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = "";
+            filtered.forEach((item, index) => {
+                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                const canvasId = `pdf-thumb-${Date.now()}-${index}`;
+                const card = document.createElement('div');
+                card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
+                card.style.animationDelay = `${Math.min(index * 0.035, 0.35)}s`;
+                
+                card.innerHTML = `
+                    <div class="a4-viewport relative overflow-hidden flex items-center justify-center ${!hasAnyMaterial ? 'bg-neutral-100/70' : ''}">
+                        <i data-lucide="loader-2" class="w-5 h-5 pdf-loading animate-spin text-ink-subtle absolute"></i>
+                        <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
+                        ${hasAnyMaterial ? `
+                            <span class="absolute top-2 right-2 bg-neutral-900 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm z-10 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 印刷可
+                            </span>
+                        ` : `
+                            <span class="absolute top-2 right-2 bg-neutral-200/90 text-neutral-600 text-[9px] font-bold px-2 py-0.5 rounded z-10 flex items-center gap-1 border border-neutral-300">
+                                <i data-lucide="lock" class="w-2.5 h-2.5"></i> 準備中
+                            </span>
+                        `}
+                        ${hasAnyMaterial ? `
+                            <div class="hidden md:flex absolute inset-0 bg-neutral-900/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2 p-4">
+                                <button onclick="event.stopPropagation(); window.open('${item.pdfBasic}');" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
+                                    <i data-lucide="printer" class="w-3.5 h-3.5"></i> 開く・印刷
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="p-3.5 flex flex-col flex-grow justify-between ${hasAnyMaterial ? 'bg-white' : 'bg-neutral-50/50'}">
+                        <div>
+                            <div class="flex items-center gap-1.5 mb-1.5 text-[10px] font-bold text-ink-muted flex-wrap">
+                                <span class="text-ink font-bold">${item.subject}</span>
+                                <span>•</span>
+                                <span>${item.grade}</span>
+                                ${item.unit ? `<span class="bg-neutral-100 px-1.5 py-0.5 rounded text-[9px] text-ink-light">${item.unit}</span>` : ''}
+                            </div>
+                            <h3 class="text-xs font-bold ${hasAnyMaterial ? 'text-ink group-hover:text-neutral-700' : 'text-neutral-500'} leading-snug line-clamp-2 transition-colors">
+                                ${item.title}
+                            </h3>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px]">
+                            <span class="${hasAnyMaterial ? 'text-ink-subtle font-medium' : 'text-neutral-400 font-bold'}">
+                                ${hasAnyMaterial ? '解答・解説付き' : '準備中（選択不可）'}
+                            </span>
+                            ${hasAnyMaterial ? `
+                                <span class="font-bold text-ink group-hover:translate-x-0.5 transition-transform">
+                                    詳細 &rarr;
+                                </span>
+                            ` : `
+                                <span class="text-neutral-400 font-bold flex items-center gap-0.5">
+                                    未公開
+                                </span>
+                            `}
+                        </div>
+                    </div>
+                `;
+
+                // 文字教材がある場合のみクリックして詳細画面へ遷移可能にする
+                if (hasAnyMaterial) {
+                    card.onclick = () => navigate(`#detail-${item.id}`);
+                }
+                container.appendChild(card);
+
+                if (item.pdfBasic && item.pdfBasic !== "#") {
+                    renderPDFThumbnail(item.pdfBasic, canvasId);
+                } else {
+                    const canvasEl = document.getElementById(canvasId);
+                    if (canvasEl && canvasEl.parentElement) {
+                        canvasEl.parentElement.innerHTML = `
+                            <div class="w-full h-full bg-neutral-50 flex flex-col items-center justify-center gap-1 text-neutral-400 p-4">
+                                <i data-lucide="clock" class="w-5 h-5 stroke-1"></i>
+                                <span class="text-[10px] font-bold">作成準備中</span>
+                            </div>`;
+                    }
+                }
+            });
+            lucide.createIcons();
+        }
+
+        async function loadFullPDFCarousel(url) {
+            const track = document.getElementById('pdf-carousel-track');
+            if(!track) return;
+            track.innerHTML = `<div class="min-w-full flex justify-center items-center py-24 text-ink"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>`;
+            lucide.createIcons();
+
+            if (window.pdfjsLib && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                const totalPages = pdf.numPages;
+                pdfCarouselTotalPages = totalPages;
+                pdfCarouselCurrentPage = 1;
+                
+                track.innerHTML = "";
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    const slide = document.createElement('div');
+                    slide.className = "min-w-full flex justify-center items-center p-2 sm:p-4 select-none";
+                    
+                    const paper = document.createElement('div');
+                    paper.className = "paper-card w-full max-w-sm aspect-[1/1.414] relative bg-white overflow-hidden";
+                    
+                    const canvasId = `detail-pdf-canvas-${pageNum}`;
+                    paper.innerHTML = `
+                        <i data-lucide="loader-2" class="w-8 h-8 pdf-loading animate-spin absolute text-neutral-400 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"></i>
+                        <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
+                        <div class="absolute bottom-3 right-3 bg-neutral-900/80 text-white text-[10px] px-2.5 py-0.5 rounded font-bold backdrop-blur-sm z-20">${pageNum} / ${totalPages}</div>
+                    `;
+                    slide.appendChild(paper);
+                    track.appendChild(slide);
+                    
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 2.0 });
+                    const canvas = document.getElementById(canvasId);
+                    if(canvas) {
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                        const l = canvas.parentElement.querySelector('.pdf-loading');
+                        if (l) l.remove();
+                    }
+                }
+                updateCarouselPosition();
+                initSwipeGestures();
+            } catch(e) {
+                console.warn('[Tamaben] PDF preview load failed:', e);
+                track.innerHTML = `
+                    <div class="w-full max-w-sm aspect-[1/1.414] bg-canvas border border-dashed border-neutral-300 rounded-xl flex flex-col items-center justify-center p-6 text-center text-ink-muted">
+                        <i data-lucide="file-text" class="w-10 h-10 mb-2 stroke-1"></i>
+                        <span class="font-bold text-xs">プリント準備中です。<br>公開をお待ちください。</span>
+                    </div>`;
+                lucide.createIcons();
+            }
+        }
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        function initSwipeGestures() {
+            const track = document.getElementById('pdf-carousel-track');
+            if(!track) return;
+            track.ontouchstart = (e) => { touchStartX = e.changedTouches[0].screenX; };
+            track.ontouchend = (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchStartX - touchEndX > 40) nextPdfPage();
+                else if (touchEndX - touchStartX > 40) prevPdfPage();
+            };
+        }
+
+        function prevPdfPage() {
+            if (pdfCarouselCurrentPage > 1) {
+                pdfCarouselCurrentPage--;
+                updateCarouselPosition();
+            }
+        }
+        function nextPdfPage() {
+            if (pdfCarouselCurrentPage < pdfCarouselTotalPages) {
+                pdfCarouselCurrentPage++;
+                updateCarouselPosition();
+            }
+        }
+        function updateCarouselPosition() {
+            const track = document.getElementById('pdf-carousel-track');
+            const indicator = document.getElementById('pdf-carousel-indicator');
+            if (track) track.style.transform = `translateX(${-(pdfCarouselCurrentPage - 1) * 100}%)`;
+            if (indicator) {
+                indicator.innerHTML = `<span class="text-xs font-bold text-ink">${pdfCarouselCurrentPage} <span class="text-neutral-400">/ ${pdfCarouselTotalPages} ページ</span></span>`;
+            }
+        }
+
+        function openDetail(item, hasAnyMaterial) {
+            recordViewHistory(item.title);
+            const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
+            const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
+            const hasAns = !!item.pdfAns && item.pdfAns !== "#";
+            const isFav = userStats.favMaterials.includes(item.id);
+            const isVideoFav = userStats.favVideos.includes(item.id);
+
+            document.getElementById('detail-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                    <div class="md:col-span-6 flex flex-col items-center">
+                        <div class="relative w-full max-w-sm overflow-hidden rounded-xl bg-canvas p-1 border border-neutral-200">
+                            <div id="pdf-carousel-track" class="carousel-track flex transition-transform duration-300 ease-out"></div>
+                            <button onclick="prevPdfPage()" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 text-ink rounded-full flex items-center justify-center shadow border border-neutral-200 active:scale-90">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="nextPdfPage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 text-ink rounded-full flex items-center justify-center shadow border border-neutral-200 active:scale-90">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="mt-3 flex flex-col items-center gap-1">
+                            <div id="pdf-carousel-indicator"></div>
+                            <span class="text-[10px] text-ink-muted">← 左右スワイプでページをめくれます →</span>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-6 flex flex-col">
+                        <div class="flex items-center justify-between gap-2 mb-3 flex-wrap">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2.5 py-1 bg-neutral-100 text-ink text-xs font-bold rounded border border-neutral-200">
+                                    ${item.grade} • ${item.subject}
+                                </span>
+                                ${item.unit ? `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded border border-emerald-200">単元: ${item.unit}</span>` : ''}
+                            </div>
+                            <button onclick="toggleBookmark('${item.id}')" class="px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 ${isFav ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-white border-neutral-200 text-ink-muted hover:text-ink'}">
+                                <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isFav ? 'fill-amber-500 text-amber-500' : ''}"></i>
+                                <span>${isFav ? '保存済み' : 'ブックマーク'}</span>
+                            </button>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
+
+                        <div class="space-y-3 max-w-md w-full">
+                            <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="w-full py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                <span class="flex items-center gap-2.5"><i data-lucide="printer" class="w-4 h-4"></i> 基本問題を印刷・開く</span>
+                                <span class="text-[10px] opacity-75">PDF</span>
+                            </button>
+                            <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="w-full py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4"></i> 練習問題に挑戦</span>
+                                <span class="text-[10px] opacity-75">${hasAdv ? 'PDF' : '準備中'}</span>
+                            </button>
+                            <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="w-full py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${hasAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                <span class="flex items-center gap-2.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> 解答・くわしい解説</span>
+                                <span class="text-[10px] text-ink-muted">${hasAns ? 'PDF' : '準備中'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            if(hasBasic) loadFullPDFCarousel(item.pdfBasic);
+            lucide.createIcons();
+        }
+
+        function recordViewHistory(title) {
+            const now = new Date();
+            userStats.views.push({ title: title, time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` });
+            if (userStats.views.length > 50) userStats.views.shift(); 
+            saveStatsToStorage();
+        }
+        function recordDay() {
+            const todayStr = (new Date()).toISOString().split('T')[0];
+            if (!userStats.learningDays.includes(todayStr)) {
+                userStats.learningDays.push(todayStr);
+                saveStatsToStorage();
+            }
+        }
+        function saveStatsToStorage() { localStorage.setItem('tamaben_user_stats', JSON.stringify(userStats)); }
+        function loadStatsFromStorage() {
+            const s = localStorage.getItem('tamaben_user_stats');
+            if (s) userStats = JSON.parse(s);
+            recordDay();
+            updateParentsDashboard();
+        }
+
+        async function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
+            document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
+            activeSubjectFilter = null; 
+            activeUnitFilter = null; 
+            await loadMaterials(true); // タブ切替時にも外部 data.json と同期
+            buildSubjectChips();
+            renderMaterials();
+        }
+
+        function switchSubjectCategory(catId) {
+            document.querySelectorAll('.subj-cat-tab').forEach(b => {
+                b.classList.remove('active', 'bg-ink', 'text-white');
+                b.classList.add('bg-white', 'text-ink');
+            });
+            event.target.classList.add('active', 'bg-ink', 'text-white');
+            document.querySelectorAll('.scat-block').forEach(b => b.classList.add('hidden'));
+            const el = document.getElementById(`scat-${catId}`);
+            if(el) el.classList.remove('hidden');
+        }
+
+        function quickSearch(k) {
+            document.getElementById('search-keyword').value = k;
+            executeSearch();
+        }
+
+        async function executeSearch() {
+            // 検索実行直前に常に最新の data.json と同期
+            await loadMaterials(true);
+
+            const grade = document.getElementById('search-grade').value;
+            const subject = document.getElementById('search-subject').value;
+            const unit = document.getElementById('search-unit').value;
+            const rawKeyword = document.getElementById('search-keyword').value.trim();
+            const keyword = rawKeyword.toLowerCase();
+            
+            let queryText = rawKeyword || unit || subject || grade || 'すべてのプリント';
+            document.getElementById('search-results-title').textContent = `「${queryText}」の検索結果`;
+            
+            const resultsGrid = document.getElementById('search-results-grid');
+            if (!resultsGrid) return;
+
+            // URLやパスからファイル名・ID（chu1-su1 等）を抽出
+            const cleanKey = keyword.replace(/^https?:\/\/[^\/]+\//, '').replace(/^print\//, '').replace(/\.pdf$/, '').trim();
+
+            const filtered = MATERIAL_DATA.filter(item => {
+                // 学年マッチ
+                const matchGrade = grade ? item.grade === grade : true;
+
+                // 教科マッチ（算数・数学のエイリアスを完全吸収）
+                const matchSubject = (() => {
+                    if (!subject) return true;
+                    if (subject === '算数・数学' || subject === '算数 / 数学' || subject === '算数' || subject === '数学') {
+                        return item.subject === '算数' || item.subject === '数学';
+                    }
+                    return item.subject.includes(subject);
+                })();
+
+                // 単元マッチ
+                const matchUnit = unit ? (item.unit === unit || item.title.includes(unit)) : true;
+
+                // キーワードマッチ（タイトル、教科、単元、ID、PDFパス、URL、タグすべてを網羅）
+                const matchKeyword = (() => {
+                    if (!keyword) return true;
+
+                    // 1. IDおよびクリーンIDマッチ（chu1-su1 等）
+                    if (item.id && (item.id.toLowerCase().includes(keyword) || (cleanKey && item.id.toLowerCase().includes(cleanKey)))) return true;
+
+                    // 2. PDFパスおよびURLマッチ
+                    if (item.pdfBasic && (
+                        item.pdfBasic.toLowerCase().includes(keyword) || 
+                        keyword.includes(item.pdfBasic.toLowerCase()) || 
+                        (cleanKey && item.pdfBasic.toLowerCase().includes(cleanKey))
+                    )) return true;
+                    if (item.pdfAns && (
+                        item.pdfAns.toLowerCase().includes(keyword) || 
+                        keyword.includes(item.pdfAns.toLowerCase())
+                    )) return true;
+
+                    // 3. タイトル・単元・教科
+                    if (item.title && item.title.toLowerCase().includes(keyword)) return true;
+                    if (item.unit && item.unit.toLowerCase().includes(keyword)) return true;
+                    if (item.subject && item.subject.toLowerCase().includes(keyword)) return true;
+
+                    // 4. タグマッチ
+                    if (item.tags && Array.isArray(item.tags)) {
+                        if (item.tags.some(t => t.toLowerCase().includes(keyword) || (cleanKey && t.toLowerCase().includes(cleanKey)) || keyword.includes(t.toLowerCase()))) {
+                            return true;
+                        }
+                    }
+
+                    // 5. 複数単語トークン分解
+                    const tokens = keyword.split(/[\s,、　・/]+/);
+                    if (tokens.length > 1) {
+                        return tokens.every(token => {
+                            return (item.title && item.title.toLowerCase().includes(token)) ||
+                                   (item.grade && item.grade.toLowerCase().includes(token)) ||
+                                   (item.subject && item.subject.toLowerCase().includes(token)) ||
+                                   (item.unit && item.unit.toLowerCase().includes(token)) ||
+                                   (item.id && item.id.toLowerCase().includes(token)) ||
+                                   (item.tags && item.tags.some(t => t.toLowerCase().includes(token)));
+                        });
+                    }
+
+                    return false;
+                })();
+
+                return matchGrade && matchSubject && matchUnit && matchKeyword;
+            });
+
+            resultsGrid.innerHTML = "";
+            if (filtered.length === 0) {
+                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs">条件に一致する教材プリントが見つかりませんでした。<br>キーワードを変更して再度お試しください。</div>`;
+            } else {
+                filtered.forEach((item, index) => {
+                    const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
+                    const card = document.createElement('div');
+                    card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
+                    card.style.animationDelay = `${Math.min(index * 0.035, 0.35)}s`;
+                    card.innerHTML = `
+                        <div class="a4-viewport relative overflow-hidden flex items-center justify-center ${!hasAnyMaterial ? 'bg-neutral-100/70' : ''}">
+                            <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
+                            ${hasAnyMaterial ? `
+                                <span class="absolute top-2 right-2 bg-neutral-900 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm z-10 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 印刷可
+                                </span>
+                            ` : `
+                                <span class="absolute top-2 right-2 bg-neutral-200/90 text-neutral-600 text-[9px] font-bold px-2 py-0.5 rounded z-10 flex items-center gap-1 border border-neutral-300">
+                                    <i data-lucide="lock" class="w-2.5 h-2.5"></i> 準備中
+                                </span>
+                            `}
+                        </div>
+                        <div class="p-3.5 flex flex-col flex-grow justify-between ${hasAnyMaterial ? 'bg-white' : 'bg-neutral-50/50'}">
+                            <div>
+                                <div class="flex items-center gap-1 text-[10px] font-bold text-ink-muted mb-0.5">
+                                    <span>${item.subject} • ${item.grade}</span>
+                                </div>
+                                <h3 class="text-xs font-bold ${hasAnyMaterial ? 'text-ink' : 'text-neutral-500'} line-clamp-2">${item.title}</h3>
+                                ${item.unit ? `<span class="inline-block mt-2 px-1.5 py-0.5 bg-neutral-100 rounded text-[9px] font-medium text-ink-muted">${item.unit}</span>` : ''}
+                            </div>
+                            <div class="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-between text-[10px]">
+                                <span class="${hasAnyMaterial ? 'text-ink-subtle' : 'text-neutral-400 font-bold'}">
+                                    ${hasAnyMaterial ? '詳細 &rarr;' : '準備中（選択不可）'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+
+                    if (hasAnyMaterial) {
+                        card.onclick = () => navigate(`#detail-${item.id}`);
+                    }
+                    resultsGrid.appendChild(card);
+                    if (item.pdfBasic && item.pdfBasic !== "#") renderPDFThumbnail(item.pdfBasic, canvasId);
+                });
+            }
+            navigate('#results');
+            lucide.createIcons();
+        }
+
+        function navigate(hash) { window.location.hash = hash; }
+
+        function updateNavActiveState(hash) {
+            // デスクトップナビのアクティブ状態
+            document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black'));
+            let activeId = 'nav-btn-home';
+            if (hash === '#subjects') activeId = 'nav-btn-subjects';
+            else if (hash === '#search' || hash === '#results') activeId = 'nav-btn-search';
+            else if (hash === '#users' || hash === '#parents') activeId = 'nav-btn-users';
+            
+            const activeNav = document.getElementById(activeId);
+            if (activeNav) activeNav.classList.add('bg-neutral-100', 'text-ink', 'font-black');
+
+            // ボトムナビのアクティブ状態
+            document.querySelectorAll('.bnav-item-btn').forEach(b => {
+                b.classList.remove('text-ink');
+                b.classList.add('text-ink-muted');
+                const icon = b.querySelector('i');
+                if (icon) icon.classList.remove('scale-110');
+            });
+            let bActiveId = 'bnav-btn-home';
+            if (hash === '#subjects') bActiveId = 'bnav-btn-subjects';
+            else if (hash === '#search' || hash === '#results') bActiveId = 'bnav-btn-search';
+            else if (hash === '#mypage' || hash === '#register') bActiveId = 'bnav-btn-mypage';
+            
+            const activeBNav = document.getElementById(bActiveId);
+            if (activeBNav) {
+                activeBNav.classList.remove('text-ink-muted');
+                activeBNav.classList.add('text-ink');
+                const icon = activeBNav.querySelector('i');
+                if (icon) icon.classList.add('scale-110');
+            }
+        }
+
+        async function handleHashChange(shouldReloadData = false) {
+            if (!isLoaded) {
+                // 初回読み込み完了前は loadMaterials 完了時の自動呼び出しを待機
+                return;
+            }
+
+            if (shouldReloadData) {
+                // 画面遷移の即応性を損なわないようバックグラウンドで最新同期
+                loadMaterials(true);
+            }
+
+            const hash = window.location.hash || '#home';
+            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-users-info', 'view-parents-report'];
+
+            const updateDOM = () => {
+                views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
+
+                if (hash.startsWith('#detail-')) {
+                    const id = decodeURIComponent(hash.replace('#detail-', ''));
+                    const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
+                    if (item) {
+                        const detailEl = document.getElementById('view-detail');
+                        if (detailEl) detailEl.classList.remove('hidden');
+                        const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                        openDetail(item, hasAny);
+                    } else {
+                        // IDが見つからない場合のみホームへフォールバック
+                        navigate('#home');
+                    }
+                } else {
+                    let targetView = 'view-home';
+                    if (hash === '#home' || hash === '') {
+                        targetView = 'view-home';
+                        renderMaterials();
+                    } else if (hash === '#search') {
+                        targetView = 'view-search';
+                    } else if (hash === '#results') {
+                        targetView = 'view-search-results';
+                    } else if (hash === '#register' || hash === '#mypage') {
+                        targetView = 'view-mypage';
+                        renderMyPage();
+                    } else if (hash === '#subjects') {
+                        targetView = 'view-subjects';
+                    } else if (hash === '#users' || hash === '#parents') {
+                        targetView = 'view-users-info';
+                        updateParentsDashboard();
+                    }
+                    const targetEl = document.getElementById(targetView);
+                    if (targetEl) targetEl.classList.remove('hidden');
+                }
+                updateNavActiveState(hash);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // ブラウザの View Transition API が利用可能な場合はシームレスな画面遷移を実行
+            if (document.startViewTransition && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+                document.startViewTransition(updateDOM);
+            } else {
+                updateDOM();
+            }
+        }
+
+        window.addEventListener('hashchange', () => handleHashChange(true));
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.pdfjsLib) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+            lucide.createIcons();
+            loadStatsFromStorage();
+            loadSettingsFromStorage();
+            await loadMaterials();
         });
     </script>
 </body>
