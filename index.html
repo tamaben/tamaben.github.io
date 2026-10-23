@@ -857,11 +857,8 @@
             syncSearchUnits();
             renderPopularUnits();
             
-            // 画面が現在開いているビューに応じて再描画
-            const hash = window.location.hash || '#home';
-            if (hash === '#home' || hash === '') {
-                renderMaterials();
-            }
+            // 現在のハッシュURLに応じた画面を描画・ルーティング（初回・更新時共通）
+            handleHashChange(false);
         }
 
         // タブフォーカス時にバックグラウンド同期
@@ -1200,6 +1197,10 @@
             track.innerHTML = `<div class="min-w-full flex justify-center items-center py-24 text-ink"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>`;
             lucide.createIcons();
 
+            if (window.pdfjsLib && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+
             try {
                 const pdf = await pdfjsLib.getDocument(url).promise;
                 const totalPages = pdf.numPages;
@@ -1237,6 +1238,7 @@
                 updateCarouselPosition();
                 initSwipeGestures();
             } catch(e) {
+                console.warn('[Tamaben] PDF preview load failed:', e);
                 track.innerHTML = `
                     <div class="w-full max-w-sm aspect-[1/1.414] bg-canvas border border-dashed border-neutral-300 rounded-xl flex flex-col items-center justify-center p-6 text-center text-ink-muted">
                         <i data-lucide="file-text" class="w-10 h-10 mb-2 stroke-1"></i>
@@ -1519,12 +1521,17 @@
 
         function navigate(hash) { window.location.hash = hash; }
 
-        async function handleHashChange() {
-            // ページ遷移時にも外部 data.json と常に最新同期
-            if (isLoaded) {
-                await loadMaterials(true);
+        async function handleHashChange(shouldReloadData = false) {
+            if (!isLoaded) {
+                // 初回読み込み完了前は loadMaterials 完了時の自動呼び出しを待機
+                return;
             }
-            if (!isLoaded) return; 
+
+            if (shouldReloadData) {
+                // 画面遷移の即応性を損なわないようバックグラウンドで最新同期
+                loadMaterials(true);
+            }
+
             const hash = window.location.hash || '#home';
             const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-parents-report'];
             views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
@@ -1533,18 +1540,30 @@
                 const id = decodeURIComponent(hash.replace('#detail-', ''));
                 const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
                 if (item) {
-                    document.getElementById('view-detail').classList.remove('hidden');
+                    const detailEl = document.getElementById('view-detail');
+                    if (detailEl) detailEl.classList.remove('hidden');
                     const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
                     openDetail(item, hasAny);
-                } else { navigate('#home'); }
+                } else {
+                    // IDが見つからない場合のみホームへフォールバック
+                    navigate('#home');
+                }
             } else {
                 let targetView = 'view-home';
-                if (hash === '#search') targetView = 'view-search';
-                else if (hash === '#results') targetView = 'view-search-results';
-                else if (hash === '#register') targetView = 'view-register';
-                else if (hash === '#mypage') targetView = 'view-mypage';
-                else if (hash === '#subjects') targetView = 'view-subjects';
-                else if (hash === '#parents') {
+                if (hash === '#home' || hash === '') {
+                    targetView = 'view-home';
+                    renderMaterials();
+                } else if (hash === '#search') {
+                    targetView = 'view-search';
+                } else if (hash === '#results') {
+                    targetView = 'view-search-results';
+                } else if (hash === '#register') {
+                    targetView = 'view-register';
+                } else if (hash === '#mypage') {
+                    targetView = 'view-mypage';
+                } else if (hash === '#subjects') {
+                    targetView = 'view-subjects';
+                } else if (hash === '#parents') {
                     targetView = 'view-parents-report';
                     updateParentsDashboard();
                 }
@@ -1554,11 +1573,14 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.addEventListener('hashchange', handleHashChange);
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('hashchange', () => handleHashChange(true));
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.pdfjsLib) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
             lucide.createIcons();
             loadStatsFromStorage();
-            loadMaterials();
+            await loadMaterials();
         });
     </script>
 </body>
