@@ -208,8 +208,13 @@
                 <button onclick="navigate('#parents')" class="px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-colors">保護者の方へ</button>
             </nav>
 
-            <!-- 右側アクション（学年バッジ・マイページ） -->
+            <!-- 右側アクション（リアルタイム同期バッジ・学年バッジ・マイページ） -->
             <div class="flex items-center gap-3">
+                <!-- 外部 data.json リアルタイム同期インジケーター -->
+                <div id="data-sync-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-neutral-100 text-neutral-600 border border-neutral-200" title="外部 data.json と常時接続中">
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-400"></span> 接続中...
+                </div>
+
                 <div id="grade-badge" class="hidden sm:flex items-center gap-2 border border-neutral-200 px-3 py-1 rounded-full bg-neutral-50">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span id="user-grade-label" class="text-xs font-bold text-ink">小学1年生</span>
@@ -739,11 +744,12 @@
         }, 1000);
 
         // ━━━━━━━━━━━━━━━━━━━━
-        // 外部 data.json とのリアルタイム通信（HTML内にはデータを持たない）
+        // 外部 data.json とのリアルタイム通信（常に最新を取得）
         // ━━━━━━━━━━━━━━━━━━━━
         async function loadMaterials(isSilent = false) {
+            const syncBadge = document.getElementById('data-sync-badge');
             try {
-                // キャッシュを強制回避するタイムスタンプとno-store指定
+                // キャッシュを一切使わせないタイムスタンプとヘッダー
                 const timestamp = Date.now();
                 const response = await fetch(`data.json?_t=${timestamp}`, {
                     cache: 'no-store',
@@ -758,12 +764,25 @@
                 
                 if (Array.isArray(data)) {
                     MATERIAL_DATA = data;
-                    if (!isSilent) console.log(`[Tamaben] 外部data.jsonから${data.length}件の教材データを読み込みました`);
+                    if (syncBadge) {
+                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> data.json 同期中 (${data.length}件)`;
+                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200";
+                    }
+                    if (!isSilent) console.log(`[Tamaben] 外部 data.json から ${data.length} 件の最新データを同期完了`);
                 } else {
                     MATERIAL_DATA = [];
                 }
             } catch (e) {
-                console.error('[Tamaben] 外部data.jsonの読み込みに失敗しました:', e);
+                console.error('[Tamaben] 外部 data.json の取得に失敗しました:', e);
+                if (syncBadge) {
+                    if (window.location.protocol === 'file:') {
+                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> file://制限中（Webサーバーで実行推奨）`;
+                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200";
+                    } else {
+                        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> data.json 未接続`;
+                        syncBadge.className = "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200";
+                    }
+                }
                 if (!MATERIAL_DATA) MATERIAL_DATA = [];
             }
 
@@ -785,20 +804,18 @@
             const hash = window.location.hash || '#home';
             if (hash === '#home' || hash === '') {
                 renderMaterials();
-            } else {
-                handleHashChange(); 
             }
         }
 
-        // タブがアクティブになった時やフォーカス時に data.json をバックグラウンド同期
+        // タブフォーカス時にバックグラウンド同期
         window.addEventListener('focus', () => {
             loadMaterials(true);
         });
 
-        // 30秒ごとに自動同期ポーリング
+        // 15秒ごとに外部 data.json と自動同期ポーリング
         setInterval(() => {
             loadMaterials(true);
-        }, 30000);
+        }, 15000);
 
         function getUnitsFor(subject, grade) {
             let units = [];
@@ -1282,12 +1299,13 @@
             recordDay();
         }
 
-        function switchTab(tab) {
+        async function switchTab(tab) {
             currentTab = tab;
             document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
             document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
             activeSubjectFilter = null; 
             activeUnitFilter = null; 
+            await loadMaterials(true); // タブ切替時にも外部 data.json と同期
             buildSubjectChips();
             renderMaterials();
         }
@@ -1443,7 +1461,11 @@
 
         function navigate(hash) { window.location.hash = hash; }
 
-        function handleHashChange() {
+        async function handleHashChange() {
+            // ページ遷移時にも外部 data.json と常に最新同期
+            if (isLoaded) {
+                await loadMaterials(true);
+            }
             if (!isLoaded) return; 
             const hash = window.location.hash || '#home';
             const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-parents-report'];
