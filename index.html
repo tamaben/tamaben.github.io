@@ -362,24 +362,20 @@
             </div>
         </div>
 
-        <!-- 2段目: スマホ用サブナビゲーションバー（マイページ等のバーの下に常時配置） -->
-        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-3 py-1.5 overflow-x-auto no-scrollbar shadow-2xs">
-            <nav class="flex items-center gap-1 text-xs font-semibold whitespace-nowrap min-w-max">
-                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn px-3 py-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-xs flex items-center gap-1">
-                    <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                    <span>教材トップ</span>
+        <!-- 2段目: スマホ用サブナビゲーションバー（アイコン無し・4等分均等配置で1画面内にスッキリ収まる） -->
+        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-1.5 py-1.5 shadow-2xs">
+            <nav class="grid grid-cols-4 gap-1 w-full text-center">
+                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+                    教材トップ
                 </button>
-                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn px-3 py-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-xs flex items-center gap-1">
-                    <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-                    <span>全教科一覧</span>
+                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+                    全教科一覧
                 </button>
-                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn px-3 py-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-xs flex items-center gap-1">
-                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
-                    <span>教材を検索</span>
+                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+                    教材を検索
                 </button>
-                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn px-3 py-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-xs flex items-center gap-1">
-                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400"></i>
-                    <span>学習者・保護者の方へ</span>
+                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10px] sm:text-[11px] font-bold flex items-center justify-center tracking-tight leading-tight">
+                    学習者・保護者<span class="hidden min-[390px]:inline">の方へ</span>
                 </button>
             </nav>
         </div>
@@ -925,28 +921,8 @@
 
     </main>
 
-    <!-- スマホ専用固定ボトムナビ -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-border px-6 py-2 flex items-center justify-between" style="padding-bottom: max(env(safe-area-inset-bottom), 8px);">
-        <button id="bnav-btn-home" onclick="navigate('#home')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
-            <i data-lucide="home" class="w-5 h-5 transition-transform"></i>
-            <span class="text-[10px] font-bold">ホーム</span>
-        </button>
-        <button id="bnav-btn-subjects" onclick="navigate('#subjects')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
-            <i data-lucide="layers" class="w-5 h-5 transition-transform"></i>
-            <span class="text-[10px] font-bold">教科</span>
-        </button>
-        <button id="bnav-btn-search" onclick="navigate('#search')" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
-            <i data-lucide="search" class="w-5 h-5 transition-transform"></i>
-            <span class="text-[10px] font-bold">検索</span>
-        </button>
-        <button id="bnav-btn-mypage" onclick="handleUserMenu()" class="bnav-item-btn flex flex-col items-center gap-1 text-ink-muted hover:text-ink active:scale-90 transition-all outline-none">
-            <i data-lucide="user" class="w-5 h-5 transition-transform"></i>
-            <span class="text-[10px] font-bold">マイページ</span>
-        </button>
-    </nav>
-
-    <!-- PCフッター -->
-    <footer class="hidden md:block bg-white border-t border-ink-border py-8 text-center text-xs text-ink-muted">
+    <!-- フッター -->
+    <footer class="bg-white border-t border-ink-border py-8 text-center text-xs text-ink-muted">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-center items-center mb-2">
                 <img src="logo.svg" alt="タマベン" class="h-5 w-auto opacity-70" onerror="this.outerHTML='<span class=\'font-bold text-ink\'>タマベン</span>'">
@@ -2517,25 +2493,6 @@
                 activeMNav.classList.add('bg-neutral-900', 'text-white', 'font-bold');
             }
 
-            // ボトムナビのアクティブ状態
-            document.querySelectorAll('.bnav-item-btn').forEach(b => {
-                b.classList.remove('text-ink');
-                b.classList.add('text-ink-muted');
-                const icon = b.querySelector('i');
-                if (icon) icon.classList.remove('scale-110');
-            });
-            let bActiveId = 'bnav-btn-home';
-            if (hash === '#subjects') bActiveId = 'bnav-btn-subjects';
-            else if (hash === '#search' || hash === '#results') bActiveId = 'bnav-btn-search';
-            else if (hash === '#mypage' || hash === '#register') bActiveId = 'bnav-btn-mypage';
-            
-            const activeBNav = document.getElementById(bActiveId);
-            if (activeBNav) {
-                activeBNav.classList.remove('text-ink-muted');
-                activeBNav.classList.add('text-ink');
-                const icon = activeBNav.querySelector('i');
-                if (icon) icon.classList.add('scale-110');
-            }
         }
 
         async function handleHashChange(shouldReloadData = false) {
