@@ -1173,6 +1173,15 @@
         let pdfCarouselCurrentPage = 1;
         let pdfCarouselTotalPages = 1;
 
+        function hasAnyPrintable(item) {
+            if (!item) return false;
+            const basicAns = item.pdfBasicAns || item.pdfAns;
+            return (!!item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
+                   (!!basicAns && basicAns !== "#" && basicAns !== "") ||
+                   (!!item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
+                   (!!item.pdfAdvAns && item.pdfAdvAns !== "#" && item.pdfAdvAns !== "");
+        }
+
         let userStats = {
             viewCount: 0,
             views: [], 
@@ -1314,7 +1323,7 @@
             if (hash.startsWith('#detail-')) {
                 const item = MATERIAL_DATA.find(m => String(m.id) === String(id));
                 if (item) {
-                    const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    const hasAny = hasAnyPrintable(item);
                     openDetail(item, hasAny);
                     const bIcon = document.querySelector('#detail-content [data-lucide="bookmark"]');
                     if (bIcon) bIcon.classList.add('bookmark-pop');
@@ -1342,11 +1351,7 @@
                 const targetGrade = userSettings.grade;
 
                 // 今ある（公開中・利用可能な）教材プリントを抽出
-                const availableMaterials = MATERIAL_DATA.filter(item => 
-                    (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
-                    (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
-                    (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
-                );
+                const availableMaterials = MATERIAL_DATA.filter(hasAnyPrintable);
 
                 let recommended = [];
 
@@ -1571,6 +1576,12 @@
                 }
                 if (!item.unit) {
                     item.unit = item.title;
+                }
+                if (!item.pdfBasicAns && item.pdfAns) {
+                    item.pdfBasicAns = item.pdfAns;
+                }
+                if (!item.pdfAdvAns) {
+                    item.pdfAdvAns = "#";
                 }
             });
 
@@ -2008,11 +2019,7 @@
 
         function renderPopularUnits() {
             // 今ある（実際に教材PDFが存在・公開されている）教材のみを抽出
-            const availableMaterials = MATERIAL_DATA.filter(item => 
-                (item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "") ||
-                (item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "") ||
-                (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
-            );
+            const availableMaterials = MATERIAL_DATA.filter(hasAnyPrintable);
 
             const heroBar = document.getElementById('hero-popular-units-bar');
             const heroList = document.getElementById('hero-popular-units-list');
@@ -2209,9 +2216,7 @@
                 const matchSubjectChip = activeSubjectFilter ? item.subject === activeSubjectFilter : true;
                 const matchUnitChip = activeUnitFilter ? (item.unit === activeUnitFilter || item.title.includes(activeUnitFilter)) : true;
                 
-                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || 
-                                       (item.pdfAdv && item.pdfAdv !== "#") || 
-                                       (item.pdfAns && item.pdfAns !== "#");
+                const hasAnyMaterial = hasAnyPrintable(item);
                 let matchFilter = true;
                 if (filterValue === 'available') matchFilter = hasAnyMaterial;
                 if (filterValue === 'unavailable') matchFilter = !hasAnyMaterial;
@@ -2238,7 +2243,7 @@
 
             container.innerHTML = "";
             filtered.forEach((item, index) => {
-                const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                const hasAnyMaterial = hasAnyPrintable(item);
                 const isRestricted = !!item.downloadRestricted;
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 const card = document.createElement('div');
@@ -2345,11 +2350,15 @@
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
 
-            // 基本問題・練習問題・答えの3セクションを定義
+            const basicAnsUrl = item.pdfBasicAns || item.pdfAns;
+            const advAnsUrl = item.pdfAdvAns;
+
+            // 基本問題・基本の答え・練習問題・練習の答えを定義
             const sections = [
-                { key: 'basic', label: '基本問題', url: item.pdfBasic, badgeBg: 'bg-neutral-900 text-white', icon: 'printer' },
-                { key: 'adv', label: '練習問題', url: item.pdfAdv, badgeBg: 'bg-amber-600 text-white', icon: 'zap' },
-                { key: 'ans', label: '答え・解説', url: item.pdfAns, badgeBg: 'bg-emerald-600 text-white', icon: 'check-circle-2' }
+                { key: 'basic', label: '基本問題', fullLabel: '基本問題', url: item.pdfBasic, badgeBg: 'bg-neutral-900 text-white', icon: 'printer' },
+                { key: 'basicAns', label: '基本の答え', fullLabel: '基本問題の答え', url: basicAnsUrl, badgeBg: 'bg-neutral-700 text-white', icon: 'check-circle-2' },
+                { key: 'adv', label: '練習問題', fullLabel: '練習問題', url: item.pdfAdv, badgeBg: 'bg-neutral-900 text-white', icon: 'zap' },
+                { key: 'advAns', label: '練習の答え', fullLabel: '練習問題の答え', url: advAnsUrl, badgeBg: 'bg-neutral-700 text-white', icon: 'check-circle-2' }
             ];
 
             pdfCarouselSlides = [];
@@ -2669,13 +2678,20 @@
 
         function openDetail(item, hasAnyMaterial) {
             recordViewHistory(item.title);
-            const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
-            const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
-            const hasAns = !!item.pdfAns && item.pdfAns !== "#";
+            const basicAnsUrl = item.pdfBasicAns || item.pdfAns;
+            const advAnsUrl = item.pdfAdvAns;
+
+            const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#" && item.pdfBasic !== "";
+            const hasBasicAns = !!basicAnsUrl && basicAnsUrl !== "#" && basicAnsUrl !== "";
+            const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#" && item.pdfAdv !== "";
+            const hasAdvAns = !!advAnsUrl && advAnsUrl !== "#" && advAnsUrl !== "";
+
             const isRestricted = !!item.downloadRestricted;
             const canDownloadBasic = hasBasic && !isRestricted;
+            const canDownloadBasicAns = hasBasicAns && !isRestricted;
             const canDownloadAdv = hasAdv && !isRestricted;
-            const canDownloadAns = hasAns && !isRestricted;
+            const canDownloadAdvAns = hasAdvAns && !isRestricted;
+
             const isFav = userStats.favMaterials.includes(item.id);
             const isVideoFav = userStats.favVideos.includes(item.id);
 
@@ -2752,56 +2768,87 @@
 
                         <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
 
-                        <div class="space-y-3 max-w-md w-full">
-                            <div class="flex items-center gap-2">
-                                <button ${canDownloadBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'}">
-                                    <span class="flex items-center gap-2.5">
-                                        <i data-lucide="${isRestricted ? 'lock' : 'printer'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : ''}"></i> 
-                                        ${isRestricted ? '基本問題（ダウンロード一時制限中）' : '基本問題を印刷・開く'}
-                                    </span>
-                                    <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'opacity-75'}">
-                                        ${isRestricted ? '制限中' : 'PDF'}
-                                    </span>
-                                </button>
-                                ${hasBasic ? `
-                                <button onclick="jumpToSection('basic')" title="基本問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                                ` : ''}
+                        <div class="space-y-4 max-w-md w-full">
+                            <!-- 基本問題セクション -->
+                            <div class="p-4 bg-neutral-50/70 border border-neutral-200 rounded-2xl space-y-2.5">
+                                <div class="text-[11px] font-black text-neutral-500 uppercase tracking-wider px-1 flex items-center gap-1.5">
+                                    <i data-lucide="book-open" class="w-3.5 h-3.5 text-neutral-600"></i>
+                                    <span>基本問題</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button ${canDownloadBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex-grow py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'}">
+                                        <span class="flex items-center gap-2.5">
+                                            <i data-lucide="${isRestricted ? 'lock' : 'printer'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : ''}"></i> 
+                                            ${isRestricted ? '基本問題（制限中）' : '基本問題を印刷・開く'}
+                                        </span>
+                                        <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'opacity-75'}">
+                                            ${isRestricted ? '制限中' : 'PDF'}
+                                        </span>
+                                    </button>
+                                    ${hasBasic ? `
+                                    <button onclick="jumpToSection('basic')" title="基本問題プレビューを表示" class="p-3 bg-white hover:bg-neutral-100 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200 shadow-xs">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                    ` : ''}
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <button ${canDownloadBasicAns ? `onclick="window.open('${basicAnsUrl}')"` : 'disabled'} class="flex-grow py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${canDownloadBasicAns ? 'bg-white border border-neutral-300 text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                        <span class="flex items-center gap-2.5">
+                                            <i data-lucide="${isRestricted ? 'lock' : 'check-circle-2'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : 'text-neutral-700'}"></i> 
+                                            ${isRestricted ? '基本の答え（制限中）' : '基本問題の答え・解説'}
+                                        </span>
+                                        <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'text-ink-muted'}">
+                                            ${hasBasicAns ? (isRestricted ? '制限中' : 'PDF') : '準備中'}
+                                        </span>
+                                    </button>
+                                    ${hasBasicAns ? `
+                                    <button onclick="jumpToSection('basicAns')" title="基本問題の答えプレビューを表示" class="p-2.5 bg-white hover:bg-neutral-100 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                    ` : ''}
+                                </div>
                             </div>
 
-                            <div class="flex items-center gap-2">
-                                <button ${canDownloadAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                    <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4 text-amber-600"></i> 練習問題に挑戦</span>
-                                    <span class="text-[10px] opacity-75">${hasAdv ? (isRestricted ? '制限中' : 'PDF') : '準備中'}</span>
-                                </button>
-                                ${hasAdv ? `
-                                <button onclick="jumpToSection('adv')" title="練習問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                                ` : ''}
-                            </div>
+                            <!-- 練習問題セクション -->
+                            <div class="p-4 bg-neutral-50/70 border border-neutral-200 rounded-2xl space-y-2.5">
+                                <div class="text-[11px] font-black text-neutral-500 uppercase tracking-wider px-1 flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5 text-neutral-600"></i>
+                                    <span>練習問題（ステップアップ）</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button ${canDownloadAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex-grow py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                        <span class="flex items-center gap-2.5"><i data-lucide="${isRestricted ? 'lock' : 'zap'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : 'text-amber-600'}"></i> ${isRestricted ? '練習問題（制限中）' : '練習問題に挑戦'}</span>
+                                        <span class="text-[10px] opacity-75">${hasAdv ? (isRestricted ? '制限中' : 'PDF') : '準備中'}</span>
+                                    </button>
+                                    ${hasAdv ? `
+                                    <button onclick="jumpToSection('adv')" title="練習問題プレビューを表示" class="p-3 bg-white hover:bg-neutral-100 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200 shadow-xs">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                    ` : ''}
+                                </div>
 
-                            <div class="flex items-center gap-2">
-                                <button ${canDownloadAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex-grow py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${canDownloadAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                    <span class="flex items-center gap-2.5">
-                                        <i data-lucide="${isRestricted ? 'lock' : 'check-circle-2'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : 'text-emerald-600'}"></i> 
-                                        ${isRestricted ? '解答・解説（ダウンロード一時制限中）' : '解答・くわしい解説'}
-                                    </span>
-                                    <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'text-ink-muted'}">
-                                        ${hasAns ? (isRestricted ? '制限中' : 'PDF') : '準備中'}
-                                    </span>
-                                </button>
-                                ${hasAns ? `
-                                <button onclick="jumpToSection('ans')" title="解答プレビューを表示" class="p-3 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                                ` : ''}
+                                <div class="flex items-center gap-2">
+                                    <button ${canDownloadAdvAns ? `onclick="window.open('${advAnsUrl}')"` : 'disabled'} class="flex-grow py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${canDownloadAdvAns ? 'bg-white border border-neutral-300 text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                        <span class="flex items-center gap-2.5">
+                                            <i data-lucide="${isRestricted ? 'lock' : 'check-circle-2'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : 'text-neutral-700'}"></i> 
+                                            ${isRestricted ? '練習の答え（制限中）' : '練習問題の答え・解説'}
+                                        </span>
+                                        <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'text-ink-muted'}">
+                                            ${hasAdvAns ? (isRestricted ? '制限中' : 'PDF') : '準備中'}
+                                        </span>
+                                    </button>
+                                    ${hasAdvAns ? `
+                                    <button onclick="jumpToSection('advAns')" title="練習問題の答えプレビューを表示" class="p-2.5 bg-white hover:bg-neutral-100 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
 
                         <div class="mt-6 pt-5 border-t border-neutral-100 text-[11px] text-ink-muted leading-relaxed">
-                            <span class="font-bold text-ink">💡 プレビューの使い方:</span> 左側のプレビュー画面をスワイプするか矢印を押すことで、基本問題・練習問題・答えをすべてひと続きで確認できます。右の目のアイコンを押すと該当ページへ直接ジャンプします。
+                            <span class="font-bold text-ink">💡 プレビューの使い方:</span> 左側のプレビュー画面をスワイプするか矢印を押すことで、基本問題・基本の答え・練習問題・練習の答えをすべてひと続きで確認できます。右の目のアイコンを押すと該当ページへ直接ジャンプします。
                         </div>
                     </div>
                 </div>
@@ -2910,9 +2957,19 @@
                         keyword.includes(item.pdfBasic.toLowerCase()) || 
                         (cleanKey && item.pdfBasic.toLowerCase().includes(cleanKey))
                     )) return true;
-                    if (item.pdfAns && (
-                        item.pdfAns.toLowerCase().includes(keyword) || 
-                        keyword.includes(item.pdfAns.toLowerCase())
+                    if (item.pdfAdv && (
+                        item.pdfAdv.toLowerCase().includes(keyword) || 
+                        keyword.includes(item.pdfAdv.toLowerCase()) || 
+                        (cleanKey && item.pdfAdv.toLowerCase().includes(cleanKey))
+                    )) return true;
+                    const basicAns = item.pdfBasicAns || item.pdfAns;
+                    if (basicAns && (
+                        basicAns.toLowerCase().includes(keyword) || 
+                        keyword.includes(basicAns.toLowerCase())
+                    )) return true;
+                    if (item.pdfAdvAns && (
+                        item.pdfAdvAns.toLowerCase().includes(keyword) || 
+                        keyword.includes(item.pdfAdvAns.toLowerCase())
                     )) return true;
 
                     // 3. タイトル・単元・教科
@@ -2951,7 +3008,7 @@
                 resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs">条件に一致する教材プリントが見つかりませんでした。<br>キーワードを変更して再度お試しください。</div>`;
             } else {
                 filtered.forEach((item, index) => {
-                    const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                    const hasAnyMaterial = hasAnyPrintable(item);
                     const canvasId = `pdf-thumb-search-${Date.now()}-${index}`;
                     const card = document.createElement('div');
                     card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
@@ -3053,7 +3110,7 @@
                     if (item) {
                         const detailEl = document.getElementById('view-detail');
                         if (detailEl) detailEl.classList.remove('hidden');
-                        const hasAny = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                        const hasAny = hasAnyPrintable(item);
                         openDetail(item, hasAny);
                     } else {
                         // IDが見つからない場合のみホームへフォールバック
