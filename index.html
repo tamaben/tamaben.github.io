@@ -1169,37 +1169,25 @@
                 );
 
                 let recommended = [];
-                let isFallback = false;
 
                 if (targetGrade) {
-                    // 設定学年に合致する、今ある教材
-                    const matched = availableMaterials.filter(m => m.grade === targetGrade);
-                    if (matched.length > 0) {
-                        recommended = matched;
-                    } else {
-                        // 該当学年のプリントが準備中の場合は、今ある公開教材の中からおすすめを表示
-                        recommended = availableMaterials.slice(0, 4);
-                        isFallback = true;
-                    }
+                    // 設定学年に合致する、今ある教材のみを抽出（他学年では補完しない）
+                    recommended = availableMaterials.filter(m => m.grade === targetGrade);
                 } else {
-                    // 学年未設定時も今ある公開教材の中からおすすめを表示
+                    // 学年未設定時は今ある公開教材の中からおすすめを表示
                     recommended = availableMaterials.slice(0, 4);
                 }
 
                 if (recGradeLabel) {
-                    if (targetGrade) {
-                        recGradeLabel.textContent = isFallback ? `${targetGrade}（今あるおすすめ）` : `${targetGrade}向け`;
-                    } else {
-                        recGradeLabel.textContent = '今あるおすすめプリント';
-                    }
+                    recGradeLabel.textContent = targetGrade ? `${targetGrade}向け` : '今あるおすすめプリント';
                 }
 
                 if (recommended.length === 0) {
                     recGrid.innerHTML = `
                         <div class="col-span-full py-12 px-6 bg-canvas border border-dashed border-neutral-300 rounded-2xl text-center">
                             <i data-lucide="book-open" class="w-8 h-8 text-ink-muted mx-auto mb-2 stroke-1"></i>
-                            <p class="text-xs font-bold text-ink mb-1">現在教材プリントを準備中です</p>
-                            <p class="text-[11px] text-ink-muted mb-4">まもなく新しいプリントが追加されます。「教材トップ」から公開中の教材をご覧ください。</p>
+                            <p class="text-xs font-bold text-ink mb-1">現在${targetGrade ? `${targetGrade}向けの` : ''}教材プリントを準備中です</p>
+                            <p class="text-[11px] text-ink-muted mb-4">順次新しい単元のプリントを追加してまいります。「教材トップ」から公開中の教材をご覧ください。</p>
                             <button onclick="navigate('#home')" class="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-xs font-bold hover:bg-neutral-50 shadow-sm">すべての教材を見る</button>
                         </div>
                     `;
@@ -1547,13 +1535,16 @@
                 (item.pdfAns && item.pdfAns !== "#" && item.pdfAns !== "")
             );
 
-            if (availableMaterials.length === 0) return;
-
+            const heroBar = document.getElementById('hero-popular-units-bar');
+            const heroList = document.getElementById('hero-popular-units-list');
+            const heroLabel = document.getElementById('hero-popular-units-label');
+            const searchContainer = document.getElementById('popular-units-container');
             const targetGrade = userSettings.grade; // 設定された学年（生年月日から判定または手動選択）
+
             let selectedUnits = [];
 
             if (targetGrade) {
-                // 1. まず現在の学年で今ある単元を優先抽出
+                // 1. 自分の学年に合致する、今ある教材のみから単元を抽出（他学年での補完は行わない）
                 const sameGradeMaterials = availableMaterials.filter(m => m.grade === targetGrade);
                 sameGradeMaterials.forEach(m => {
                     if (m.unit && !selectedUnits.includes(m.unit)) {
@@ -1561,26 +1552,33 @@
                     }
                 });
 
-                // 2. 該当学年の単元だけでは少ない場合、同じ学校区分（小学校/中学校）の今ある単元を補完
-                const isJunior = targetGrade.startsWith('中学');
-                const stageMaterials = availableMaterials.filter(m => isJunior ? m.tab === 'junior' : m.tab === 'elementary');
-                stageMaterials.forEach(m => {
-                    if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 5) {
+                // 自分の学年の教材がなければ、おすすめ単元バーを非表示にする
+                if (selectedUnits.length === 0) {
+                    if (heroBar) heroBar.classList.add('hidden');
+                    if (searchContainer) {
+                        searchContainer.innerHTML = `
+                            <p class="text-xs text-ink-muted col-span-full py-2">現在、${targetGrade}のプリントは準備中です。</p>
+                        `;
+                    }
+                    return;
+                }
+            } else {
+                // 学年未設定時は今ある公開教材の代表単元
+                availableMaterials.forEach(m => {
+                    if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 6) {
                         selectedUnits.push(m.unit);
                     }
                 });
+                if (selectedUnits.length === 0) {
+                    if (heroBar) heroBar.classList.add('hidden');
+                    return;
+                }
             }
 
-            // 3. 学年未設定または不足している場合は、今ある公開教材から代表的な単元を追加
-            availableMaterials.forEach(m => {
-                if (m.unit && !selectedUnits.includes(m.unit) && selectedUnits.length < 6) {
-                    selectedUnits.push(m.unit);
-                }
-            });
+            // 自分の学年の教材単元が存在する場合はバーを表示
+            if (heroBar) heroBar.classList.remove('hidden');
 
             // ヒーローセクションの人気単元バーの更新
-            const heroList = document.getElementById('hero-popular-units-list');
-            const heroLabel = document.getElementById('hero-popular-units-label');
             if (heroList) {
                 heroList.innerHTML = '';
                 if (heroLabel) {
@@ -1603,7 +1601,6 @@
             }
 
             // 検索ページ（#search）の代表単元ボタン群の更新
-            const searchContainer = document.getElementById('popular-units-container');
             if (searchContainer) {
                 searchContainer.innerHTML = '';
                 selectedUnits.forEach(unit => {
@@ -1749,6 +1746,7 @@
             container.innerHTML = "";
             filtered.forEach((item, index) => {
                 const hasAnyMaterial = (item.pdfBasic && item.pdfBasic !== "#") || (item.pdfAdv && item.pdfAdv !== "#") || (item.pdfAns && item.pdfAns !== "#");
+                const isRestricted = !!item.downloadRestricted;
                 const canvasId = `pdf-thumb-${Date.now()}-${index}`;
                 const card = document.createElement('div');
                 card.className = `paper-card card-appear flex flex-col select-none ${hasAnyMaterial ? 'card-available group' : 'card-unavailable'}`;
@@ -1758,7 +1756,11 @@
                     <div class="a4-viewport relative overflow-hidden flex items-center justify-center ${!hasAnyMaterial ? 'bg-neutral-100/70' : ''}">
                         <i data-lucide="loader-2" class="w-5 h-5 pdf-loading animate-spin text-ink-subtle absolute"></i>
                         <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
-                        ${hasAnyMaterial ? `
+                        ${isRestricted ? `
+                            <span class="absolute top-2 right-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm z-10 flex items-center gap-1">
+                                <i data-lucide="lock" class="w-2.5 h-2.5"></i> 一時制限中
+                            </span>
+                        ` : (hasAnyMaterial ? `
                             <span class="absolute top-2 right-2 bg-neutral-900 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm z-10 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 印刷可
                             </span>
@@ -1766,12 +1768,18 @@
                             <span class="absolute top-2 right-2 bg-neutral-200/90 text-neutral-600 text-[9px] font-bold px-2 py-0.5 rounded z-10 flex items-center gap-1 border border-neutral-300">
                                 <i data-lucide="lock" class="w-2.5 h-2.5"></i> 準備中
                             </span>
-                        `}
+                        `)}
                         ${hasAnyMaterial ? `
                             <div class="hidden md:flex absolute inset-0 bg-neutral-900/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2 p-4">
-                                <button onclick="event.stopPropagation(); window.open('${item.pdfBasic}');" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
-                                    <i data-lucide="printer" class="w-3.5 h-3.5"></i> 開く・印刷
-                                </button>
+                                ${isRestricted ? `
+                                    <button onclick="event.stopPropagation(); navigate('#detail-${item.id}');" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i> プレビューを見る
+                                    </button>
+                                ` : `
+                                    <button onclick="event.stopPropagation(); window.open('${item.pdfBasic}');" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
+                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> 開く・印刷
+                                    </button>
+                                `}
                             </div>
                         ` : ''}
                     </div>
@@ -1789,8 +1797,8 @@
                             </h3>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px]">
-                            <span class="${hasAnyMaterial ? 'text-ink-subtle font-medium' : 'text-neutral-400 font-bold'}">
-                                ${hasAnyMaterial ? '解答・解説付き' : '準備中（選択不可）'}
+                            <span class="${hasAnyMaterial ? (isRestricted ? 'text-amber-700 font-bold' : 'text-ink-subtle font-medium') : 'text-neutral-400 font-bold'}">
+                                ${hasAnyMaterial ? (isRestricted ? 'プレビュー閲覧可（一時制限中）' : '解答・解説付き') : '準備中（選択不可）'}
                             </span>
                             ${hasAnyMaterial ? `
                                 <span class="font-bold text-ink group-hover:translate-x-0.5 transition-transform">
@@ -2171,6 +2179,10 @@
             const hasBasic = !!item.pdfBasic && item.pdfBasic !== "#";
             const hasAdv = !!item.pdfAdv && item.pdfAdv !== "#";
             const hasAns = !!item.pdfAns && item.pdfAns !== "#";
+            const isRestricted = !!item.downloadRestricted;
+            const canDownloadBasic = hasBasic && !isRestricted;
+            const canDownloadAdv = hasAdv && !isRestricted;
+            const canDownloadAns = hasAns && !isRestricted;
             const isFav = userStats.favMaterials.includes(item.id);
             const isVideoFav = userStats.favVideos.includes(item.id);
 
@@ -2226,19 +2238,37 @@
                                     ${item.grade} • ${item.subject}
                                 </span>
                                 ${item.unit ? `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded border border-emerald-200">単元: ${item.unit}</span>` : ''}
+                                ${isRestricted ? `
+                                    <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded border border-amber-300 flex items-center gap-1">
+                                        <i data-lucide="lock" class="w-3 h-3 text-amber-700"></i> ダウンロード一時制限中
+                                    </span>
+                                ` : ''}
                             </div>
                             <button onclick="toggleBookmark('${item.id}')" class="px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 ${isFav ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-white border-neutral-200 text-ink-muted hover:text-ink'}">
                                 <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isFav ? 'fill-amber-500 text-amber-500' : ''}"></i>
                                 <span>${isFav ? '保存済み' : 'ブックマーク'}</span>
                             </button>
                         </div>
+                        
+                        ${isRestricted ? `
+                            <div class="mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs flex items-center gap-2.5 font-medium leading-relaxed">
+                                <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                                <span>こちらの教材は現在、ダウンロード・印刷を一時的に制限しております。内容の確認は左側のプレビュー機能をご利用いただけます。</span>
+                            </div>
+                        ` : ''}
+
                         <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
 
                         <div class="space-y-3 max-w-md w-full">
                             <div class="flex items-center gap-2">
-                                <button ${hasBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                    <span class="flex items-center gap-2.5"><i data-lucide="printer" class="w-4 h-4"></i> 基本問題を印刷・開く</span>
-                                    <span class="text-[10px] opacity-75">PDF</span>
+                                <button ${canDownloadBasic ? `onclick="window.open('${item.pdfBasic}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadBasic ? 'bg-ink text-white hover:bg-neutral-800 shadow-sm active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'}">
+                                    <span class="flex items-center gap-2.5">
+                                        <i data-lucide="${isRestricted ? 'lock' : 'printer'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : ''}"></i> 
+                                        ${isRestricted ? '基本問題（ダウンロード一時制限中）' : '基本問題を印刷・開く'}
+                                    </span>
+                                    <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'opacity-75'}">
+                                        ${isRestricted ? '制限中' : 'PDF'}
+                                    </span>
                                 </button>
                                 ${hasBasic ? `
                                 <button onclick="jumpToSection('basic')" title="基本問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
@@ -2248,9 +2278,9 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <button ${hasAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${hasAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                <button ${canDownloadAdv ? `onclick="window.open('${item.pdfAdv}')"` : 'disabled'} class="flex-grow py-3.5 px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-between transition-all ${canDownloadAdv ? 'bg-white border-2 border-ink text-ink hover:bg-neutral-50 active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
                                     <span class="flex items-center gap-2.5"><i data-lucide="zap" class="w-4 h-4 text-amber-600"></i> 練習問題に挑戦</span>
-                                    <span class="text-[10px] opacity-75">${hasAdv ? 'PDF' : '準備中'}</span>
+                                    <span class="text-[10px] opacity-75">${hasAdv ? (isRestricted ? '制限中' : 'PDF') : '準備中'}</span>
                                 </button>
                                 ${hasAdv ? `
                                 <button onclick="jumpToSection('adv')" title="練習問題プレビューを表示" class="p-3.5 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
@@ -2260,9 +2290,14 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <button ${hasAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex-grow py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${hasAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
-                                    <span class="flex items-center gap-2.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> 解答・くわしい解説</span>
-                                    <span class="text-[10px] text-ink-muted">${hasAns ? 'PDF' : '準備中'}</span>
+                                <button ${canDownloadAns ? `onclick="window.open('${item.pdfAns}')"` : 'disabled'} class="flex-grow py-3 px-5 rounded-xl font-bold text-xs flex items-center justify-between transition-all ${canDownloadAns ? 'bg-canvas border border-neutral-300 text-ink hover:bg-white active:scale-[0.99]' : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'}">
+                                    <span class="flex items-center gap-2.5">
+                                        <i data-lucide="${isRestricted ? 'lock' : 'check-circle-2'}" class="w-4 h-4 ${isRestricted ? 'text-amber-600' : 'text-emerald-600'}"></i> 
+                                        ${isRestricted ? '解答・解説（ダウンロード一時制限中）' : '解答・くわしい解説'}
+                                    </span>
+                                    <span class="text-[10px] ${isRestricted ? 'text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded font-bold' : 'text-ink-muted'}">
+                                        ${hasAns ? (isRestricted ? '制限中' : 'PDF') : '準備中'}
+                                    </span>
                                 </button>
                                 ${hasAns ? `
                                 <button onclick="jumpToSection('ans')" title="解答プレビューを表示" class="p-3 bg-neutral-100 hover:bg-neutral-200 text-ink rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 border border-neutral-200">
