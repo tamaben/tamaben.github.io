@@ -312,127 +312,8 @@
             100% { transform: scale(1); }
         }
 
-        /* ━━━━━━━━━━━━━━━━━━━━
-           起動時アニメーション（落ち着いた勉強意欲を高めるスプラッシュ）
-           ━━━━━━━━━━━━━━━━━━━━ */
-        #site-splash-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            cursor: pointer;
-            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .splash-paper-stroke {
-            stroke-dasharray: 170;
-            stroke-dashoffset: 170;
-            animation: splashDraw 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.05s;
-        }
-
-        .splash-line-stroke {
-            stroke-dasharray: 25;
-            stroke-dashoffset: 25;
-            animation: splashDraw 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .splash-line-1 { animation-delay: 0.25s; }
-        .splash-line-2 { animation-delay: 0.38s; }
-
-        .splash-check-stroke {
-            stroke-dasharray: 35;
-            stroke-dashoffset: 35;
-            animation: splashDraw 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.52s;
-        }
-
-        .splash-sparkle {
-            opacity: 0;
-            transform-origin: 47px 13px;
-            animation: splashPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            animation-delay: 0.72s;
-        }
-
-        @keyframes splashDraw {
-            to { stroke-dashoffset: 0; }
-        }
-
-        @keyframes splashPop {
-            0% { opacity: 0; transform: scale(0) rotate(-25deg); }
-            70% { opacity: 1; transform: scale(1.2) rotate(6deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
-        }
-
-        .splash-brand {
-            opacity: 0;
-            animation: splashFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.42s;
-        }
-
-        .splash-text {
-            opacity: 0;
-            animation: splashFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.62s;
-        }
-
-        .splash-text-sub {
-            opacity: 0;
-            animation: splashFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.8s;
-        }
-
-        .splash-marker {
-            display: inline-block;
-            position: relative;
-            background: #0f172a;
-            color: #ffffff;
-            padding: 0.04em 0.32em;
-            margin: 0 0.1em;
-            border-radius: 2px;
-            white-space: nowrap;
-            clip-path: inset(0 100% 0 0);
-            animation: splashMarkerDraw 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.82s;
-        }
-
-        @keyframes splashMarkerDraw {
-            to { clip-path: inset(0 0 0 0); }
-        }
-
-        @keyframes splashFadeUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .splash-hint {
-            opacity: 0;
-            animation: splashFadeIn 0.3s ease forwards;
-            animation-delay: 1.1s;
-        }
-
-        @keyframes splashFadeIn {
-            to { opacity: 1; }
-        }
-
-        .splash-exit {
-            opacity: 0 !important;
-            transform: scale(1.02) !important;
-            pointer-events: none !important;
-        }
-
         /* ユーザーのモーション軽減設定への配慮 */
         @media (prefers-reduced-motion: reduce) {
-            #site-splash-screen {
-                display: none !important;
-            }
             .view-section:not(.hidden),
             .card-appear,
             .bookmark-pop,
@@ -446,46 +327,6 @@
     </style>
 </head>
 <body class="font-sans antialiased text-ink selection:bg-neutral-900 selection:text-white">
-
-    <!-- ━━━━━━━━━━━━━━━━━━━━
-         サイト起動時アニメーション（真っ白な画面から静かに広がる学習のひらめき）
-         ━━━━━━━━━━━━━━━━━━━━ -->
-    <div id="site-splash-screen" onclick="closeSplashScreen()" aria-label="起動アニメーション（タップでスキップ）" role="dialog" aria-modal="true">
-        <div class="relative flex flex-col items-center max-w-sm px-6 text-center pointer-events-none">
-            <!-- 落ち着いた手書き風の学習モチーフ（用紙・罫線・できたチェック・きらめき） -->
-            <div class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-5 relative flex items-center justify-center">
-                <svg class="w-full h-full text-ink drop-shadow-sm" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- ノート用紙 -->
-                    <rect class="splash-paper-stroke" x="14" y="10" width="36" height="44" rx="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <!-- 罫線 -->
-                    <path class="splash-line-stroke splash-line-1" d="M22 22H42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path class="splash-line-stroke splash-line-2" d="M22 30H42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- 「できた！」チェックマーク -->
-                    <path class="splash-check-stroke" d="M22 41L29 46L44 34" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    <!-- 学ぶ楽しさのひらめき（小さなスター） -->
-                    <path class="splash-sparkle" d="M47 8C47 11 49 13 52 13C49 13 47 15 47 18C47 15 45 13 42 13C45 13 47 11 47 8Z" fill="#0f172a"/>
-                </svg>
-            </div>
-
-            <!-- タイトルロゴ -->
-            <div class="splash-brand text-2xl sm:text-3xl font-black text-ink tracking-tight font-display">
-                タマベン
-            </div>
-
-            <!-- やりたくなるポジティブなキャッチコピー -->
-            <p class="splash-text text-xs sm:text-sm font-bold text-neutral-600 mt-2 tracking-wide font-display">
-                学ぶことは、もっと<span class="splash-marker">楽しく</span>。
-            </p>
-            <p class="splash-text-sub text-[11px] text-neutral-400 mt-1.5 font-medium tracking-wide">
-                きょうも、新しい「できた！」に出会おう
-            </p>
-
-            <!-- スキップ案内（目立たず上品に） -->
-            <span class="splash-hint text-[10px] text-neutral-300 font-medium mt-6 tracking-wider">
-                タップしてすぐに開く
-            </span>
-        </div>
-    </div>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━
          PC / タブレット用ヘッダー（logo.svg 対応）
@@ -2808,28 +2649,6 @@
             }
         }
 
-        function closeSplashScreen() {
-            const splash = document.getElementById('site-splash-screen');
-            if (!splash || splash.dataset.closed === 'true') return;
-            splash.dataset.closed = 'true';
-            splash.classList.add('splash-exit');
-            
-            // サイト本体が開いた瞬間にヒーローのインクマーカーアニメーションを新鮮に実行
-            setTimeout(() => {
-                document.querySelectorAll('.ink-marker').forEach(el => {
-                    el.style.animation = 'none';
-                    el.offsetHeight; // 強制リフロー
-                    el.style.animation = '';
-                });
-            }, 180);
-
-            setTimeout(() => {
-                if (splash && splash.parentNode) {
-                    splash.parentNode.removeChild(splash);
-                }
-            }, 480);
-        }
-
         window.addEventListener('hashchange', () => handleHashChange(true));
         document.addEventListener('DOMContentLoaded', async () => {
             if (window.pdfjsLib) {
@@ -2838,12 +2657,6 @@
             lucide.createIcons();
             loadStatsFromStorage();
             loadSettingsFromStorage();
-
-            // 起動時アニメーション自動完了（約1.75秒で落ち着いてフェードアウト）
-            setTimeout(() => {
-                closeSplashScreen();
-            }, 1750);
-
             await loadMaterials();
         });
     </script>
