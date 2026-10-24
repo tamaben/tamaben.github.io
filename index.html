@@ -435,10 +435,11 @@
                     
                     <!-- 上段: 学年セグメント＆フィルター切替 -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ink-border">
-                        <!-- 小学生 / 中学生 切り替えセグメント -->
+                        <!-- 小学生 / 中学生 / 高校生 切り替えセグメント -->
                         <div class="inline-flex bg-neutral-200/80 p-1 rounded-xl self-start">
-                            <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-5 py-2 rounded-lg text-xs font-black">小学生プリント</button>
-                            <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-5 py-2 rounded-lg text-xs font-black">中学生プリント</button>
+                            <button onclick="switchTab('elementary')" id="tab-elementary" class="tab-btn active px-3.5 sm:px-5 py-2 rounded-lg text-xs font-black whitespace-nowrap">小学生プリント</button>
+                            <button onclick="switchTab('junior')" id="tab-junior" class="tab-btn px-3.5 sm:px-5 py-2 rounded-lg text-xs font-black whitespace-nowrap">中学生プリント</button>
+                            <button onclick="switchTab('high')" id="tab-high" class="tab-btn px-3.5 sm:px-5 py-2 rounded-lg text-xs font-black whitespace-nowrap">高校生プリント</button>
                         </div>
 
                         <!-- 右側コントロール: 単元セレクト & 状態フィルター -->
@@ -507,6 +508,9 @@
                             <option value="中学1年生">中学1年生</option>
                             <option value="中学2年生">中学2年生</option>
                             <option value="中学3年生">中学3年生</option>
+                            <option value="高校1年生">高校1年生</option>
+                            <option value="高校2年生">高校2年生</option>
+                            <option value="高校3年生">高校3年生</option>
                         </select>
                     </div>
 
@@ -520,6 +524,7 @@
                             <option value="理科">理科</option>
                             <option value="英語">英語</option>
                             <option value="社会">社会</option>
+                            <option value="情報">情報</option>
                         </select>
                     </div>
 
@@ -646,29 +651,29 @@
 
                 <!-- 高校普通科 -->
                 <div id="scat-hs_gen" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="quickSearch('現代の国語')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">現代の国語</button>
-                    <button onclick="quickSearch('言語文化')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">言語文化</button>
-                    <button onclick="quickSearch('数学Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学Ⅰ</button>
-                    <button onclick="quickSearch('物理基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">物理基礎</button>
-                    <button onclick="quickSearch('化学基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">化学基礎</button>
-                    <button onclick="quickSearch('生物基礎')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生物基礎</button>
-                    <button onclick="quickSearch('情報Ⅰ')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報Ⅰ</button>
+                    <button onclick="quickSearchBySubject('現代の国語', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">現代の国語</button>
+                    <button onclick="quickSearchBySubject('言語文化', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">言語文化</button>
+                    <button onclick="quickSearchBySubject('数学Ⅰ', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">数学Ⅰ</button>
+                    <button onclick="quickSearchBySubject('物理基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">物理基礎</button>
+                    <button onclick="quickSearchBySubject('化学基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">化学基礎</button>
+                    <button onclick="quickSearchBySubject('生物基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生物基礎</button>
+                    <button onclick="quickSearchBySubject('情報Ⅰ', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報Ⅰ</button>
                 </div>
 
                 <!-- 工業高校 -->
                 <div id="scat-hs_tech" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="quickSearch('電気回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電気回路</button>
-                    <button onclick="quickSearch('電子回路')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電子回路</button>
-                    <button onclick="quickSearch('プログラミング技術')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">プログラミング技術</button>
-                    <button onclick="quickSearch('機械設計')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">機械設計</button>
+                    <button onclick="quickSearchBySubject('電気回路', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電気回路</button>
+                    <button onclick="quickSearchBySubject('電子回路', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電子回路</button>
+                    <button onclick="quickSearchBySubject('プログラミング技術', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">プログラミング技術</button>
+                    <button onclick="quickSearchBySubject('機械設計', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">機械設計</button>
                 </div>
 
                 <!-- 商業高校 -->
                 <div id="scat-hs_comm" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="quickSearch('簿記')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">簿記</button>
-                    <button onclick="quickSearch('原価計算')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">原価計算</button>
-                    <button onclick="quickSearch('マーケティング')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">マーケティング</button>
-                    <button onclick="quickSearch('情報処理')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報処理</button>
+                    <button onclick="quickSearchBySubject('簿記', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">簿記</button>
+                    <button onclick="quickSearchBySubject('原価計算', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">原価計算</button>
+                    <button onclick="quickSearchBySubject('マーケティング', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">マーケティング</button>
+                    <button onclick="quickSearchBySubject('情報処理', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報処理</button>
                 </div>
             </div>
         </div>
@@ -948,7 +953,13 @@
             '数学': {
                 '中学1年生': ['正の数・負の数', '文字と式', '一元一次方程式', '比例と反比例', '平面図形・空間図形', 'データの活用'],
                 '中学2年生': ['式の計算', '連立方程式', '一次関数', '平行線と合同', '三角形と四角形', '確率'],
-                '中学3年生': ['多項式の展開と因数分解', '平方根', '二次方程式', '関数 y=ax²', '相似な図形', '円周角の定理', '三平方の定理']
+                '中学3年生': ['多項式の展開と因数分解', '平方根', '二次方程式', '関数 y=ax²', '相似な図形', '円周角の定理', '三平方の定理'],
+                '高校1年生': ['数と式', '集合と命題', '2次関数', '図形と計量', 'データの分析'],
+                '高校2年生': ['式と証明', '複素数と方程式', '図形と方程式', '三角関数', '指数関数・対数関数', '微分法と積分法'],
+                '高校3年生': ['極限', '微分法', '積分法とその応用']
+            },
+            '数学Ⅰ': {
+                '高校1年生': ['数と式', '集合と命題', '2次関数', '図形と計量', 'データの分析']
             },
             '国語': {
                 '小学1年生': ['ひらがな・カタカナ', 'かん字のきほん', 'ことばあそび'],
@@ -956,7 +967,13 @@
                 '小学3年生': ['漢字の音と訓', '説明文の組み立て', 'ローマ字'],
                 '中学1年生': ['現代文読解', '文法の基礎（品詞）', '故事成語・漢文入門'],
                 '中学2年生': ['用言の活用', '古典の世界（竹取物語・平家物語）', '短歌・俳句'],
-                '中学3年生': ['論理的文章の読解', '和歌・古典文学', '言葉の歴史と変遷']
+                '中学3年生': ['論理的文章の読解', '和歌・古典文学', '言葉の歴史と変遷'],
+                '高校1年生': ['現代の国語', '言語文化'],
+                '高校2年生': ['論理国語', '文学国語', '古典探究'],
+                '高校3年生': ['大学入試現代文演習', '大学入試古典演習']
+            },
+            '現代の国語': {
+                '高校1年生': ['論理的な文章', '文学的な文章', '実用的な文章']
             },
             '理科': {
                 '小学3年生': ['植物のそだちかた', 'チョウの育ち方', '光と音の性質', 'じしゃくのふしぎ'],
@@ -965,14 +982,24 @@
                 '小学6年生': ['ものの燃え方と空気', 'ヒトや動物の体', '植物の養分と水', '水溶液の性質', 'てこの規則性', '地層と火山'],
                 '中学1年生': ['植物の生活と種類', '身の回りの物質と気体', '光・音・力', '大地の成り立ちと地震'],
                 '中学2年生': ['化学変化と原子・分子', '動物の生活と生物の変遷', '天気とその変化', '電流と磁界'],
-                '中学3年生': ['化学変化とイオン・酸とアルカリ', '生命の連続性・生殖', '物体の運動と力学的エネルギー', '地球と宇宙']
+                '中学3年生': ['化学変化とイオン・酸とアルカリ', '生命の連続性・生殖', '物体の運動と力学的エネルギー', '地球と宇宙'],
+                '高校1年生': ['物理基礎', '化学基礎', '生物基礎', '地学基礎']
             },
             '英語': {
                 '小学5年生': ['アルファベット', '身の回りの単語', '簡単な自己紹介'],
                 '小学6年生': ['日課や季節の表現', '過去の出来事', '中学校の行事案内'],
                 '中学1年生': ['be動詞と一般動詞', '助動詞 can', '複数形・人称代名詞', '現在進行形', '疑問詞 (what/where/when)'],
                 '中学2年生': ['過去形・過去進行形', '未来の表現 (will / be going to)', '助動詞 (must/may/should)', '不定詞・動名詞', '比較表現'],
-                '中学3年生': ['受動態', '現在完了形', '関係代名詞', '間接疑問文', '分詞の後置修飾']
+                '中学3年生': ['受動態', '現在完了形', '関係代名詞', '間接疑問文', '分詞の後置修飾'],
+                '高校1年生': ['英語コミュニケーションⅠ', '論理・表現Ⅰ'],
+                '高校2年生': ['英語コミュニケーションⅡ', '論理・表現Ⅱ'],
+                '高校3年生': ['英語コミュニケーションⅢ', '総合英語演習']
+            },
+            '情報': {
+                '高校1年生': ['情報社会の問題解決', 'コミュニケーションと情報デザイン', 'プログラミング', '情報通信ネットワーク']
+            },
+            '情報Ⅰ': {
+                '高校1年生': ['情報社会の問題解決', 'コミュニケーションと情報デザイン', 'プログラミング', '情報通信ネットワーク']
             },
             '社会': {
                 '小学3年生': ['わたしたちのまち', 'はたらく人とくらし'],
@@ -1419,7 +1446,7 @@
             if (subject === '算数・数学' || subject === '算数 / 数学' || subject === '算数' || subject === '数学') {
                 if (grade && grade.includes('小学')) {
                     targetSub = '算数';
-                } else if (grade && grade.includes('中学')) {
+                } else if (grade && (grade.includes('中学') || grade.includes('高校'))) {
                     targetSub = '数学';
                 } else {
                     targetSub = null;
@@ -1447,6 +1474,18 @@
                 for (let s in UNIT_MASTER) {
                     for (let g in UNIT_MASTER[s]) units.push(...UNIT_MASTER[s][g]);
                 }
+            }
+
+            // MATERIAL_DATA に存在する該当教科・学年の単元も補完
+            if (typeof MATERIAL_DATA !== 'undefined' && Array.isArray(MATERIAL_DATA)) {
+                MATERIAL_DATA.forEach(item => {
+                    if (!item.unit) return;
+                    const matchSub = !targetSub || item.subject === targetSub || (targetSub === '数学' && (item.subject === '数学' || item.subject === '数学Ⅰ')) || (targetSub === '国語' && (item.subject === '国語' || item.subject === '現代の国語'));
+                    const matchG = !grade || item.grade === grade;
+                    if (matchSub && matchG) {
+                        units.push(item.unit);
+                    }
+                });
             }
 
             return [...new Set(units)];
@@ -1620,8 +1659,10 @@
                 currentTab = unitItem.tab;
                 const elemBtn = document.getElementById('tab-elementary');
                 const jnrBtn = document.getElementById('tab-junior');
+                const highBtn = document.getElementById('tab-high');
                 if (elemBtn) elemBtn.classList.toggle('active', currentTab === 'elementary');
                 if (jnrBtn) jnrBtn.classList.toggle('active', currentTab === 'junior');
+                if (highBtn) highBtn.classList.toggle('active', currentTab === 'high');
                 activeSubjectFilter = unitItem.subject || null;
                 activeUnitFilter = unitName;
             }
@@ -1639,8 +1680,12 @@
         function quickSearchBySubject(subjectName, schoolType) {
             if (schoolType) {
                 currentTab = schoolType;
-                document.getElementById('tab-elementary').classList.toggle('active', currentTab === 'elementary');
-                document.getElementById('tab-junior').classList.toggle('active', currentTab === 'junior');
+                const elemBtn = document.getElementById('tab-elementary');
+                const jnrBtn = document.getElementById('tab-junior');
+                const highBtn = document.getElementById('tab-high');
+                if (elemBtn) elemBtn.classList.toggle('active', currentTab === 'elementary');
+                if (jnrBtn) jnrBtn.classList.toggle('active', currentTab === 'junior');
+                if (highBtn) highBtn.classList.toggle('active', currentTab === 'high');
             }
             activeSubjectFilter = subjectName;
             buildSubjectChips();
@@ -1734,10 +1779,18 @@
             });
 
             if(filtered.length === 0) {
+                let emptyMsg = '該当する教材プリントがありません。';
+                if (filterValue === 'available') {
+                    if (currentTab === 'high') {
+                        emptyMsg = '高校生向けの今すぐ印刷可能なプリントは現在準備中です。<br><span class="text-[11px] font-normal text-neutral-400 mt-1">「表示: すべて (準備中含む)」に切り替えると、公開予定の教材一覧をご覧いただけます。</span>';
+                    } else if (currentTab === 'elementary') {
+                        emptyMsg = '小学生向けの今すぐ印刷可能なプリントは現在準備中です。<br><span class="text-[11px] font-normal text-neutral-400 mt-1">「表示: すべて (準備中含む)」に切り替えると、公開予定の教材一覧をご覧いただけます。</span>';
+                    }
+                }
                 container.innerHTML = `
                     <div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs flex flex-col items-center">
                         <i data-lucide="inbox" class="w-8 h-8 mb-2 stroke-1"></i>
-                        該当する教材プリントがありません。
+                        ${emptyMsg}
                     </div>`;
                 lucide.createIcons();
                 return;
@@ -2340,8 +2393,12 @@
 
         async function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-elementary').classList.toggle('active', tab === 'elementary');
-            document.getElementById('tab-junior').classList.toggle('active', tab === 'junior');
+            const elemBtn = document.getElementById('tab-elementary');
+            const jnrBtn = document.getElementById('tab-junior');
+            const highBtn = document.getElementById('tab-high');
+            if (elemBtn) elemBtn.classList.toggle('active', tab === 'elementary');
+            if (jnrBtn) jnrBtn.classList.toggle('active', tab === 'junior');
+            if (highBtn) highBtn.classList.toggle('active', tab === 'high');
             activeSubjectFilter = null; 
             activeUnitFilter = null; 
             await loadMaterials(true); // タブ切替時にも外部 data.json と同期
