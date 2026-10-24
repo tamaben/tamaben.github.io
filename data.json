@@ -25,7 +25,7 @@
     "pdfAdv": "#",
     "pdfAns": "print/chu1-su1-cota.pdf",
     "textbook": "",
-    "downloadRestricted": true,
+    "downloadRestricted": false,
     "pdfBasicAns": "print/chu1-su1-cota.pdf",
     "pdfAdvAns": "#"
   },
