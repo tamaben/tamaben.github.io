@@ -1,41 +1,20 @@
 [
   {
-    "id": "chu1-su1",
-    "tab": "junior",
-    "grade": "中学1年生",
-    "subject": "数学",
-    "unit": "正の数・負の数",
-    "title": "正の数・負の数と数直線",
-    "tags": ["中1", "数学", "正の数", "負の数", "数直線", "絶対値", "加法", "減法", "乗法", "除法", "chu1-su1", "chu1su1", "print/chu1-su1.pdf"],
-    "pdfBasic": "print/chu1-su1.pdf",
-    "pdfAdv": "#",
-    "pdfAns": "print/chu1-su1-cota.pdf",
-    "textbook": ""
+    "id": "note-2",
+    "date": "2026.10.24",
+    "category": "お知らせ",
+    "badgeColor": "neutral",
+    "title": "タマベンサイト リニューアルのお知らせ",
+    "content": "日頃よりタマベンをご利用いただき、誠にありがとうございます。\n学習者のみなさまや保護者の方々により快適にご利用いただけるよう、タマベン公式サイトを大幅にリニューアルいたしました。\n\n今回のリニューアルの主な内容は以下の通りです。\n\n[box]\n<h4 class=\"font-bold text-sm text-neutral-900 mb-1.5 flex items-center gap-2\"><span class=\"note-step-number\">1</span>大幅なデザインの変更</h4>\n勉強に集中しやすく、目に優しい「紙とインク」を基調としたデザインへと全面刷新いたしました。スマートフォンやタブレット、パソコンなど、どの端末からでも見やすく快適に教材プリントをご利用いただけます。\n[/box]\n\n[box]\n<h4 class=\"font-bold text-sm text-neutral-900 mb-1.5 flex items-center gap-2\"><span class=\"note-step-number\">2</span>検索機能で欲しい教材がすぐに見つかる</h4>\n学年・教科・単元の連動フィルターやキーワード検索を大幅に強化しました。今学びたい単元や復習したい教材プリントをスムーズに探して、すぐに印刷やプレビューが可能です。\n[/box]\n\n「学ぶことは、もっと楽しく。」を合言葉に、これからも使いやすいサイトを目指してまいります。\n新しくなったタマベンをぜひ日々の家庭学習にお役立てください。",
+    "important": false
   },
   {
-    "id": "j3-e-01",
-    "tab": "junior",
-    "grade": "中学3年生",
-    "subject": "英語",
-    "unit": "受動態",
-    "title": "Unit 1 受動態",
-    "tags": ["中3", "英語", "文法", "受動態", "過去分詞", "be動詞", "chu3-en1", "j3-e-01"],
-    "pdfBasic": "print/chu3-en1.pdf",
-    "pdfAdv": "#",
-    "pdfAns": "print/chu3-en1-cota.pdf",
-    "textbook": ""
-  },
-  {
-    "id": "j3-e-02",
-    "tab": "junior",
-    "grade": "中学3年生",
-    "subject": "英語",
-    "unit": "現在完了形",
-    "title": "Unit 2 現在完了形",
-    "tags": ["中3", "英語", "文法", "現在完了", "過去分詞", "have", "chu3-en2", "j3-e-02"],
-    "pdfBasic": "print/chu3-en2.pdf",
-    "pdfAdv": "#",
-    "pdfAns": "print/chu3-en2-cota.pdf",
-    "textbook": ""
-  },
-  
+    "id": "note-1",
+    "date": "2026.10.24",
+    "category": "教材情報",
+    "badgeColor": "neutral",
+    "title": "タマベンサイトの教材制作についてのお知らせ",
+    "content": "タマベンにおける今後の教材制作の進め方についてお知らせいたします。\n\n[box]\n<h4 class=\"font-bold text-sm text-neutral-900 mb-1.5 flex items-center gap-2\"><span class=\"note-step-number\">1</span>教材の制作順序について</h4>\n・まず、<strong>中学校の教材</strong>から作成していき、その後に小学校、高校の順番で進めていきます。<br>\n・これに合わせて、まずは<strong>「中学1年生の数学」</strong>の教材から集中的に制作を進めてまいります。<br>\n・数学の制作が一通り進んだ後、英語や理科、社会などの各教科へ順番に進めていきます。\n[/box]\n\n[box]\n<h4 class=\"font-bold text-sm text-neutral-900 mb-1.5 flex items-center gap-2\"><span class=\"note-step-number\">2</span>お問い合わせフォームの設置予定について</h4>\n小学校・中学校・高校の基本教科が一通り完成した段階で、サイト内にお問い合わせフォームを追加させていただきます。\n[/box]\n\n[box]\n<h4 class=\"font-bold text-sm text-neutral-900 mb-1.5 flex items-center gap-2\"><span class=\"note-step-number\">3</span>教材の不具合・誤字などのご報告について（一時的な対応）</h4>\nお問い合わせフォームが設置されるまでの「一時的な対応」として、作成途中の教材に万が一不具合や誤字などがございましたら、<strong>タマベンチームの公式YouTubeのコミュニティ</strong>にて教えていただけますと幸いです。<br>\n<span class=\"text-xs text-neutral-600 mt-1 block\">※お問い合わせフォーム設置後は、フォームより受け付けいたします。</span>\n[/box]\n\nみなさまの声を大切にしながら、より分かりやすく楽しい教材を順次お届けしてまいります。どうぞよろしくお願いいたします。",
+    "important": true
+  }
+]
