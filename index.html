@@ -1183,6 +1183,9 @@
 
         let MATERIAL_DATA = [];
         let ANNOUNCEMENTS_DATA = [];
+        let lastMaterialDataJson = '';
+        let lastAnnouncementsJson = '';
+        let currentActiveHash = null;
         let currentTab = 'elementary';
         let activeSubjectFilter = null; 
         let activeUnitFilter = null; 
@@ -1591,19 +1594,38 @@
                 }
             });
 
+            const currentDataJson = JSON.stringify(MATERIAL_DATA);
+            const dataChanged = currentDataJson !== lastMaterialDataJson;
+            lastMaterialDataJson = currentDataJson;
+
+            const wasInitialLoad = !isLoaded;
             isLoaded = true; 
-            buildSubjectChips();
-            syncSearchUnits();
-            renderPopularUnits();
-            
-            // 現在のハッシュURLに応じた画面を描画・ルーティング（初回・更新時共通）
-            handleHashChange(false);
+
+            if (wasInitialLoad) {
+                buildSubjectChips();
+                syncSearchUnits();
+                renderPopularUnits();
+                // 初回ロード時は画面初期化（スクロール位置はリセットしない）
+                handleHashChange(false, false);
+            } else if (dataChanged) {
+                // バックグラウンド同期でデータ変更があった場合のみ差分更新（画面遷移やスクロールは絶対に行わない）
+                buildSubjectChips();
+                syncSearchUnits();
+                renderPopularUnits();
+                const hash = window.location.hash || '#home';
+                if (hash === '#home' || hash === '') {
+                    renderMaterials();
+                } else if (hash === '#register' || hash === '#mypage') {
+                    renderMyPage();
+                }
+            }
         }
 
         // ━━━━━━━━━━━━━━━━━━━━
         // お知らせシステム（note.json 完全非同期同期）
         // ━━━━━━━━━━━━━━━━━━━━
         async function loadAnnouncements(isSilent = false) {
+            let dataChanged = false;
             try {
                 const refreshIcon = document.getElementById('news-refresh-icon');
                 if (refreshIcon && !isSilent) refreshIcon.classList.add('animate-spin');
@@ -1652,20 +1674,29 @@
                     }
                 }
 
-                if (Array.isArray(loadedNotes) && loadedNotes.length > 0) {
-                    ANNOUNCEMENTS_DATA = loadedNotes;
-                    try {
-                        localStorage.setItem('tamaben_cached_notes', JSON.stringify(loadedNotes));
-                    } catch(_) {}
-                } else {
+                if (Array.isArray(loadedNotes)) {
+                    const newNotesJson = JSON.stringify(loadedNotes);
+                    if (newNotesJson !== lastAnnouncementsJson) {
+                        ANNOUNCEMENTS_DATA = loadedNotes;
+                        lastAnnouncementsJson = newNotesJson;
+                        dataChanged = true;
+                        try {
+                            localStorage.setItem('tamaben_cached_notes', newNotesJson);
+                        } catch(_) {}
+                    }
+                } else if (!lastAnnouncementsJson) {
                     const cached = localStorage.getItem('tamaben_cached_notes');
                     if (cached) {
                         try {
                             ANNOUNCEMENTS_DATA = JSON.parse(cached);
+                            lastAnnouncementsJson = cached;
+                            dataChanged = true;
                         } catch (_) {}
                     }
                     if (!ANNOUNCEMENTS_DATA) {
                         ANNOUNCEMENTS_DATA = [];
+                        lastAnnouncementsJson = '[]';
+                        dataChanged = true;
                     }
                 }
             } catch (e) {
@@ -1673,7 +1704,9 @@
             } finally {
                 const refreshIcon = document.getElementById('news-refresh-icon');
                 if (refreshIcon) refreshIcon.classList.remove('animate-spin');
-                renderAnnouncements();
+                if (dataChanged) {
+                    renderAnnouncements();
+                }
             }
         }
 
@@ -3006,7 +3039,7 @@
 
         }
 
-        async function handleHashChange(shouldReloadData = false) {
+        async function handleHashChange(shouldReloadData = false, shouldScroll = true) {
             if (!isLoaded) {
                 // 初回読み込み完了前は loadMaterials 完了時の自動呼び出しを待機
                 return;
@@ -3018,6 +3051,9 @@
             }
 
             const hash = window.location.hash || '#home';
+            const isHashChanged = currentActiveHash !== hash;
+            currentActiveHash = hash;
+
             const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-users-info', 'view-parents-report'];
 
             const updateDOM = () => {
@@ -3057,7 +3093,11 @@
                     if (targetEl) targetEl.classList.remove('hidden');
                 }
                 updateNavActiveState(hash);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // 別の画面（ハッシュ）への遷移時のみスクロール位置を先頭に戻す
+                if (isHashChanged && shouldScroll) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             };
 
             // ブラウザの View Transition API が利用可能な場合はシームレスな画面遷移を実行
@@ -3068,7 +3108,7 @@
             }
         }
 
-        window.addEventListener('hashchange', () => handleHashChange(true));
+        window.addEventListener('hashchange', () => handleHashChange(true, true));
         document.addEventListener('DOMContentLoaded', async () => {
             if (window.pdfjsLib) {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
