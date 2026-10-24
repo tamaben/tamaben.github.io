@@ -427,8 +427,45 @@
                 </div>
             </section>
 
+            <!-- ━━━━━━━━━━━━━━━━━━━━
+                 お知らせ欄 (note.json 連動)
+                 ━━━━━━━━━━━━━━━━━━━━ -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2" id="announcements-section">
+                <div class="bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-6 shadow-2xs">
+                    <!-- ヘッダー行 -->
+                    <div class="flex items-center justify-between gap-3 pb-3 border-b border-neutral-100">
+                        <div class="flex items-center gap-2 sm:gap-2.5">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-ink text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <i data-lucide="bell" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-sm sm:text-base font-black text-ink tracking-tight">お知らせ</h2>
+                                    <span id="news-badge-count" class="text-[10px] bg-neutral-100 text-neutral-600 font-bold px-2 py-0.5 rounded-full border border-neutral-200">読み込み中...</span>
+                                </div>
+                                <p class="text-[10.5px] text-ink-muted font-medium hidden sm:block mt-0.5">メンテナンスや教材に関する最新情報をお知らせします</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="loadAnnouncements(false)" title="最新のお知らせを再取得" class="text-xs text-ink-muted hover:text-ink px-2.5 py-1 rounded-lg hover:bg-neutral-100 transition-colors flex items-center gap-1 active:scale-95">
+                                <i data-lucide="refresh-cw" class="w-3 h-3 sm:w-3.5 sm:h-3.5" id="news-refresh-icon"></i>
+                                <span class="text-[11px] font-bold">更新</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- お知らせリスト（note.jsonから動的生成） -->
+                    <div id="announcements-list" class="divide-y divide-neutral-100">
+                        <div class="py-6 text-center text-ink-muted text-xs font-bold flex items-center justify-center gap-2">
+                            <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-ink-subtle"></i>
+                            お知らせを読み込み中...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- メイン教材カタログエリア -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
                 
                 <!-- コントロールバー（学年区分タブ・教科水平スクロール・単元連動フィルター） -->
                 <div class="space-y-4 mb-8">
@@ -836,6 +873,27 @@
                 </div>
             </div>
 
+            <!-- 最新のお知らせ一覧カード (note.json 連動) -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center shadow-xs">
+                            <i data-lucide="bell" class="w-4 h-4"></i>
+                        </span>
+                        <div>
+                            <h3 class="font-black text-base sm:text-lg text-ink">タマベンからのお知らせ</h3>
+                            <p class="text-[11px] font-bold text-ink-muted">メンテナンスや教材に関する最新情報（note.json連動）</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="users-announcements-list" class="divide-y divide-neutral-100">
+                    <div class="py-6 text-center text-ink-muted text-xs font-bold flex items-center justify-center gap-2">
+                        <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-ink-subtle"></i>
+                        お知らせを読み込み中...
+                    </div>
+                </div>
+            </div>
+
             <!-- ご褒美シール枠のご案内カード（4:3 画像対応） -->
             <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
                 <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6 flex-wrap gap-2">
@@ -1013,6 +1071,7 @@
         };
 
         let MATERIAL_DATA = [];
+        let ANNOUNCEMENTS_DATA = [];
         let currentTab = 'elementary';
         let activeSubjectFilter = null; 
         let activeUnitFilter = null; 
@@ -1430,14 +1489,222 @@
             handleHashChange(false);
         }
 
+        // ━━━━━━━━━━━━━━━━━━━━
+        // お知らせシステム（note.json 完全非同期同期）
+        // ━━━━━━━━━━━━━━━━━━━━
+        async function loadAnnouncements(isSilent = false) {
+            try {
+                const refreshIcon = document.getElementById('news-refresh-icon');
+                if (refreshIcon && !isSilent) refreshIcon.classList.add('animate-spin');
+
+                const originUrl = (window.location.origin && window.location.origin !== 'null') ? `${window.location.origin}/note.json` : '';
+                const currentBaseUrl = (window.location.href && !window.location.href.startsWith('file:')) ? new URL('note.json', window.location.href).href : '';
+
+                const candidateUrls = [...new Set([
+                    originUrl,
+                    currentBaseUrl,
+                    'https://tamaben.github.io/note.json',
+                    '/note.json',
+                    'note.json',
+                    './note.json'
+                ])].filter(u => u && u.trim() !== '');
+
+                let loadedNotes = null;
+
+                for (const url of candidateUrls) {
+                    try {
+                        const response = await fetch(url, { cache: 'no-cache' });
+                        if (response.ok) {
+                            let text = await response.text();
+                            if (!text || text.trim() === '') continue;
+
+                            let parsed = null;
+                            try {
+                                parsed = JSON.parse(text);
+                            } catch (parseErr) {
+                                const trimmed = text.trim();
+                                if (trimmed.startsWith('[') && !trimmed.endsWith(']')) {
+                                    const cleaned = trimmed.replace(/,\s*$/, '') + '\n]';
+                                    try {
+                                        parsed = JSON.parse(cleaned);
+                                    } catch (_) {}
+                                }
+                            }
+
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                loadedNotes = parsed;
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        // 次の候補を試行
+                    }
+                }
+
+                if (Array.isArray(loadedNotes) && loadedNotes.length > 0) {
+                    ANNOUNCEMENTS_DATA = loadedNotes;
+                    try {
+                        localStorage.setItem('tamaben_cached_notes', JSON.stringify(loadedNotes));
+                    } catch(_) {}
+                } else if (ANNOUNCEMENTS_DATA.length === 0) {
+                    const cached = localStorage.getItem('tamaben_cached_notes');
+                    if (cached) {
+                        try {
+                            ANNOUNCEMENTS_DATA = JSON.parse(cached);
+                        } catch (_) {}
+                    }
+                    if (!ANNOUNCEMENTS_DATA || ANNOUNCEMENTS_DATA.length === 0) {
+                        // オフライン・file://時の標準フォールバック
+                        ANNOUNCEMENTS_DATA = [
+                            {
+                                id: "note-4",
+                                date: "2026.10.24",
+                                category: "メンテナンス",
+                                badgeColor: "amber",
+                                title: "【定期メンテナンス】サーバー機器保守のお知らせ",
+                                content: "下記の日程にて、サーバー機器の定期メンテナンスを実施いたします。\n\n・実施日時：2026年10月28日(水) 深夜 2:00 〜 4:00\n・影響範囲：作業時間中も教材のプレビュー閲覧・PDF印刷は通常通りご利用いただけますが、一時的にページの読み込みに時間がかかる場合がございます。\n\n学習者および保護者のみなさまにはご不便をおかけいたしますが、安定運用のための保守にご理解とご協力をよろしくお願い申し上げます。",
+                                important: false
+                            },
+                            {
+                                id: "note-3",
+                                date: "2026.10.24",
+                                category: "教材情報",
+                                badgeColor: "emerald",
+                                title: "高校生向け教材（数学Ⅰ・現代の国語・情報Ⅰ）の作成準備中",
+                                content: "現在、高校生向けの各教科教材プリントの作成準備を進めております。\n高校生プリントのタブより公開予定の単元をご確認いただけます。完成したプリントから順次公開してまいりますので、高校生のみなさまや先取り学習にご活用ください。",
+                                important: false
+                            },
+                            {
+                                id: "note-2",
+                                date: "2026.10.23",
+                                category: "教材情報",
+                                badgeColor: "emerald",
+                                title: "数学プリント「正の数・負の数と数直線」の公開とダウンロードについて",
+                                content: "中学1年生向け数学「正の数・負の数と数直線」を公開しました。\n現在プリントの調整作業のためダウンロードを一時制限（プレビュー閲覧は可能）としております。調整が完了次第、ダウンロード制限を解除いたしますので今しばらくお待ちください。",
+                                important: false
+                            },
+                            {
+                                id: "note-1",
+                                date: "2026.10.20",
+                                category: "お知らせ",
+                                badgeColor: "blue",
+                                title: "教材上部のご褒美シール枠（2cm×2cm）の活用について",
+                                content: "学習後の達成感を高めるため、教材上部に2cm×2cmのご褒美シール枠を設けています。\n市販のシールを貼ることで、お子さまが自発的に「やりたい！」と楽しんで学べる学習習慣づくりにお役立ていただけます。（※一部教材には枠が付いていない場合がございます）",
+                                important: false
+                            }
+                        ];
+                    }
+                }
+            } catch (e) {
+                console.error('[Tamaben] note.json の取得エラー:', e);
+            } finally {
+                const refreshIcon = document.getElementById('news-refresh-icon');
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+                renderAnnouncements();
+            }
+        }
+
+        function renderAnnouncements() {
+            const listContainer = document.getElementById('announcements-list');
+            const usersListContainer = document.getElementById('users-announcements-list');
+            const badgeCount = document.getElementById('news-badge-count');
+            
+            if (badgeCount) {
+                badgeCount.textContent = `${ANNOUNCEMENTS_DATA.length}件`;
+            }
+
+            const buildHTML = (prefix) => {
+                if (!ANNOUNCEMENTS_DATA || ANNOUNCEMENTS_DATA.length === 0) {
+                    return `
+                        <div class="py-8 text-center text-ink-muted text-xs font-bold flex flex-col items-center">
+                            <i data-lucide="inbox" class="w-6 h-6 mb-1.5 stroke-1 text-ink-subtle"></i>
+                            現在メンテナンスや教材に関するお知らせはありません。
+                        </div>`;
+                }
+
+                return ANNOUNCEMENTS_DATA.map((item, index) => {
+                    const safeId = item.id || `news-${index}`;
+                    const elementId = `${prefix}-${safeId}`;
+
+                    let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+                    if (item.category === 'メンテナンス' || item.badgeColor === 'amber') {
+                        badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+                    } else if (item.category === '教材情報' || item.category === '更新' || item.badgeColor === 'emerald') {
+                        badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                    } else if (item.category === '重要' || item.important || item.badgeColor === 'rose') {
+                        badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                    } else {
+                        badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+                    }
+
+                    return `
+                        <div class="py-3 sm:py-3.5 transition-colors group">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 cursor-pointer select-none" onclick="toggleAnnouncement('${elementId}')">
+                                <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap min-w-0">
+                                    <span class="text-[11px] font-mono font-bold text-ink-muted tracking-tight shrink-0">${item.date || ''}</span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">
+                                        ${item.category || 'お知らせ'}
+                                    </span>
+                                    ${item.important ? `
+                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200 shrink-0">
+                                            重要
+                                        </span>
+                                    ` : ''}
+                                    <h3 class="text-xs sm:text-sm font-bold text-ink group-hover:text-neutral-600 transition-colors break-words">
+                                        ${item.title || ''}
+                                    </h3>
+                                </div>
+                                <div class="flex items-center gap-1 text-[11px] font-bold text-ink-subtle group-hover:text-ink shrink-0 self-end sm:self-auto">
+                                    <span class="text-[10px]" id="arrow-label-${elementId}">開く</span>
+                                    <i data-lucide="chevron-down" id="arrow-icon-${elementId}" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+                                </div>
+                            </div>
+                            <div id="announcement-content-${elementId}" class="hidden mt-2.5 text-xs text-neutral-600 leading-relaxed bg-neutral-50/80 p-3.5 sm:p-4 rounded-xl border border-neutral-100">
+                                <div class="whitespace-pre-line font-medium">${item.content || ''}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            if (listContainer) {
+                listContainer.innerHTML = buildHTML('home');
+            }
+            if (usersListContainer) {
+                usersListContainer.innerHTML = buildHTML('users');
+            }
+
+            lucide.createIcons();
+        }
+
+        function toggleAnnouncement(elementId) {
+            const contentEl = document.getElementById(`announcement-content-${elementId}`);
+            const iconEl = document.getElementById(`arrow-icon-${elementId}`);
+            const labelEl = document.getElementById(`arrow-label-${elementId}`);
+            if (!contentEl) return;
+
+            const isHidden = contentEl.classList.contains('hidden');
+            if (isHidden) {
+                contentEl.classList.remove('hidden');
+                if (iconEl) iconEl.classList.add('rotate-180');
+                if (labelEl) labelEl.textContent = '閉じる';
+            } else {
+                contentEl.classList.add('hidden');
+                if (iconEl) iconEl.classList.remove('rotate-180');
+                if (labelEl) labelEl.textContent = '開く';
+            }
+        }
+
         // タブフォーカス時にバックグラウンド同期
         window.addEventListener('focus', () => {
             loadMaterials(true);
+            loadAnnouncements(true);
         });
 
-        // 15秒ごとに外部 data.json と自動同期ポーリング
+        // 15秒ごとに外部 data.json & note.json と自動同期ポーリング
         setInterval(() => {
             loadMaterials(true);
+            loadAnnouncements(true);
         }, 15000);
 
         function getUnitsFor(subject, grade) {
@@ -2657,7 +2924,10 @@
             lucide.createIcons();
             loadStatsFromStorage();
             loadSettingsFromStorage();
-            await loadMaterials();
+            await Promise.all([
+                loadMaterials(),
+                loadAnnouncements()
+            ]);
         });
     </script>
 </body>
