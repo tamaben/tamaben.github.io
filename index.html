@@ -312,6 +312,74 @@
             100% { transform: scale(1); }
         }
 
+        /* ━━━━━━━━━━━━━━━━━━━━
+           お知らせ用リッチスタイル（線・枠・図形・ステップ）
+           ━━━━━━━━━━━━━━━━━━━━ */
+        .note-hr {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 1.25rem 0;
+        }
+        .note-hr-dashed {
+            border: 0;
+            border-top: 2px dashed #cbd5e1;
+            margin: 1.25rem 0;
+        }
+        .note-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #1e293b;
+        }
+        .note-box-blue {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #172554;
+        }
+        .note-box-emerald {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #064e3b;
+        }
+        .note-box-amber {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #78350f;
+        }
+        .note-box-dashed {
+            background-color: #ffffff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            color: #1e293b;
+        }
+        .note-step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 9999px;
+            background-color: #0f172a;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
         /* ユーザーのモーション軽減設定への配慮 */
         @media (prefers-reduced-motion: reduce) {
             .view-section:not(.hidden),
@@ -997,6 +1065,49 @@
         </div>
     </footer>
 
+    <!-- ━━━━━━━━━━━━━━━━━━━━
+         お知らせ全画面モーダル (Announcement Fullscreen Modal)
+         ━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="announcement-modal" class="fixed inset-0 z-[100] hidden bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 md:p-6 transition-all" onclick="handleAnnouncementModalBackdrop(event)">
+        <div class="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-neutral-200 paper-card" onclick="event.stopPropagation()">
+            
+            <!-- モーダルヘッダー -->
+            <div class="px-5 sm:px-7 py-4 border-b border-neutral-200 bg-white sticky top-0 z-10 flex items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <span id="modal-news-badge" class="text-xs font-bold px-2.5 py-0.5 rounded border">お知らせ</span>
+                    <span id="modal-news-date" class="text-xs font-mono font-bold text-ink-muted">2026.10.24</span>
+                    <span id="modal-news-important" class="hidden text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">重要</span>
+                </div>
+                
+                <button onclick="closeAnnouncementModal()" class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-ink flex items-center justify-center transition-colors active:scale-95" aria-label="閉じる">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- スクロール可能な本文領域 -->
+            <div class="p-5 sm:p-8 overflow-y-auto flex-grow bg-white text-ink">
+                <h1 id="modal-news-title" class="text-xl sm:text-2xl font-black text-ink leading-snug tracking-tight mb-5 pb-3 border-b border-neutral-100">
+                    <!-- タイトル -->
+                </h1>
+
+                <div id="modal-news-content" class="text-sm text-ink-light leading-relaxed">
+                    <!-- 線・枠・図形対応のリッチコンテンツ -->
+                </div>
+            </div>
+
+            <!-- モーダルフッター -->
+            <div class="px-5 sm:px-7 py-3.5 border-t border-neutral-100 bg-neutral-50 flex items-center justify-between shrink-0">
+                <span class="text-[11px] text-ink-muted font-bold flex items-center gap-1.5">
+                    <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                    タマベン公式お知らせ
+                </span>
+                <button onclick="closeAnnouncementModal()" class="px-5 py-2 bg-ink text-white rounded-xl text-xs font-bold hover:bg-neutral-800 transition-all shadow-sm active:scale-95 flex items-center gap-1.5">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- スクリプト（単元マスター＆自動連動システム搭載） -->
     <script>
         const UNIT_MASTER = {
@@ -1546,53 +1657,15 @@
                     try {
                         localStorage.setItem('tamaben_cached_notes', JSON.stringify(loadedNotes));
                     } catch(_) {}
-                } else if (ANNOUNCEMENTS_DATA.length === 0) {
+                } else {
                     const cached = localStorage.getItem('tamaben_cached_notes');
                     if (cached) {
                         try {
                             ANNOUNCEMENTS_DATA = JSON.parse(cached);
                         } catch (_) {}
                     }
-                    if (!ANNOUNCEMENTS_DATA || ANNOUNCEMENTS_DATA.length === 0) {
-                        // オフライン・file://時の標準フォールバック
-                        ANNOUNCEMENTS_DATA = [
-                            {
-                                id: "note-4",
-                                date: "2026.10.24",
-                                category: "メンテナンス",
-                                badgeColor: "amber",
-                                title: "【定期メンテナンス】サーバー機器保守のお知らせ",
-                                content: "下記の日程にて、サーバー機器の定期メンテナンスを実施いたします。\n\n・実施日時：2026年10月28日(水) 深夜 2:00 〜 4:00\n・影響範囲：作業時間中も教材のプレビュー閲覧・PDF印刷は通常通りご利用いただけますが、一時的にページの読み込みに時間がかかる場合がございます。\n\n学習者および保護者のみなさまにはご不便をおかけいたしますが、安定運用のための保守にご理解とご協力をよろしくお願い申し上げます。",
-                                important: false
-                            },
-                            {
-                                id: "note-3",
-                                date: "2026.10.24",
-                                category: "教材情報",
-                                badgeColor: "emerald",
-                                title: "高校生向け教材（数学Ⅰ・現代の国語・情報Ⅰ）の作成準備中",
-                                content: "現在、高校生向けの各教科教材プリントの作成準備を進めております。\n高校生プリントのタブより公開予定の単元をご確認いただけます。完成したプリントから順次公開してまいりますので、高校生のみなさまや先取り学習にご活用ください。",
-                                important: false
-                            },
-                            {
-                                id: "note-2",
-                                date: "2026.10.23",
-                                category: "教材情報",
-                                badgeColor: "emerald",
-                                title: "数学プリント「正の数・負の数と数直線」の公開とダウンロードについて",
-                                content: "中学1年生向け数学「正の数・負の数と数直線」を公開しました。\n現在プリントの調整作業のためダウンロードを一時制限（プレビュー閲覧は可能）としております。調整が完了次第、ダウンロード制限を解除いたしますので今しばらくお待ちください。",
-                                important: false
-                            },
-                            {
-                                id: "note-1",
-                                date: "2026.10.20",
-                                category: "お知らせ",
-                                badgeColor: "blue",
-                                title: "教材上部のご褒美シール枠（2cm×2cm）の活用について",
-                                content: "学習後の達成感を高めるため、教材上部に2cm×2cmのご褒美シール枠を設けています。\n市販のシールを貼ることで、お子さまが自発的に「やりたい！」と楽しんで学べる学習習慣づくりにお役立ていただけます。（※一部教材には枠が付いていない場合がございます）",
-                                important: false
-                            }
-                        ];
+                    if (!ANNOUNCEMENTS_DATA) {
+                        ANNOUNCEMENTS_DATA = [];
                     }
                 }
             } catch (e) {
@@ -1638,8 +1711,8 @@
                     }
 
                     return `
-                        <div class="py-3 sm:py-3.5 transition-colors group">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 cursor-pointer select-none" onclick="toggleAnnouncement('${elementId}')">
+                        <div class="py-3 sm:py-3.5 transition-colors group cursor-pointer hover:bg-neutral-50/70 rounded-xl px-2.5 -mx-2.5" onclick="openAnnouncementModal('${item.id}')">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 select-none">
                                 <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap min-w-0">
                                     <span class="text-[11px] font-mono font-bold text-ink-muted tracking-tight shrink-0">${item.date || ''}</span>
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">
@@ -1654,13 +1727,10 @@
                                         ${item.title || ''}
                                     </h3>
                                 </div>
-                                <div class="flex items-center gap-1 text-[11px] font-bold text-ink-subtle group-hover:text-ink shrink-0 self-end sm:self-auto">
-                                    <span class="text-[10px]" id="arrow-label-${elementId}">開く</span>
-                                    <i data-lucide="chevron-down" id="arrow-icon-${elementId}" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+                                <div class="flex items-center gap-1.5 text-[11px] font-bold text-ink-subtle group-hover:text-ink shrink-0 self-end sm:self-auto">
+                                    <span class="text-[10.5px]">全画面で読む</span>
+                                    <i data-lucide="maximize-2" class="w-3.5 h-3.5 group-hover:scale-110 transition-transform"></i>
                                 </div>
-                            </div>
-                            <div id="announcement-content-${elementId}" class="hidden mt-2.5 text-xs text-neutral-600 leading-relaxed bg-neutral-50/80 p-3.5 sm:p-4 rounded-xl border border-neutral-100">
-                                <div class="whitespace-pre-line font-medium">${item.content || ''}</div>
                             </div>
                         </div>
                     `;
@@ -1677,23 +1747,105 @@
             lucide.createIcons();
         }
 
-        function toggleAnnouncement(elementId) {
-            const contentEl = document.getElementById(`announcement-content-${elementId}`);
-            const iconEl = document.getElementById(`arrow-icon-${elementId}`);
-            const labelEl = document.getElementById(`arrow-label-${elementId}`);
-            if (!contentEl) return;
+        // ━━━━━━━━━━━━━━━━━━━━
+        // お知らせリッチテキスト整形（線・枠・図形対応）
+        // ━━━━━━━━━━━━━━━━━━━━
+        function formatAnnouncementContent(content) {
+            if (!content) return "";
+            
+            let text = content;
 
-            const isHidden = contentEl.classList.contains('hidden');
-            if (isHidden) {
-                contentEl.classList.remove('hidden');
-                if (iconEl) iconEl.classList.add('rotate-180');
-                if (labelEl) labelEl.textContent = '閉じる';
+            // ステップ番号の置換: [step:1] -> <span class="note-step-number">1</span>
+            text = text.replace(/\[step:(\d+)\]/g, `<span class="note-step-number">$1</span>`);
+
+            // 枠（カード・ボックス）タグの置換
+            text = text.replace(/\[box:blue\]([\s\S]*?)\[\/box\]/gi, `<div class="note-box-blue">$1</div>`);
+            text = text.replace(/\[box:emerald\]([\s\S]*?)\[\/box\]/gi, `<div class="note-box-emerald">$1</div>`);
+            text = text.replace(/\[box:amber\]([\s\S]*?)\[\/box\]/gi, `<div class="note-box-amber">$1</div>`);
+            text = text.replace(/\[box:dashed\]([\s\S]*?)\[\/box\]/gi, `<div class="note-box-dashed">$1</div>`);
+            text = text.replace(/\[box\]([\s\S]*?)\[\/box\]/gi, `<div class="note-box">$1</div>`);
+            text = text.replace(/\[info\]([\s\S]*?)\[\/info\]/gi, `<div class="note-box-blue">$1</div>`);
+            text = text.replace(/\[warning\]([\s\S]*?)\[\/warning\]/gi, `<div class="note-box-amber">$1</div>`);
+            text = text.replace(/\[success\]([\s\S]*?)\[\/success\]/gi, `<div class="note-box-emerald">$1</div>`);
+            text = text.replace(/\[dashed\]([\s\S]*?)\[\/dashed\]/gi, `<div class="note-box-dashed">$1</div>`);
+
+            // 水平線（区切り線）の置換
+            text = text.replace(/^---dashed---$/gm, `<hr class="note-hr-dashed">`);
+            text = text.replace(/^---$/gm, `<hr class="note-hr">`);
+
+            // 改行（\n）を <br> に変換（ただしブロック要素の直前・直後は除外）
+            text = text.replace(/\n/g, "<br>");
+            text = text.replace(/(<br>)*\s*(<\/?(div|hr|h\d|ul|ol|li|p|table|tr|td|section|blockquote)[^>]*>)\s*(<br>)*/gi, "$2");
+
+            return text;
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━
+        // お知らせ全画面モーダル制御
+        // ━━━━━━━━━━━━━━━━━━━━
+        function openAnnouncementModal(id) {
+            const item = ANNOUNCEMENTS_DATA.find(n => n.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('announcement-modal');
+            const badgeEl = document.getElementById('modal-news-badge');
+            const dateEl = document.getElementById('modal-news-date');
+            const importantEl = document.getElementById('modal-news-important');
+            const titleEl = document.getElementById('modal-news-title');
+            const contentEl = document.getElementById('modal-news-content');
+
+            if (!modal || !badgeEl || !dateEl || !titleEl || !contentEl) return;
+
+            let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+            if (item.category === 'メンテナンス' || item.badgeColor === 'amber') {
+                badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+            } else if (item.category === '教材情報' || item.category === '更新' || item.badgeColor === 'emerald') {
+                badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+            } else if (item.category === '重要' || item.important || item.badgeColor === 'rose') {
+                badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
             } else {
-                contentEl.classList.add('hidden');
-                if (iconEl) iconEl.classList.remove('rotate-180');
-                if (labelEl) labelEl.textContent = '開く';
+                badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+            }
+
+            badgeEl.className = `text-xs font-bold px-2.5 py-0.5 rounded border ${badgeClass}`;
+            badgeEl.textContent = item.category || 'お知らせ';
+
+            dateEl.textContent = item.date || '';
+
+            if (item.important) {
+                importantEl.classList.remove('hidden');
+            } else {
+                importantEl.classList.add('hidden');
+            }
+
+            titleEl.textContent = item.title || '';
+            contentEl.innerHTML = formatAnnouncementContent(item.content);
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeAnnouncementModal() {
+            const modal = document.getElementById('announcement-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+            document.body.style.overflow = '';
+        }
+
+        function handleAnnouncementModalBackdrop(event) {
+            if (event.target.id === 'announcement-modal') {
+                closeAnnouncementModal();
             }
         }
+
+        // ESCキーでモーダルを閉じる
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAnnouncementModal();
+            }
+        });
 
         // タブフォーカス時にバックグラウンド同期
         window.addEventListener('focus', () => {
