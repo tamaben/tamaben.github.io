@@ -362,20 +362,20 @@
             </div>
         </div>
 
-        <!-- 2段目: スマホ用サブナビゲーションバー（アイコン無し・4等分均等配置で1画面内にスッキリ収まる） -->
-        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-1.5 py-1.5 shadow-2xs">
-            <nav class="grid grid-cols-4 gap-1 w-full text-center">
-                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+        <!-- 2段目: スマホ用サブナビゲーションバー（1行ですっきり収まるフレキシブル配置） -->
+        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-2 py-1.5 shadow-2xs">
+            <nav class="flex items-center justify-between w-full gap-0.5 sm:gap-1">
+                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">
                     教材トップ
                 </button>
-                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">
                     全教科一覧
                 </button>
-                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold flex items-center justify-center">
+                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">
                     教材を検索
                 </button>
-                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-0.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10px] sm:text-[11px] font-bold flex items-center justify-center tracking-tight leading-tight">
-                    学習者・保護者<span class="hidden min-[390px]:inline">の方へ</span>
+                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap tracking-tight text-center shrink-0">
+                    学習者・保護者の方へ
                 </button>
             </nav>
         </div>
