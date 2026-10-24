@@ -313,57 +313,37 @@
         }
 
         /* ━━━━━━━━━━━━━━━━━━━━
-           お知らせ用リッチスタイル（線・枠・図形・ステップ）
+           お知らせ用リッチスタイル（白黒・モノトーン階調）
            ━━━━━━━━━━━━━━━━━━━━ */
         .note-hr {
             border: 0;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
             margin: 1.25rem 0;
         }
         .note-hr-dashed {
             border: 0;
-            border-top: 2px dashed #cbd5e1;
+            border-top: 2px dashed #d1d5db;
             margin: 1.25rem 0;
         }
-        .note-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1rem 1.25rem;
-            margin: 1rem 0;
-            color: #1e293b;
-        }
-        .note-box-blue {
-            background-color: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 0.75rem;
-            padding: 1rem 1.25rem;
-            margin: 1rem 0;
-            color: #172554;
-        }
-        .note-box-emerald {
-            background-color: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            border-radius: 0.75rem;
-            padding: 1rem 1.25rem;
-            margin: 1rem 0;
-            color: #064e3b;
-        }
+        .note-box,
+        .note-box-blue,
+        .note-box-emerald,
         .note-box-amber {
-            background-color: #fffbeb;
-            border: 1px solid #fde68a;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-left: 3px solid #111827;
             border-radius: 0.75rem;
             padding: 1rem 1.25rem;
             margin: 1rem 0;
-            color: #78350f;
+            color: #111827;
         }
         .note-box-dashed {
             background-color: #ffffff;
-            border: 2px dashed #cbd5e1;
+            border: 2px dashed #9ca3af;
             border-radius: 0.75rem;
             padding: 1rem 1.25rem;
             margin: 1rem 0;
-            color: #1e293b;
+            color: #111827;
         }
         .note-step-number {
             display: inline-flex;
@@ -372,7 +352,7 @@
             width: 1.5rem;
             height: 1.5rem;
             border-radius: 9999px;
-            background-color: #0f172a;
+            background-color: #111827;
             color: #ffffff;
             font-weight: 800;
             font-size: 0.75rem;
@@ -1074,9 +1054,9 @@
             <!-- モーダルヘッダー -->
             <div class="px-5 sm:px-7 py-4 border-b border-neutral-200 bg-white sticky top-0 z-10 flex items-center justify-between gap-3 shrink-0">
                 <div class="flex items-center gap-2.5 flex-wrap">
-                    <span id="modal-news-badge" class="text-xs font-bold px-2.5 py-0.5 rounded border">お知らせ</span>
+                    <span id="modal-news-badge" class="text-xs font-bold px-2.5 py-0.5 rounded border border-neutral-300 bg-neutral-100 text-neutral-800">お知らせ</span>
                     <span id="modal-news-date" class="text-xs font-mono font-bold text-ink-muted">2026.10.24</span>
-                    <span id="modal-news-important" class="hidden text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">重要</span>
+                    <span id="modal-news-important" class="hidden text-[10px] font-bold px-2 py-0.5 rounded bg-neutral-900 text-white border border-neutral-900">重要</span>
                 </div>
                 
                 <button onclick="closeAnnouncementModal()" class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-ink flex items-center justify-center transition-colors active:scale-95" aria-label="閉じる">
@@ -1732,16 +1712,7 @@
                     const safeId = item.id || `news-${index}`;
                     const elementId = `${prefix}-${safeId}`;
 
-                    let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-                    if (item.category === 'メンテナンス' || item.badgeColor === 'amber') {
-                        badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
-                    } else if (item.category === '教材情報' || item.category === '更新' || item.badgeColor === 'emerald') {
-                        badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
-                    } else if (item.category === '重要' || item.important || item.badgeColor === 'rose') {
-                        badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
-                    } else {
-                        badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-                    }
+                    const badgeClass = 'bg-neutral-100 text-neutral-800 border-neutral-300';
 
                     return `
                         <div class="py-3 sm:py-3.5 transition-colors group cursor-pointer hover:bg-neutral-50/70 rounded-xl px-2.5 -mx-2.5" onclick="openAnnouncementModal('${item.id}')">
@@ -1752,7 +1723,7 @@
                                         ${item.category || 'お知らせ'}
                                     </span>
                                     ${item.important ? `
-                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200 shrink-0">
+                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-neutral-900 text-white border border-neutral-900 shrink-0">
                                             重要
                                         </span>
                                     ` : ''}
@@ -1829,23 +1800,13 @@
 
             if (!modal || !badgeEl || !dateEl || !titleEl || !contentEl) return;
 
-            let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-            if (item.category === 'メンテナンス' || item.badgeColor === 'amber') {
-                badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
-            } else if (item.category === '教材情報' || item.category === '更新' || item.badgeColor === 'emerald') {
-                badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
-            } else if (item.category === '重要' || item.important || item.badgeColor === 'rose') {
-                badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
-            } else {
-                badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-            }
-
-            badgeEl.className = `text-xs font-bold px-2.5 py-0.5 rounded border ${badgeClass}`;
+            badgeEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded border border-neutral-300 bg-neutral-100 text-neutral-800';
             badgeEl.textContent = item.category || 'お知らせ';
 
             dateEl.textContent = item.date || '';
 
             if (item.important) {
+                importantEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-neutral-900 text-white border border-neutral-900';
                 importantEl.classList.remove('hidden');
             } else {
                 importantEl.classList.add('hidden');
