@@ -1,3 +1,4 @@
+```json
 [
   {
     "id": "chu1-su1",
@@ -5,7 +6,7 @@
     "grade": "中学1年生",
     "subject": "数学",
     "unit": "正の数・負の数",
-    "title": "正の数・負の数と数直線",
+    "title": "正の数・負の数",
     "tags": [
       "中1",
       "数学",
@@ -27,6 +28,33 @@
     "textbook": "",
     "downloadRestricted": false,
     "pdfBasicAns": "print/chu1-su1-cota.pdf",
+    "pdfAdvAns": "#"
+  },
+  {
+    "id": "chu1-su2",
+    "tab": "junior",
+    "grade": "中学1年生",
+    "subject": "数学",
+    "unit": "文字と式",
+    "title": "文字と式",
+    "tags": [
+      "中1",
+      "数学",
+      "文字と式",
+      "文字式",
+      "式の値",
+      "文字式の表し方",
+      "項",
+      "係数",
+      "chu1-su2",
+      "chu1su2"
+    ],
+    "pdfBasic": "#",
+    "pdfAdv": "#",
+    "pdfAns": "#",
+    "textbook": "",
+    "downloadRestricted": false,
+    "pdfBasicAns": "#",
     "pdfAdvAns": "#"
   },
   {
@@ -78,4 +106,6 @@
     "downloadRestricted": false,
     "pdfBasicAns": "print/chu3-en2-cota.pdf",
     "pdfAdvAns": "#"
-  },
+  }
+]
+```
