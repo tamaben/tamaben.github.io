@@ -540,7 +540,7 @@
                             <!-- 状態フィルター -->
                             <div class="flex items-center gap-1.5">
                                 <label for="material-filter" class="text-xs font-semibold text-ink-muted">表示:</label>
-                                <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="renderMaterials()">
+                                <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="onMaterialFilterChange()">
                                     <option value="all">すべて (準備中含む)</option>
                                     <option value="available" selected>今すぐ印刷可能のみ</option>
                                     <option value="unavailable">準備中のみ</option>
@@ -2070,7 +2070,7 @@
         function getUnitsFor(subject, grade) {
             let units = [];
             let targetSub = subject;
-            if (subject === '算数・数学' || subject === '算数 / 数学' || subject === '算数' || subject === '数学') {
+            if (subject === '算数・数学' || subject === '算数 / 数学') {
                 if (grade && grade.includes('小学')) {
                     targetSub = '算数';
                 } else if (grade && (grade.includes('中学') || grade.includes('高校'))) {
@@ -2145,18 +2145,50 @@
             const pillsBar = document.getElementById('catalog-unit-pills-bar');
             if (!unitSelect) return;
 
-            const units = getUnitsFor(activeSubjectFilter, null);
+            const filterEl = document.getElementById('material-filter');
+            const filterValue = filterEl ? filterEl.value : 'available';
 
-            unitSelect.innerHTML = `<option value="">すべての単元</option>`;
-            units.forEach(u => {
-                const opt = document.createElement('option');
-                opt.value = u;
-                opt.textContent = u;
-                if (activeUnitFilter === u) opt.selected = true;
-                unitSelect.appendChild(opt);
+            // 現在のタブ・選択中教科・表示設定（印刷可能のみ/すべて）に合致する「今出ている教材」を抽出
+            const activeMaterials = MATERIAL_DATA.filter(item => {
+                if (item.tab !== currentTab) return false;
+                if (activeSubjectFilter && item.subject !== activeSubjectFilter) return false;
+                const hasAnyMaterial = hasAnyPrintable(item);
+                if (filterValue === 'available') return hasAnyMaterial;
+                if (filterValue === 'unavailable') return !hasAnyMaterial;
+                return true;
             });
 
-            if (activeSubjectFilter && units.length > 0 && pillsBar) {
+            // 今出ている教材の中から重複のない単元リストを抽出
+            const units = [];
+            activeMaterials.forEach(m => {
+                const u = (m.unit || m.title || '').trim();
+                if (u && !units.includes(u)) {
+                    units.push(u);
+                }
+            });
+
+            // 選択中の単元フィルターが現在表示可能な単元リストに含まれなくなった場合はリセット
+            if (activeUnitFilter && !units.includes(activeUnitFilter)) {
+                activeUnitFilter = null;
+            }
+
+            // 単元ドロップダウンの更新
+            unitSelect.innerHTML = `<option value="">すべての単元</option>`;
+            if (units.length === 0) {
+                unitSelect.disabled = true;
+            } else {
+                unitSelect.disabled = false;
+                units.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u;
+                    opt.textContent = u;
+                    if (activeUnitFilter === u) opt.selected = true;
+                    unitSelect.appendChild(opt);
+                });
+            }
+
+            // 単元クイックピル（水平バー）の更新: 現在出ている単元が存在する場合に表示
+            if (units.length > 0 && pillsBar) {
                 pillsBar.classList.remove('hidden');
                 pillsBar.innerHTML = `<span class="text-[10px] font-bold text-ink-muted shrink-0 mr-1">単元:</span>`;
                 
@@ -2165,19 +2197,17 @@
                 allPill.textContent = 'すべて';
                 allPill.onclick = () => {
                     activeUnitFilter = null;
-                    updateCatalogUnits();
                     renderMaterials();
                 };
                 pillsBar.appendChild(allPill);
 
-                units.slice(0, 8).forEach(u => {
+                units.forEach(u => {
                     const pill = document.createElement('button');
                     const isActive = activeUnitFilter === u;
                     pill.className = `px-2.5 py-1 text-[11px] font-bold rounded-md shrink-0 transition-colors ${isActive ? 'bg-ink text-white' : 'bg-white border border-neutral-200 text-ink-light hover:bg-neutral-50'}`;
                     pill.textContent = u;
                     pill.onclick = () => {
                         activeUnitFilter = u;
-                        updateCatalogUnits();
                         renderMaterials();
                     };
                     pillsBar.appendChild(pill);
@@ -2189,7 +2219,6 @@
 
         function onCatalogUnitChange() {
             activeUnitFilter = document.getElementById('catalog-unit-select').value || null;
-            updateCatalogUnits();
             renderMaterials();
         }
 
@@ -2320,8 +2349,22 @@
             const chipContainer = document.getElementById('has-material-subjects-chips');
             if (!chipContainer) return;
 
-            const currentTabMaterials = MATERIAL_DATA.filter(item => item.tab === currentTab);
+            const filterEl = document.getElementById('material-filter');
+            const filterValue = filterEl ? filterEl.value : 'available';
+
+            // 現在のタブかつ表示設定（今すぐ印刷可能のみ/すべて）に合致する教材から教科を抽出
+            const currentTabMaterials = MATERIAL_DATA.filter(item => {
+                if (item.tab !== currentTab) return false;
+                const hasAnyMaterial = hasAnyPrintable(item);
+                if (filterValue === 'available') return hasAnyMaterial;
+                if (filterValue === 'unavailable') return !hasAnyMaterial;
+                return true;
+            });
             const subjects = [...new Set(currentTabMaterials.map(item => item.subject))];
+
+            if (activeSubjectFilter && !subjects.includes(activeSubjectFilter)) {
+                activeSubjectFilter = null;
+            }
             
             chipContainer.innerHTML = '';
             
@@ -2333,7 +2376,6 @@
                 activeSubjectFilter = null;
                 activeUnitFilter = null;
                 buildSubjectChips();
-                updateCatalogUnits();
                 renderMaterials();
             };
             chipContainer.appendChild(allBtn);
@@ -2347,13 +2389,15 @@
                     activeSubjectFilter = subj;
                     activeUnitFilter = null;
                     buildSubjectChips();
-                    updateCatalogUnits();
                     renderMaterials();
                 };
                 chipContainer.appendChild(btn);
             });
+        }
 
-            updateCatalogUnits();
+        function onMaterialFilterChange() {
+            buildSubjectChips();
+            renderMaterials();
         }
 
         async function renderPDFThumbnail(url, canvasId) {
@@ -2383,6 +2427,7 @@
         }
 
         function renderMaterials() {
+            updateCatalogUnits();
             const container = document.getElementById('learning-materials-container');
             if (!container) return;
             const filterValue = document.getElementById('material-filter').value;
@@ -3111,7 +3156,7 @@
                 // 教科マッチ（算数・数学のエイリアスを完全吸収）
                 const matchSubject = (() => {
                     if (!subject) return true;
-                    if (subject === '算数・数学' || subject === '算数 / 数学' || subject === '算数' || subject === '数学') {
+                    if (subject === '算数・数学' || subject === '算数 / 数学') {
                         return item.subject === '算数' || item.subject === '数学';
                     }
                     return item.subject.includes(subject);
