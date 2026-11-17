@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAPPY NEW YEAR 2027 | 2027年賀状特別サイト</title>
+  <meta name="description" content="2027年賀状特別サイト。新年のご挨拶、特別動画、ひつじおみくじ、ミニゲームを楽しんでね！">
+
+  <!-- Google Fonts: 年賀状の丸みのあるタイポグラフィと手書き風日本語 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Yomogi&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-cream: #FCF6E8;
+      --bg-card: #FFFDF7;
+      --bg-warm: #F6ECD4;
+      --red-main: #AF2D34;
+      --red-dark: #8F2228;
+      --gold-main: #D2A650;
+      --gold-dark: #B58833;
+      --brown-text: #3D2214;
+      --brown-muted: #725544;
+      --chara-yellow: #EFE0A8;
+      --shadow-soft: 0 10px 28px rgba(61, 34, 20, 0.08);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--brown-text);
+      font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* 紙吹雪Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* 四隅からひょっこり覗くキャラ */
+    .corner-peek {
+      position: fixed;
+      bottom: -14px;
+      width: 96px;
+      height: 96px;
+      z-index: 50;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .corner-peek-left { left: -14px; }
+    .corner-peek-right { right: -14px; }
+    .corner-peek:hover,
+    .corner-peek.pop {
+      transform: translateY(-10px) scale(1.08);
+    }
+    .peek-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 4px 8px rgba(61, 34, 20, 0.12));
+    }
+
+    /* 全体レイアウト */
+    .page-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 16px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* 1. ヒーローセクション */
+    .hero-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background-color: var(--red-main);
+      color: #FFFDF7;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 6px 18px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(175, 45, 52, 0.22);
+    }
+
+    .nengajo-board {
+      background-color: var(--bg-cream);
+      border: 3px solid rgba(210, 166, 80, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 28px 16px 32px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+
+    .happy-new-year {
+      margin-bottom: -14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hny-text {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.1rem, 7.8vw, 4.4rem);
+      color: var(--red-main);
+      letter-spacing: 0.03em;
+      line-height: 1;
+      display: inline-block;
+      text-shadow: 0 2px 0 rgba(255, 253, 247, 0.8);
+    }
+
+    .year-stage {
+      position: relative;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .year-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+
+    .year-digit {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 265px;
+      fill: var(--gold-main);
+      user-select: none;
+    }
+
+    .chara-interactive {
+      cursor: pointer;
+      transition: filter 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chara-interactive:hover {
+      filter: drop-shadow(0 6px 10px rgba(61, 34, 20, 0.18));
+    }
+    .chara-interactive.bounce {
+      animation: charaBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes charaBounce {
+      0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+      50% { filter: drop-shadow(0 -8px 12px rgba(175, 45, 52, 0.28)); }
+    }
+
+    /* 吹き出し */
+    .speech-bubble {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px) scale(0.9);
+      background: #FFFFFF;
+      color: var(--brown-text);
+      border: 2px solid var(--gold-main);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(61, 34, 20, 0.14);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+      z-index: 20;
+    }
+    .speech-bubble.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .hero-hint {
+      font-size: 0.85rem;
+      color: var(--brown-muted);
+      margin-top: 6px;
+      margin-bottom: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* ボタン共通 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary {
+      background-color: var(--red-main);
+      color: #FFFDF7;
+      box-shadow: 0 6px 16px rgba(175, 45, 52, 0.25);
+    }
+    .btn-primary:hover {
+      background-color: var(--red-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: var(--gold-main);
+      color: #FFFDF7;
+      box-shadow: 0 6px 16px rgba(210, 166, 80, 0.28);
+    }
+    .btn-secondary:hover {
+      background-color: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-small {
+      background-color: var(--bg-warm);
+      color: var(--brown-text);
+      font-size: 0.9rem;
+      padding: 8px 18px;
+    }
+    .btn-small:hover { background-color: #ECDAB2; }
+
+    /* クイックナビ */
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      position: sticky;
+      top: 10px;
+      z-index: 40;
+    }
+
+    .quick-nav a {
+      background: rgba(255, 253, 247, 0.92);
+      backdrop-filter: blur(6px);
+      color: var(--brown-text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(210, 166, 80, 0.45);
+      box-shadow: 0 4px 12px rgba(61, 34, 20, 0.06);
+      transition: all 0.2s ease;
+    }
+    .quick-nav a:hover {
+      background: var(--gold-main);
+      color: #FFFDF7;
+      border-color: var(--gold-main);
+    }
+
+    /* セクション共通 */
+    .card-section {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-soft);
+      border: 2px solid rgba(210, 166, 80, 0.25);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--red-main);
+      background: rgba(175, 45, 52, 0.08);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.4rem, 4vw, 1.85rem);
+      color: var(--brown-text);
+      font-weight: 900;
+    }
+
+    .section-desc {
+      font-size: 0.92rem;
+      color: var(--brown-muted);
+      margin-top: 4px;
+    }
+
+    /* 2. ごあいさつ */
+    .greeting-paper {
+      background-color: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      border: 1.5px dashed rgba(210, 166, 80, 0.6);
+    }
+
+    .greeting-text {
+      font-family: 'Yomogi', 'Zen Maru Gothic', cursive, sans-serif;
+      font-size: clamp(1.05rem, 3vw, 1.25rem);
+      line-height: 1.95;
+      white-space: pre-line;
+      color: var(--brown-text);
+    }
+
+    .greeting-signature {
+      text-align: right;
+      font-family: 'Yomogi', 'Zen Maru Gothic', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--red-main);
+      margin-top: 18px;
+    }
+
+    /* 3. 特別動画セクション */
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 3px solid var(--gold-main);
+      box-shadow: 0 8px 20px rgba(61, 34, 20, 0.1);
+    }
+
+    .video-frame video,
+    .video-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* 動画未設定時のアニメーションシアター */
+    .video-theater {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #FCF6E8 0%, #F6ECD4 100%);
+      position: relative;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .theater-stage {
+      width: 100%;
+      max-width: 340px;
+      margin-bottom: 8px;
+    }
+
+    .theater-sheep-jump {
+      animation: theaterJump 1.6s ease-in-out infinite;
+    }
+
+    .theater-chara-sway {
+      animation: theaterSway 2.2s ease-in-out infinite;
+    }
+
+    @keyframes theaterJump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes theaterSway {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    .theater-caption {
+      font-family: 'Yomogi', 'Zen Maru Gothic', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+      color: var(--red-main);
+      margin-bottom: 6px;
+    }
+
+    .theater-note {
+      font-size: 0.78rem;
+      color: var(--brown-muted);
+      background: rgba(255, 253, 247, 0.8);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    /* 4. おみくじ */
+    .omikuji-box-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .omikuji-box {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      transition: transform 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .omikuji-box:hover { transform: scale(1.05); }
+    .omikuji-box.shaking { animation: omikujiShake 0.55s ease-in-out; }
+
+    @keyframes omikujiShake {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-12deg); }
+      40% { transform: rotate(12deg); }
+      60% { transform: rotate(-10deg); }
+      80% { transform: rotate(8deg); }
+    }
+
+    .omikuji-stick {
+      width: 14px;
+      height: 36px;
+      background: #F5E6C4;
+      border: 2px solid var(--gold-dark);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      margin-bottom: -4px;
+    }
+
+    .omikuji-cylinder {
+      width: 92px;
+      height: 132px;
+      background: linear-gradient(135deg, #D2A650, #B58833);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 20px rgba(61, 34, 20, 0.18);
+      border: 3px solid #FFFDF7;
+    }
+
+    .omikuji-cylinder span {
+      writing-mode: vertical-rl;
+      background: #FFFDF7;
+      color: var(--red-main);
+      font-weight: 900;
+      font-size: 1.15rem;
+      padding: 12px 6px;
+      border-radius: 6px;
+      letter-spacing: 0.15em;
+    }
+
+    .omikuji-cta {
+      margin-top: 12px;
+      font-weight: 700;
+      color: var(--red-main);
+      font-size: 0.95rem;
+    }
+
+    .omikuji-result {
+      width: 100%;
+      max-width: 460px;
+      background: var(--bg-cream);
+      border: 3px solid var(--red-main);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      text-align: center;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.88); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .omikuji-rank {
+      display: inline-block;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #FFFDF7;
+      background: var(--red-main);
+      padding: 6px 26px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .omikuji-title {
+      font-size: 1.25rem;
+      color: var(--brown-text);
+      margin-bottom: 10px;
+    }
+
+    .omikuji-message {
+      font-size: 0.98rem;
+      color: var(--brown-text);
+      margin-bottom: 16px;
+    }
+
+    .omikuji-lucky {
+      background: #FFFDF7;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+      border: 1px solid rgba(210, 166, 80, 0.4);
+    }
+
+    /* 5. ミニゲーム */
+    .game-controls-top {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .sound-toggle {
+      background: var(--bg-cream);
+      border: 1.5px solid rgba(210, 166, 80, 0.55);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brown-text);
+      cursor: pointer;
+    }
+
+    .game-hud {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .hud-item {
+      background: var(--bg-cream);
+      border: 2px solid rgba(210, 166, 80, 0.45);
+      border-radius: 14px;
+      padding: 8px 18px;
+      text-align: center;
+      min-width: 90px;
+    }
+
+    .hud-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--brown-muted);
+      font-weight: 700;
+    }
+
+    .hud-value {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--red-main);
+    }
+
+    .game-board {
+      position: relative;
+      max-width: 420px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      background: var(--bg-warm);
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(210, 166, 80, 0.4);
+    }
+
+    .game-hole {
+      aspect-ratio: 1 / 1;
+      background: #E8D5A7;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 6px 10px rgba(61, 34, 20, 0.16);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .game-mole {
+      position: absolute;
+      inset: 8%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(115%);
+      transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .game-hole.up .game-mole {
+      transform: translateY(4%);
+      pointer-events: auto;
+    }
+
+    .game-hole.hit .game-mole {
+      transform: translateY(20%) scale(1.15);
+    }
+
+    .score-pop {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--red-main);
+      pointer-events: none;
+      animation: floatUp 0.55s ease-out forwards;
+      z-index: 5;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(0.9); }
+      100% { opacity: 0; transform: translate(-50%, -28px) scale(1.15); }
+    }
+
+    .game-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(252, 246, 232, 0.92);
+      backdrop-filter: blur(3px);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 20px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .game-overlay p {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    /* フッター */
+    .site-footer {
+      text-align: center;
+      padding: 24px 0 12px;
+      color: var(--brown-muted);
+    }
+
+    .footer-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      color: var(--red-main);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-sub {
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 520px) {
+      .corner-peek { width: 70px; height: 70px; bottom: -10px; }
+      .card-section { padding: 24px 16px; }
+      .game-hud { gap: 8px; }
+      .hud-item { padding: 6px 12px; min-width: 78px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- 四隅からひょっこり覗くキャラクター -->
+  <div class="corner-peek corner-peek-left" title="タップしてみてね！" role="button" tabindex="0" aria-label="左下のキャラクター">
+    <svg viewBox="0 0 100 100" class="peek-svg">
+      <g transform="rotate(28 50 60)">
+        <ellipse cx="22" cy="52" rx="12" ry="7" fill="#EFE0A8" />
+        <ellipse cx="78" cy="52" rx="12" ry="7" fill="#EFE0A8" />
+        <circle cx="50" cy="56" r="34" fill="#EFE0A8" />
+        <ellipse cx="42" cy="48" rx="4.5" ry="6.5" fill="#2D1C14" />
+        <ellipse cx="58" cy="48" rx="4.5" ry="6.5" fill="#2D1C14" />
+        <circle cx="40.5" cy="46" r="1.5" fill="#FFFFFF" />
+        <circle cx="56.5" cy="46" r="1.5" fill="#FFFFFF" />
+        <path d="M 44 60 Q 50 66 56 60" stroke="#2D1C14" stroke-width="3" fill="none" stroke-linecap="round" />
+      </g>
+    </svg>
+  </div>
+
+  <div class="corner-peek corner-peek-right" title="タップしてみてね！" role="button" tabindex="0" aria-label="右下のキャラクター">
+    <svg viewBox="0 0 100 100" class="peek-svg">
+      <g transform="rotate(-24 50 60)">
+        <ellipse cx="22" cy="52" rx="12" ry="7" fill="#EFE0A8" />
+        <ellipse cx="78" cy="52" rx="12" ry="7" fill="#EFE0A8" />
+        <circle cx="50" cy="56" r="34" fill="#EFE0A8" />
+        <ellipse cx="42" cy="48" rx="4.5" ry="6.5" fill="#2D1C14" />
+        <ellipse cx="58" cy="48" rx="4.5" ry="6.5" fill="#2D1C14" />
+        <circle cx="40.5" cy="46" r="1.5" fill="#FFFFFF" />
+        <circle cx="56.5" cy="46" r="1.5" fill="#FFFFFF" />
+        <path d="M 44 60 Q 50 66 56 60" stroke="#2D1C14" stroke-width="3" fill="none" stroke-linecap="round" />
+      </g>
+    </svg>
+  </div>
+
+  <main class="page-wrapper">
+    <!-- 1. ヒーローセクション -->
+    <header class="hero-section">
+      <div class="hero-badge">2027年賀状特別サイト</div>
+      <div class="nengajo-board">
+        <h1 class="happy-new-year" aria-label="HAPPY NEW YEAR 2027">
+          <span class="hny-text">HAPPY NEW YEAR</span>
+        </h1>
+
+        <div class="year-stage">
+          <svg viewBox="0 0 800 320" class="year-svg" role="img" aria-label="2027の数字と羊のキャラクターたち">
+            <text x="115" y="255" class="year-digit" text-anchor="middle">2</text>
+            <text x="305" y="255" class="year-digit" text-anchor="middle">0</text>
+            <text x="495" y="255" class="year-digit" text-anchor="middle">2</text>
+            <text x="680" y="255" class="year-digit" text-anchor="middle">7</text>
+
+            <!-- キャラ1 -->
+            <g class="chara-interactive" data-speech="あけおめ〜！" transform="translate(132, 200)">
+              <rect x="-10" y="22" width="6" height="12" rx="3" fill="#EFE0A8" />
+              <rect x="4" y="22" width="6" height="12" rx="3" fill="#EFE0A8" />
+              <ellipse cx="-24" cy="-2" rx="8" ry="5" transform="rotate(-20 -24 -2)" fill="#EFE0A8" />
+              <ellipse cx="24" cy="-2" rx="8" ry="5" transform="rotate(20 24 -2)" fill="#EFE0A8" />
+              <circle cx="0" cy="0" r="24" fill="#EFE0A8" />
+              <ellipse cx="-6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <ellipse cx="6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <circle cx="-7" cy="-5.5" r="1" fill="#FFFFFF" />
+              <circle cx="5" cy="-5.5" r="1" fill="#FFFFFF" />
+              <path d="M -4 4 Q 0 8 4 4" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            </g>
+
+            <!-- キャラ2: もこもこ羊 -->
+            <g class="chara-interactive" data-speech="メェ〜！今年もよろしくね！" transform="translate(305, 165)">
+              <circle cx="0" cy="0" r="40" fill="#FFFFFF" />
+              <circle cx="-26" cy="-24" r="14" fill="#FFFFFF" />
+              <circle cx="0" cy="-34" r="15" fill="#FFFFFF" />
+              <circle cx="26" cy="-24" r="14" fill="#FFFFFF" />
+              <circle cx="-34" cy="4" r="14" fill="#FFFFFF" />
+              <circle cx="34" cy="4" r="14" fill="#FFFFFF" />
+              <circle cx="-22" cy="28" r="15" fill="#FFFFFF" />
+              <circle cx="22" cy="28" r="15" fill="#FFFFFF" />
+              <circle cx="0" cy="34" r="14" fill="#FFFFFF" />
+              <ellipse cx="-32" cy="-10" rx="11" ry="7" transform="rotate(-25 -32 -10)" fill="#E7BA68" />
+              <ellipse cx="32" cy="-10" rx="11" ry="7" transform="rotate(25 32 -10)" fill="#E7BA68" />
+              <ellipse cx="0" cy="0" rx="25" ry="23" fill="#F2E0A8" />
+              <circle cx="-8" cy="-20" r="9" fill="#FFFFFF" />
+              <circle cx="5" cy="-22" r="10" fill="#FFFFFF" />
+              <circle cx="15" cy="-17" r="7" fill="#FFFFFF" />
+              <ellipse cx="-8" cy="-2" rx="4" ry="6" fill="#2D1C14" />
+              <ellipse cx="8" cy="-2" rx="4" ry="6" fill="#2D1C14" />
+              <circle cx="-9.5" cy="-4" r="1.4" fill="#FFFFFF" />
+              <circle cx="6.5" cy="-4" r="1.4" fill="#FFFFFF" />
+              <path d="M -5 9 Q 0 14 5 9" stroke="#2D1C14" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            </g>
+
+            <!-- キャラ3 -->
+            <g class="chara-interactive" data-speech="げんきいっぱい！" transform="translate(512, 200)">
+              <rect x="-10" y="22" width="6" height="12" rx="3" fill="#EFE0A8" />
+              <rect x="4" y="22" width="6" height="12" rx="3" fill="#EFE0A8" />
+              <ellipse cx="-24" cy="-2" rx="8" ry="5" transform="rotate(-20 -24 -2)" fill="#EFE0A8" />
+              <ellipse cx="24" cy="-2" rx="8" ry="5" transform="rotate(20 24 -2)" fill="#EFE0A8" />
+              <circle cx="0" cy="0" r="24" fill="#EFE0A8" />
+              <ellipse cx="-6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <ellipse cx="6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <circle cx="-7" cy="-5.5" r="1" fill="#FFFFFF" />
+              <circle cx="5" cy="-5.5" r="1" fill="#FFFFFF" />
+              <path d="M -4 4 Q 0 8 4 4" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            </g>
+
+            <!-- キャラ4: ぶら下がり -->
+            <g class="chara-interactive" data-speech="ぶら〜ん♪" transform="translate(656, 108) rotate(180)">
+              <rect x="-10" y="20" width="6" height="14" rx="3" fill="#EFE0A8" />
+              <rect x="4" y="20" width="6" height="14" rx="3" fill="#EFE0A8" />
+              <ellipse cx="-24" cy="-2" rx="8" ry="5" transform="rotate(-20 -24 -2)" fill="#EFE0A8" />
+              <ellipse cx="24" cy="-2" rx="8" ry="5" transform="rotate(20 24 -2)" fill="#EFE0A8" />
+              <circle cx="0" cy="0" r="24" fill="#EFE0A8" />
+              <ellipse cx="-6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <ellipse cx="6" cy="-4" rx="3" ry="4.5" fill="#2D1C14" />
+              <circle cx="-7" cy="-5.5" r="1" fill="#FFFFFF" />
+              <circle cx="5" cy="-5.5" r="1" fill="#FFFFFF" />
+              <path d="M -4 4 Q 0 8 4 4" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            </g>
+          </svg>
+          <div id="speech-bubble" class="speech-bubble" aria-live="polite"></div>
+        </div>
+
+        <p class="hero-hint">▲ キャラクターをタップするとおしゃべりするよ！</p>
+
+        <div class="hero-actions">
+          <button id="celebrate-btn" class="btn btn-primary" type="button">🎉 おめでとうクラッカー！</button>
+          <a href="#special-video" class="btn btn-secondary">🎬 特別動画をみる</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ナビゲーション -->
+    <nav class="quick-nav" aria-label="ページ内メニュー">
+      <a href="#greeting">ごあいさつ</a>
+      <a href="#special-video">特別動画</a>
+      <a href="#omikuji">ひつじみくじ</a>
+      <a href="#minigame">ミニゲーム</a>
+    </nav>
+
+    <!-- 2. 新年のご挨拶カード -->
+    <section id="greeting" class="card-section">
+      <div class="section-header">
+        <span class="section-tag">GREETING</span>
+        <h2 id="greeting-heading">あけましておめでとう！</h2>
+      </div>
+      <div class="greeting-paper">
+        <p id="greeting-body" class="greeting-text"></p>
+        <p id="greeting-signature" class="greeting-signature"></p>
+      </div>
+    </section>
+
+    <!-- 3. 特別動画 -->
+    <section id="special-video" class="card-section">
+      <div class="section-header">
+        <span class="section-tag">SPECIAL MOVIE</span>
+        <h2>2027年 特別動画</h2>
+        <p class="section-desc">新年の特別ムービーをお届け！</p>
+      </div>
+      <div id="video-container" class="video-frame">
+        <!-- JSで動画（MP4 / YouTube / アニメーションシアター）を描画します -->
+      </div>
+    </section>
+
+    <!-- 4. ひつじおみくじ -->
+    <section id="omikuji" class="card-section">
+      <div class="section-header">
+        <span class="section-tag">FORTUNE 2027</span>
+        <h2>2027年 ひつじおみくじ</h2>
+        <p class="section-desc">ことしの運勢を占ってみよう！</p>
+      </div>
+      <div class="omikuji-box-wrap">
+        <button id="draw-omikuji-btn" class="omikuji-box" type="button" aria-label="おみくじを引く">
+          <div class="omikuji-stick"></div>
+          <div class="omikuji-cylinder"><span>おみくじ</span></div>
+          <span class="omikuji-cta">タップして引く！</span>
+        </button>
+
+        <div id="omikuji-result" class="omikuji-result hidden" aria-live="polite">
+          <div class="omikuji-rank" id="omikuji-rank">大吉</div>
+          <h3 class="omikuji-title" id="omikuji-title"></h3>
+          <p class="omikuji-message" id="omikuji-message"></p>
+          <div class="omikuji-lucky">
+            <span>🍀 ラッキーアイテム：</span>
+            <strong id="omikuji-lucky-item"></strong>
+          </div>
+          <button id="retry-omikuji-btn" class="btn btn-small" type="button">もういちど引く</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ミニゲーム：もこもこひつじタッチ！ -->
+    <section id="minigame" class="card-section">
+      <div class="section-header">
+        <span class="section-tag">MINI GAME</span>
+        <h2>もこもこひつじタッチ！</h2>
+        <p class="section-desc">15秒間でひょっこり出てくる羊たちをたくさんタッチしよう！（もこもこ羊は2点！）</p>
+      </div>
+
+      <div class="game-controls-top">
+        <button id="sound-toggle-btn" class="sound-toggle" type="button">🔊 効果音：ON</button>
+      </div>
+
+      <div class="game-hud">
+        <div class="hud-item">
+          <span class="hud-label">スコア</span>
+          <span id="game-score" class="hud-value">0</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">のこり時間</span>
+          <span id="game-time" class="hud-value">15</span>秒
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">ベスト</span>
+          <span id="game-best" class="hud-value">0</span>
+        </div>
+      </div>
+
+      <div id="game-board" class="game-board">
+        <div id="game-overlay" class="game-overlay">
+          <p id="game-overlay-msg">ひつじさんたちが待ってるよ！</p>
+          <button id="start-game-btn" class="btn btn-primary" type="button">ゲームスタート！</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p class="footer-logo">HAPPY NEW YEAR 2027</p>
+      <p class="footer-sub">2027年賀状特別サイト • Made with ❤️</p>
+    </footer>
+  </main>
+
+  <script>
+    /**
+     * =========================================================
+     * 2027年賀状特別サイト カスタマイズ設定
+     * ここを書き換えるだけでメッセージや動画を差し替えられます！
+     * =========================================================
+     */
+    const SITE_CONFIG = {
+      greeting: {
+        heading: "あけましておめでとう！",
+        body: "あけましておめでとう！\n今年も元気いっぱいで、笑顔あふれる素敵な一年になりますように。\nまた今年もお会いできるのを楽しみにしています！",
+        signature: "2027年 元旦　たまべんファミリーより"
+      },
+      video: {
+        // MP4動画ファイルを使う場合: 例 "special.mp4" （同じフォルダに置く場合）
+        mp4Url: "",
+        // YouTube動画を使う場合（限定公開など）: 動画IDを指定 例 "dQw4w9WgXcQ"
+        youtubeId: "",
+        // 動画ファイルが未設定のときに表示するシアターメッセージ
+        fallbackCaption: "2027年もいっぱい笑って、いっぱいあそぼうね！"
+      },
+      omikujiList: [
+        {
+          rank: "大吉",
+          title: "もこもこ大吉！",
+          message: "羊の毛みたいにふわふわで最高の一年！やりたいことにチャレンジすると大成功するよ。",
+          luckyItem: "あたたかいココア",
+          color: "#AF2D34"
+        },
+        {
+          rank: "大吉",
+          title: "ひつじ年スペシャル吉！",
+          message: "おともだちや家族とたくさん笑えるハッピーな一年！素敵な出会いや再会がありそう。",
+          luckyItem: "きいろいハンカチ",
+          color: "#D2A650"
+        },
+        {
+          rank: "中吉",
+          title: "のんびり中吉",
+          message: "あわてずマイペースに過ごすと運気アップ！おいしいおやつを食べてパワーチャージしよう。",
+          luckyItem: "ふわふわのぬいぐるみ",
+          color: "#C47A3B"
+        },
+        {
+          rank: "小吉",
+          title: "ぽかぽか小吉",
+          message: "小さな幸せが毎日たくさん見つかる一年！お散歩や外遊びをすると良いことがあるかも？",
+          luckyItem: "お気に入りのくつした",
+          color: "#6B8E4E"
+        }
+      ]
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initGreeting();
+      initSpecialVideo();
+      initCharacters();
+      initConfetti();
+      initOmikuji();
+      initMiniGame();
+    });
+
+    function initGreeting() {
+      const headingEl = document.getElementById("greeting-heading");
+      const bodyEl = document.getElementById("greeting-body");
+      const sigEl = document.getElementById("greeting-signature");
+      if (headingEl) headingEl.textContent = SITE_CONFIG.greeting.heading;
+      if (bodyEl) bodyEl.textContent = SITE_CONFIG.greeting.body;
+      if (sigEl) sigEl.textContent = SITE_CONFIG.greeting.signature;
+    }
+
+    function initSpecialVideo() {
+      const container = document.getElementById("video-container");
+      if (!container) return;
+
+      const { mp4Url, youtubeId, fallbackCaption } = SITE_CONFIG.video;
+
+      if (youtubeId) {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}?rel=0`;
+        iframe.title = "2027年賀状特別動画";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        container.appendChild(iframe);
+        return;
+      }
+
+      if (mp4Url) {
+        const video = document.createElement("video");
+        video.src = mp4Url;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "metadata";
+        video.onerror = () => renderFallbackTheater(container, fallbackCaption);
+        container.appendChild(video);
+        return;
+      }
+
+      renderFallbackTheater(container, fallbackCaption);
+    }
+
+    function renderFallbackTheater(container, caption) {
+      container.innerHTML = `
+        <div class="video-theater">
+          <svg viewBox="0 0 320 120" class="theater-stage" aria-hidden="true">
+            <g class="theater-chara-sway" transform="translate(80, 68)">
+              <circle cx="0" cy="0" r="22" fill="#EFE0A8" />
+              <ellipse cx="-22" cy="-2" rx="7" ry="4" fill="#EFE0A8" />
+              <ellipse cx="22" cy="-2" rx="7" ry="4" fill="#EFE0A8" />
+              <ellipse cx="-6" cy="-3" rx="2.8" ry="4" fill="#2D1C14" />
+              <ellipse cx="6" cy="-3" rx="2.8" ry="4" fill="#2D1C14" />
+              <path d="M -4 4 Q 0 8 4 4" stroke="#2D1C14" stroke-width="2" fill="none" stroke-linecap="round" />
+            </g>
+            <g class="theater-sheep-jump" transform="translate(160, 62)">
+              <circle cx="0" cy="0" r="30" fill="#FFFFFF" />
+              <circle cx="-20" cy="-18" r="11" fill="#FFFFFF" />
+              <circle cx="0" cy="-25" r="12" fill="#FFFFFF" />
+              <circle cx="20" cy="-18" r="11" fill="#FFFFFF" />
+              <circle cx="-25" cy="4" r="11" fill="#FFFFFF" />
+              <circle cx="25" cy="4" r="11" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="19" ry="17" fill="#F2E0A8" />
+              <ellipse cx="-6" cy="-2" rx="3" ry="4.5" fill="#2D1C14" />
+              <ellipse cx="6" cy="-2" rx="3" ry="4.5" fill="#2D1C14" />
+              <path d="M -4 7 Q 0 11 4 7" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            </g>
+            <g class="theater-chara-sway" transform="translate(240, 68)">
+              <circle cx="0" cy="0" r="22" fill="#EFE0A8" />
+              <ellipse cx="-22" cy="-2" rx="7" ry="4" fill="#EFE0A8" />
+              <ellipse cx="22" cy="-2" rx="7" ry="4" fill="#EFE0A8" />
+              <ellipse cx="-6" cy="-3" rx="2.8" ry="4" fill="#2D1C14" />
+              <ellipse cx="6" cy="-3" rx="2.8" ry="4" fill="#2D1C14" />
+              <path d="M -4 4 Q 0 8 4 4" stroke="#2D1C14" stroke-width="2" fill="none" stroke-linecap="round" />
+            </g>
+          </svg>
+          <p class="theater-caption">${escapeHtml(caption)}</p>
+          <span class="theater-note">※ 動画ファイル（MP4）または YouTube ID を設定するとここに動画が表示されます</span>
+        </div>
+      `;
+    }
+
+    function initCharacters() {
+      const speechBubble = document.getElementById("speech-bubble");
+      const charas = document.querySelectorAll(".chara-interactive");
+      let bubbleTimer = null;
+
+      function showSpeech(text) {
+        if (!speechBubble) return;
+        speechBubble.textContent = text;
+        speechBubble.classList.add("show");
+        clearTimeout(bubbleTimer);
+        bubbleTimer = setTimeout(() => speechBubble.classList.remove("show"), 2200);
+      }
+
+      charas.forEach((chara) => {
+        chara.addEventListener("click", () => {
+          showSpeech(chara.dataset.speech || "メェ〜！");
+          chara.classList.remove("bounce");
+          void chara.offsetWidth;
+          chara.classList.add("bounce");
+        });
+      });
+
+      const cornerMsgs = ["やっほー！", "あけましておめでとう！"];
+      document.querySelectorAll(".corner-peek").forEach((el, idx) => {
+        const trigger = () => {
+          el.classList.add("pop");
+          showSpeech(cornerMsgs[idx % cornerMsgs.length]);
+          setTimeout(() => el.classList.remove("pop"), 450);
+        };
+        el.addEventListener("click", trigger);
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            trigger();
+          }
+        });
+      });
+    }
+
+    let fireConfetti = () => {};
+    function initConfetti() {
+      const canvas = document.getElementById("confetti-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      let animId = null;
+      const colors = ["#AF2D34", "#D2A650", "#EFE0A8", "#FFFFFF", "#E7BA68"];
+
+      const resize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      resize();
+      window.addEventListener("resize", resize);
+
+      function spawn(count = 70) {
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: -20 - Math.random() * 120,
+            w: 8 + Math.random() * 8,
+            h: 5 + Math.random() * 6,
+            vx: (Math.random() - 0.5) * 4,
+            vy: 2.5 + Math.random() * 4.5,
+            rot: Math.random() * Math.PI * 2,
+            vRot: (Math.random() - 0.5) * 0.2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            opacity: 1
+          });
+        }
+        if (!animId) loop();
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vRot;
+          if (p.y > canvas.height * 0.8) p.opacity -= 0.025;
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        particles = particles.filter((p) => p.opacity > 0 && p.y < canvas.height + 30);
+        if (particles.length > 0) {
+          animId = requestAnimationFrame(loop);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          animId = null;
+        }
+      }
+
+      fireConfetti = spawn;
+      document.getElementById("celebrate-btn")?.addEventListener("click", () => spawn(90));
+      setTimeout(() => spawn(45), 350);
+    }
+
+    function initOmikuji() {
+      const drawBtn = document.getElementById("draw-omikuji-btn");
+      const retryBtn = document.getElementById("retry-omikuji-btn");
+      const resultBox = document.getElementById("omikuji-result");
+      const rankEl = document.getElementById("omikuji-rank");
+      const titleEl = document.getElementById("omikuji-title");
+      const msgEl = document.getElementById("omikuji-message");
+      const luckyEl = document.getElementById("omikuji-lucky-item");
+      if (!drawBtn || !resultBox) return;
+
+      const list = SITE_CONFIG.omikujiList;
+      drawBtn.addEventListener("click", () => {
+        drawBtn.classList.add("shaking");
+        drawBtn.disabled = true;
+        setTimeout(() => {
+          drawBtn.classList.remove("shaking");
+          drawBtn.disabled = false;
+          drawBtn.classList.add("hidden");
+
+          const item = list[Math.floor(Math.random() * list.length)];
+          rankEl.textContent = item.rank;
+          rankEl.style.backgroundColor = item.color || "#AF2D34";
+          resultBox.style.borderColor = item.color || "#AF2D34";
+          titleEl.textContent = item.title;
+          msgEl.textContent = item.message;
+          luckyEl.textContent = item.luckyItem;
+
+          resultBox.classList.remove("hidden");
+          if (item.rank === "大吉") fireConfetti(60);
+        }, 600);
+      });
+
+      retryBtn?.addEventListener("click", () => {
+        resultBox.classList.add("hidden");
+        drawBtn.classList.remove("hidden");
+      });
+    }
+
+    function initMiniGame() {
+      const board = document.getElementById("game-board");
+      const overlay = document.getElementById("game-overlay");
+      const overlayMsg = document.getElementById("game-overlay-msg");
+      const startBtn = document.getElementById("start-game-btn");
+      const soundBtn = document.getElementById("sound-toggle-btn");
+      const scoreEl = document.getElementById("game-score");
+      const timeEl = document.getElementById("game-time");
+      const bestEl = document.getElementById("game-best");
+      if (!board || !startBtn) return;
+
+      let soundOn = true;
+      let audioCtx = null;
+      soundBtn?.addEventListener("click", () => {
+        soundOn = !soundOn;
+        soundBtn.textContent = soundOn ? "🔊 効果音：ON" : "🔇 効果音：OFF";
+      });
+
+      function playPopSound(isBonus) {
+        if (!soundOn) return;
+        try {
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(isBonus ? 660 : 520, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(isBonus ? 990 : 760, audioCtx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } catch (_) {}
+      }
+
+      const STORAGE_KEY = "nengajo2027_best_score";
+      let bestScore = Number(localStorage.getItem(STORAGE_KEY) || 0);
+      bestEl.textContent = bestScore;
+
+      const holes = [];
+      for (let i = 0; i < 9; i++) {
+        const hole = document.createElement("div");
+        hole.className = "game-hole";
+        const mole = document.createElement("div");
+        mole.className = "game-mole";
+        hole.appendChild(mole);
+        board.insertBefore(hole, overlay);
+        holes.push(hole);
+      }
+
+      const fluffySvg = `
+        <svg viewBox="0 0 80 80" width="84%" height="84%">
+          <circle cx="40" cy="42" r="28" fill="#FFFFFF" />
+          <circle cx="22" cy="24" r="10" fill="#FFFFFF" />
+          <circle cx="40" cy="16" r="11" fill="#FFFFFF" />
+          <circle cx="58" cy="24" r="10" fill="#FFFFFF" />
+          <circle cx="15" cy="44" r="10" fill="#FFFFFF" />
+          <circle cx="65" cy="44" r="10" fill="#FFFFFF" />
+          <ellipse cx="40" cy="42" rx="18" ry="16" fill="#F2E0A8" />
+          <ellipse cx="34" cy="40" rx="3" ry="4.5" fill="#2D1C14" />
+          <ellipse cx="46" cy="40" rx="3" ry="4.5" fill="#2D1C14" />
+          <path d="M 36 49 Q 40 53 44 49" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+        </svg>`;
+
+      const yellowSvg = `
+        <svg viewBox="0 0 80 80" width="80%" height="80%">
+          <ellipse cx="18" cy="40" rx="7" ry="4" fill="#EFE0A8" />
+          <ellipse cx="62" cy="40" rx="7" ry="4" fill="#EFE0A8" />
+          <circle cx="40" cy="42" r="22" fill="#EFE0A8" />
+          <ellipse cx="34" cy="39" rx="3" ry="4.5" fill="#2D1C14" />
+          <ellipse cx="46" cy="39" rx="3" ry="4.5" fill="#2D1C14" />
+          <path d="M 36 47 Q 40 51 44 47" stroke="#2D1C14" stroke-width="2.2" fill="none" stroke-linecap="round" />
+        </svg>`;
+
+      let score = 0;
+      let timeLeft = 15;
+      let playing = false;
+      let countdownId = null;
+      let spawnTimerId = null;
+
+      holes.forEach((hole) => {
+        hole.addEventListener("pointerdown", () => {
+          if (!playing || !hole.classList.contains("up")) return;
+          const pts = Number(hole.dataset.points || 1);
+          score += pts;
+          scoreEl.textContent = score;
+          playPopSound(pts > 1);
+
+          const pop = document.createElement("span");
+          pop.className = "score-pop";
+          pop.textContent = `+${pts}`;
+          hole.appendChild(pop);
+          setTimeout(() => pop.remove(), 550);
+
+          hole.classList.remove("up");
+          hole.classList.add("hit");
+          setTimeout(() => hole.classList.remove("hit"), 160);
+        });
+      });
+
+      function popRandom() {
+        if (!playing) return;
+        const available = holes.filter((h) => !h.classList.contains("up"));
+        if (available.length > 0) {
+          const hole = available[Math.floor(Math.random() * available.length)];
+          const isFluffy = Math.random() < 0.35;
+          hole.dataset.points = isFluffy ? "2" : "1";
+          hole.querySelector(".game-mole").innerHTML = isFluffy ? fluffySvg : yellowSvg;
+          hole.classList.add("up");
+
+          const stayMs = 680 + Math.random() * 480;
+          setTimeout(() => hole.classList.remove("up"), stayMs);
+        }
+        spawnTimerId = setTimeout(popRandom, 420 + Math.random() * 300);
+      }
+
+      startBtn.addEventListener("click", () => {
+        score = 0;
+        timeLeft = 15;
+        playing = true;
+        scoreEl.textContent = score;
+        timeEl.textContent = timeLeft;
+        overlay.classList.add("hidden");
+        holes.forEach((h) => h.classList.remove("up", "hit"));
+
+        popRandom();
+        countdownId = setInterval(() => {
+          timeLeft -= 1;
+          timeEl.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            playing = false;
+            clearInterval(countdownId);
+            clearTimeout(spawnTimerId);
+            holes.forEach((h) => h.classList.remove("up"));
+
+            if (score > bestScore) {
+              bestScore = score;
+              localStorage.setItem(STORAGE_KEY, String(bestScore));
+              bestEl.textContent = bestScore;
+              overlayMsg.textContent = `🎉 新記録！ ${score}点 すごい！`;
+              fireConfetti(70);
+            } else {
+              overlayMsg.textContent = `おつかれさま！ ${score}点 だったよ！`;
+            }
+            startBtn.textContent = "もういちど遊ぶ！";
+            overlay.classList.remove("hidden");
+          }
+        }, 1000);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
