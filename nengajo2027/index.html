@@ -276,19 +276,17 @@
 
     <!-- 移動中画面（スマホの人間アクセス時） -->
     <section id="redirect-panel" class="card-frame hidden">
-      <p class="auth-desc">特別映像ページ（YouTube）へ移動しています…</p>
-      <a id="direct-video-link" class="btn btn-primary" href="https://www.youtube.com/@tamaben-tama">
+      <p class="auth-desc">特別映像ページ（YouTube）を新しいタブで開きました。<br>このタブは閉じて問題ありません。</p>
+      <a id="direct-video-link" class="btn btn-primary" href="https://www.youtube.com/@tamaben-tama" target="_blank" rel="noopener noreferrer">
         🎬 特別映像を視聴する
       </a>
     </section>
 
     <!-- AI・コンピューター判定時のカメラ認証画面 -->
     <section id="camera-auth-panel" class="card-frame hidden" aria-label="年賀状AIカメラ認証">
-      <div id="detect-reason" class="auth-alert">
-        🤖 AIまたはコンピューターからのアクセスを検出しました
-      </div>
+      <div id="detect-reason" class="auth-alert hidden"></div>
       <p class="auth-desc">
-        参加確認のため、<strong>カメラで実物の年賀状を撮影</strong>してください。<br>
+        特別映像の視聴には、<strong>カメラで実物の年賀状を撮影して認証</strong>が必要です。<br>
         参考年賀状を記憶したブラウザ内AIが照合します。
       </p>
 
@@ -317,8 +315,8 @@
 
     <!-- 認証完了後の遷移パネル -->
     <section id="verified-panel" class="card-frame hidden">
-      <p class="auth-desc status-ok">✅ AIによる年賀状の確認が完了しました！</p>
-      <a id="verified-video-link" class="btn btn-primary" href="https://www.youtube.com/@tamaben-tama">
+      <p class="auth-desc status-ok">✅ AIによる年賀状の確認が完了しました！<br>新しいタブでYouTubeを開きました（このタブは閉じて問題ありません）。</p>
+      <a id="verified-video-link" class="btn btn-primary" href="https://www.youtube.com/@tamaben-tama" target="_blank" rel="noopener noreferrer">
         🎬 特別映像を視聴する（YouTube）
       </a>
     </section>
@@ -332,10 +330,15 @@
     const SITE_CONFIG = {
       targetUrl: "https://www.youtube.com/@tamaben-tama",
       referenceImagePath: "nengajo_ref.jpg",
+      // 不正な侵入（AI・自動操作・PC等）ではない通常アクセス時は認証不要
+      requireInitialAuth: false,
+      requireAuthEveryTime: false,
       // 類似度のしきい値（カメラ撮影では照明や角度で差が出るため完全一致はあり得ない）
       minSimilarity: 0.62, // これ未満は別物として拒否
       maxSimilarity: 0.985 // これ以上はデジタル元画像そのものの不正入力として拒否
     };
+
+    const VERIFIED_KEY = "nengajo2027_verified";
 
     function detectAiOrComputer() {
       const ua = navigator.userAgent || "";
@@ -354,22 +357,54 @@
       return { isAiOrComputer: false, reason: "" };
     }
 
+    function openYoutubeAndCloseTab(url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      try {
+        window.open("", "_self");
+        window.close();
+      } catch (_) {}
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const redirectPanel = document.getElementById("redirect-panel");
       const authPanel = document.getElementById("camera-auth-panel");
       const verifiedPanel = document.getElementById("verified-panel");
+      const reasonEl = document.getElementById("detect-reason");
 
-      document.getElementById("direct-video-link").href = SITE_CONFIG.targetUrl;
-      document.getElementById("verified-video-link").href = SITE_CONFIG.targetUrl;
+      const directLink = document.getElementById("direct-video-link");
+      const verifiedLink = document.getElementById("verified-video-link");
+      directLink.href = SITE_CONFIG.targetUrl;
+      verifiedLink.href = SITE_CONFIG.targetUrl;
+
+      [directLink, verifiedLink].forEach((link) => {
+        link.addEventListener("click", () => {
+          setTimeout(() => {
+            try { window.close(); } catch (_) {}
+          }, 150);
+        });
+      });
 
       const check = detectAiOrComputer();
-      if (!check.isAiOrComputer) {
+      const alreadyVerified = localStorage.getItem(VERIFIED_KEY) === "1";
+
+      // 認証をスキップしてYouTubeへ遷移できる条件：
+      // AI/PCではなく、かつ（毎回認証OFF かつ 認証済み、または 初回認証OFF）
+      const canSkipAuth =
+        !check.isAiOrComputer &&
+        !SITE_CONFIG.requireAuthEveryTime &&
+        (alreadyVerified || !SITE_CONFIG.requireInitialAuth);
+
+      if (canSkipAuth) {
         redirectPanel.classList.remove("hidden");
-        window.location.replace(SITE_CONFIG.targetUrl);
+        openYoutubeAndCloseTab(SITE_CONFIG.targetUrl);
         return;
       }
 
-      document.getElementById("detect-reason").textContent = check.reason;
+      // 基本は最初に認証画面を表示（AI/PC判定時は理由アラートも表示）
+      if (check.isAiOrComputer) {
+        reasonEl.textContent = check.reason;
+        reasonEl.classList.remove("hidden");
+      }
       authPanel.classList.remove("hidden");
       initAiCameraAuth(authPanel, verifiedPanel);
     });
@@ -481,12 +516,13 @@
           statusEl.className = "status-msg status-err";
           retryBtn.classList.remove("hidden");
         } else {
+          localStorage.setItem(VERIFIED_KEY, "1");
           statusEl.textContent = `認証成功！（一致度 ${percent}%）YouTubeへ移動します…`;
           statusEl.className = "status-msg status-ok";
           setTimeout(() => {
             authPanel.classList.add("hidden");
             verifiedPanel.classList.remove("hidden");
-            window.location.href = SITE_CONFIG.targetUrl;
+            openYoutubeAndCloseTab(SITE_CONFIG.targetUrl);
           }, 900);
         }
       });
