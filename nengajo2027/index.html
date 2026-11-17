@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HAPPY NEW YEAR 2027 | 2027年賀状特別サイト</title>
-  <meta name="description" content="2027年賀状特別サイト。年賀状デザインと特別映像へのリンクです。">
+  <meta name="description" content="2027年賀状特別サイト。YouTubeチャンネルへ移動します。">
+  <meta http-equiv="refresh" content="0; url=https://www.youtube.com/@tamaben-tama">
+  <script>
+    window.location.replace("https://www.youtube.com/@tamaben-tama");
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -258,8 +262,7 @@
       nengajoScanImage: "nengajo2027.jpg",
 
       // 2. 特別映像の視聴リンク URL（YouTube や Google Drive などのURL）
-      // 例: "https://youtu.be/xxxxxxxxxxx"
-      videoUrl: ""
+      videoUrl: "https://www.youtube.com/@tamaben-tama"
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -281,7 +284,7 @@
       const noteEl = document.getElementById("video-link-note");
       if (SITE_CONFIG.videoUrl) {
         linkEl.href = SITE_CONFIG.videoUrl;
-        noteEl.textContent = "タップすると特別映像ページが開きます";
+        noteEl.textContent = "自動で移動しない場合は上のボタンをタップしてください";
       } else {
         linkEl.addEventListener("click", (e) => {
           e.preventDefault();
