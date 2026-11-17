@@ -10,6 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 
+  <!-- APIキー不要・無料でブラウザ内で動作するAI (TensorFlow.js + MobileNet) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js" defer></script>
+
   <style>
     :root {
       --bg-cream: #FCF6E8;
@@ -90,7 +94,6 @@
       margin-bottom: 20px;
     }
 
-    /* 認証画面 */
     .auth-alert {
       background: rgba(175, 45, 52, 0.08);
       border: 1.5px solid rgba(175, 45, 52, 0.35);
@@ -99,14 +102,28 @@
       padding: 12px 14px;
       font-size: 0.92rem;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .auth-desc {
       font-size: 0.95rem;
       color: var(--brown-text);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       line-height: 1.7;
+    }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-warm);
+      border: 1px solid rgba(210, 166, 80, 0.6);
+      color: var(--brown-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
     }
 
     .camera-stage {
@@ -203,13 +220,10 @@
     .status-ok { color: #2E7D32; }
     .status-err { color: var(--red-main); }
 
-    /* スキャン画面（通常表示 / 認証後） */
-    .scan-image {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 12px;
-      margin-bottom: 16px;
+    .similarity-meter {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--brown-muted);
     }
 
     .hidden { display: none !important; }
@@ -269,13 +283,16 @@
     </section>
 
     <!-- AI・コンピューター判定時のカメラ認証画面 -->
-    <section id="camera-auth-panel" class="card-frame hidden" aria-label="年賀状カメラ認証">
+    <section id="camera-auth-panel" class="card-frame hidden" aria-label="年賀状AIカメラ認証">
       <div id="detect-reason" class="auth-alert">
         🤖 AIまたはコンピューターからのアクセスを検出しました
       </div>
       <p class="auth-desc">
-        参加確認のため、<strong>カメラで実物の年賀状を撮影して認証</strong>してください。
+        参加確認のため、<strong>カメラで実物の年賀状を撮影</strong>してください。<br>
+        参考年賀状を記憶したブラウザ内AIが照合します。
       </p>
+
+      <div id="ai-status-badge" class="ai-badge">⏳ AIモデルと参考年賀状を読み込み中…</div>
 
       <div class="camera-stage">
         <video id="camera-video" autoplay playsinline muted class="hidden"></video>
@@ -289,17 +306,18 @@
       </div>
 
       <div class="btn-row">
-        <button id="start-camera-btn" class="btn btn-secondary" type="button">📷 カメラを起動する</button>
-        <button id="capture-verify-btn" class="btn btn-primary hidden" type="button">✨ 撮影して認証する</button>
+        <button id="start-camera-btn" class="btn btn-secondary" type="button" disabled>📷 カメラを起動する</button>
+        <button id="capture-verify-btn" class="btn btn-primary hidden" type="button">✨ 撮影してAI認証する</button>
         <button id="retry-camera-btn" class="btn btn-secondary hidden" type="button">🔄 撮り直す</button>
       </div>
 
       <p id="auth-status" class="status-msg" aria-live="polite"></p>
+      <p id="similarity-meter" class="similarity-meter"></p>
     </section>
 
-    <!-- 認証完了後の遷移・視聴リンクパネル -->
+    <!-- 認証完了後の遷移パネル -->
     <section id="verified-panel" class="card-frame hidden">
-      <p class="auth-desc status-ok">✅ 年賀状の確認が完了しました！</p>
+      <p class="auth-desc status-ok">✅ AIによる年賀状の確認が完了しました！</p>
       <a id="verified-video-link" class="btn btn-primary" href="https://www.youtube.com/@tamaben-tama">
         🎬 特別映像を視聴する（YouTube）
       </a>
@@ -312,36 +330,25 @@
 
   <script>
     const SITE_CONFIG = {
-      // 特別映像 / チャンネルの遷移先URL
-      targetUrl: "https://www.youtube.com/@tamaben-tama"
+      targetUrl: "https://www.youtube.com/@tamaben-tama",
+      referenceImagePath: "nengajo_ref.jpg",
+      // 類似度のしきい値（カメラ撮影では照明や角度で差が出るため完全一致はあり得ない）
+      minSimilarity: 0.62, // これ未満は別物として拒否
+      maxSimilarity: 0.985 // これ以上はデジタル元画像そのものの不正入力として拒否
     };
 
-    /**
-     * AI・自動操作ツール・コンピューター(PC)からのアクセスかを判別
-     * @returns {{ isAiOrComputer: boolean, reason: string }}
-     */
     function detectAiOrComputer() {
       const ua = navigator.userAgent || "";
-
-      // 1. WebDriver / 自動操作 / ヘッドレス / Bot 判定
       const botPattern = /HeadlessChrome|PhantomJS|Playwright|Puppeteer|Selenium|bot|crawler|spider|curl|wget|python/i;
       if (navigator.webdriver === true || botPattern.test(ua)) {
-        return {
-          isAiOrComputer: true,
-          reason: "🤖 AI・自動操作ブラウザからのアクセスを検出しました"
-        };
+        return { isAiOrComputer: true, reason: "🤖 AI・自動操作ブラウザからのアクセスを検出しました" };
       }
 
-      // 2. コンピューター（PC / 非モバイル）判定
       const isMobileUa = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
       const hasTouch = (navigator.maxTouchPoints || 0) > 0;
       const isFinePointer = window.matchMedia && window.matchMedia("(pointer: fine)").matches;
-
       if (!isMobileUa || (!hasTouch && isFinePointer)) {
-        return {
-          isAiOrComputer: true,
-          reason: "💻 コンピューター（PC）からのアクセスを検出しました"
-        };
+        return { isAiOrComputer: true, reason: "💻 コンピューター（PC）からのアクセスを検出しました" };
       }
 
       return { isAiOrComputer: false, reason: "" };
@@ -351,28 +358,24 @@
       const redirectPanel = document.getElementById("redirect-panel");
       const authPanel = document.getElementById("camera-auth-panel");
       const verifiedPanel = document.getElementById("verified-panel");
-      const directLink = document.getElementById("direct-video-link");
-      const verifiedLink = document.getElementById("verified-video-link");
 
-      directLink.href = SITE_CONFIG.targetUrl;
-      verifiedLink.href = SITE_CONFIG.targetUrl;
+      document.getElementById("direct-video-link").href = SITE_CONFIG.targetUrl;
+      document.getElementById("verified-video-link").href = SITE_CONFIG.targetUrl;
 
       const check = detectAiOrComputer();
-
       if (!check.isAiOrComputer) {
-        // 通常の人間のスマホアクセス → 即座にYouTubeへ移動
         redirectPanel.classList.remove("hidden");
         window.location.replace(SITE_CONFIG.targetUrl);
         return;
       }
 
-      // AIまたはコンピューターと判別 → カメラ撮影認証を要求
       document.getElementById("detect-reason").textContent = check.reason;
       authPanel.classList.remove("hidden");
-      initCameraAuth(authPanel, verifiedPanel);
+      initAiCameraAuth(authPanel, verifiedPanel);
     });
 
-    function initCameraAuth(authPanel, verifiedPanel) {
+    async function initAiCameraAuth(authPanel, verifiedPanel) {
+      const aiBadge = document.getElementById("ai-status-badge");
       const video = document.getElementById("camera-video");
       const canvas = document.getElementById("camera-canvas");
       const guide = document.getElementById("camera-guide");
@@ -381,15 +384,39 @@
       const captureBtn = document.getElementById("capture-verify-btn");
       const retryBtn = document.getElementById("retry-camera-btn");
       const statusEl = document.getElementById("auth-status");
+      const meterEl = document.getElementById("similarity-meter");
 
+      let model = null;
+      let refEmbedding = null;
       let stream = null;
+
+      // 1. MobileNet (APIキー不要・無料) のロードと参考年賀状の記憶
+      try {
+        await waitForLibraries();
+        model = await mobilenet.load({ version: 2, alpha: 1.0 });
+
+        const refImg = await loadImage(SITE_CONFIG.referenceImagePath);
+        refEmbedding = tf.tidy(() => {
+          const emb = model.infer(refImg, true);
+          return normalizeVector(emb.squeeze());
+        });
+
+        aiBadge.textContent = "✅ AI準備完了（参考年賀状を記憶しました）";
+        startBtn.disabled = false;
+      } catch (err) {
+        aiBadge.textContent = "⚠️ AIモデルの初期化に失敗しました（通信環境を確認してください）";
+        statusEl.textContent = "再読み込みしてお試しください。";
+        statusEl.className = "status-msg status-err";
+        return;
+      }
 
       async function startCamera() {
         statusEl.textContent = "";
         statusEl.className = "status-msg";
+        meterEl.textContent = "";
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          statusEl.textContent = "この環境ではカメラが利用できません。カメラ付き端末でアクセスしてください。";
+          statusEl.textContent = "この環境ではカメラが利用できません。";
           statusEl.className = "status-msg status-err";
           return;
         }
@@ -408,7 +435,7 @@
           retryBtn.classList.add("hidden");
           captureBtn.classList.remove("hidden");
         } catch (err) {
-          statusEl.textContent = "カメラの起動が許可されませんでした。カメラへのアクセスを許可してください。";
+          statusEl.textContent = "カメラの起動が許可されませんでした。アクセスを許可してください。";
           statusEl.className = "status-msg status-err";
         }
       }
@@ -420,56 +447,11 @@
         }
       }
 
-      /**
-       * 撮影画像を解析して、真っ暗/単色/ダミー映像でないか＆年賀状らしい情報量があるかを確認
-       */
-      function verifyCapturedFrame(ctx, w, h) {
-        const data = ctx.getImageData(0, 0, w, h).data;
-        const step = 16;
-        let count = 0;
-        let sumLuma = 0;
-        let sumSqLuma = 0;
-        let warmOrPaperPixels = 0;
-
-        for (let i = 0; i < data.length; i += 4 * step) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-
-          sumLuma += luma;
-          sumSqLuma += luma * luma;
-          count++;
-
-          // 明るい紙面・クリーム色・赤・ゴールド系のピクセルをカウント
-          if (luma > 135 && r >= b - 10) {
-            warmOrPaperPixels++;
-          }
-        }
-
-        const mean = sumLuma / count;
-        const variance = (sumSqLuma / count) - (mean * mean);
-        const stdDev = Math.sqrt(Math.max(0, variance));
-        const paperRatio = warmOrPaperPixels / count;
-
-        // 1. 真っ暗 / 白飛び / 単色ダミー画像（分散が小さすぎる）を弾く
-        if (mean < 25 || stdDev < 14) {
-          return { ok: false, message: "画像が暗すぎるか、年賀状がはっきり映っていません。明るい場所で撮り直してください。" };
-        }
-
-        // 2. 年賀状らしい明るい紙面がある程度映っているか
-        if (paperRatio < 0.15) {
-          return { ok: false, message: "年賀状が枠内にしっかり映るように近づけて撮影してください。" };
-        }
-
-        return { ok: true, message: "認証成功！YouTubeへ移動します…" };
-      }
-
       startBtn.addEventListener("click", startCamera);
       retryBtn.addEventListener("click", startCamera);
 
       captureBtn.addEventListener("click", () => {
-        if (!video.videoWidth) return;
+        if (!video.videoWidth || !model || !refEmbedding) return;
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
@@ -481,20 +463,62 @@
         captureBtn.classList.add("hidden");
         stopCamera();
 
-        const result = verifyCapturedFrame(ctx, canvas.width, canvas.height);
-        if (result.ok) {
-          statusEl.textContent = result.message;
+        // MobileNetで撮影画像の特徴を抽出し、参考年賀状とのコサイン類似度を算出
+        const similarity = tf.tidy(() => {
+          const capEmb = normalizeVector(model.infer(canvas, true).squeeze());
+          return tf.sum(tf.mul(refEmbedding, capEmb)).dataSync()[0];
+        });
+
+        const percent = (similarity * 100).toFixed(1);
+        meterEl.textContent = `AI照合スコア：${percent}%`;
+
+        if (similarity >= SITE_CONFIG.maxSimilarity) {
+          statusEl.textContent = "元画像とほぼ同一のデジタルデータです。実物の年賀状をカメラで撮影してください。";
+          statusEl.className = "status-msg status-err";
+          retryBtn.classList.remove("hidden");
+        } else if (similarity < SITE_CONFIG.minSimilarity) {
+          statusEl.textContent = "参考の年賀状と一致しませんでした。枠内に明るく映して撮り直してください。";
+          statusEl.className = "status-msg status-err";
+          retryBtn.classList.remove("hidden");
+        } else {
+          statusEl.textContent = `認証成功！（一致度 ${percent}%）YouTubeへ移動します…`;
           statusEl.className = "status-msg status-ok";
           setTimeout(() => {
             authPanel.classList.add("hidden");
             verifiedPanel.classList.remove("hidden");
             window.location.href = SITE_CONFIG.targetUrl;
           }, 900);
-        } else {
-          statusEl.textContent = result.message;
-          statusEl.className = "status-msg status-err";
-          retryBtn.classList.remove("hidden");
         }
+      });
+    }
+
+    function normalizeVector(vec) {
+      const norm = tf.norm(vec);
+      return tf.div(vec, tf.maximum(norm, tf.scalar(1e-8)));
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function waitForLibraries() {
+      return new Promise((resolve, reject) => {
+        const started = Date.now();
+        const timer = setInterval(() => {
+          if (window.tf && window.mobilenet) {
+            clearInterval(timer);
+            resolve();
+          } else if (Date.now() - started > 15000) {
+            clearInterval(timer);
+            reject(new Error("Library timeout"));
+          }
+        }, 100);
       });
     }
   </script>
