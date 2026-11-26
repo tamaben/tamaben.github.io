@@ -12,6 +12,39 @@
     <meta name="description" content="タマベンは、小学生・中学生・高校生向けの無料学習教材サイト。教科書準拠プリントをインストール不要ですぐに利用・印刷できます。テーマは「学習を楽しく」。">
     <meta name="keywords" content="タマベン, 教材サイト, 無料プリント, 学習教材サイト, 宿題プリント, PDFプリント, 単元別プリント">
 
+    <!-- Google Consent Mode v2 & Google AdSense -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        (function() {
+            var adsGranted = false;
+            var analyticsGranted = false;
+            var hasConsentChoice = false;
+            try {
+                var raw = localStorage.getItem('tamaben_cookie_consent');
+                if (raw) {
+                    var parsed = JSON.parse(raw);
+                    hasConsentChoice = true;
+                    adsGranted = parsed.ads !== false && parsed.status !== 'essential_only';
+                    analyticsGranted = parsed.analytics !== false && parsed.status !== 'essential_only';
+                }
+            } catch (e) {}
+
+            gtag('consent', 'default', {
+                'ad_storage': adsGranted ? 'granted' : 'denied',
+                'ad_user_data': adsGranted ? 'granted' : 'denied',
+                'ad_personalization': adsGranted ? 'granted' : 'denied',
+                'analytics_storage': analyticsGranted ? 'granted' : 'denied',
+                'wait_for_update': hasConsentChoice ? 0 : 500
+            });
+
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.requestNonPersonalizedAds = adsGranted ? 0 : 1;
+        })();
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8496238664250615"
+         crossorigin="anonymous"></script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -360,6 +393,30 @@
             flex-shrink: 0;
         }
 
+        /* ━━━━━━━━━━━━━━━━━━━━
+           Google AdSense 広告枠（学習を邪魔しない余白＆未配信時の自動非表示）
+           ━━━━━━━━━━━━━━━━━━━━ */
+        .tamaben-ad-wrap {
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .tamaben-ad-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: 0.04em;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            user-select: none;
+        }
+        /* Google公式仕様: 広告在庫がない場合（unfilled）は余白を残さず非表示 */
+        ins.adsbygoogle[data-ad-status="unfilled"] {
+            display: none !important;
+        }
+
         /* ユーザーのモーション軽減設定への配慮 */
         @media (prefers-reduced-motion: reduce) {
             .view-section:not(.hidden),
@@ -541,9 +598,8 @@
                             <div class="flex items-center gap-1.5">
                                 <label for="material-filter" class="text-xs font-semibold text-ink-muted">表示:</label>
                                 <select id="material-filter" class="bg-white border border-neutral-300 rounded-lg px-3 py-1.5 text-xs font-bold text-ink outline-none cursor-pointer focus:border-ink shadow-sm" onchange="onMaterialFilterChange()">
-                                    <option value="all">すべて (準備中含む)</option>
                                     <option value="available" selected>今すぐ印刷可能のみ</option>
-                                    <option value="unavailable">準備中のみ</option>
+                                    <option value="all">すべて表示</option>
                                 </select>
                             </div>
                         </div>
@@ -563,6 +619,74 @@
                 <!-- プリント用紙カードグリッド -->
                 <div id="learning-materials-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[40vh]">
                     <!-- JSにて動的に描画 -->
+                </div>
+
+                <!-- 広告枠①: トップページ教材一覧の下（操作を邪魔しない自然な区切り） -->
+                <div id="ad-slot-home-bottom" class="tamaben-ad-wrap hidden"></div>
+
+                <!-- タマベン学習ガイド ＆ よくある質問（サイトの信頼性・独自解説セクション） -->
+                <div class="mt-14 pt-10 border-t border-ink-border space-y-10">
+                    <!-- 3つの特徴 -->
+                    <div>
+                        <div class="mb-5">
+                            <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">Features & Guide</span>
+                            <h2 class="text-base sm:text-lg font-black text-ink mt-0.5">タマベンの無料学習プリントについて</h2>
+                            <p class="text-xs text-ink-muted mt-1">日々の家庭学習や学校の復習・テスト対策に、登録不要ですぐにご活用いただけます。</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                                <div class="flex items-center gap-2.5 mb-2.5">
+                                    <span class="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-ink shrink-0">
+                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                    </span>
+                                    <h3 class="text-xs sm:text-sm font-black text-ink">登録不要・A4サイズで即印刷</h3>
+                                </div>
+                                <p class="text-xs text-ink-muted leading-relaxed">
+                                    会員登録やアプリのインストールは一切不要です。ブラウザ上で紙面を全ページプレビュー確認してから、ご自宅のプリンターやコンビニのネットプリント等でA4用紙にきれいに印刷できます。
+                                </p>
+                            </div>
+                            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                                <div class="flex items-center gap-2.5 mb-2.5">
+                                    <span class="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-ink shrink-0">
+                                        <i data-lucide="book-open-check" class="w-3.5 h-3.5"></i>
+                                    </span>
+                                    <h3 class="text-xs sm:text-sm font-black text-ink">基本問題からステップアップ</h3>
+                                </div>
+                                <p class="text-xs text-ink-muted leading-relaxed">
+                                    教科書の単元に沿った「基本問題」と、定着を確かめる「練習問題」、さらに丁寧な「答え・解説プリント」をセットで用意。つまずきやすいポイントを自分のペースで着実に克服できます。
+                                </p>
+                            </div>
+                            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                                <div class="flex items-center gap-2.5 mb-2.5">
+                                    <span class="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-ink shrink-0">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                    </span>
+                                    <h3 class="text-xs sm:text-sm font-black text-ink">やる気が続く「ご褒美シール枠」</h3>
+                                </div>
+                                <p class="text-xs text-ink-muted leading-relaxed">
+                                    プリント上部の名前欄横には、市販の2cm×2cmシールがぴったり収まる「ご褒美シール枠」を設けています。1枚やり遂げるたびに達成感が積み重なり、毎日の学習習慣づくりを応援します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- よくある質問（FAQ） -->
+                    <div class="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-7 shadow-2xs">
+                        <h3 class="text-sm sm:text-base font-black text-ink mb-4 flex items-center gap-2">
+                            <i data-lucide="help-circle" class="w-4 h-4 text-ink"></i>
+                            <span>よくあるご質問（ご利用ルール）</span>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 bg-canvas rounded-xl border border-neutral-200 space-y-1">
+                                <p class="font-black text-ink">Q. プリントの利用に料金はかかりますか？</p>
+                                <p class="text-ink-muted leading-relaxed">A. すべての学習プリント・解答解説を完全無料でご利用いただけます。何枚印刷しても料金は一切かかりません。</p>
+                            </div>
+                            <div class="p-4 bg-canvas rounded-xl border border-neutral-200 space-y-1">
+                                <p class="font-black text-ink">Q. 学校や学習塾、家庭教師の授業でも使えますか？</p>
+                                <p class="text-ink-muted leading-relaxed">A. はい、ご家庭での学習はもちろん、学校・学童・学習塾など教育現場での印刷・配布も無料で自由にご活用いただけます（PDF自体の再配布や商用販売のみご遠慮ください）。</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -677,6 +801,9 @@
             <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- 動的に描画 -->
             </div>
+
+            <!-- 広告枠②: 検索結果グリッドの下 -->
+            <div id="ad-slot-search-bottom" class="tamaben-ad-wrap hidden"></div>
         </div>
 
         <!-- ━━━━━━━━━━━━━━━━━━━━
@@ -690,6 +817,9 @@
             <div id="detail-content">
                 <!-- JSで動的展開 -->
             </div>
+
+            <!-- 広告枠③: 教材詳細ページの最下部（プレビューや印刷ボタンから離し誤クリックを防止） -->
+            <div id="ad-slot-detail-bottom" class="tamaben-ad-wrap hidden"></div>
         </div>
 
         <!-- ━━━━━━━━━━━━━━━━━━━━
@@ -750,7 +880,7 @@
                     <button onclick="quickSearchBySubject('電気回路', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電気回路</button>
                     <button onclick="quickSearchBySubject('電子回路', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">電子回路</button>
                     <button onclick="quickSearchBySubject('プログラミング技術', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">プログラミング技術</button>
-                    <button onclick="quickSearchBySubject('機械設計', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">機械設計</button>
+                    <button onclick="quickSearchBySubject('機械設計', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-left text-xs">機械設計</button>
                 </div>
 
                 <!-- 商業高校 -->
@@ -761,6 +891,9 @@
                     <button onclick="quickSearchBySubject('情報処理', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報処理</button>
                 </div>
             </div>
+
+            <!-- 広告枠④: 全教科一覧の下 -->
+            <div id="ad-slot-subjects-bottom" class="tamaben-ad-wrap hidden"></div>
         </div>
 
         <!-- 06 設定・登録 (マイページへ統合・エイリアス) -->
@@ -1041,15 +1174,20 @@
             <p class="mb-2 text-ink-subtle" style="text-wrap: pretty;">
                 <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという願いを込めて作成しています。</span>
             </p>
-            <div class="flex justify-center items-center gap-3 sm:gap-4 mb-3 text-[11px] text-ink-muted">
-                <button type="button" onclick="openCookiePrivacyModal('cookie')" class="hover:underline hover:text-ink cursor-pointer inline-flex items-center gap-1.5 transition-colors">
-                    <i data-lucide="cookie" class="w-3.5 h-3.5"></i>
-                    <span>クッキー設定</span>
+            <div class="flex flex-wrap justify-center items-center gap-3 sm:gap-4 mb-3 text-[11px] text-ink-muted">
+                <button type="button" onclick="openCookiePrivacyModal('about')" class="hover:underline hover:text-ink cursor-pointer inline-flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+                    <span>運営者情報・利用規約</span>
                 </button>
                 <span class="text-neutral-300">|</span>
                 <button type="button" onclick="openCookiePrivacyModal('policy')" class="hover:underline hover:text-ink cursor-pointer inline-flex items-center gap-1.5 transition-colors">
                     <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                     <span>プライバシーポリシー</span>
+                </button>
+                <span class="text-neutral-300">|</span>
+                <button type="button" onclick="openCookiePrivacyModal('cookie')" class="hover:underline hover:text-ink cursor-pointer inline-flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="cookie" class="w-3.5 h-3.5"></i>
+                    <span>クッキー設定</span>
                 </button>
             </div>
             <p>&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
@@ -1113,7 +1251,7 @@
                         <span>Cookieとプライバシー保護について</span>
                     </h3>
                     <p class="text-[11px] text-neutral-600 leading-relaxed mb-3">
-                        当サイトでは、学習の進捗やお気に入り教材の保存、および快適な学習環境を提供するためにCookieと端末ストレージを使用しています。
+                        当サイトでは、学習の進捗やお気に入り教材の保存、利用傾向の分析、および適切な広告配信（Google AdSense）のためにCookieと端末ストレージを使用しています。詳細は<button type="button" onclick="openCookiePrivacyModal('policy')" class="underline underline-offset-2 hover:text-ink font-semibold">プライバシーポリシー</button>をご確認ください。
                     </p>
                     <div class="flex flex-wrap items-center gap-2 pt-1">
                         <button type="button" onclick="acceptAllCookies()" class="py-2 px-3.5 bg-ink text-white hover:bg-neutral-800 rounded-xl font-bold text-xs shadow-xs transition-all active:scale-95">
@@ -1132,7 +1270,7 @@
     </div>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━
-         クッキー・プライバシーポリシーモーダル (Cookie & Privacy Modal)
+         クッキー・プライバシーポリシー・運営情報モーダル (Cookie, Privacy & Site Info Modal)
          ━━━━━━━━━━━━━━━━━━━━ -->
     <div id="cookie-privacy-modal" class="fixed inset-0 z-[110] hidden bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 md:p-6 transition-all" onclick="handleCookiePrivacyModalBackdrop(event)">
         <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-neutral-200 paper-card" onclick="event.stopPropagation()">
@@ -1143,8 +1281,8 @@
                         <i data-lucide="shield-check" class="w-4 h-4 text-ink"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm sm:text-base font-black text-ink">プライバシーポリシー & Cookie設定</h2>
-                        <p class="text-[10px] text-ink-muted">学習データの保護と適切なCookie利用について</p>
+                        <h2 class="text-sm sm:text-base font-black text-ink">サイト規約・プライバシー・Cookie設定</h2>
+                        <p class="text-[10px] text-ink-muted">運営者情報・プリント利用規約・データ保護と広告配信について</p>
                     </div>
                 </div>
                 <button type="button" onclick="closeCookiePrivacyModal()" class="w-8 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-ink flex items-center justify-center transition-colors">
@@ -1153,12 +1291,15 @@
             </div>
 
             <!-- タブナビゲーション -->
-            <div class="px-5 sm:px-6 pt-3 pb-0 border-b border-neutral-100 flex gap-2 shrink-0 bg-neutral-50/50">
-                <button type="button" id="cookie-tab-btn-settings" onclick="switchCookieTab('cookie')" class="pb-2.5 px-3 text-xs font-bold border-b-2 border-ink text-ink transition-all">
+            <div class="px-5 sm:px-6 pt-3 pb-0 border-b border-neutral-100 flex gap-1 sm:gap-2 overflow-x-auto no-scrollbar shrink-0 bg-neutral-50/50">
+                <button type="button" id="cookie-tab-btn-settings" onclick="switchCookieTab('cookie')" class="pb-2.5 px-3 text-xs font-bold border-b-2 border-ink text-ink whitespace-nowrap transition-all">
                     Cookie設定
                 </button>
-                <button type="button" id="cookie-tab-btn-policy" onclick="switchCookieTab('policy')" class="pb-2.5 px-3 text-xs font-semibold text-neutral-500 hover:text-ink border-b-2 border-transparent transition-all">
+                <button type="button" id="cookie-tab-btn-policy" onclick="switchCookieTab('policy')" class="pb-2.5 px-3 text-xs font-semibold text-neutral-500 hover:text-ink border-b-2 border-transparent whitespace-nowrap transition-all">
                     プライバシーポリシー
+                </button>
+                <button type="button" id="cookie-tab-btn-about" onclick="switchCookieTab('about')" class="pb-2.5 px-3 text-xs font-semibold text-neutral-500 hover:text-ink border-b-2 border-transparent whitespace-nowrap transition-all">
+                    運営者情報・利用規約
                 </button>
             </div>
 
@@ -1167,7 +1308,7 @@
                 <!-- パネル1: Cookie設定 -->
                 <div id="cookie-panel-settings" class="space-y-4">
                     <p class="text-neutral-600">
-                        タマベンでは、利用者の皆さまが学習を快適に進められるよう、端末にCookieおよびローカルストレージを使用しています。利用状況をご確認の上、設定を選択いただけます。
+                        タマベンでは、利用者の皆さまが学習を快適に進められるよう、また教材を無料で提供し続けるために、端末にCookieおよびローカルストレージを使用しています。利用目的ごとに設定を選択いただけます。
                     </p>
 
                     <!-- 必須項目 -->
@@ -1180,7 +1321,7 @@
                             <span class="text-[11px] text-neutral-500 font-bold">必須</span>
                         </div>
                         <p class="text-[11px] text-neutral-600">
-                            教材のお気に入り登録（マイページ機能）、プリント閲覧履歴、検索フィルターの保持など、サイトの学習機能を正常に動作させるために必須のデータです。
+                            教材のお気に入り登録（マイページ機能）、プリント閲覧履歴、学年・検索フィルターの保持、およびCookie同意状態の記録など、サイトの学習機能を正常に動作させるために必須のデータです。
                         </p>
                     </div>
 
@@ -1200,6 +1341,22 @@
                         </p>
                     </div>
 
+                    <!-- 広告配信・パーソナライズド広告（Google AdSense） -->
+                    <div class="p-4 bg-white border border-neutral-200 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-ink text-xs">広告配信・パーソナライズド広告（Google AdSense）</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="cookie-opt-ads" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-neutral-900"></div>
+                            </label>
+                        </div>
+                        <p class="text-[11px] text-neutral-600">
+                            すべての学習教材を無料で提供・維持するため、第三者配信事業者（Google AdSense）による広告配信にCookieを使用します。オフにした場合、過去の閲覧情報に基づくパーソナライズド広告（興味・関心に応じた広告）が無効化されます。
+                        </p>
+                    </div>
+
                     <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-200 text-[11px] text-neutral-600 flex items-start gap-2">
                         <i data-lucide="info" class="w-4 h-4 text-neutral-700 shrink-0 mt-0.5"></i>
                         <span>設定はいつでもフッターの「クッキー設定」リンクから変更や取り消しが可能です。</span>
@@ -1209,39 +1366,98 @@
                 <!-- パネル2: プライバシーポリシー全文 -->
                 <div id="cookie-panel-policy" class="space-y-4 hidden">
                     <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-200 text-[11px] text-neutral-600">
-                        タマベン（以下、「当サイト」）は、利用者のプライバシーを尊重し、個人情報の保護に最大限配慮して運営されています。
+                        タマベン（以下、「当サイト」）は、学習者および保護者の皆さまのプライバシーを尊重し、個人情報の保護と適切なデータ管理に最大限配慮して運営されています。
                     </div>
 
                     <div>
                         <h4 class="font-black text-ink text-xs mb-1">1. 取得する情報および保存方法</h4>
                         <p class="text-neutral-600 text-[11px] mb-1">
-                            当サイトでは、利用者の利便性と学習サポートを目的として、以下の情報をブラウザのCookieおよびローカルストレージに保存することがあります：
+                            当サイトでは、学習サポート機能の提供およびサイト運営のため、以下の情報をブラウザのCookieまたはローカルストレージに保存・利用することがあります：
                         </p>
                         <ul class="list-disc pl-5 space-y-0.5 text-neutral-600 text-[11px]">
-                            <li>教材の閲覧履歴およびお気に入り設定</li>
-                            <li>学年や教科の検索フィルター選択状況</li>
-                            <li>Cookie利用に関する同意ステータス</li>
+                            <li>教材の閲覧履歴・学習記録およびブックマーク（お気に入り）設定</li>
+                            <li>マイページでの学年・生年月日設定（※お使いのブラウザ内のみに保存され、当サイトのサーバーへ送信・収集されることはありません）</li>
+                            <li>学年・教科の検索フィルター選択状況およびCookie利用に関する同意ステータス</li>
+                            <li>利用傾向の分析および第三者配信の広告サービス（Google AdSense）に伴うCookie情報</li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 class="font-black text-ink text-xs mb-1">2. 利用目的</h4>
                         <p class="text-neutral-600 text-[11px]">
-                            取得した情報は、学習の進捗管理、教材アクセスの利便性向上、およびサービス改善のための統計分析のみに利用し、目的外の利用は行いません。
+                            取得した情報は、学習進捗の管理、学年に合わせた教材アクセスの利便性向上、サービス改善のための匿名統計分析、および学習プリントを無料で提供し続けるための広告配信・最適化の目的に限り利用いたします。
                         </p>
                     </div>
 
                     <div>
-                        <h4 class="font-black text-ink text-xs mb-1">3. 第三者への開示・提供の禁止</h4>
+                        <h4 class="font-black text-ink text-xs mb-1">3. 広告配信（Google AdSense）について</h4>
+                        <div class="space-y-1.5 text-neutral-600 text-[11px]">
+                            <p>
+                                当サイトでは、第三者配信の広告サービス「Google AdSense（グーグル・アドセンス）」を利用しています。
+                            </p>
+                            <p>
+                                Google を含む第三者配信事業者は、Cookie を使用して、利用者が当サイトや他のウェブサイトに過去にアクセスした際の情報に基づいて広告を配信します。Google が広告 Cookie を使用することにより、利用者が当サイトや他のサイトにアクセスした際の情報に基づいて、Google やそのパートナーが適切な広告を利用者に表示できます。
+                            </p>
+                            <p>
+                                利用者は、当サイトの「Cookie設定」からパーソナライズド広告用のCookie利用をいつでもオフにできるほか、Google の「<a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer" class="text-ink font-bold underline underline-offset-2 hover:opacity-75">マイ アド センター（広告設定）</a>」または「<a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-ink font-bold underline underline-offset-2 hover:opacity-75">www.aboutads.info</a>」にアクセスして、パーソナライズド広告を無効（オプトアウト）にすることができます。
+                            </p>
+                            <p>
+                                Google による広告での Cookie の取り扱い詳細については、「<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" class="text-ink font-bold underline underline-offset-2 hover:opacity-75">Google ポリシーと規約（広告）</a>」をご覧ください。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-ink text-xs mb-1">4. 個人情報の第三者への開示・提供の禁止</h4>
                         <p class="text-neutral-600 text-[11px]">
-                            当サイトで保持する利用情報について、法令に基づく場合を除き、第三者へ提供または開示することは一切ありません。
+                            当サイトでは、法令に基づく場合を除き、個人を特定できる情報を第三者へ提供または開示することは一切ありません（前項に定める第三者広告配信事業者によるCookieを通じた匿名データの取り扱いを除きます）。
                         </p>
                     </div>
 
                     <div>
-                        <h4 class="font-black text-ink text-xs mb-1">4. Cookieの管理および無効化（オプトアウト）</h4>
+                        <h4 class="font-black text-ink text-xs mb-1">5. Cookieの管理および無効化（オプトアウト）</h4>
                         <p class="text-neutral-600 text-[11px]">
-                            利用者は本設定パネルまたはブラウザの設定により、Cookieの送受信をいつでも拒否・変更することができます。
+                            利用者は本モーダルの「Cookie設定」タブまたはご使用のブラウザ設定により、Cookieの送受信をいつでも拒否・変更することができます。なお、ブラウザの設定でローカルストレージや必須Cookieをすべて無効にした場合、ブックマークや学年設定の保持など一部の機能がご利用いただけなくなる場合があります。
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-ink text-xs mb-1">6. プライバシーポリシーの変更について</h4>
+                        <p class="text-neutral-600 text-[11px]">
+                            当サイトは、法令の制定・改正やサービス内容の変更に伴い、本ポリシーを適宜見直し、予告なく変更する場合があります。変更後のプライバシーポリシーは、当サイトに掲載した時点から効力を生じるものとします。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- パネル3: 運営者情報・利用規約 -->
+                <div id="cookie-panel-about" class="space-y-4 hidden">
+                    <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-200 text-[11px] text-neutral-600">
+                        「タマベン」は、「学ぶことは、もっと楽しく」をテーマに、小学生・中学生・高校生向けの学習プリントを無料で制作・公開している学習支援サイトです。
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-ink text-xs mb-1">1. 運営者情報</h4>
+                        <ul class="list-disc pl-5 space-y-0.5 text-neutral-600 text-[11px]">
+                            <li>サイト名：タマベン（無料学習教材サイト）</li>
+                            <li>運営主体：タマベン制作チーム（個人運営）</li>
+                            <li>サイトURL：https://tamaben.github.io/</li>
+                            <li>活動内容：小・中・高校生向け学習プリントおよび解説教材の企画・制作・無償公開</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-ink text-xs mb-1">2. 教材プリントのご利用規約・著作権について</h4>
+                        <ul class="list-disc pl-5 space-y-1 text-neutral-600 text-[11px]">
+                            <li>当サイトで公開している教材PDFおよびコンテンツの著作権は、タマベン制作チームに帰属します。</li>
+                            <li><strong>無料でご利用いただける範囲：</strong>ご家庭での個人学習のほか、小学校・中学校・高等学校・特別支援学校・学童保育・学習塾・家庭教師などの授業・宿題配布用途として、事前連絡なしで自由に印刷・配布いただけます。</li>
+                            <li><strong>禁止事項：</strong>教材PDFデータ自体の別サイトやSNSへの無断転載・二次配布（直リンクを含む）、教材を改変しての公開、および教材自体を販売する商用行為は固くお断りいたします。</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-ink text-xs mb-1">3. 免責事項</h4>
+                        <p class="text-neutral-600 text-[11px]">
+                            教材の作成・校正には細心の注意を払っておりますが、万一誤植や解答の不備等がございました場合は順次修正いたします。当サイトの利用により生じたいかなる損害についても、運営者は一切の責任を負いかねますのであらかじめご了承ください。教材の訂正情報やメンテナンス情報はトップページの「お知らせ」にて随時ご案内いたします。
                         </p>
                     </div>
                 </div>
@@ -1769,6 +1985,22 @@
             isLoaded = true; 
 
             if (wasInitialLoad) {
+                // 初回表示時に初期タブの公開教材が0件の場合は、公開中のプリントがある学年区分を自動選択（審査時の「準備中」空画面を防止）
+                const currentHasPrintable = MATERIAL_DATA.some(m => m.tab === currentTab && hasAnyPrintable(m));
+                if (!currentHasPrintable) {
+                    const fallbackTab = ['elementary', 'junior', 'high'].find(t =>
+                        MATERIAL_DATA.some(m => m.tab === t && hasAnyPrintable(m))
+                    );
+                    if (fallbackTab) {
+                        currentTab = fallbackTab;
+                        const elemBtn = document.getElementById('tab-elementary');
+                        const jnrBtn = document.getElementById('tab-junior');
+                        const highBtn = document.getElementById('tab-high');
+                        if (elemBtn) elemBtn.classList.toggle('active', currentTab === 'elementary');
+                        if (jnrBtn) jnrBtn.classList.toggle('active', currentTab === 'junior');
+                        if (highBtn) highBtn.classList.toggle('active', currentTab === 'high');
+                    }
+                }
                 buildSubjectChips();
                 syncSearchUnits();
                 renderPopularUnits();
@@ -3359,6 +3591,7 @@
                     if (targetEl) targetEl.classList.remove('hidden');
                 }
                 updateNavActiveState(hash);
+                requestAnimationFrame(() => renderVisibleAdSlots());
 
                 // 別の画面（ハッシュ）への遷移時のみスクロール位置を先頭に戻す
                 if (isHashChanged && shouldScroll) {
@@ -3375,7 +3608,7 @@
         }
 
         /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-           クッキー＆プライバシー管理 (Cookie & Privacy Management)
+           クッキー＆プライバシー管理 (Cookie & Privacy Management / Google Consent Mode v2)
            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
         const COOKIE_CONSENT_KEY = 'tamaben_cookie_consent';
 
@@ -3401,12 +3634,30 @@
             return null;
         }
 
+        function applyGoogleConsent(consentData) {
+            const adsGranted = !!(consentData && consentData.ads !== false && consentData.status !== 'essential_only');
+            const analyticsGranted = !!(consentData && consentData.analytics !== false && consentData.status !== 'essential_only');
+
+            if (typeof gtag === 'function') {
+                gtag('consent', 'update', {
+                    'ad_storage': adsGranted ? 'granted' : 'denied',
+                    'ad_user_data': adsGranted ? 'granted' : 'denied',
+                    'ad_personalization': adsGranted ? 'granted' : 'denied',
+                    'analytics_storage': analyticsGranted ? 'granted' : 'denied'
+                });
+            }
+
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.requestNonPersonalizedAds = adsGranted ? 0 : 1;
+        }
+
         function saveCookieConsentData(data) {
             try {
                 const json = JSON.stringify(data);
                 localStorage.setItem(COOKIE_CONSENT_KEY, json);
                 setCookie(COOKIE_CONSENT_KEY, json, 365);
             } catch(e) {}
+            applyGoogleConsent(data);
         }
 
         function initCookieConsent() {
@@ -3422,6 +3673,7 @@
                     lucide.createIcons();
                 }, 800);
             } else {
+                applyGoogleConsent(consent);
                 banner.classList.add('hidden', 'pointer-events-none');
             }
         }
@@ -3441,12 +3693,13 @@
                 status: 'accepted_all',
                 essential: true,
                 analytics: true,
+                ads: true,
                 updatedAt: new Date().toISOString()
             };
             saveCookieConsentData(consentData);
             hideCookieConsentBanner();
             closeCookiePrivacyModal();
-            showCookieToast('Cookieの利用に同意しました');
+            showCookieToast('すべてのCookie利用に同意しました');
         }
 
         function acceptEssentialCookiesOnly() {
@@ -3454,6 +3707,7 @@
                 status: 'essential_only',
                 essential: true,
                 analytics: false,
+                ads: false,
                 updatedAt: new Date().toISOString()
             };
             saveCookieConsentData(consentData);
@@ -3463,11 +3717,15 @@
         }
 
         function saveCustomCookieSettings() {
-            const analyticsChecked = document.getElementById('cookie-opt-analytics') ? document.getElementById('cookie-opt-analytics').checked : false;
+            const analyticsToggle = document.getElementById('cookie-opt-analytics');
+            const adsToggle = document.getElementById('cookie-opt-ads');
+            const analyticsChecked = analyticsToggle ? analyticsToggle.checked : false;
+            const adsChecked = adsToggle ? adsToggle.checked : false;
             const consentData = {
-                status: analyticsChecked ? 'accepted_all' : 'custom',
+                status: (analyticsChecked && adsChecked) ? 'accepted_all' : ((!analyticsChecked && !adsChecked) ? 'essential_only' : 'custom'),
                 essential: true,
                 analytics: analyticsChecked,
+                ads: adsChecked,
                 updatedAt: new Date().toISOString()
             };
             saveCookieConsentData(consentData);
@@ -3482,12 +3740,16 @@
             
             const consent = getCookieConsentData();
             const analyticsToggle = document.getElementById('cookie-opt-analytics');
+            const adsToggle = document.getElementById('cookie-opt-ads');
             if (analyticsToggle) {
-                analyticsToggle.checked = consent ? (consent.analytics !== false) : true;
+                analyticsToggle.checked = consent ? (consent.analytics !== false && consent.status !== 'essential_only') : true;
+            }
+            if (adsToggle) {
+                adsToggle.checked = consent ? (consent.ads !== false && consent.status !== 'essential_only') : true;
             }
 
             modal.classList.remove('hidden');
-            switchCookieTab(tab === 'policy' ? 'policy' : 'cookie');
+            switchCookieTab(tab);
             lucide.createIcons();
         }
 
@@ -3503,30 +3765,25 @@
         }
 
         function switchCookieTab(tab) {
-            const settingsBtn = document.getElementById('cookie-tab-btn-settings');
-            const policyBtn = document.getElementById('cookie-tab-btn-policy');
-            const settingsPanel = document.getElementById('cookie-panel-settings');
-            const policyPanel = document.getElementById('cookie-panel-policy');
+            const tabs = [
+                { key: 'cookie', btn: document.getElementById('cookie-tab-btn-settings'), panel: document.getElementById('cookie-panel-settings') },
+                { key: 'policy', btn: document.getElementById('cookie-tab-btn-policy'), panel: document.getElementById('cookie-panel-policy') },
+                { key: 'about', btn: document.getElementById('cookie-tab-btn-about'), panel: document.getElementById('cookie-panel-about') }
+            ];
+            const activeKey = (tab === 'policy' || tab === 'about') ? tab : 'cookie';
 
-            if (!settingsBtn || !policyBtn || !settingsPanel || !policyPanel) return;
-
-            if (tab === 'policy') {
-                policyBtn.classList.add('border-ink', 'text-ink', 'font-bold');
-                policyBtn.classList.remove('border-transparent', 'text-neutral-500', 'font-semibold');
-                settingsBtn.classList.remove('border-ink', 'text-ink', 'font-bold');
-                settingsBtn.classList.add('border-transparent', 'text-neutral-500', 'font-semibold');
-
-                policyPanel.classList.remove('hidden');
-                settingsPanel.classList.add('hidden');
-            } else {
-                settingsBtn.classList.add('border-ink', 'text-ink', 'font-bold');
-                settingsBtn.classList.remove('border-transparent', 'text-neutral-500', 'font-semibold');
-                policyBtn.classList.remove('border-ink', 'text-ink', 'font-bold');
-                policyBtn.classList.add('border-transparent', 'text-neutral-500', 'font-semibold');
-
-                settingsPanel.classList.remove('hidden');
-                policyPanel.classList.add('hidden');
-            }
+            tabs.forEach(t => {
+                if (!t.btn || !t.panel) return;
+                if (t.key === activeKey) {
+                    t.btn.classList.add('border-ink', 'text-ink', 'font-bold');
+                    t.btn.classList.remove('border-transparent', 'text-neutral-500', 'font-semibold');
+                    t.panel.classList.remove('hidden');
+                } else {
+                    t.btn.classList.remove('border-ink', 'text-ink', 'font-bold');
+                    t.btn.classList.add('border-transparent', 'text-neutral-500', 'font-semibold');
+                    t.panel.classList.add('hidden');
+                }
+            });
             lucide.createIcons();
         }
 
@@ -3546,6 +3803,64 @@
             }, 2500);
         }
 
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           Google AdSense 自然配置スロット管理（審査前セーフモード＆SPA対応）
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        const ADSENSE_CONFIG = {
+            client: 'ca-pub-8496238664250615',
+            // 【重要：審査申請前】
+            // 審査合格前はすべて空文字（''）のままデプロイ・申請してください。
+            // 空文字の間は不要な空白枠を出さず、<head>内のAdSenseコードのみでクリーンにサイト審査が行われます。
+            // 審査合格後、AdSense管理画面で作成した「ディスプレイ広告（レスポンシブ）」の data-ad-slot 番号を入れると自動表示されます。
+            slots: {
+                'ad-slot-home-bottom': '',     // ① トップページ：教材一覧の下（学習ガイドの前）
+                'ad-slot-detail-bottom': '',   // ② 教材詳細ページ：プリント操作エリアの下（誤タップ防止余白付き）
+                'ad-slot-search-bottom': '',   // ③ 検索結果ページ：検索結果一覧の下
+                'ad-slot-subjects-bottom': ''  // ④ 全教科一覧ページ：教科カードの下
+            }
+        };
+
+        function renderVisibleAdSlots() {
+            Object.entries(ADSENSE_CONFIG.slots).forEach(([containerId, slotId]) => {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                // 審査前（slotId未設定）は空白やエラーを出さないよう非表示のまま維持
+                if (!slotId || String(slotId).trim() === '') {
+                    container.classList.add('hidden');
+                    return;
+                }
+
+                // SPAの非表示ビュー内にある場合は表示されるまで待機（availableWidth=0 エラー防止）
+                const parentView = container.closest('.view-section');
+                if (parentView && parentView.classList.contains('hidden')) {
+                    return;
+                }
+
+                if (container.dataset.adInitialized === 'true') return;
+
+                container.classList.remove('hidden');
+                container.innerHTML = `
+                    <span class="tamaben-ad-label">スポンサーリンク</span>
+                    <div class="max-w-4xl mx-auto overflow-hidden text-center">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="${ADSENSE_CONFIG.client}"
+                             data-ad-slot="${String(slotId).trim()}"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                    </div>
+                `;
+                container.dataset.adInitialized = 'true';
+
+                try {
+                    (window.adsbygoogle = window.adsbygoogle || []).push({});
+                } catch (e) {
+                    console.warn('[Tamaben] AdSense slot init:', e);
+                }
+            });
+        }
+
         window.addEventListener('hashchange', () => handleHashChange(true, true));
         document.addEventListener('DOMContentLoaded', async () => {
             if (window.pdfjsLib) {
@@ -3559,6 +3874,7 @@
                 loadMaterials(),
                 loadAnnouncements()
             ]);
+            renderVisibleAdSlots();
         });
     </script>
 </body>
