@@ -105,5 +105,31 @@
     "downloadRestricted": false,
     "pdfBasicAns": "print/chu3-en2-cota.pdf",
     "pdfAdvAns": "#"
+  },
+  {
+    "id": "j3-e-03",
+    "tab": "junior",
+    "grade": "中学3年生",
+    "subject": "英語",
+    "unit": "長文読解",
+    "title": "高校入試・英語長文対策(1)",
+    "tags": [
+      "中3",
+      "高校入試",
+      "英語",
+      "長文",
+      "長文読解",
+      "読解",
+      "j3-e-03",
+      "Kou-eng-cho1",
+      "print/Kou-eng-cho1.pdf"
+    ],
+    "pdfBasic": "print/Kou-eng-cho1.pdf",
+    "pdfAdv": "#",
+    "pdfAns": "#",
+    "textbook": "",
+    "downloadRestricted": false,
+    "pdfBasicAns": "#",
+    "pdfAdvAns": "#"
   }
 ]
