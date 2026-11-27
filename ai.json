@@ -26,6 +26,8 @@
     "encodingFormat": "application/json",
     "description": "タマベンの全教材マスターデータ（単一情報源）。新しいプリントの追加・更新はすべて data.json に反映されます。",
     "urlTemplates": {
+      "materialCanonicalUrl": "https://tamaben.github.io/{gradeSlug}/#{slug}",
+      "entranceExamSpecialPage": "https://tamaben.github.io/koukou-nyushi/",
       "materialDetailPage": "https://tamaben.github.io/?id={id}",
       "pdfFile": "https://tamaben.github.io/{pdfPath}"
     },
