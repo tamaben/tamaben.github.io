@@ -1,0 +1,200 @@
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "schemaVersion": "1.1",
+  "updatedAt": "2026-11-26",
+  "name": "無料教材のタマベン AI・検索エンジン向け教材カタログ",
+  "alternateName": [
+    "タマベン",
+    "Tamaben",
+    "無料教材のタマベン"
+  ],
+  "description": "小学生・中学生・高校生向けの無料学習プリントサイト「タマベン」の公式構造化カタログデータ（AIエージェント・LLM・検索クローラー用）。固定PDF教材（問題・解答解説セット）に加え、数値や問題が毎回変わる「カスタム無限ドリル生成機能（算数・数学・英語・高校情報I対応）」、iPad等のタブレット直接書き込みモード、QRコードWeb答え合わせ連携をすべて登録不要・完全無料で提供しています。",
+  "inLanguage": "ja",
+  "isAccessibleForFree": true,
+  "license": "ご家庭での個人学習、小学校・中学校・高校・特別支援学校・学童保育・学習塾・家庭教師での印刷・授業配布は完全無料（PDFやデータの商用転売・無断再配布のみ禁止）",
+  "site": {
+    "title": "無料教材のタマベン｜小学生・中学生・高校生の無料学習プリント",
+    "publisher": "タマベンチーム",
+    "contactEmail": "tamapiko.1234@gmail.com",
+    "url": "https://tamaben.github.io/",
+    "endpoints": {
+      "aiCatalogJson": "/ai.json",
+      "rawMaterialsJson": "/data.json",
+      "announcementsJson": "/note.json",
+      "customDrillGenerator": "/#generator",
+      "sitemapXml": "/sitemap.xml"
+    },
+    "differentiators": [
+      "誤タップを誘発しないクリーンなUI設計と爆速4軸検索（学年×教科×単元×難易度）",
+      "毎回問題が変わる『カスタム自動ドリルメーカー』（問題数・制限時間・ふりがな・別紙解答・QRコードを自由設定してA4印刷）",
+      "iPad・Chromebook対応の『タブレット直接手書きノートモード』（ブラウザ上でペン・赤ペン・マーカー記入可能）",
+      "つまずき単元に特化したスモールステップ解説メモ＆新課程『高校 情報I』対応",
+      "利用者からの『欲しい単元プリントのリクエスト共創機能』"
+    ]
+  },
+  "interactiveTools": [
+    {
+      "@type": "LearningResource",
+      "id": "custom-drill-generator",
+      "name": "タマベン カスタム無限ドリルメーカー（自動問題生成・A4印刷）",
+      "url": "https://tamaben.github.io/#generator",
+      "learningResourceType": "Interactive Worksheet Generator",
+      "educationalLevel": ["小学生", "中学生", "高校生"],
+      "isAccessibleForFree": true,
+      "summary": "ボタン1つで毎回数値・出題順が変わる自分専用のA4学習プリントをその場で自動生成・印刷できる機能。問題数（10問・15問・20問）、難易度（基礎スモールステップ・標準・応用）、制限時間欄、つまずきヒント、ご褒美シール枠、解答別紙出力を自由にカスタマイズ可能。",
+      "supportedUnits": [
+        "小学生算数：たし算・ひき算・かけ算・わり算の基礎反復",
+        "小学生算数（つまずき特化）：分数の通分・たし算・ひき算スモールステップ",
+        "中学1年数学：正の数・負の数の四則計算（符号ミス対策）",
+        "中学1年数学：文字式の計算・1次方程式",
+        "中学英語（つまずき特化）：be動詞と一般動詞の区別・疑問文・否定文",
+        "高校 情報I（新課程対応）：2進数・10進数・16進数の基数変換とビット計算"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "@type": "LearningResource",
+      "id": "chu1-su1",
+      "status": "published",
+      "schoolStage": "中学校",
+      "grade": "中学1年生",
+      "subject": "数学",
+      "unit": "正の数・負の数",
+      "title": "正の数・負の数",
+      "difficulty": ["基礎", "標準"],
+      "summary": "中学1年生数学の最初の重要単元「正の数・負の数」の基礎から計算までを身につける無料学習プリント。符号のついた数の表し方、数直線上の位置、絶対値の意味と大小比較、正負の数の加法・減法・乗法・除法（四則計算）を段階的に演習できます。丁寧な解答・解説PDF付き。",
+      "stumblingPointTip": "かっこを外すときの符号の変化（特にマイナスを引く計算）と、累乗の指数がどこにかかっているか（(-3)^2 = +9 と -3^2 = -9 の違い）が定期テスト最頻出の注意ポイントです。",
+      "learningTopics": [
+        "正の数・負の数の意味と反対の性質をもつ量",
+        "数直線上の点と絶対値・数の大小",
+        "正負の数の加法（足し算）・減法（引き算）",
+        "正負の数の乗法（掛け算）・除法（割り算）"
+      ],
+      "format": {
+        "paperSize": "A4",
+        "encodingFormat": "application/pdf",
+        "includesAnswerSheet": true,
+        "supportsTabletPenMode": true,
+        "isAccessibleForFree": true,
+        "registrationRequired": false
+      },
+      "urls": {
+        "page": "https://tamaben.github.io/?id=chu1-su1",
+        "worksheetPdf": "https://tamaben.github.io/print/chu1-su1.pdf",
+        "answerPdf": "https://tamaben.github.io/print/chu1-su1-cota.pdf"
+      },
+      "keywords": [
+        "中1 数学 無料プリント",
+        "正の数 負の数 プリント PDF",
+        "数直線 絶対値 問題",
+        "正負の数 計算問題 答え付き"
+      ]
+    },
+    {
+      "@type": "LearningResource",
+      "id": "j3-e-01",
+      "status": "published",
+      "schoolStage": "中学校",
+      "grade": "中学3年生",
+      "subject": "英語",
+      "unit": "受動態",
+      "title": "Unit 1 受動態",
+      "difficulty": ["基礎", "標準"],
+      "summary": "中学3年生英語の文法単元「受動態（受け身：be動詞＋過去分詞）」を基礎から学べる無料学習プリント。肯定文・否定文・疑問文の作り方、byを用いた動作主の表現、能動態から受動態への書き換え問題、規則動詞・不規則動詞の過去分詞の確認まで収録。解答・解説PDF付き。",
+      "stumblingPointTip": "主語が単数か複数か、また時制が現在（am/is/are）か過去（was/were）かによってbe動詞を正しく選び分けること、不規則動詞の過去分詞スペルミスに注意しましょう。",
+      "learningTopics": [
+        "受動態（be動詞＋過去分詞）の基本構造（「〜される」）",
+        "現在形・過去形の受動態の使い分け",
+        "受動態の否定文・疑問文と答え方",
+        "能動態から受動態への書き換え演習"
+      ],
+      "format": {
+        "paperSize": "A4",
+        "encodingFormat": "application/pdf",
+        "includesAnswerSheet": true,
+        "supportsTabletPenMode": true,
+        "isAccessibleForFree": true,
+        "registrationRequired": false
+      },
+      "urls": {
+        "page": "https://tamaben.github.io/?id=j3-e-01",
+        "worksheetPdf": "https://tamaben.github.io/print/chu3-en1.pdf",
+        "answerPdf": "https://tamaben.github.io/print/chu3-en1-cota.pdf"
+      },
+      "keywords": [
+        "中3 英語 受動態 プリント 無料",
+        "受け身 練習問題 PDF",
+        "be動詞 過去分詞 プリント 解答付き"
+      ]
+    },
+    {
+      "@type": "LearningResource",
+      "id": "j3-e-02",
+      "status": "published",
+      "schoolStage": "中学校",
+      "grade": "中学3年生",
+      "subject": "英語",
+      "unit": "現在完了形",
+      "title": "Unit 2 現在完了形",
+      "difficulty": ["基礎", "標準"],
+      "summary": "中学3年生英語の重要文法「現在完了形（have / has ＋ 過去分詞）」を整理して習得できる無料学習プリント。継続用法・経験用法・完了用法の識別と書き換え、for / since / ever / never / already / yet などの重要語句の使い方を網羅。解答・解説PDF付き。",
+      "stumblingPointTip": "主語が3人称単数のときは have ではなく has を使うこと、yesterday や ~ ago のような『過去の一時点』を表す語句は現在完了形と一緒に使えない点がテストでよく狙われます。",
+      "learningTopics": [
+        "現在完了形（have / has + 過去分詞）の基本形",
+        "継続用法（for / since / How long〜?）",
+        "経験用法（ever / never / before / 回数表現）",
+        "完了・結果用法（just / already / yet）"
+      ],
+      "format": {
+        "paperSize": "A4",
+        "encodingFormat": "application/pdf",
+        "includesAnswerSheet": true,
+        "supportsTabletPenMode": true,
+        "isAccessibleForFree": true,
+        "registrationRequired": false
+      },
+      "urls": {
+        "page": "https://tamaben.github.io/?id=j3-e-02",
+        "worksheetPdf": "https://tamaben.github.io/print/chu3-en2.pdf",
+        "answerPdf": "https://tamaben.github.io/print/chu3-en2-cota.pdf"
+      },
+      "keywords": [
+        "中3 英語 現在完了形 プリント 無料",
+        "have 過去分詞 問題 PDF",
+        "現在完了 継続 経験 完了 プリント 答え付き"
+      ]
+    },
+    {
+      "@type": "LearningResource",
+      "id": "chu1-su2",
+      "status": "preparing",
+      "schoolStage": "中学校",
+      "grade": "中学1年生",
+      "subject": "数学",
+      "unit": "文字と式",
+      "title": "文字と式",
+      "difficulty": ["基礎"],
+      "summary": "中学1年生数学「文字と式」の学習プリント（現在準備中。カスタム無限ドリルメーカーにて先行演習可能）。",
+      "learningTopics": [
+        "文字を使った式の表し方（×、÷の省略ルール）",
+        "文字への代入と式の値",
+        "項と係数、1次式の計算"
+      ],
+      "format": {
+        "paperSize": "A4",
+        "encodingFormat": "application/pdf",
+        "includesAnswerSheet": true,
+        "isAccessibleForFree": true,
+        "registrationRequired": false
+      },
+      "urls": {
+        "page": "https://tamaben.github.io/?id=chu1-su2"
+      },
+      "keywords": [
+        "中1 数学 文字と式 プリント"
+      ]
+    }
+  ]
+}

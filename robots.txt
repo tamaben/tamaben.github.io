@@ -1,4 +1,36 @@
 User-agent: *
 Allow: /
+Allow: /ai.json
+Allow: /data.json
+Allow: /print/
+
+# AI検索・LLMクローラーへの教材カタログ公開許可
+User-agent: GPTBot
+Allow: /
+Allow: /ai.json
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /ai.json
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /ai.json
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /ai.json
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /ai.json
+
+User-agent: Google-Extended
+Allow: /
+Allow: /ai.json
+
+User-agent: Applebot-Extended
+Allow: /
+Allow: /ai.json
 
 Sitemap: https://tamaben.github.io/sitemap.xml

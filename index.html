@@ -9,11 +9,13 @@
     <link rel="shortcut icon" href="./icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icon.png">
 
-    <meta name="description" content="無料教材のタマベンは、小学生・中学生・高校生向けの学習プリントサイトです。高校入試・高校受験対策から日々の勉強、定期テスト対策、基礎の総復習まで完全無料。数学・英語などの教科書単元に沿った学習プリントを会員登録不要・PDFで無料ダウンロード＆A4印刷できます。全問答え・解説付きで家庭学習や塾の授業に最適。">
-    <meta name="keywords" content="無料教材, 無料学習教材, 無料プリント, 学習プリント, 高校入試 無料プリント, 高校受験 無料プリント, 日々の勉強 プリント, 定期テスト対策 無料, 中学生 無料プリント, 小学生 無料プリント, 高校生 無料プリント, 単元別プリント, 復習プリント 無料, 基礎学習 ドリル, 家庭学習, 答え付き, PDF, タマベン">
+    <meta name="description" content="無料教材のタマベンは、小学生・中学生・高校生向けの無料学習プリントサイトです。日々の勉強、学校の予習・復習、基礎固め、定期テスト対策から受験の基礎復習まで、教科書単元に沿ったA4プリントを会員登録不要・PDFで無料ダウンロード＆印刷できます。全問答え・解説付き。">
+    <meta name="keywords" content="無料教材, タマベン, 無料学習教材, 無料プリント, 学習プリント, 日々の勉強, 予習復習, 家庭学習, 定期テスト対策, 基礎学習, ドリル 無料, 中学生 無料プリント, 小学生 無料プリント, 高校生 無料プリント, 高校入試 基礎, 単元別プリント, 答え付き, PDF">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
     <link rel="canonical" id="canonical-link" href="https://tamaben.github.io/">
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://tamaben.github.io/sitemap.xml">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml">
+    <link rel="alternate" type="application/json" id="ai-catalog-link" title="無料教材のタマベン AI・検索エンジン向け教材カタログ (ai.json)" href="./ai.json">
+    <meta name="ai-content-catalog" content="./ai.json">
     <meta name="theme-color" content="#0f172a">
 
     <!-- OGP / Twitter Card -->
@@ -21,15 +23,15 @@
     <meta property="og:site_name" content="無料教材のタマベン">
     <meta property="og:locale" content="ja_JP">
     <meta property="og:title" content="無料教材のタマベン｜小学生・中学生・高校生の無料学習プリント">
-    <meta property="og:description" content="小学生・中学生・高校生向けの無料学習プリント。高校入試対策・定期テスト対策・日々の勉強に使えるPDFを登録不要ですぐ印刷。答え・解説付き。">
+    <meta property="og:description" content="学ぶことは、もっと楽しく。「できた！」に出会える毎日の無料学習プリント。登録不要・A4サイズPDFですぐ印刷、答え・解説付き。">
     <meta property="og:url" content="https://tamaben.github.io/">
     <meta property="og:image" content="https://tamaben.github.io/icon.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="無料教材のタマベン｜小学生・中学生・高校生の無料学習プリント">
-    <meta name="twitter:description" content="小学生・中学生・高校生の無料学習プリント。高校入試対策から日々の宿題・復習までPDFで即印刷、答え付き。">
+    <meta name="twitter:description" content="小学生・中学生・高校生の無料学習プリント。日々の勉強・予習復習・テスト対策にPDFで即印刷、答え付き。">
 
-    <!-- 構造化データ（JSON-LD） -->
-    <script type="application/ld+json">
+    <!-- 構造化データ（JSON-LD: WebSite / Organization / AI向けDataCatalog / 教材ItemList / FAQPage） -->
+    <script type="application/ld+json" id="tamaben-jsonld">
     {
       "@context": "https://schema.org",
       "@graph": [
@@ -38,8 +40,8 @@
           "@id": "https://tamaben.github.io/#website",
           "url": "https://tamaben.github.io/",
           "name": "無料教材のタマベン",
-          "alternateName": ["タマベン", "Tamaben", "無料学習教材タマベン"],
-          "description": "小学生・中学生・高校生向けの無料学習プリントサイト。高校入試・高校受験対策から日々の勉強・定期テスト対策まで対応したPDF教材を無料配布。",
+          "alternateName": ["タマベン", "Tamaben", "無料学習教材サイト タマベン"],
+          "description": "小学生・中学生・高校生向けの無料学習プリントサイト。日々の勉強・予習復習・定期テスト対策に使えるA4サイズPDF教材（答え・解説付き）と自動ドリル生成機能を登録不要で無料公開。",
           "inLanguage": "ja",
           "publisher": { "@id": "https://tamaben.github.io/#organization" }
         },
@@ -48,7 +50,104 @@
           "@id": "https://tamaben.github.io/#organization",
           "name": "タマベンチーム",
           "url": "https://tamaben.github.io/",
+          "email": "tamapiko.1234@gmail.com",
           "logo": "https://tamaben.github.io/icon.png"
+        },
+        {
+          "@type": "DataCatalog",
+          "@id": "https://tamaben.github.io/#ai-catalog",
+          "name": "無料教材のタマベン AI・検索向け教材カタログデータ",
+          "description": "AIアシスタント・LLM・検索クローラーが全教材の学年・教科・単元内容・問題PDF・解答PDFのURLを構造化JSONとして直接取得できる専用カタログエンドポイントです。",
+          "url": "https://tamaben.github.io/ai.json",
+          "inLanguage": "ja",
+          "isAccessibleForFree": true,
+          "dataset": [
+            {
+              "@type": "Dataset",
+              "name": "タマベン公開学習プリント一覧データ",
+              "description": "小学生・中学生・高校生向けの単元別無料学習プリントおよび解答PDFのメタデータ一式",
+              "isAccessibleForFree": true,
+              "license": "https://tamaben.github.io/#terms",
+              "distribution": [
+                {
+                  "@type": "DataDownload",
+                  "name": "AI・検索エンジン専用 構造化教材カタログ (ai.json)",
+                  "encodingFormat": "application/json",
+                  "contentUrl": "https://tamaben.github.io/ai.json"
+                },
+                {
+                  "@type": "DataDownload",
+                  "name": "教材マスターデータ (data.json)",
+                  "encodingFormat": "application/json",
+                  "contentUrl": "https://tamaben.github.io/data.json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://tamaben.github.io/#materials-list",
+          "name": "公開中の無料学習プリント一覧",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@type": "LearningResource",
+                "@id": "https://tamaben.github.io/?id=chu1-su1#resource",
+                "name": "中学1年生 数学「正の数・負の数」無料学習プリント",
+                "description": "数直線、絶対値、正負の数の加法・減法・乗法・除法を基礎から学べるA4無料プリント（答え・解説PDF付き）。",
+                "educationalLevel": "中学1年生",
+                "learningResourceType": "Worksheet",
+                "inLanguage": "ja",
+                "isAccessibleForFree": true,
+                "url": "https://tamaben.github.io/?id=chu1-su1",
+                "encoding": [
+                  { "@type": "MediaObject", "name": "問題PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu1-su1.pdf" },
+                  { "@type": "MediaObject", "name": "解答・解説PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu1-su1-cota.pdf" }
+                ]
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@type": "LearningResource",
+                "@id": "https://tamaben.github.io/?id=j3-e-01#resource",
+                "name": "中学3年生 英語「Unit 1 受動態」無料学習プリント",
+                "description": "be動詞＋過去分詞の受動態（受け身）の肯定文・否定文・疑問文・書き換えを学べるA4無料プリント（答え・解説PDF付き）。",
+                "educationalLevel": "中学3年生",
+                "learningResourceType": "Worksheet",
+                "inLanguage": "ja",
+                "isAccessibleForFree": true,
+                "url": "https://tamaben.github.io/?id=j3-e-01",
+                "encoding": [
+                  { "@type": "MediaObject", "name": "問題PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu3-en1.pdf" },
+                  { "@type": "MediaObject", "name": "解答・解説PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu3-en1-cota.pdf" }
+                ]
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@type": "LearningResource",
+                "@id": "https://tamaben.github.io/?id=j3-e-02#resource",
+                "name": "中学3年生 英語「Unit 2 現在完了形」無料学習プリント",
+                "description": "have/has＋過去分詞の現在完了形（継続・経験・完了用法）を整理して学べるA4無料プリント（答え・解説PDF付き）。",
+                "educationalLevel": "中学3年生",
+                "learningResourceType": "Worksheet",
+                "inLanguage": "ja",
+                "isAccessibleForFree": true,
+                "url": "https://tamaben.github.io/?id=j3-e-02",
+                "encoding": [
+                  { "@type": "MediaObject", "name": "問題PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu3-en2.pdf" },
+                  { "@type": "MediaObject", "name": "解答・解説PDF", "encodingFormat": "application/pdf", "contentUrl": "https://tamaben.github.io/print/chu3-en2-cota.pdf" }
+                ]
+              }
+            }
+          ]
         },
         {
           "@type": "FAQPage",
@@ -57,7 +156,7 @@
             {
               "@type": "Question",
               "name": "プリントの利用に料金はかかりますか？",
-              "acceptedAnswer": { "@type": "Answer", "text": "高校入試対策問題から日々の勉強・定期テスト対策プリントまで、すべて完全無料でご利用いただけます。会員登録も不要です。" }
+              "acceptedAnswer": { "@type": "Answer", "text": "すべての学習プリント・解答解説を完全無料でご利用いただけます。会員登録も不要です。" }
             },
             {
               "@type": "Question",
@@ -122,6 +221,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -465,11 +566,129 @@
             display: none !important;
         }
 
+        /* 3D ヒーローモデル＆立体エントランス演出 */
+        .hero-3d-perspective {
+            perspective: 1100px;
+        }
+        @keyframes heroText3DEnter {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 22px, -30px) rotateX(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) rotateX(0deg);
+            }
+        }
+        .hero-enter-1 {
+            animation: heroText3DEnter 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.08s;
+            transform-origin: center bottom;
+        }
+        .hero-enter-2 {
+            animation: heroText3DEnter 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.22s;
+        }
+        .hero-enter-3 {
+            animation: heroText3DEnter 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.34s;
+        }
+        #hero-3d-stage {
+            position: relative;
+            width: 100%;
+            touch-action: pan-y;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #hero-3d-stage:active {
+            cursor: grabbing;
+        }
+        #hero-3d-stage canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            outline: none;
+        }
+        .hero-stage-glow {
+            background: radial-gradient(circle at 52% 50%, rgba(15, 23, 42, 0.045) 0%, rgba(16, 185, 129, 0.035) 38%, rgba(255, 255, 255, 0) 72%);
+        }
+
+        /* タブレット手書きノート背景＆ペンレイヤー */
+        .paper-tint-warm {
+            background-color: #fdfaf3 !important;
+        }
+        .paper-tint-grid {
+            background-color: #ffffff !important;
+            background-size: 18px 18px !important;
+            background-image:
+                linear-gradient(to right, rgba(148, 163, 184, 0.22) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.22) 1px, transparent 1px) !important;
+        }
+        #detail-pen-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        /* A4 カスタム自動ドリル 印刷専用レイアウト (@media print) */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                color: #000000 !important;
+            }
+            header,
+            footer,
+            #cookie-consent-banner,
+            #cookie-privacy-modal,
+            #announcement-modal,
+            .no-print,
+            .tamaben-ad-wrap {
+                display: none !important;
+            }
+            main {
+                min-height: auto !important;
+            }
+            #view-generator {
+                display: block !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .drill-print-sheet {
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .drill-page-break {
+                page-break-before: always;
+                break-before: page;
+                padding-top: 4mm !important;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .view-section:not(.hidden),
             .card-appear,
             .bookmark-pop,
             .ink-marker,
+            .hero-enter-1,
+            .hero-enter-2,
+            .hero-enter-3,
             ::view-transition-old(root),
             ::view-transition-new(root) {
                 animation: none !important;
@@ -488,10 +707,14 @@
             </button>
 
             <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-light">
-                <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
-                <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
-                <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
-                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">学習者・保護者の方へ</button>
+                <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
+                <button id="nav-btn-generator" onclick="navigate('#generator')" class="nav-item-btn px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 inline-flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>自動ドリル生成</span>
+                </button>
+                <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
+                <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
+                <button id="nav-btn-users" onclick="navigate('#users')" class="nav-item-btn px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">学習者・保護者の方へ</button>
             </nav>
 
             <div class="flex items-center gap-2 sm:gap-3">
@@ -507,12 +730,15 @@
             </div>
         </div>
 
-        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-2 py-1.5 shadow-2xs">
-            <nav class="flex items-center justify-between w-full gap-0.5 sm:gap-1">
-                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">教材トップ</button>
-                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">全教科一覧</button>
-                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">教材を検索</button>
-                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap tracking-tight text-center shrink-0">学習者・保護者の方へ</button>
+        <div class="md:hidden border-t border-neutral-100 bg-white/95 px-1.5 py-1.5 shadow-2xs">
+            <nav class="flex items-center justify-between w-full gap-0.5 overflow-x-auto no-scrollbar">
+                <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] font-bold whitespace-nowrap text-center shrink-0">トップ</button>
+                <button id="mnav-btn-generator" onclick="navigate('#generator')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] font-bold whitespace-nowrap text-center shrink-0 inline-flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>自動ドリル
+                </button>
+                <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] font-bold whitespace-nowrap text-center shrink-0">全教科</button>
+                <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] font-bold whitespace-nowrap text-center shrink-0">検索</button>
+                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] font-bold whitespace-nowrap tracking-tight text-center shrink-0">保護者の方へ</button>
             </nav>
         </div>
     </header>
@@ -521,35 +747,62 @@
         
         <!-- 01 トップページ -->
         <div id="view-home" class="view-section">
-            <section class="border-b border-ink-border bg-white paper-grid-pattern relative py-14 md:py-20">
-                <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-                    
-                    <h1 class="text-2xl sm:text-3xl md:text-5xl font-black text-ink tracking-tight leading-snug md:leading-snug mb-5">
-                        <span class="block text-[11px] sm:text-xs font-bold text-ink-muted tracking-wider mb-3">高校入試・高校受験対策から日々の勉強・復習まで｜無料学習プリント「タマベン」</span>
-                        <span class="inline-block">日々の勉強は、もっと<span class="ink-marker">楽しく</span>。</span><br class="hidden sm:inline"/>
-                        <span class="inline-block">高校入試も、毎日の<span class="ink-marker ink-marker-2">無料プリント</span>で。</span>
-                    </h1>
+            <section id="hero-section" class="border-b border-ink-border bg-white paper-grid-pattern relative overflow-hidden py-8 sm:py-12 lg:py-16">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 items-center gap-4 sm:gap-6 lg:gap-8 hero-3d-perspective">
+                        
+                        <!-- 左カラム（スマホでは3Dモデルの下）: キャッチコピー＆検索導線 -->
+                        <div class="lg:col-span-7 text-center lg:text-left order-2 lg:order-1">
+                            <h1 class="hero-enter-1 text-2xl sm:text-3xl md:text-[2.1rem] xl:text-[2.5rem] font-black text-ink tracking-tight leading-snug md:leading-snug mb-4 sm:mb-5">
+                                <span class="block text-[11px] sm:text-xs font-bold text-ink-muted tracking-wider mb-2.5 sm:mb-3">小学生・中学生・高校生の無料学習教材サイト「タマベン」</span>
+                                <span class="inline-block">学ぶことは、</span><span class="inline-block">もっと<span class="ink-marker">楽しく</span>。</span><br class="hidden sm:inline"/>
+                                <span class="inline-block">「できた！」に出会える、</span><span class="inline-block">毎日の<span class="ink-marker ink-marker-2">無料プリント</span>。</span>
+                            </h1>
 
-                    <p class="text-xs sm:text-sm text-ink-muted max-w-xl mx-auto mb-8 font-medium leading-relaxed" style="text-wrap: pretty;">
-                        <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという</span><span class="inline-block">願いを込めて</span><span class="inline-block">作成しています。</span><br class="hidden sm:inline"/>
-                        <span class="inline-block">個人で作成しているため、</span><span class="inline-block">教材数は少ないですが</span><span class="inline-block">ご了承ください。</span>
-                    </p>
+                            <p class="hero-enter-2 text-xs sm:text-sm text-ink-muted max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-7 font-medium leading-relaxed" style="text-wrap: pretty;">
+                                <span class="inline-block">タマベンチームの教材は、</span><span class="inline-block">楽しく学んでほしいという</span><span class="inline-block">願いを込めて</span><span class="inline-block">作成しています。</span><br class="hidden sm:inline"/>
+                                <span class="inline-block">個人で作成しているため、</span><span class="inline-block">教材数は少ないですが</span><span class="inline-block">ご了承ください。</span>
+                            </p>
 
-                    <div class="max-w-xl mx-auto px-2">
-                        <div onclick="navigate('#search')" class="cursor-pointer flex items-center justify-between rounded-xl p-2.5 sm:p-3 bg-white border-2 border-neutral-200 hover:border-ink transition-all shadow-sm group">
-                            <div class="flex items-center gap-3 pl-2">
-                                <i data-lucide="search" class="w-4 h-4 text-ink-subtle group-hover:text-ink transition-colors"></i>
-                                <span class="text-xs sm:text-sm text-ink-subtle font-medium text-left">教科、単元名、学年で教材を探す...</span>
+                            <div class="hero-enter-3 max-w-xl mx-auto lg:mx-0 space-y-3">
+                                <div onclick="navigate('#search')" class="cursor-pointer flex items-center justify-between rounded-xl p-2.5 sm:p-3 bg-white border-2 border-neutral-200 hover:border-ink transition-all shadow-sm group">
+                                    <div class="flex items-center gap-3 pl-2">
+                                        <i data-lucide="search" class="w-4 h-4 text-ink-subtle group-hover:text-ink transition-colors"></i>
+                                        <span class="text-xs sm:text-sm text-ink-subtle font-medium text-left">教科、単元名、学年で教材を探す...</span>
+                                    </div>
+                                    <span class="px-3 py-1.5 bg-neutral-100 group-hover:bg-ink group-hover:text-white rounded-lg text-xs font-bold text-ink-light transition-all">検索する</span>
+                                </div>
+
+                                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-0.5">
+                                    <button type="button" onclick="navigate('#generator')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-ink text-white hover:bg-neutral-800 text-xs font-bold shadow-xs transition-all active:scale-95">
+                                        <i data-lucide="wand-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                        <span>毎回問題が変わる「自動ドリル生成」を使う</span>
+                                    </button>
+                                    <button type="button" onclick="document.getElementById('request-cocreate-box')?.scrollIntoView({behavior:'smooth'})" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-neutral-200 hover:border-ink text-xs font-bold text-ink-light hover:text-ink transition-all active:scale-95">
+                                        <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
+                                        <span>欲しい単元をリクエスト</span>
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center justify-center lg:justify-start gap-1.5 flex-wrap pt-1 text-[11px]" id="hero-popular-units-bar">
+                                    <span id="hero-popular-units-label" class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
+                                    <div id="hero-popular-units-list" class="inline-flex items-center gap-1.5 flex-wrap"></div>
+                                </div>
                             </div>
-                            <span class="px-3 py-1.5 bg-neutral-100 group-hover:bg-ink group-hover:text-white rounded-lg text-xs font-bold text-ink-light transition-all">検索する</span>
                         </div>
-                    </div>
 
-                    <div class="flex items-center justify-center gap-1.5 flex-wrap mt-4 text-[11px]" id="hero-popular-units-bar">
-                        <span id="hero-popular-units-label" class="text-ink-subtle font-semibold mr-1">人気の単元:</span>
-                        <div id="hero-popular-units-list" class="inline-flex items-center gap-1.5 flex-wrap"></div>
-                    </div>
+                        <!-- 右カラム（スマホでは最上部）: インタラクティブ3Dステーショナリー＆プリントモデル -->
+                        <div class="lg:col-span-5 order-1 lg:order-2 relative flex flex-col items-center justify-center">
+                            <div class="hero-stage-glow relative w-full max-w-[440px] h-[220px] sm:h-[260px] lg:h-[380px] flex items-center justify-center">
+                                <div id="hero-3d-stage" class="w-full h-full" aria-label="タマベン 3D学習プリント・ステーショナリーモデル" role="img"></div>
+                                <div id="hero-3d-hint" class="pointer-events-none absolute bottom-1.5 right-2 sm:bottom-2 sm:right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur-xs border border-neutral-200/90 text-[10px] font-semibold text-ink-muted shadow-2xs transition-opacity duration-500">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span>ドラッグで3D回転・タップで動く</span>
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
                 </div>
             </section>
 
@@ -629,7 +882,7 @@
                         <div class="mb-5">
                             <span class="text-[10px] font-bold text-ink-muted uppercase tracking-wider">Features & Guide</span>
                             <h2 class="text-base sm:text-lg font-black text-ink mt-0.5">タマベンの無料学習プリントについて</h2>
-                            <p class="text-xs text-ink-muted mt-1">高校入試対策から日々の勉強・定期テスト復習まで、登録不要ですぐにご活用いただけます。</p>
+                            <p class="text-xs text-ink-muted mt-1">日々の勉強・予習復習からテスト対策まで、登録不要ですぐにご活用いただけます。</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
@@ -651,7 +904,7 @@
                                     <h3 class="text-xs sm:text-sm font-black text-ink">基本問題からステップアップ</h3>
                                 </div>
                                 <p class="text-xs text-ink-muted leading-relaxed">
-                                    教科書単元の「基本問題」から高校入試実戦問題まで、丁寧な「答え・解説プリント」をセットで用意。つまずきやすいポイントを自分のペースで着実に克服できます。
+                                    教科書の単元に沿った「基本問題」と丁寧な「答え・解説プリント」をセットで用意。つまずきやすいポイントも自分のペースで着実に身につけられます。
                                 </p>
                             </div>
                             <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
@@ -704,7 +957,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                             <section class="p-4 bg-canvas rounded-xl border border-neutral-200">
-                                <h3 class="font-black text-ink mb-2">中学生の無料プリント（高校入試・定期テスト対策）</h3>
+                                <h3 class="font-black text-ink mb-2">中学生の無料プリント</h3>
                                 <h4 class="font-bold text-ink-light mt-2 mb-1">中学1年生 数学</h4>
                                 <ul class="space-y-1.5">
                                     <li>
@@ -725,31 +978,91 @@
                                 </ul>
                             </section>
                             <section class="p-4 bg-canvas rounded-xl border border-neutral-200">
-                                <h3 class="font-black text-ink mb-2">小学生の無料プリント（日々の勉強・計算ドリル）</h3>
+                                <h3 class="font-black text-ink mb-2">小学生の無料プリント</h3>
                                 <p class="text-ink-muted leading-relaxed">算数・国語・理科・社会・英語のプリントを準備中です。公開しだい、このページとお知らせでご案内します。</p>
                             </section>
                             <section class="p-4 bg-canvas rounded-xl border border-neutral-200">
-                                <h3 class="font-black text-ink mb-2">高校生の無料プリント</h3>
-                                <p class="text-ink-muted leading-relaxed">数学・英語などの基礎プリントを準備中です。公開しだい、このページとお知らせでご案内します。</p>
+                                <h3 class="font-black text-ink mb-2">高校生の無料プリント（情報Ⅰ対応）</h3>
+                                <p class="text-ink-muted leading-relaxed mb-2">新課程「情報Ⅰ（2進数・16進数・ビット計算）」はカスタム自動ドリルで今すぐ問題生成・A4印刷が可能です。</p>
+                                <button type="button" onclick="openGeneratorPreset('hs-info-binary')" class="text-[11px] font-bold text-ink underline underline-offset-2 hover:opacity-75">情報Ⅰドリルを開く &rarr;</button>
                             </section>
                         </div>
                     </nav>
+
+                    <!-- 差別化機能: 無限カスタムドリル導線 ＆ リクエスト共創ボックス -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-8">
+                        <div class="lg:col-span-5 bg-ink text-white rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-emerald-300 text-[10px] font-bold mb-3">
+                                    <i data-lucide="sparkles" class="w-3 h-3"></i>
+                                    <span>同じ問題の丸暗記を防ぐ</span>
+                                </div>
+                                <h3 class="text-base sm:text-lg font-black leading-snug mb-2">毎回数値・問題が変わる<br>「カスタム自動ドリルメーカー」</h3>
+                                <p class="text-xs text-neutral-300 leading-relaxed mb-5">
+                                    問題数（10〜20問）・制限時間欄・つまずきヒント・別紙解答・QRコードを自由に選んで、その場でA4プリントを自動作成＆印刷できます。分数の通分・正負の数・be動詞と一般動詞の区別・高校「情報Ⅰ」に対応。
+                                </p>
+                            </div>
+                            <button type="button" onclick="navigate('#generator')" class="w-full py-3 px-4 bg-white text-ink hover:bg-neutral-100 rounded-xl font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
+                                <i data-lucide="wand-2" class="w-4 h-4"></i>
+                                <span>自分専用プリントを自動生成する</span>
+                            </button>
+                        </div>
+
+                        <div id="request-cocreate-box" class="lg:col-span-7 bg-white border border-neutral-200 rounded-2xl p-6 shadow-2xs">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div>
+                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">みんなで作るタマベン</span>
+                                    <h3 class="text-sm sm:text-base font-black text-ink mt-1.5">「この単元のプリントが欲しい！」リクエスト窓口</h3>
+                                </div>
+                                <i data-lucide="message-square-heart" class="w-5 h-5 text-ink-muted shrink-0"></i>
+                            </div>
+                            <p class="text-xs text-ink-muted leading-relaxed mb-4">
+                                「分数の通分だけ集中練習したい」「次のテスト範囲のこの単元でつまずいている」など、生徒さん・保護者の方・先生からのリクエストをもとに新しいプリントを優先制作しています。採用されたプリントには感謝ラベルを掲載します。
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-2.5">
+                                <select id="req-grade" class="bg-canvas border border-neutral-300 rounded-xl px-3 py-2 text-xs font-bold text-ink outline-none focus:border-ink">
+                                    <option value="小学生">小学生</option>
+                                    <option value="中学1年生" selected>中学1年生</option>
+                                    <option value="中学2年生">中学2年生</option>
+                                    <option value="中学3年生">中学3年生</option>
+                                    <option value="高校生">高校生</option>
+                                </select>
+                                <select id="req-subject" class="bg-canvas border border-neutral-300 rounded-xl px-3 py-2 text-xs font-bold text-ink outline-none focus:border-ink">
+                                    <option value="算数・数学">算数・数学</option>
+                                    <option value="英語">英語</option>
+                                    <option value="国語">国語</option>
+                                    <option value="理科">理科</option>
+                                    <option value="社会">社会</option>
+                                    <option value="情報Ⅰ">高校 情報Ⅰ</option>
+                                </select>
+                                <input type="text" id="req-unit" placeholder="欲しい単元（例：比例と反比例）" class="bg-canvas border border-neutral-300 rounded-xl px-3 py-2 text-xs font-bold text-ink outline-none focus:border-ink placeholder:font-normal">
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="req-memo" placeholder="つまずいている点や要望（任意：スモールステップ希望など）" class="flex-grow bg-canvas border border-neutral-300 rounded-xl px-3 py-2 text-xs text-ink outline-none focus:border-ink">
+                                <button type="button" onclick="submitMaterialRequest()" class="px-4 py-2.5 bg-ink hover:bg-neutral-800 text-white rounded-xl text-xs font-bold whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                                    <span>リクエストを送る</span>
+                                </button>
+                            </div>
+                            <p id="req-feedback-msg" class="hidden text-[11px] font-bold text-emerald-700 mt-2"></p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
 
-        <!-- 02 検索トップページ -->
+        <!-- 02 検索トップページ（学年×教科×単元×難易度 4軸爆速フィルター） -->
         <div id="view-search" class="view-section hidden max-w-4xl mx-auto px-4 sm:px-6 py-10">
             <div class="border-b border-ink-border pb-6 mb-8">
                 <h2 class="text-xl sm:text-2xl font-black text-ink mb-1">プリントを探す</h2>
-                <p class="text-xs text-ink-muted">学年・教科を選択すると、対応する単元が自動で調節・表示されます。</p>
+                <p class="text-xs text-ink-muted">学年・教科・単元・難易度を組み合わせて、目的のプリントを瞬時に絞り込めます。</p>
             </div>
 
             <div class="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div>
                         <label class="text-xs font-bold text-ink-light block mb-2">1. 学年を選択</label>
-                        <select id="search-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
+                        <select id="search-grade" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
                             <option value="">すべての学年</option>
                             <option value="小学1年生">小学1年生</option>
                             <option value="小学2年生">小学2年生</option>
@@ -768,7 +1081,7 @@
 
                     <div>
                         <label class="text-xs font-bold text-ink-light block mb-2">2. 教科を選択</label>
-                        <select id="search-subject" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
+                        <select id="search-subject" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink" onchange="syncSearchUnits()">
                             <option value="">すべての教科</option>
                             <option value="算数・数学">算数 / 数学</option>
                             <option value="国語">国語</option>
@@ -784,20 +1097,35 @@
                             <label class="text-xs font-bold text-ink-light block">3. 単元を選択</label>
                             <span id="unit-sync-status" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">自動調節中</span>
                         </div>
-                        <select id="search-unit" class="w-full bg-canvas border border-neutral-300 rounded-xl px-4 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                        <select id="search-unit" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
                             <option value="">すべての単元</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-ink-light block mb-2">4. 難易度・状態</label>
+                        <select id="search-difficulty" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <option value="all">すべて（基本〜応用）</option>
+                            <option value="printable">今すぐ印刷可能のみ</option>
+                            <option value="basic">基本・スモールステップ</option>
+                            <option value="adv">練習・応用問題あり</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="flex items-center rounded-xl px-4 py-3 bg-canvas border border-neutral-300 mb-6 focus-within:border-ink transition-colors">
                     <i data-lucide="search" class="w-4 h-4 text-ink-subtle mr-3"></i>
-                    <input type="text" id="search-keyword" placeholder="自由キーワード（例：正の数、受動態、方程式など）" class="w-full bg-transparent outline-none font-bold text-xs text-ink placeholder:text-neutral-400">
+                    <input type="text" id="search-keyword" onkeydown="if(event.key==='Enter'){executeSearch();}" placeholder="自由キーワード（例：正の数、受動態、現在完了など／Enterで即検索）" class="w-full bg-transparent outline-none font-bold text-xs text-ink placeholder:text-neutral-400">
                 </div>
 
-                <button onclick="executeSearch()" class="w-full py-3 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.99]">
-                    <i data-lucide="search" class="w-4 h-4"></i> この条件でプリントを検索
-                </button>
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <button onclick="executeSearch()" class="flex-grow py-3 bg-ink hover:bg-neutral-800 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.99]">
+                        <i data-lucide="search" class="w-4 h-4"></i> この条件でプリントを検索
+                    </button>
+                    <button type="button" onclick="navigate('#generator')" class="py-3 px-4 bg-canvas hover:bg-neutral-100 border border-neutral-300 text-ink rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5">
+                        <i data-lucide="wand-2" class="w-3.5 h-3.5 text-emerald-600"></i> 自動ドリル生成へ
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -896,7 +1224,10 @@
                     <button onclick="quickSearchBySubject('物理基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">物理基礎</button>
                     <button onclick="quickSearchBySubject('化学基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">化学基礎</button>
                     <button onclick="quickSearchBySubject('生物基礎', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">生物基礎</button>
-                    <button onclick="quickSearchBySubject('情報Ⅰ', 'high')" class="p-4 bg-canvas border border-neutral-200 hover:border-ink rounded-xl font-bold text-xs text-left">情報Ⅰ</button>
+                    <button onclick="openGeneratorPreset('hs-info-binary')" class="p-4 bg-emerald-50/70 border border-emerald-300 hover:border-ink rounded-xl font-bold text-xs text-left flex items-center justify-between">
+                        <span>情報Ⅰ</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-ink text-white">自動生成対応</span>
+                    </button>
                 </div>
 
                 <div id="scat-hs_tech" class="scat-block hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -916,6 +1247,103 @@
 
             <!-- 広告枠④ -->
             <div id="ad-slot-subjects-bottom" class="tamaben-ad-wrap hidden"></div>
+        </div>
+
+        <!-- 05B カスタム無限ドリルメーカー（毎回問題が変わる自分専用A4プリント生成） -->
+        <div id="view-generator" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+            <div class="no-print border-b border-ink-border pb-6 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full mb-2">
+                        <i data-lucide="wand-2" class="w-3 h-3"></i>
+                        <span>動的カスタム生成・無限反復ドリル</span>
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-ink">カスタム自動ドリルメーカー</h2>
+                    <p class="text-xs text-ink-muted mt-1">ボタンを押すたびに新しい数値・出題順でプリントを自動作成。同じ問題の答えを覚えてしまう悩みを解消します。</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="generateCustomDrill(true)" class="px-4 py-2.5 bg-white border border-neutral-300 hover:border-ink text-ink rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all">
+                        <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+                        <span>別の問題にシャッフル</span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-ink hover:bg-neutral-800 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm active:scale-95 transition-all">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>A4プリント印刷 / PDF保存</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- カスタム設定パネル（印刷時は自動非表示） -->
+            <div class="no-print bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-2xs mb-8 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-1">
+                        <label class="text-xs font-bold text-ink block mb-1.5">1. 単元・つまずきテーマを選択</label>
+                        <select id="gen-topic" onchange="generateCustomDrill(false)" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <optgroup label="小学生（基礎＆つまずき単元）">
+                                <option value="elem-calc">小学生算数｜四則計算（たし算・ひき算・かけ算）</option>
+                                <option value="elem-fraction">小5・小6算数｜【つまずき特化】分数の通分・加減</option>
+                            </optgroup>
+                            <optgroup label="中学生（定期テスト頻出・苦手克服）">
+                                <option value="jhs-posneg" selected>中1数学｜【符号ミス克服】正の数・負の数の計算</option>
+                                <option value="jhs-eq">中1数学｜文字式の計算・1次方程式</option>
+                                <option value="jhs-eng-verb">中1・中2英語｜【つまずき特化】be動詞と一般動詞の区別</option>
+                            </optgroup>
+                            <optgroup label="高校生（新課程・最新領域）">
+                                <option value="hs-info-binary">高校 情報Ⅰ｜【新課程】2進数・16進数変換＆ビット計算</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5">2. スモールステップ難易度</label>
+                        <select id="gen-level" onchange="generateCustomDrill(false)" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <option value="step1">ステップ1：超基礎（1つずつ確認）</option>
+                            <option value="step2" selected>ステップ2：標準（テスト頻出レベル）</option>
+                            <option value="step3">ステップ3：応用チャレンジ</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-ink block mb-1.5">3. 問題数</label>
+                        <select id="gen-count" onchange="generateCustomDrill(false)" class="w-full bg-canvas border border-neutral-300 rounded-xl px-3 py-2.5 text-xs font-bold text-ink outline-none focus:border-ink">
+                            <option value="10" selected>10問（5分でサクッと復習）</option>
+                            <option value="14">14問（バランス標準）</option>
+                            <option value="20">20問（しっかり反復演習）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-ink-light">
+                            <input type="checkbox" id="gen-opt-timer" checked onchange="renderGeneratedDrillSheet()" class="rounded border-neutral-300 text-ink focus:ring-0">
+                            <span>目標タイム欄</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-ink-light">
+                            <input type="checkbox" id="gen-opt-tip" checked onchange="renderGeneratedDrillSheet()" class="rounded border-neutral-300 text-ink focus:ring-0">
+                            <span>つまずき注意メモを表示</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-ink-light">
+                            <input type="checkbox" id="gen-opt-sticker" checked onchange="renderGeneratedDrillSheet()" class="rounded border-neutral-300 text-ink focus:ring-0">
+                            <span>ご褒美シール枠（2cm）</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-ink-light">
+                            <input type="checkbox" id="gen-opt-qr" checked onchange="renderGeneratedDrillSheet()" class="rounded border-neutral-300 text-ink focus:ring-0">
+                            <span>Web連携QRコード</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-ink-light">
+                            <input type="checkbox" id="gen-opt-anspage" checked onchange="renderGeneratedDrillSheet()" class="rounded border-neutral-300 text-ink focus:ring-0">
+                            <span>2ページ目に解答・解説を同時出力</span>
+                        </label>
+                    </div>
+                    <button type="button" id="gen-toggle-inline-ans-btn" onclick="toggleInlineDrillAnswers()" class="px-3 py-1.5 rounded-lg border border-neutral-300 bg-canvas hover:bg-neutral-100 font-bold text-ink text-[11px] inline-flex items-center gap-1.5">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span id="gen-toggle-inline-ans-label">画面上で答えを表示する</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 生成されたA4プリント紙面プレビュー＆印刷対象本体 -->
+            <div id="generated-drill-sheets-wrap" class="space-y-8"></div>
         </div>
 
         <!-- 06 設定・登録 -->
@@ -1203,6 +1631,11 @@
                 <a href="./sitemap.xml" class="hover:underline hover:text-ink inline-flex items-center gap-1.5 transition-colors">
                     <i data-lucide="map" class="w-3.5 h-3.5"></i>
                     <span>サイトマップ</span>
+                </a>
+                <span class="text-neutral-300">|</span>
+                <a href="./ai.json" target="_blank" rel="noopener" class="hover:underline hover:text-ink inline-flex items-center gap-1.5 transition-colors" title="AI・検索エンジン向け構造化教材データ">
+                    <i data-lucide="database" class="w-3.5 h-3.5"></i>
+                    <span>AI教材データ(JSON)</span>
                 </a>
             </div>
             <p>&copy; 2026 Tamaben. All printable materials are free for learners and educators.</p>
@@ -1835,10 +2268,10 @@
                 const candidateUrls = [...new Set([
                     originUrl,
                     currentBaseUrl,
-                    'https://tamaben.github.io/data.json',
                     '/data.json',
                     'data.json',
-                    './data.json'
+                    './data.json',
+                    'https://tamaben.github.io/data.json'
                 ])].filter(u => u && u.trim() !== '');
 
                 let loadedData = null;
@@ -1958,10 +2391,10 @@
                 const candidateUrls = [...new Set([
                     originUrl,
                     currentBaseUrl,
-                    'https://tamaben.github.io/note.json',
                     '/note.json',
                     'note.json',
-                    './note.json'
+                    './note.json',
+                    'https://tamaben.github.io/note.json'
                 ])].filter(u => u && u.trim() !== '');
 
                 let loadedNotes = null;
@@ -2964,19 +3397,45 @@
             const canDownloadAdvAns = hasAdvAns && !isRestricted;
 
             const isFav = userStats.favMaterials.includes(item.id);
+            const tipText = getUnitStumblingTip(item);
 
             document.getElementById('detail-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                     <div class="md:col-span-6 flex flex-col items-center w-full">
                         <div id="pdf-carousel-tabs" class="flex items-center gap-1.5 mb-2.5 w-full max-w-sm justify-center flex-wrap"></div>
 
+                        <!-- タブレット直接書き込みモード＆用紙カラー切替バー -->
+                        <div class="w-full max-w-sm mb-2.5 bg-white border border-neutral-200 rounded-xl p-2 shadow-2xs space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <button type="button" id="btn-toggle-pen-mode" onclick="toggleTabletPenMode()" class="px-3 py-1.5 rounded-lg border border-neutral-300 bg-canvas hover:border-ink text-ink text-[11px] font-bold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                                    <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span id="pen-mode-btn-label">タブレット手書きモード OFF</span>
+                                </button>
+                                <div class="flex items-center gap-1 text-[10px]">
+                                    <button type="button" onclick="setDetailPaperTint('white')" title="標準ホワイト" class="px-2 py-1 rounded border border-neutral-300 bg-white font-bold text-ink">白紙</button>
+                                    <button type="button" onclick="setDetailPaperTint('warm')" title="目に優しいウォーム紙" class="px-2 py-1 rounded border border-amber-200 bg-[#fdfaf3] font-bold text-amber-900">目に優しい</button>
+                                    <button type="button" onclick="setDetailPaperTint('grid')" title="方眼アシスト" class="px-2 py-1 rounded border border-slate-200 bg-slate-50 font-bold text-slate-700">方眼</button>
+                                </div>
+                            </div>
+                            <div id="tablet-pen-tools" class="hidden pt-1.5 border-t border-neutral-100 flex items-center justify-between gap-1 flex-wrap">
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="selectPenTool('black')" id="ptool-black" class="px-2.5 py-1 rounded-md bg-ink text-white text-[10px] font-bold">黒ペン</button>
+                                    <button type="button" onclick="selectPenTool('red')" id="ptool-red" class="px-2.5 py-1 rounded-md bg-white border border-neutral-200 text-red-600 text-[10px] font-bold">赤丸つけ</button>
+                                    <button type="button" onclick="selectPenTool('marker')" id="ptool-marker" class="px-2.5 py-1 rounded-md bg-white border border-neutral-200 text-amber-700 text-[10px] font-bold">蛍光</button>
+                                    <button type="button" onclick="selectPenTool('eraser')" id="ptool-eraser" class="px-2.5 py-1 rounded-md bg-white border border-neutral-200 text-ink-muted text-[10px] font-bold">消しゴム</button>
+                                </div>
+                                <button type="button" onclick="clearTabletPenCanvas()" class="px-2 py-1 rounded-md text-[10px] font-bold text-red-600 hover:bg-red-50">全消去</button>
+                            </div>
+                        </div>
+
                         <div class="w-full max-w-sm flex items-center justify-between px-1 mb-2 text-xs">
                             <div id="pdf-page-section-badge" class="flex items-center gap-2"></div>
                             <div id="pdf-page-count-badge" class="text-[11px] font-bold text-ink-muted"></div>
                         </div>
 
-                        <div class="relative w-full max-w-sm overflow-hidden rounded-xl bg-canvas p-1 sm:p-1.5 border border-neutral-200 shadow-sm" style="perspective: 1200px;">
+                        <div id="detail-preview-frame" class="relative w-full max-w-sm overflow-hidden rounded-xl bg-canvas p-1 sm:p-1.5 border border-neutral-200 shadow-sm transition-colors" style="perspective: 1200px;">
                             <div id="pdf-carousel-track" class="carousel-track flex"></div>
+                            <canvas id="detail-pen-canvas" class="hidden"></canvas>
                         </div>
                         
                         <div class="mt-3.5 w-full max-w-sm flex items-center justify-between px-1">
@@ -2987,7 +3446,7 @@
 
                             <span class="text-[10px] text-ink-muted select-none flex items-center gap-1 font-medium">
                                 <i data-lucide="hand" class="w-3.5 h-3.5 text-neutral-400"></i>
-                                <span>スワイプで紙めくり</span>
+                                <span id="swipe-hint-label">スワイプで紙めくり</span>
                             </span>
 
                             <button onclick="nextPdfPage()" id="btn-next-page" class="px-3.5 py-2 bg-white hover:bg-neutral-50 text-ink rounded-xl border border-neutral-200 text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed">
@@ -3023,7 +3482,16 @@
                             </div>
                         ` : ''}
 
-                        <h1 class="text-2xl sm:text-3xl font-black text-ink mb-6 leading-snug">${item.title}</h1>
+                        <h1 class="text-2xl sm:text-3xl font-black text-ink mb-4 leading-snug">${item.title}</h1>
+
+                        <!-- 現役目線のつまずき注意・テスト前確認メモ -->
+                        <div class="mb-5 p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs text-ink leading-relaxed max-w-md">
+                            <div class="font-black text-emerald-900 flex items-center gap-1.5 mb-1">
+                                <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                <span>テスト前にここだけ確認！（つまずき注意メモ）</span>
+                            </div>
+                            <p class="text-[11.5px] text-emerald-950/85">${tipText}</p>
+                        </div>
 
                         <div class="space-y-4 max-w-md w-full">
                             <div class="p-4 bg-neutral-50/70 border border-neutral-200 rounded-2xl space-y-2.5">
@@ -3100,15 +3568,26 @@
                                     ` : ''}
                                 </div>
                             </div>
+
+                            <!-- 紙×デジタル連携: Web答え合わせ直行QRコード -->
+                            <div class="p-3.5 bg-white border border-neutral-200 rounded-2xl flex items-center gap-3.5 shadow-2xs">
+                                <div id="detail-qr-box" class="w-16 h-16 rounded-lg border border-neutral-200 bg-white p-1 flex items-center justify-center shrink-0"></div>
+                                <div class="text-[11px] leading-relaxed">
+                                    <p class="font-black text-ink mb-0.5">スマホで答え・解説へ直行（QR連携）</p>
+                                    <p class="text-ink-muted">紙に印刷した後も、スマホカメラで読み取るだけでこの単元の答え合わせ画面をすぐ開けます。</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-6 pt-5 border-t border-neutral-100 text-[11px] text-ink-muted leading-relaxed">
-                            <span class="font-bold text-ink">💡 プレビューの使い方:</span> 左側のプレビュー画面をスワイプするか矢印を押すことで、基本問題・基本の答え・練習問題・練習の答えをすべてひと続きで確認できます。右の目のアイコンを押すと該当ページへ直接ジャンプします。
+                            <span class="font-bold text-ink">💡 使い方のコツ:</span> iPadやChromebookでは左上の「タブレット手書きモード」をONにすると、そのままペンで書き込んで丸つけまで完結できます。
                         </div>
                     </div>
                 </div>
             `;
+            resetTabletPenState();
             loadFullPDFCarousel(item);
+            renderDetailQrCode(item);
             lucide.createIcons();
         }
 
@@ -3165,6 +3644,8 @@
             const grade = document.getElementById('search-grade').value;
             const subject = document.getElementById('search-subject').value;
             const unit = document.getElementById('search-unit').value;
+            const difficultyEl = document.getElementById('search-difficulty');
+            const difficulty = difficultyEl ? difficultyEl.value : 'all';
             const rawKeyword = document.getElementById('search-keyword').value.trim();
             const keyword = rawKeyword.toLowerCase();
             
@@ -3187,6 +3668,14 @@
                 })();
 
                 const matchUnit = unit ? (item.unit === unit || item.title.includes(unit)) : true;
+
+                const matchDifficulty = (() => {
+                    if (!difficulty || difficulty === 'all') return true;
+                    if (difficulty === 'printable') return hasAnyPrintable(item);
+                    if (difficulty === 'basic') return !!item.pdfBasic && item.pdfBasic !== '#';
+                    if (difficulty === 'adv') return !!item.pdfAdv && item.pdfAdv !== '#';
+                    return true;
+                })();
 
                 const matchKeyword = (() => {
                     if (!keyword) return true;
@@ -3236,12 +3725,19 @@
                     return false;
                 })();
 
-                return matchGrade && matchSubject && matchUnit && matchKeyword;
+                return matchGrade && matchSubject && matchUnit && matchDifficulty && matchKeyword;
             });
 
             resultsGrid.innerHTML = "";
             if (filtered.length === 0) {
-                resultsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs">条件に一致する教材プリントが見つかりませんでした。<br>キーワードを変更して再度お試しください。</div>`;
+                resultsGrid.innerHTML = `
+                    <div class="col-span-full py-14 text-center space-y-3">
+                        <p class="text-ink-muted font-bold text-xs">条件に一致するPDF教材が見つかりませんでした。</p>
+                        <button type="button" onclick="navigate('#generator')" class="px-4 py-2 bg-ink text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5">
+                            <i data-lucide="wand-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span>「カスタム自動ドリルメーカー」で問題を自動生成する</span>
+                        </button>
+                    </div>`;
             } else {
                 filtered.forEach((item, index) => {
                     const hasAnyMaterial = hasAnyPrintable(item);
@@ -3294,7 +3790,8 @@
         function updateNavActiveState(hash) {
             document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black'));
             let activeId = 'nav-btn-home';
-            if (hash === '#subjects') activeId = 'nav-btn-subjects';
+            if (hash === '#generator') activeId = 'nav-btn-generator';
+            else if (hash === '#subjects') activeId = 'nav-btn-subjects';
             else if (hash === '#search' || hash === '#results') activeId = 'nav-btn-search';
             else if (hash === '#users' || hash === '#parents') activeId = 'nav-btn-users';
             
@@ -3306,7 +3803,8 @@
                 b.classList.add('text-ink-muted');
             });
             let mActiveId = 'mnav-btn-home';
-            if (hash === '#subjects') mActiveId = 'mnav-btn-subjects';
+            if (hash === '#generator') mActiveId = 'mnav-btn-generator';
+            else if (hash === '#subjects') mActiveId = 'mnav-btn-subjects';
             else if (hash === '#search' || hash === '#results') mActiveId = 'mnav-btn-search';
             else if (hash === '#users' || hash === '#parents') mActiveId = 'mnav-btn-users';
 
@@ -3325,7 +3823,7 @@
             const isHashChanged = currentActiveHash !== hash;
             currentActiveHash = hash;
 
-            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-users-info', 'view-parents-report'];
+            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-generator', 'view-users-info', 'view-parents-report'];
 
             const updateDOM = () => {
                 views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
@@ -3346,6 +3844,9 @@
                     if (hash === '#home' || hash === '') {
                         targetView = 'view-home';
                         renderMaterials();
+                    } else if (hash === '#generator') {
+                        targetView = 'view-generator';
+                        ensureDrillInitialized();
                     } else if (hash === '#search') {
                         targetView = 'view-search';
                     } else if (hash === '#results') {
@@ -3364,6 +3865,7 @@
                 }
                 updateNavActiveState(hash);
                 updateSeoForRoute(hash);
+                syncHero3DVisibility(hash);
                 requestAnimationFrame(() => renderVisibleAdSlots());
 
                 if (isHashChanged && shouldScroll) {
@@ -3614,11 +4116,22 @@
             });
         }
 
-        const SEO_BASE_URL = 'https://tamaben.github.io/';
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           将来ドメイン自動適応 SEO & AI専用カタログ (ai.json) 連携
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        const DETECTED_ORIGIN = (function() {
+            const o = window.location.origin;
+            if (o && o !== 'null' && !o.startsWith('file:') && !o.includes('localhost') && !o.includes('127.0.0.1')) {
+                return o.replace(/\/$/, '');
+            }
+            return 'https://tamaben.github.io';
+        })();
+        const SEO_BASE_URL = DETECTED_ORIGIN + '/';
         const SEO_DEFAULT_TITLE = document.title;
         const SEO_DEFAULT_DESC = (document.querySelector('meta[name="description"]') || {}).content || '';
         const SEO_VIEW_TITLES = {
-            '#search': 'プリントを探す（学年・教科・単元から検索）',
+            '#generator': 'カスタム自動ドリルメーカー（毎回問題が変わる無料A4プリント生成）',
+            '#search': 'プリントを探す（学年・教科・単元・難易度から爆速検索）',
             '#results': '検索結果一覧',
             '#subjects': 'すべての教科・科目',
             '#mypage': 'マイページ',
@@ -3626,6 +4139,84 @@
             '#users': '学習者・保護者の方へ',
             '#parents': '学習者・保護者の方へ'
         };
+
+        let AI_CATALOG_MAP = {};
+
+        async function loadAiCatalog() {
+            try {
+                const res = await fetch('./ai.json', { cache: 'no-cache' });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data && Array.isArray(data.materials)) {
+                    data.materials.forEach(m => {
+                        if (m && m.id) AI_CATALOG_MAP[String(m.id)] = m;
+                    });
+                }
+            } catch (_) {}
+        }
+
+        function getUnitStumblingTip(item) {
+            const aiEntry = item && AI_CATALOG_MAP[String(item.id)];
+            if (aiEntry && aiEntry.stumblingPointTip) return aiEntry.stumblingPointTip;
+            const id = String((item && item.id) || '');
+            if (id === 'chu1-su1') {
+                return 'かっこを外すときの符号の変化（特に負の数を引く計算）と、指数がどこにかかっているか（(-3)² = +9 と -3² = -9 の違い）がテスト最頻出の注意ポイントです！';
+            }
+            if (id === 'j3-e-01') {
+                return '主語が単数か複数か、また現在形（am/is/are）か過去形（was/were）かでbe動詞を正しく選び分けること、不規則動詞の過去分詞スペルに注意しましょう！';
+            }
+            if (id === 'j3-e-02') {
+                return '主語が3人称単数のときは have ではなく has を使うこと、yesterday や ~ ago などの「過去の一時点」を表す語は現在完了形と一緒に使えない点が頻出です！';
+            }
+            return 'まずは「基本問題」で解き方の型を確認し、丸つけで間違えた問題だけ印をつけて翌日もう一度解き直すと定着率がぐっと上がります。';
+        }
+
+        function updateDynamicResourceJsonLd(item) {
+            let scriptEl = document.getElementById('tamaben-dynamic-resource-jsonld');
+            if (!item) {
+                if (scriptEl) scriptEl.remove();
+                return;
+            }
+            if (!scriptEl) {
+                scriptEl = document.createElement('script');
+                scriptEl.type = 'application/ld+json';
+                scriptEl.id = 'tamaben-dynamic-resource-jsonld';
+                document.head.appendChild(scriptEl);
+            }
+            const aiEntry = AI_CATALOG_MAP[String(item.id)] || {};
+            const encodings = [];
+            if (item.pdfBasic && item.pdfBasic !== '#') {
+                encodings.push({
+                    "@type": "MediaObject",
+                    "name": "基本問題PDF",
+                    "encodingFormat": "application/pdf",
+                    "contentUrl": new URL(item.pdfBasic, SEO_BASE_URL).href
+                });
+            }
+            const ans = item.pdfBasicAns || item.pdfAns;
+            if (ans && ans !== '#') {
+                encodings.push({
+                    "@type": "MediaObject",
+                    "name": "解答・解説PDF",
+                    "encodingFormat": "application/pdf",
+                    "contentUrl": new URL(ans, SEO_BASE_URL).href
+                });
+            }
+            const ld = {
+                "@context": "https://schema.org",
+                "@type": "LearningResource",
+                "@id": `${SEO_BASE_URL}?id=${encodeURIComponent(item.id)}#resource`,
+                "name": `${item.grade} ${item.subject}「${item.title}」無料学習プリント`,
+                "description": aiEntry.summary || `${item.grade} ${item.subject}「${item.title}」のA4無料学習プリント（解答・解説付き）。`,
+                "educationalLevel": item.grade,
+                "learningResourceType": "Worksheet",
+                "inLanguage": "ja",
+                "isAccessibleForFree": true,
+                "url": `${SEO_BASE_URL}?id=${encodeURIComponent(item.id)}`,
+                "encoding": encodings
+            };
+            scriptEl.textContent = JSON.stringify(ld);
+        }
 
         (function initQueryRoute() {
             const params = new URLSearchParams(window.location.search);
@@ -3653,21 +4244,1105 @@
                     if (new URLSearchParams(window.location.search).get('id') !== String(item.id)) {
                         history.replaceState(null, '', window.location.pathname + '?id=' + encodeURIComponent(item.id) + hash);
                     }
+                    const aiEntry = AI_CATALOG_MAP[String(item.id)];
                     const label = `${item.grade} ${item.subject}「${item.title}」`;
+                    const richDesc = (aiEntry && aiEntry.summary)
+                        ? aiEntry.summary
+                        : `${label}の無料学習プリントです。会員登録不要でPDFをダウンロード・印刷できます。答え・解説付きで家庭学習や授業の復習に。`;
                     setSeoMeta(
                         `${item.title}｜${item.grade} ${item.subject}の無料プリント（PDF・解答付き）- 無料教材のタマベン`,
-                        `${label}の無料学習プリントです。会員登録不要でPDFをダウンロード・印刷できます。答え・解説付きで家庭学習や授業の復習に。`,
+                        richDesc,
                         `${SEO_BASE_URL}?id=${encodeURIComponent(item.id)}`
                     );
+                    updateDynamicResourceJsonLd(item);
                     return;
                 }
             }
+            updateDynamicResourceJsonLd(null);
             if (window.location.search.includes('id=')) {
                 history.replaceState(null, '', window.location.pathname + hash);
             }
             const viewTitle = SEO_VIEW_TITLES[hash];
             setSeoMeta(viewTitle ? `${viewTitle} - 無料教材のタマベン` : SEO_DEFAULT_TITLE, SEO_DEFAULT_DESC, SEO_BASE_URL);
         }
+
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           タブレット直接書き込みペン機能 ＆ QRコード生成
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        window.isTabletPenModeActive = false;
+        let currentPenTool = 'black';
+        let isPenDrawing = false;
+        let lastPenPt = null;
+
+        function resetTabletPenState() {
+            window.isTabletPenModeActive = false;
+            currentPenTool = 'black';
+            isPenDrawing = false;
+            lastPenPt = null;
+        }
+
+        function toggleTabletPenMode() {
+            const canvas = document.getElementById('detail-pen-canvas');
+            const tools = document.getElementById('tablet-pen-tools');
+            const btn = document.getElementById('btn-toggle-pen-mode');
+            const label = document.getElementById('pen-mode-btn-label');
+            const swipeHint = document.getElementById('swipe-hint-label');
+            if (!canvas || !btn || !label) return;
+
+            window.isTabletPenModeActive = !window.isTabletPenModeActive;
+            if (window.isTabletPenModeActive) {
+                canvas.classList.remove('hidden');
+                if (tools) tools.classList.remove('hidden');
+                btn.classList.add('bg-ink', 'text-white', 'border-ink');
+                btn.classList.remove('bg-canvas', 'text-ink');
+                label.textContent = '手書きモード ON（記入中）';
+                if (swipeHint) swipeHint.textContent = 'ボタンでページ移動';
+                initTabletPenCanvas(canvas);
+            } else {
+                canvas.classList.add('hidden');
+                if (tools) tools.classList.add('hidden');
+                btn.classList.remove('bg-ink', 'text-white', 'border-ink');
+                btn.classList.add('bg-canvas', 'text-ink');
+                label.textContent = 'タブレット手書きモード OFF';
+                if (swipeHint) swipeHint.textContent = 'スワイプで紙めくり';
+            }
+        }
+
+        function initTabletPenCanvas(canvas) {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            if (canvas.width !== Math.floor(rect.width * dpr) || canvas.height !== Math.floor(rect.height * dpr)) {
+                canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+                canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+            }
+            if (canvas.dataset.bound === '1') return;
+            canvas.dataset.bound = '1';
+
+            const getPt = (e) => {
+                const r = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / r.width;
+                const scaleY = canvas.height / r.height;
+                return {
+                    x: (e.clientX - r.left) * scaleX,
+                    y: (e.clientY - r.top) * scaleY
+                };
+            };
+
+            canvas.addEventListener('pointerdown', (e) => {
+                if (!window.isTabletPenModeActive) return;
+                e.preventDefault();
+                canvas.setPointerCapture(e.pointerId);
+                isPenDrawing = true;
+                lastPenPt = getPt(e);
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!isPenDrawing || !window.isTabletPenModeActive || !lastPenPt) return;
+                e.preventDefault();
+                const ctx = canvas.getContext('2d');
+                const pt = getPt(e);
+                const dprScale = Math.min(window.devicePixelRatio || 1, 2);
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (currentPenTool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 18 * dprScale;
+                    ctx.strokeStyle = 'rgba(0,0,0,1)';
+                } else if (currentPenTool === 'marker') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = 12 * dprScale;
+                    ctx.strokeStyle = 'rgba(250, 204, 21, 0.28)';
+                } else if (currentPenTool === 'red') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = 2.4 * dprScale;
+                    ctx.strokeStyle = '#dc2626';
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = 2.2 * dprScale;
+                    ctx.strokeStyle = '#0f172a';
+                }
+                ctx.beginPath();
+                ctx.moveTo(lastPenPt.x, lastPenPt.y);
+                ctx.lineTo(pt.x, pt.y);
+                ctx.stroke();
+                ctx.restore();
+                lastPenPt = pt;
+            });
+
+            const stopDraw = () => { isPenDrawing = false; lastPenPt = null; };
+            canvas.addEventListener('pointerup', stopDraw);
+            canvas.addEventListener('pointercancel', stopDraw);
+        }
+
+        function selectPenTool(tool) {
+            currentPenTool = tool;
+            ['black', 'red', 'marker', 'eraser'].forEach(k => {
+                const b = document.getElementById('ptool-' + k);
+                if (!b) return;
+                if (k === tool) {
+                    b.classList.add('ring-2', 'ring-ink');
+                } else {
+                    b.classList.remove('ring-2', 'ring-ink');
+                }
+            });
+        }
+
+        function clearTabletPenCanvas() {
+            const canvas = document.getElementById('detail-pen-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setDetailPaperTint(mode) {
+            const frame = document.getElementById('detail-preview-frame');
+            if (!frame) return;
+            frame.classList.remove('paper-tint-warm', 'paper-tint-grid');
+            frame.querySelectorAll('.paper-card').forEach(card => {
+                card.classList.remove('paper-tint-warm', 'paper-tint-grid');
+                if (mode === 'warm') card.classList.add('paper-tint-warm');
+                else if (mode === 'grid') card.classList.add('paper-tint-grid');
+            });
+            if (mode === 'warm') frame.classList.add('paper-tint-warm');
+            else if (mode === 'grid') frame.classList.add('paper-tint-grid');
+        }
+
+        function renderQrInto(container, urlText, sizePx = 56) {
+            if (!container) return;
+            container.innerHTML = '';
+            if (window.QRCode) {
+                try {
+                    new QRCode(container, {
+                        text: urlText,
+                        width: sizePx,
+                        height: sizePx,
+                        colorDark: '#0f172a',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                    return;
+                } catch (_) {}
+            }
+            container.innerHTML = `<span class="text-[9px] font-mono text-ink-muted text-center leading-tight">Web<br>QR</span>`;
+        }
+
+        function renderDetailQrCode(item) {
+            const box = document.getElementById('detail-qr-box');
+            if (!box || !item) return;
+            const targetUrl = `${SEO_BASE_URL}?id=${encodeURIComponent(item.id)}`;
+            renderQrInto(box, targetUrl, 54);
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           リクエスト共創機能（欲しい単元のプリント要望送信）
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        function submitMaterialRequest() {
+            const grade = (document.getElementById('req-grade') || {}).value || '';
+            const subject = (document.getElementById('req-subject') || {}).value || '';
+            const unit = ((document.getElementById('req-unit') || {}).value || '').trim();
+            const memo = ((document.getElementById('req-memo') || {}).value || '').trim();
+            const msgEl = document.getElementById('req-feedback-msg');
+
+            if (!unit) {
+                if (msgEl) {
+                    msgEl.textContent = '※ 欲しい単元名（例：分数の通分、比例と反比例など）を入力してください。';
+                    msgEl.classList.remove('hidden', 'text-emerald-700');
+                    msgEl.classList.add('text-amber-700');
+                }
+                return;
+            }
+
+            const subjectLine = `【タマベン教材リクエスト】${grade} ${subject}「${unit}」`;
+            const bodyText = `タマベンチーム宛\n\n以下の単元のプリント作成をリクエストします。\n・対象学年：${grade}\n・教科：${subject}\n・希望単元：${unit}\n・つまずいている点・ご要望：${memo || '特になし'}\n`;
+            const mailtoUrl = `mailto:tamapiko.1234@gmail.com?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(bodyText)}`;
+
+            if (msgEl) {
+                msgEl.textContent = `✓ メール作成画面を開きました（宛先: tamapiko.1234@gmail.com）。そのまま送信してください！`;
+                msgEl.classList.remove('hidden', 'text-amber-700');
+                msgEl.classList.add('text-emerald-700');
+            }
+            window.location.href = mailtoUrl;
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           カスタム自動ドリルメーカー（毎回数値・問題が変わる無限A4プリント）
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        let currentGeneratedDrill = null;
+        let showInlineDrillAnswers = false;
+
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        }
+        function fmtSigned(n) {
+            return n >= 0 ? `(+${n})` : `(${n})`;
+        }
+
+        function openGeneratorPreset(topicKey) {
+            const sel = document.getElementById('gen-topic');
+            if (sel) sel.value = topicKey;
+            navigate('#generator');
+            generateCustomDrill(false);
+        }
+
+        function ensureDrillInitialized() {
+            if (!currentGeneratedDrill) {
+                generateCustomDrill(false);
+            }
+        }
+
+        function toggleInlineDrillAnswers() {
+            showInlineDrillAnswers = !showInlineDrillAnswers;
+            const lbl = document.getElementById('gen-toggle-inline-ans-label');
+            if (lbl) lbl.textContent = showInlineDrillAnswers ? '画面上の答えを隠す' : '画面上で答えを表示する';
+            renderGeneratedDrillSheet();
+        }
+
+        function buildProblemSet(topic, level, count) {
+            const problems = [];
+            const usedKeys = new Set();
+            let meta = {
+                gradeLabel: '中学1年生 数学',
+                title: '正の数・負の数の計算',
+                tip: 'かっこを外すときの符号に注意！「−（マイナス）を引く」ときは「＋（プラス）を足す」に変えて計算しよう。',
+                goalMinutes: level === 'step1' ? 5 : (level === 'step2' ? 7 : 10)
+            };
+
+            if (topic === 'elem-calc') {
+                meta = {
+                    gradeLabel: '小学生 算数',
+                    title: level === 'step1' ? 'たし算・ひき算の基礎反復' : (level === 'step2' ? 'かけ算・わり算と四則計算' : '四則まじりの計算チャレンジ'),
+                    tip: 'くり上がり・くり下がりは小さくメモを書くとケアレスミスがなくなります。かけ算・わり算はたし算・ひき算より先に計算しよう！',
+                    goalMinutes: 5
+                };
+            } else if (topic === 'elem-fraction') {
+                meta = {
+                    gradeLabel: '小学5・6年生 算数',
+                    title: '【つまずき克服】異分母の分数の通分・たし算ひき算',
+                    tip: '分母が違うたし算・ひき算は、まず2つの分母の「最小公倍数」を見つけて分母をそろえる（通分する）のが第1ステップ！最後に約分できるかも確認しよう。',
+                    goalMinutes: 8
+                };
+            } else if (topic === 'jhs-eq') {
+                meta = {
+                    gradeLabel: '中学1年生 数学',
+                    title: level === 'step1' ? '文字式のまとめ方（同類項）' : '1次方程式の解き方（移項と計算）',
+                    tip: 'イコール（＝）をまたいで項を移動（移項）するときは、プラスとマイナスの符号が必ず逆になります！',
+                    goalMinutes: 8
+                };
+            } else if (topic === 'jhs-eng-verb') {
+                meta = {
+                    gradeLabel: '中学1・2年生 英語',
+                    title: '【つまずき克服】be動詞と一般動詞の区別・疑問文・否定文',
+                    tip: '文の中に「動きを表す動詞（play, study, like など）」があれば一般動詞（do/doesを使う）、「〜です・〜にある」ならbe動詞（am/is/are）！1つの文に両方をそのまま並べないのが鉄則です。',
+                    goalMinutes: 7
+                };
+            } else if (topic === 'hs-info-binary') {
+                meta = {
+                    gradeLabel: '高校 情報Ⅰ（新課程対応）',
+                    title: '2進数・10進数・16進数の基数変換＆ビット表現',
+                    tip: '2進数の各けたは右から「1, 2, 4, 8, 16, 32, 64, 128」の重みを持ちます。4ビットずつ区切ると16進数（0〜9, A〜F）へ瞬時に変換できます！',
+                    goalMinutes: 8
+                };
+            }
+
+            const engBank = [
+                { s1: 'You ( ___ ) tennis after school.', opts: 'are / play', a: 'play', exp: '「テニスをする」という一般動詞が必要なので play。' },
+                { s1: 'Ken ( ___ ) a junior high school student.', opts: 'is / plays', a: 'is', exp: '「ケンは中学生です（イコール関係）」なので be動詞 is。' },
+                { s1: '( ___ ) you like music? — Yes, I do.', opts: 'Are / Do', a: 'Do', exp: '一般動詞 like の疑問文なので文頭は Do。' },
+                { s1: '( ___ ) Ms. Green from Canada?', opts: 'Is / Does', a: 'Is', exp: '一般動詞がなく「カナダ出身ですか」と尋ねる文なので Is。' },
+                { s1: 'My brother ( ___ ) not have a bike.', opts: 'is / does', a: 'does', exp: '主語が3人称単数で一般動詞 have の否定文なので does not。' },
+                { s1: 'They ( ___ ) not busy today.', opts: 'are / do', a: 'are', exp: 'busy（忙しい＝形容詞）を説明する否定文なので be動詞 are。' },
+                { s1: 'She ( ___ ) English every day.', opts: 'studies / is study', a: 'studies', exp: 'be動詞と一般動詞の原形は並べられない。3単現の studies。' },
+                { s1: '( ___ ) Tom play soccer on Sundays?', opts: 'Is / Does', a: 'Does', exp: '主語が3人称単数 Tom で一般動詞 play の疑問文なので Does。' },
+                { s1: 'I ( ___ ) not a member of the art club.', opts: 'am / do', a: 'am', exp: '主語 I に対する「〜ではありません」なので be動詞 am。' },
+                { s1: 'We ( ___ ) lunch at twelve.', opts: 'are / eat', a: 'eat', exp: '「昼食を食べる」という動作を表す一般動詞 eat を選ぶ。' },
+                { s1: 'What sport ( ___ ) you like?', opts: 'are / do', a: 'do', exp: '一般動詞 like があるので疑問詞の後ろは do you 〜? の語順。' },
+                { s1: 'Where ( ___ ) your notebook?', opts: 'is / does', a: 'is', exp: '「あなたのノートはどこにありますか」なので be動詞 is。' },
+                { s1: 'Yuki ( ___ ) the piano very well.', opts: 'is / plays', a: 'plays', exp: '主語 Yuki（3人称単数）＋「ピアノを弾く」なので plays。' },
+                { s1: '( ___ ) they in the library now?', opts: 'Are / Do', a: 'Are', exp: 'in the library（図書館にいる）を尋ねる文なので Are。' },
+                { s1: 'He ( ___ ) not watch TV at night.', opts: 'is / does', a: 'does', exp: '一般動詞 watch の否定文（主語 He）なので does。' },
+                { s1: 'This bag ( ___ ) very light.', opts: 'is / has', a: 'is', exp: 'very light（とても軽い＝状態）と結びつく be動詞 is。' },
+                { s1: 'My sister and I ( ___ ) good friends.', opts: 'am / are', a: 'are', exp: '主語が「姉と私（2人＝複数）」なので be動詞は are。' },
+                { s1: 'How many pens ( ___ ) you have?', opts: 'are / do', a: 'do', exp: '一般動詞 have を使った疑問文なので do。' },
+                { s1: 'Koji ( ___ ) tired yesterday.', opts: 'was / did', a: 'was', exp: 'tired（疲れていた＝形容詞）＋ yesterday（過去）なので was。' },
+                { s1: '( ___ ) you go to the park yesterday?', opts: 'Were / Did', a: 'Did', exp: '一般動詞 go の過去の疑問文なので文頭は Did。' }
+            ];
+
+            let guard = 0;
+            while (problems.length < count && guard < 400) {
+                guard++;
+                let q = '', ans = '', exp = '';
+
+                if (topic === 'elem-calc') {
+                    if (level === 'step1') {
+                        const isAdd = Math.random() < 0.55;
+                        const a = randInt(8, 48), b = randInt(6, 39);
+                        q = isAdd ? `${a} ＋ ${b} ＝` : `${a + b} − ${a} ＝`;
+                        ans = isAdd ? `${a + b}` : `${b}`;
+                        exp = isAdd ? `一の位から順番にくり上がりを確認して ${a + b}` : `くり下がりに注意して計算すると ${b}`;
+                    } else if (level === 'step2') {
+                        const mode = randInt(1, 3);
+                        if (mode === 1) {
+                            const a = randInt(12, 34), b = randInt(3, 9);
+                            q = `${a} × ${b} ＝`; ans = `${a * b}`; exp = `${Math.floor(a/10)*10}×${b}＝${Math.floor(a/10)*10*b} と ${a%10}×${b}＝${(a%10)*b} を合わせて ${a * b}`;
+                        } else if (mode === 2) {
+                            const b = randInt(3, 9), r = randInt(4, 14);
+                            q = `${b * r} ÷ ${b} ＝`; ans = `${r}`; exp = `${b}の段の九九・わり算より ${r}`;
+                        } else {
+                            const a = randInt(25, 85), b = randInt(14, 59);
+                            q = `${a} ＋ ${b} ＝`; ans = `${a + b}`; exp = `位をそろえて足すと ${a + b}`;
+                        }
+                    } else {
+                        const a = randInt(10, 30), b = randInt(2, 8), c = randInt(3, 9);
+                        const add = Math.random() < 0.5;
+                        if (add) {
+                            q = `${a} ＋ ${b} × ${c} ＝`; ans = `${a + b * c}`; exp = `かけ算が先：${b}×${c}＝${b * c}、次に ${a}＋${b * c}＝${a + b * c}`;
+                        } else {
+                            const prod = b * c;
+                            const first = prod + randInt(5, 25);
+                            q = `${first} − ${b} × ${c} ＝`; ans = `${first - prod}`; exp = `かけ算が先：${b}×${c}＝${prod}、次に ${first}−${prod}＝${first - prod}`;
+                        }
+                    }
+                } else if (topic === 'elem-fraction') {
+                    const denPairs = level === 'step1'
+                        ? [[2, 4], [3, 6], [2, 6], [4, 8], [5, 10]]
+                        : (level === 'step2' ? [[2, 3], [3, 4], [2, 5], [3, 5], [4, 6]] : [[4, 6], [6, 8], [6, 9], [4, 10], [3, 8]]);
+                    const [d1, d2] = denPairs[randInt(0, denPairs.length - 1)];
+                    const n1 = randInt(1, d1 - 1);
+                    const n2 = randInt(1, d2 - 1);
+                    const lcm = (d1 * d2) / gcd(d1, d2);
+                    const isAdd = level === 'step1' || Math.random() < 0.6 || (n1 * (lcm / d1) <= n2 * (lcm / d2));
+                    const rawNum = isAdd ? (n1 * (lcm / d1) + n2 * (lcm / d2)) : (n1 * (lcm / d1) - n2 * (lcm / d2));
+                    if (rawNum <= 0) continue;
+                    const g = gcd(rawNum, lcm);
+                    const fn = rawNum / g, fd = lcm / g;
+                    q = `${n1}/${d1} ${isAdd ? '＋' : '−'} ${n2}/${d2} ＝`;
+                    ans = fd === 1 ? `${fn}` : `${fn}/${fd}`;
+                    exp = `分母を${lcm}に通分 → ${n1 * (lcm / d1)}/${lcm} ${isAdd ? '＋' : '−'} ${n2 * (lcm / d2)}/${lcm} ＝ ${rawNum}/${lcm}${g > 1 ? ` ＝ ${ans}（${g}で約分）` : ''}`;
+                } else if (topic === 'jhs-posneg') {
+                    if (level === 'step1') {
+                        let a = randInt(-12, 12), b = randInt(-12, 12);
+                        if (a === 0 || b === 0) continue;
+                        const isAdd = Math.random() < 0.55;
+                        const res = isAdd ? a + b : a - b;
+                        q = `${fmtSigned(a)} ${isAdd ? '＋' : '−'} ${fmtSigned(b)} ＝`;
+                        ans = `${res}`;
+                        exp = isAdd ? `符号と絶対値の大きさを比べて ${res}` : `ひき算をたし算になおす：${a} ＋ (${-b}) ＝ ${res}`;
+                    } else if (level === 'step2') {
+                        const mode = randInt(1, 3);
+                        if (mode === 1) {
+                            let a = randInt(-15, 15), b = randInt(-14, -2);
+                            if (a === 0) continue;
+                            const res = a - b;
+                            q = `${a} − (${b}) ＝`;
+                            ans = `${res}`;
+                            exp = `負の数を引くのでプラスに変化：${a} ＋ ${Math.abs(b)} ＝ ${res}`;
+                        } else if (mode === 2) {
+                            let a = randInt(-9, 9), b = randInt(-8, 8);
+                            if (a === 0 || b === 0 || a === 1 || b === 1) continue;
+                            q = `${fmtSigned(a)} × ${fmtSigned(b)} ＝`;
+                            ans = `${a * b}`;
+                            exp = `${(a * b) > 0 ? '同符号の積は＋' : '異符号の積は−'}：${a * b}`;
+                        } else {
+                            let b = randInt(-9, 9), qv = randInt(-8, 8);
+                            if (b === 0 || qv === 0 || b === 1) continue;
+                            const a = b * qv;
+                            q = `${fmtSigned(a)} ÷ ${fmtSigned(b)} ＝`;
+                            ans = `${qv}`;
+                            exp = `${qv > 0 ? '同符号の商は＋' : '異符号の商は−'}：${qv}`;
+                        }
+                    } else {
+                        const base = randInt(2, 5);
+                        const parenSq = Math.random() < 0.5;
+                        const c = randInt(-8, 8) || 3;
+                        if (parenSq) {
+                            const sq = base * base;
+                            q = `(-${base})² ＋ (${c}) ＝`;
+                            ans = `${sq + c}`;
+                            exp = `(-${base})² は (-${base})×(-${base})＝+${sq} なので ${sq} ＋ (${c}) ＝ ${sq + c}`;
+                        } else {
+                            const sq = -(base * base);
+                            q = `-${base}² − (${c}) ＝`;
+                            ans = `${sq - c}`;
+                            exp = `-${base}² は -(${base}×${base})＝${sq} なので ${sq} − (${c}) ＝ ${sq - c}`;
+                        }
+                    }
+                } else if (topic === 'jhs-eq') {
+                    if (level === 'step1') {
+                        const a = randInt(2, 9), b = randInt(-8, 8) || 3, c = randInt(-7, 7) || -2;
+                        const coef = a + c;
+                        if (coef === 0) continue;
+                        const coefStr = coef === 1 ? 'x' : (coef === -1 ? '-x' : `${coef}x`);
+                        q = `${a}x ${b >= 0 ? '＋ ' + b : '− ' + Math.abs(b)} ${c >= 0 ? '＋ ' + c + 'x' : '− ' + Math.abs(c) + 'x'} ＝`;
+                        ans = `${coefStr} ${b >= 0 ? '+ ' + b : '- ' + Math.abs(b)}`;
+                        exp = `xの項をまとめる：(${a}${c >= 0 ? '+' + c : c})x ＝ ${coefStr}`;
+                    } else {
+                        const xVal = randInt(-7, 9) || 2;
+                        const a = randInt(2, 6);
+                        const c = level === 'step2' ? 0 : randInt(1, a - 1);
+                        const b = randInt(-12, 12) || 4;
+                        const rhs = (a - c) * xVal + b;
+                        if (c === 0) {
+                            q = `${a}x ${b >= 0 ? '＋ ' + b : '− ' + Math.abs(b)} ＝ ${rhs}`;
+                            ans = `x = ${xVal}`;
+                            exp = `${b >= 0 ? '+' + b : b} を移項して ${a}x ＝ ${rhs - b}、両辺を${a}で割って x = ${xVal}`;
+                        } else {
+                            const d = rhs;
+                            q = `${a}x ${b >= 0 ? '＋ ' + b : '− ' + Math.abs(b)} ＝ ${c === 1 ? 'x' : c + 'x'} ${d >= 0 ? '＋ ' + d : '− ' + Math.abs(d)}`;
+                            ans = `x = ${xVal}`;
+                            exp = `文字の項を左辺、数の項を右辺へ移項：${a - c}x ＝ ${d - b} より x = ${xVal}`;
+                        }
+                    }
+                } else if (topic === 'jhs-eng-verb') {
+                    const item = engBank[(problems.length + randInt(0, engBank.length - 1)) % engBank.length];
+                    q = `${item.s1}　［ ${item.opts} ］`;
+                    ans = item.a;
+                    exp = item.exp;
+                } else if (topic === 'hs-info-binary') {
+                    const mode = level === 'step1' ? randInt(1, 2) : randInt(1, 4);
+                    if (mode === 1) {
+                        const n = randInt(3, level === 'step1' ? 15 : 63);
+                        const bin = n.toString(2).padStart(level === 'step1' ? 4 : 6, '0');
+                        q = `2進数 (${bin})₂ を10進数で表せ。`;
+                        ans = `${n}`;
+                        exp = `各けたの重みを足し合わせると (${bin})₂ ＝ ${n}`;
+                    } else if (mode === 2) {
+                        const n = randInt(4, level === 'step1' ? 15 : 45);
+                        const bin = n.toString(2);
+                        q = `10進数 ${n} を2進数で表せ。`;
+                        ans = `(${bin})₂`;
+                        exp = `2で順次割った余りを下から並べると (${bin})₂`;
+                    } else if (mode === 3) {
+                        const n = randInt(16, 254);
+                        const bin = n.toString(2).padStart(8, '0');
+                        const hex = n.toString(16).toUpperCase();
+                        q = `8ビット2進数 (${bin})₂ を16進数で表せ。`;
+                        ans = `(${hex})₁₆`;
+                        exp = `4ビットずつ「${bin.slice(0, 4)}」「${bin.slice(4)}」に区切ると (${hex})₁₆`;
+                    } else {
+                        const bits = randInt(3, 8);
+                        const patterns = Math.pow(2, bits);
+                        q = `${bits}ビットで表現できる情報の通り数（情報量）は何通りか。`;
+                        ans = `${patterns}通り`;
+                        exp = `1ビットあたり2通りなので 2^${bits} ＝ ${patterns}通り`;
+                    }
+                }
+
+                if (!usedKeys.has(q)) {
+                    usedKeys.add(q);
+                    problems.push({ q, ans, exp });
+                }
+            }
+
+            return { meta, problems };
+        }
+
+        function generateCustomDrill(isManualShuffle = false) {
+            const topic = (document.getElementById('gen-topic') || {}).value || 'jhs-posneg';
+            const level = (document.getElementById('gen-level') || {}).value || 'step2';
+            const count = parseInt((document.getElementById('gen-count') || {}).value || '10', 10);
+
+            currentGeneratedDrill = buildProblemSet(topic, level, count);
+            if (isManualShuffle) showInlineDrillAnswers = false;
+            const lbl = document.getElementById('gen-toggle-inline-ans-label');
+            if (lbl) lbl.textContent = showInlineDrillAnswers ? '画面上の答えを隠す' : '画面上で答えを表示する';
+            renderGeneratedDrillSheet();
+        }
+
+        function renderGeneratedDrillSheet() {
+            if (!currentGeneratedDrill) return;
+            const wrap = document.getElementById('generated-drill-sheets-wrap');
+            if (!wrap) return;
+
+            const showTimer = !!(document.getElementById('gen-opt-timer') || {}).checked;
+            const showTip = !!(document.getElementById('gen-opt-tip') || {}).checked;
+            const showSticker = !!(document.getElementById('gen-opt-sticker') || {}).checked;
+            const showQr = !!(document.getElementById('gen-opt-qr') || {}).checked;
+            const showAnsPage = !!(document.getElementById('gen-opt-anspage') || {}).checked;
+
+            const { meta, problems } = currentGeneratedDrill;
+            const isSingleCol = problems.some(p => p.q.length > 22);
+
+            const problemsHtml = problems.map((p, idx) => `
+                <div class="py-2.5 px-2 border-b border-neutral-200/90 flex flex-col justify-between min-h-[54px]">
+                    <div class="flex items-baseline justify-between gap-2">
+                        <div class="text-xs sm:text-sm font-bold text-ink leading-relaxed">
+                            <span class="inline-block w-6 font-mono text-ink-muted text-xs">(${idx + 1})</span>
+                            <span>${p.q}</span>
+                        </div>
+                        ${showInlineDrillAnswers ? `<span class="text-xs sm:text-sm font-black text-red-600 shrink-0">${p.ans}</span>` : `<span class="w-16 border-b border-dotted border-neutral-400 shrink-0">&nbsp;</span>`}
+                    </div>
+                    ${showInlineDrillAnswers ? `<p class="text-[10.5px] text-neutral-500 pl-6 mt-1">${p.exp}</p>` : ''}
+                </div>
+            `).join('');
+
+            const ansListHtml = problems.map((p, idx) => `
+                <div class="py-2 px-2 border-b border-neutral-200 text-xs flex flex-col gap-0.5">
+                    <div class="flex items-baseline justify-between gap-2">
+                        <span class="font-bold text-ink"><span class="font-mono text-ink-muted mr-1.5">(${idx + 1})</span>${p.q}</span>
+                        <span class="font-black text-red-600 shrink-0">答え：${p.ans}</span>
+                    </div>
+                    <p class="text-[11px] text-neutral-600 pl-6">解説：${p.exp}</p>
+                </div>
+            `).join('');
+
+            wrap.innerHTML = `
+                <!-- 1ページ目：問題プリント（A4比率カード） -->
+                <article class="drill-print-sheet bg-white border border-neutral-300 rounded-2xl shadow-sm p-6 sm:p-10 max-w-4xl mx-auto">
+                    <div class="flex items-start justify-between gap-4 pb-4 border-b-2 border-ink">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 bg-ink text-white text-[10px] font-bold rounded">${meta.gradeLabel}</span>
+                                <span class="text-[10px] font-bold text-ink-muted">無料教材のタマベン 自動生成プリント</span>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-black text-ink">${meta.title}</h3>
+                            ${showTimer ? `<p class="text-[11px] text-ink-muted font-semibold mt-1">目標タイム：${meta.goalMinutes}分 ／ かかった時間（　　分　　秒） ／ 得点（　　 / ${problems.length}問）</p>` : ''}
+                        </div>
+
+                        <div class="flex items-center gap-3 shrink-0">
+                            <div class="hidden sm:flex flex-col items-end justify-end text-xs">
+                                <div class="border-b border-neutral-400 w-40 pb-1 text-left text-ink-muted text-[11px]">なまえ：</div>
+                            </div>
+                            ${showSticker ? `
+                            <div class="w-[56px] h-[56px] border-2 border-dashed border-neutral-300 rounded-lg flex flex-col items-center justify-center text-[8.5px] text-neutral-400 font-bold leading-tight text-center shrink-0">
+                                <span>ごほうび</span>
+                                <span>シール</span>
+                                <span class="text-[7.5px] font-normal">(2cm×2cm)</span>
+                            </div>` : ''}
+                            ${showQr ? `<div id="drill-sheet-qr" class="w-[54px] h-[54px] p-1 border border-neutral-200 rounded bg-white flex items-center justify-center shrink-0"></div>` : ''}
+                        </div>
+                    </div>
+
+                    ${showTip ? `
+                    <div class="mt-4 p-3 bg-neutral-50 border border-neutral-200 rounded-xl text-[11px] text-ink leading-relaxed flex items-start gap-2">
+                        <span class="font-black text-ink shrink-0">💡 ここ注意：</span>
+                        <span>${meta.tip}</span>
+                    </div>` : ''}
+
+                    <div class="mt-5 grid grid-cols-1 ${isSingleCol ? '' : 'sm:grid-cols-2 gap-x-8'} gap-y-1">
+                        ${problemsHtml}
+                    </div>
+
+                    <div class="mt-6 pt-3 border-t border-neutral-200 flex items-center justify-between text-[10px] text-neutral-400">
+                        <span>無料教材のタマベン (${SEO_BASE_URL})</span>
+                        <span>全 ${problems.length} 問</span>
+                    </div>
+                </article>
+
+                ${showAnsPage ? `
+                <!-- 2ページ目：解答・解説シート（印刷時は自動で2ページ目に改ページ） -->
+                <article class="drill-print-sheet drill-page-break bg-white border border-neutral-300 rounded-2xl shadow-sm p-6 sm:p-10 max-w-4xl mx-auto">
+                    <div class="flex items-center justify-between pb-3 border-b-2 border-ink mb-4">
+                        <div>
+                            <span class="px-2 py-0.5 bg-neutral-900 text-white text-[10px] font-bold rounded mr-2">解答・解説シート</span>
+                            <span class="text-sm sm:text-base font-black text-ink">${meta.gradeLabel}｜${meta.title}</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-ink-muted">丸つけ・解き直し用</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1">
+                        ${ansListHtml}
+                    </div>
+                </article>
+                ` : ''}
+            `;
+
+            if (showQr) {
+                renderQrInto(document.getElementById('drill-sheet-qr'), `${SEO_BASE_URL}#generator`, 46);
+            }
+            lucide.createIcons();
+        }
+
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           Three.js インタラクティブ3Dモデル ＆ サイト入場アニメーション
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+        let hero3DState = {
+            initialized: false,
+            active: true,
+            rafId: null,
+            triggerBounce: null
+        };
+
+        function syncHero3DVisibility(hash) {
+            const isHome = !hash || hash === '#home';
+            hero3DState.active = isHome && !document.hidden;
+        }
+
+        function createWorksheetTexture(variant) {
+            const c = document.createElement('canvas');
+            c.width = 512;
+            c.height = 724;
+            const ctx = c.getContext('2d');
+
+            // A4上質紙ベース
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 512, 724);
+
+            // 繊細な外枠
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(18, 18, 476, 688);
+
+            // 上部ヘッダー帯
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(36, 38, 142, 26);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillText('TAMABEN PRINT', 48, 56);
+
+            // ご褒美シール枠 (2cm風アイコン + スター)
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.setLineDash([5, 4]);
+            ctx.lineWidth = 2;
+            ctx.strokeRect(412, 36, 58, 58);
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(441, 65, 19, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText('★', 433, 71);
+
+            if (variant === 'math') {
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '900 24px sans-serif';
+                ctx.fillText('正の数・負の数', 36, 102);
+
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(36, 118);
+                ctx.lineTo(476, 118);
+                ctx.stroke();
+
+                // 数直線ボックス
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(38, 140, 436, 108);
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(38, 140, 436, 108);
+
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(64, 200);
+                ctx.lineTo(448, 200);
+                ctx.stroke();
+
+                for (let i = -3; i <= 3; i++) {
+                    const x = 256 + i * 54;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 191);
+                    ctx.lineTo(x, 209);
+                    ctx.stroke();
+                    ctx.fillStyle = i === 0 ? '#0f172a' : '#64748b';
+                    ctx.font = 'bold 14px monospace';
+                    ctx.fillText(i > 0 ? '+' + i : String(i), x - (i === 0 ? 5 : 10), 230);
+                }
+
+                // ジャンプ矢印
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(229, 196, 81, Math.PI * 1.12, Math.PI * 1.88, false);
+                ctx.stroke();
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath();
+                ctx.arc(310, 200, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 問題行
+                const rows = ['(1)  (-4) + (+7) =  +3', '(2)  (+5) - (-3) =  +8', '(3)  (-3)² + (-2) =  +7', '(4)  (-18) ÷ (-6) =  +3'];
+                rows.forEach((txt, idx) => {
+                    const y = 300 + idx * 92;
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = 'bold 20px monospace';
+                    ctx.fillText(txt, 46, y);
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(42, y + 26);
+                    ctx.lineTo(470, y + 26);
+                    ctx.stroke();
+                });
+
+                // 鮮やかな赤丸「100 / できた！」スタンプ
+                ctx.save();
+                ctx.translate(396, 565);
+                ctx.rotate(-0.14);
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 4.5;
+                ctx.beginPath();
+                ctx.arc(0, 0, 54, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(0, 0, 45, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#ef4444';
+                ctx.font = '900 28px sans-serif';
+                ctx.fillText('100', -27, 6);
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('できた！', -24, 26);
+                ctx.restore();
+            } else if (variant === 'english') {
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '900 22px sans-serif';
+                ctx.fillText('Unit 1  English Grammar', 36, 102);
+                for (let block = 0; block < 5; block++) {
+                    const base = 155 + block * 102;
+                    for (let l = 0; l < 4; l++) {
+                        ctx.strokeStyle = l === 2 ? '#94a3b8' : '#cbd5e1';
+                        ctx.lineWidth = l === 2 ? 2 : 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(42, base + l * 14);
+                        ctx.lineTo(470, base + l * 14);
+                        ctx.stroke();
+                    }
+                }
+            } else {
+                // 方眼＆関数グラフ
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                for (let gx = 40; gx <= 472; gx += 24) {
+                    ctx.beginPath(); ctx.moveTo(gx, 130); ctx.lineTo(gx, 662); ctx.stroke();
+                }
+                for (let gy = 130; gy <= 662; gy += 24) {
+                    ctx.beginPath(); ctx.moveTo(40, gy); ctx.lineTo(472, gy); ctx.stroke();
+                }
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(80, 560);
+                ctx.quadraticCurveTo(256, 180, 432, 560);
+                ctx.stroke();
+            }
+
+            const tex = new THREE.CanvasTexture(c);
+            tex.anisotropy = 4;
+            return tex;
+        }
+
+        function initHero3DScene() {
+            const stage = document.getElementById('hero-3d-stage');
+            if (!stage || hero3DState.initialized) return;
+            if (!window.THREE) {
+                setTimeout(initHero3DScene, 120);
+                return;
+            }
+            hero3DState.initialized = true;
+
+            const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+            } catch (e) {
+                return;
+            }
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(stage.clientWidth || 360, stage.clientHeight || 280);
+            if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+            stage.innerHTML = '';
+            stage.appendChild(renderer.domElement);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(34, (stage.clientWidth || 360) / (stage.clientHeight || 280), 0.1, 50);
+            camera.position.set(0, 0.15, 7.1);
+
+            // スタジオ照明
+            scene.add(new THREE.AmbientLight(0xffffff, 0.88));
+            const keyLight = new THREE.DirectionalLight(0xffffff, 0.65);
+            keyLight.position.set(4.5, 6.5, 6.0);
+            scene.add(keyLight);
+
+            const rimLight = new THREE.DirectionalLight(0xbae6fd, 0.35);
+            rimLight.position.set(-5.0, 2.5, -3.0);
+            scene.add(rimLight);
+
+            const rootGroup = new THREE.Group();
+            scene.add(rootGroup);
+
+            // ソフト接地シャドウ（楕円グラデーション）
+            const shadowCanvas = document.createElement('canvas');
+            shadowCanvas.width = 256; shadowCanvas.height = 256;
+            const sctx = shadowCanvas.getContext('2d');
+            const grad = sctx.createRadialGradient(128, 128, 12, 128, 128, 120);
+            grad.addColorStop(0, 'rgba(15, 23, 42, 0.16)');
+            grad.addColorStop(0.6, 'rgba(15, 23, 42, 0.05)');
+            grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+            sctx.fillStyle = grad;
+            sctx.fillRect(0, 0, 256, 256);
+            const shadowPlane = new THREE.Mesh(
+                new THREE.PlaneGeometry(4.2, 1.5),
+                new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(shadowCanvas), transparent: true, depthWrite: false })
+            );
+            shadowPlane.rotation.x = -Math.PI / 2;
+            shadowPlane.position.set(0, -1.85, 0);
+            scene.add(shadowPlane);
+
+            // 3枚の立体A4プリントシート
+            const edgeMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.7 });
+            const backMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+            const makeSheet = (variant) => {
+                const frontMat = new THREE.MeshStandardMaterial({
+                    map: createWorksheetTexture(variant),
+                    roughness: 0.42,
+                    metalness: 0.02
+                });
+                const geo = new THREE.BoxGeometry(2.05, 2.9, 0.032);
+                return new THREE.Mesh(geo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, backMat]);
+            };
+
+            const sheetBack = makeSheet('graph');
+            const sheetMid = makeSheet('english');
+            const sheetFront = makeSheet('math');
+            rootGroup.add(sheetBack, sheetMid, sheetFront);
+
+            // 立体六角ペンシル（タマベン・インクカラー #0f172a）
+            const pencilGroup = new THREE.Group();
+            const barrel = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.085, 0.085, 1.95, 6),
+                new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.15 })
+            );
+            const ferrule = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.087, 0.087, 0.16, 16),
+                new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.25, metalness: 0.65 })
+            );
+            ferrule.position.y = 1.05;
+            const eraser = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.082, 0.082, 0.16, 16),
+                new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.5 })
+            );
+            eraser.position.y = 1.19;
+            const woodCone = new THREE.Mesh(
+                new THREE.ConeGeometry(0.085, 0.32, 6),
+                new THREE.MeshStandardMaterial({ color: 0xf3d2b3, roughness: 0.65 })
+            );
+            woodCone.rotation.x = Math.PI;
+            woodCone.position.y = -1.13;
+            const leadTip = new THREE.Mesh(
+                new THREE.ConeGeometry(0.032, 0.13, 6),
+                new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 })
+            );
+            leadTip.rotation.x = Math.PI;
+            leadTip.position.y = -1.25;
+            pencilGroup.add(barrel, ferrule, eraser, woodCone, leadTip);
+            rootGroup.add(pencilGroup);
+
+            // タマベン象徴の3D角帽（アカデミックキャップ＋タッセル）
+            const capGroup = new THREE.Group();
+            const capMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.1 });
+            const board = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.05, 0.86), capMat);
+            board.rotation.y = Math.PI / 4;
+            const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.32, 0.24, 20), capMat);
+            crown.position.y = -0.14;
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.3 });
+            const capBtn = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 12), goldMat);
+            capBtn.position.y = 0.04;
+            const tassel = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.035, 0.34, 10), goldMat);
+            tassel.position.set(0.42, -0.13, 0.12);
+            tassel.rotation.z = -0.15;
+            capGroup.add(board, crown, capBtn, tassel);
+            rootGroup.add(capGroup);
+
+            // 3D三角定規（くり抜き穴付きフロストガラス風）
+            const rulerShape = new THREE.Shape();
+            rulerShape.moveTo(0, 0);
+            rulerShape.lineTo(1.05, 0);
+            rulerShape.lineTo(0, 1.05);
+            rulerShape.closePath();
+            const hole = new THREE.Path();
+            hole.moveTo(0.2, 0.2);
+            hole.lineTo(0.62, 0.2);
+            hole.lineTo(0.2, 0.62);
+            hole.closePath();
+            rulerShape.holes.push(hole);
+            const rulerMesh = new THREE.Mesh(
+                new THREE.ExtrudeGeometry(rulerShape, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01, bevelSegments: 2 }),
+                new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.88 })
+            );
+            rootGroup.add(rulerMesh);
+
+            // 幾何学ワイヤフレーム多面体（数学・思考力の象徴）
+            const polyGroup = new THREE.Group();
+            const icoGeo = new THREE.IcosahedronGeometry(0.32, 0);
+            const polyWire = new THREE.LineSegments(
+                new THREE.EdgesGeometry(icoGeo),
+                new THREE.LineBasicMaterial({ color: 0x0f172a })
+            );
+            const polyCore = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(0.18, 0),
+                new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, transparent: true, opacity: 0.82 })
+            );
+            polyGroup.add(polyWire, polyCore);
+            rootGroup.add(polyGroup);
+
+            // 最終ターゲット姿勢（美しい立体レイヤード配置）
+            const targets = {
+                front: { pos: [0.02, 0.02, 0.15], rot: [-0.06, -0.18, 0.03] },
+                mid:   { pos: [-0.42, 0.08, -0.28], rot: [-0.08, -0.24, 0.16] },
+                back:  { pos: [0.46, -0.06, -0.58], rot: [-0.05, -0.12, -0.15] },
+                pencil:{ pos: [0.95, -0.12, 0.72], rot: [0.22, 0.15, 0.56] },
+                cap:   { pos: [-1.18, 1.18, 0.48], rot: [0.22, 0.32, -0.16] },
+                ruler: { pos: [-1.42, -1.25, 0.42], rot: [0.12, 0.28, -0.18] },
+                poly:  { pos: [1.32, 1.08, 0.25] }
+            };
+
+            // サイト入場時のダイナミック3Dスプリング補間関数
+            const easeOutBack = (x) => {
+                const c1 = 1.55;
+                const c3 = c1 + 1;
+                return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+            };
+            const clamp01 = (v) => Math.max(0, Math.min(1, v));
+
+            // マウス・タッチドラッグ回転ステート
+            let pointerX = 0, pointerY = 0;
+            let dragRotY = 0, dragRotX = 0;
+            let velY = 0, velX = 0;
+            let isDragging = false;
+            let prevClientX = 0, prevClientY = 0;
+            let dragMoved = 0;
+            let bouncePulse = 0;
+
+            const heroSec = document.getElementById('hero-section');
+            if (heroSec) {
+                heroSec.addEventListener('pointermove', (e) => {
+                    const r = heroSec.getBoundingClientRect();
+                    pointerX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+                    pointerY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+                }, { passive: true });
+            }
+
+            stage.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                dragMoved = 0;
+                prevClientX = e.clientX;
+                prevClientY = e.clientY;
+                const hint = document.getElementById('hero-3d-hint');
+                if (hint) hint.style.opacity = '0.45';
+            });
+            window.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - prevClientX;
+                const dy = e.clientY - prevClientY;
+                dragMoved += Math.abs(dx) + Math.abs(dy);
+                velY = dx * 0.0085;
+                velX = dy * 0.006;
+                dragRotY += velY;
+                dragRotX = Math.max(-0.55, Math.min(0.55, dragRotX + velX));
+                prevClientX = e.clientX;
+                prevClientY = e.clientY;
+            }, { passive: true });
+            window.addEventListener('pointerup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                if (dragMoved < 8) {
+                    bouncePulse = 1.0;
+                    velY += 0.11;
+                }
+            });
+
+            const onResize = () => {
+                const w = stage.clientWidth || 360;
+                const h = stage.clientHeight || 280;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            };
+            window.addEventListener('resize', onResize);
+
+            const startTime = performance.now();
+
+            function animate(now) {
+                hero3DState.rafId = requestAnimationFrame(animate);
+                if (!hero3DState.active) return;
+
+                const elapsed = (now - startTime) / 1000;
+                const introDur = reducedMotion ? 0.01 : 1.35;
+
+                // 慣性減衰
+                if (!isDragging) {
+                    dragRotY += velY;
+                    dragRotX = Math.max(-0.55, Math.min(0.55, dragRotX + velX));
+                    velY *= 0.93;
+                    velX *= 0.92;
+                }
+                if (bouncePulse > 0.001) bouncePulse *= 0.91;
+
+                // 各パーツの立体フライイン（入場時に奥から扇状に展開）
+                const pBack  = easeOutBack(clamp01((elapsed - 0.02) / introDur));
+                const pMid   = easeOutBack(clamp01((elapsed - 0.12) / introDur));
+                const pFront = easeOutBack(clamp01((elapsed - 0.22) / introDur));
+                const pPen   = easeOutBack(clamp01((elapsed - 0.34) / introDur));
+                const pCap   = easeOutBack(clamp01((elapsed - 0.42) / introDur));
+                const pSub   = easeOutBack(clamp01((elapsed - 0.48) / introDur));
+
+                const floatWave = reducedMotion ? 0 : Math.sin(elapsed * 1.7) * 0.065;
+                const floatWave2 = reducedMotion ? 0 : Math.cos(elapsed * 1.35) * 0.055;
+                const pulseScale = 1 + bouncePulse * 0.08;
+
+                const applyPart = (mesh, tgt, prog, startOffset, extraY = 0) => {
+                    mesh.position.set(
+                        startOffset[0] + (tgt.pos[0] - startOffset[0]) * prog,
+                        startOffset[1] + (tgt.pos[1] - startOffset[1]) * prog + extraY,
+                        startOffset[2] + (tgt.pos[2] - startOffset[2]) * prog
+                    );
+                    if (tgt.rot) {
+                        mesh.rotation.set(
+                            startOffset[3] + (tgt.rot[0] - startOffset[3]) * prog,
+                            startOffset[4] + (tgt.rot[1] - startOffset[4]) * prog,
+                            startOffset[5] + (tgt.rot[2] - startOffset[5]) * prog
+                        );
+                    }
+                    const sc = Math.max(0.001, (0.35 + 0.65 * clamp01(prog * 1.1))) * pulseScale;
+                    mesh.scale.setScalar(sc);
+                };
+
+                applyPart(sheetBack,  targets.back,  pBack,  [0, -1.7, -1.6, -0.95, -0.9, 0], floatWave * 0.6);
+                applyPart(sheetMid,   targets.mid,   pMid,   [0, -1.7, -1.4, -0.95, -0.8, 0], floatWave * 0.8);
+                applyPart(sheetFront, targets.front, pFront, [0, -1.6, -1.2, -0.9,  -0.7, 0], floatWave);
+
+                applyPart(pencilGroup, targets.pencil, pPen, [2.1, 0.9, 1.4, 0.8, -0.9, 1.35], floatWave2 * 1.15);
+                if (!reducedMotion) {
+                    pencilGroup.rotation.z += Math.sin(elapsed * 2.2) * 0.035;
+                }
+
+                applyPart(capGroup, targets.cap, pCap, [-1.8, 2.3, -0.6, -0.6, -2.6, 0.5], -floatWave2);
+                applyPart(rulerMesh, targets.ruler, pSub, [-2.2, -2.0, -0.5, 0.8, -1.2, -0.8], floatWave2 * 0.7);
+
+                polyGroup.position.set(
+                    2.0 + (targets.poly.pos[0] - 2.0) * pSub,
+                    1.8 + (targets.poly.pos[1] - 1.8) * pSub + floatWave * 1.1,
+                    -0.6 + (targets.poly.pos[2] + 0.6) * pSub
+                );
+                polyGroup.scale.setScalar(Math.max(0.001, clamp01((elapsed - 0.4) / 0.8)) * pulseScale);
+                if (!reducedMotion) {
+                    polyGroup.rotation.x = elapsed * 0.55;
+                    polyGroup.rotation.y = elapsed * 0.75;
+                }
+
+                // 全体のマウス追従チルト＋ドラッグ回転
+                const targetGroupY = pointerX * 0.22 + dragRotY;
+                const targetGroupX = pointerY * 0.14 + dragRotX;
+                rootGroup.rotation.y += (targetGroupY - rootGroup.rotation.y) * 0.09;
+                rootGroup.rotation.x += (targetGroupX - rootGroup.rotation.x) * 0.09;
+
+                shadowPlane.scale.setScalar(1 - floatWave * 0.45);
+                renderer.render(scene, camera);
+            }
+
+            hero3DState.rafId = requestAnimationFrame(animate);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            syncHero3DVisibility(window.location.hash || '#home');
+        });
 
         document.addEventListener('click', (e) => {
             const a = e.target.closest && e.target.closest('a[data-spa-id]');
@@ -3682,13 +5357,16 @@
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
             lucide.createIcons();
+            initHero3DScene();
             initCookieConsent();
             loadStatsFromStorage();
             loadSettingsFromStorage();
             await Promise.all([
+                loadAiCatalog(),
                 loadMaterials(),
                 loadAnnouncements()
             ]);
+            ensureDrillInitialized();
             renderVisibleAdSlots();
         });
     </script>
