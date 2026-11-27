@@ -559,6 +559,7 @@
 
             <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-light">
                 <button id="nav-btn-home" onclick="navigate('#home')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材トップ</button>
+                <button id="nav-btn-nyushi" onclick="navigate('#nyushi')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-rose-50 transition-all active:scale-95 flex items-center gap-1.5 text-rose-700 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>高校入試</button>
                 <button id="nav-btn-subjects" onclick="navigate('#subjects')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">全教科一覧</button>
                 <button id="nav-btn-search" onclick="navigate('#search')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">教材を検索</button>
                 <button id="nav-btn-ai" onclick="navigate('#ai')" class="nav-item-btn px-3.5 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all active:scale-95">タマベンAI</button>
@@ -581,10 +582,11 @@
         <div class="md:hidden border-t border-neutral-100 bg-white/95 px-2 py-1.5 shadow-2xs">
             <nav class="flex items-center justify-between w-full gap-0.5 sm:gap-1">
                 <button id="mnav-btn-home" onclick="navigate('#home')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">トップ</button>
+                <button id="mnav-btn-nyushi" onclick="navigate('#nyushi')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-all active:scale-95 text-[11px] font-black whitespace-nowrap text-center shrink-0 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>入試</button>
                 <button id="mnav-btn-subjects" onclick="navigate('#subjects')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">全教科</button>
                 <button id="mnav-btn-search" onclick="navigate('#search')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">検索</button>
-                <button id="mnav-btn-ai" onclick="navigate('#ai')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">タマベンAI</button>
-                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap tracking-tight text-center shrink-0">保護者の方へ</button>
+                <button id="mnav-btn-ai" onclick="navigate('#ai')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[11px] font-bold whitespace-nowrap text-center shrink-0">AI</button>
+                <button id="mnav-btn-users" onclick="navigate('#users')" class="mnav-item-btn py-1.5 px-2 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 transition-all active:scale-95 text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap tracking-tight text-center shrink-0">保護者</button>
             </nav>
         </div>
     </header>
@@ -614,6 +616,22 @@
                                 <span class="text-xs sm:text-sm text-ink-subtle font-medium text-left">教科、単元名、学年で教材を探す...</span>
                             </div>
                             <span class="px-3 py-1.5 bg-neutral-100 group-hover:bg-ink group-hover:text-white rounded-lg text-xs font-bold text-ink-light transition-all">検索する</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 max-w-xl mx-auto px-2">
+                        <div onclick="navigate('#nyushi')" class="cursor-pointer flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-rose-50 via-amber-50 to-orange-50 border border-rose-200/90 hover:border-rose-400 hover:shadow-md transition-all group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black text-xs">入試</span>
+                                <div class="text-left">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs sm:text-sm font-black text-rose-950 group-hover:text-rose-700 transition-colors">高校入試対策 特設ページ</span>
+                                        <span class="text-[9px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded-full">新設</span>
+                                    </div>
+                                    <p class="text-[11px] text-rose-900/80 font-medium">英語長文・小問集合・関数融合など入試頻出プリント＆AI特訓</p>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-black text-rose-700 group-hover:translate-x-1 transition-transform flex items-center gap-0.5">&rarr;</span>
                         </div>
                     </div>
 
@@ -970,7 +988,7 @@
 
         <!-- 04 教材詳細ページ -->
         <div id="view-detail" class="view-section hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <button onclick="navigate('#home')" class="inline-flex items-center gap-2 text-ink-muted hover:text-ink font-bold text-xs mb-6 transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200">
+            <button onclick="navigateBackFromDetail()" class="inline-flex items-center gap-2 text-ink-muted hover:text-ink font-bold text-xs mb-6 transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200 shadow-2xs">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 一覧に戻る
             </button>
             
@@ -978,6 +996,114 @@
 
             <!-- 広告枠③ -->
             <div id="ad-slot-detail-bottom" class="tamaben-ad-wrap hidden"></div>
+        </div>
+
+        <!-- 04B 高校入試対策 特別ページ -->
+        <div id="view-nyushi" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+            <!-- パンくず・戻る -->
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="navigate('#home')" class="inline-flex items-center gap-2 text-ink-muted hover:text-ink font-bold text-xs transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 教材トップへ戻る
+                </button>
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                    高校入試 特設特訓コーナー
+                </span>
+            </div>
+
+            <!-- ヒーローヘッダー -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-900 via-neutral-900 to-slate-900 text-white p-6 sm:p-10 mb-8 shadow-md">
+                <div class="relative z-10 max-w-3xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300 text-xs font-bold mb-3">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                        <span>高校入試 突破演習・頻出単元特訓</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight mb-3">
+                        高校入試対策 特設ページ
+                    </h1>
+                    <p class="text-xs sm:text-sm text-neutral-300 leading-relaxed mb-6 font-medium">
+                        公立・私立高校入試で合否を分ける「英語長文読解」「数学の小問集合＆関数融合」「国語論説文・要約」「理科計算」「社会近現代」を完全網羅。会員登録不要・無料PDFダウンロード＆タマベンAI連携ですぐに特訓できます。
+                    </p>
+                    <div class="flex items-center gap-2 flex-wrap text-[11px] font-bold">
+                        <span class="px-3 py-1 rounded-lg bg-white/10 backdrop-blur-xs border border-white/10 text-white flex items-center gap-1.5">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> 全問・解答解説つき
+                        </span>
+                        <span class="px-3 py-1 rounded-lg bg-white/10 backdrop-blur-xs border border-white/10 text-white flex items-center gap-1.5">
+                            <i data-lucide="printer" class="w-3.5 h-3.5 text-sky-400"></i> A4印刷最適化PDF
+                        </span>
+                        <span class="px-3 py-1 rounded-lg bg-white/10 backdrop-blur-xs border border-white/10 text-white flex items-center gap-1.5">
+                            <i data-lucide="bot" class="w-3.5 h-3.5 text-amber-400"></i> タマベンAI質問対応
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 入試突破の3大攻略ポイント -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                    <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-black text-sm mb-3">1</div>
+                    <h3 class="font-bold text-sm text-ink mb-1">配点の高い小問集合を満点に</h3>
+                    <p class="text-xs text-ink-muted leading-relaxed">
+                        入試配点の40%〜50%を占める計算・基本一行問題を確実に正解することが合格の絶対条件です。
+                    </p>
+                </div>
+                <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                    <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-black text-sm mb-3">2</div>
+                    <h3 class="font-bold text-sm text-ink mb-1">英語長文は設問先読み＆速読</h3>
+                    <p class="text-xs text-ink-muted leading-relaxed">
+                        本文を読む前に設問と選択肢をチェック。段落ごとのキーワードをマークして時間内に解き切る力を養います。
+                    </p>
+                </div>
+                <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-sm mb-3">3</div>
+                    <h3 class="font-bold text-sm text-ink mb-1">タマベンAIで途中式・記述添削</h3>
+                    <p class="text-xs text-ink-muted leading-relaxed">
+                        つまずいた問題や自由英作文、国語の要約記述はタマベンAIに「添削して」「別解を教えて」と質問できます。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 教科絞り込みタブ -->
+            <div class="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 mb-6 shadow-2xs">
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="filter" class="w-4 h-4 text-ink-muted"></i>
+                        <span class="text-xs font-bold text-ink">教科で絞り込み:</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap" id="nyushi-subject-filters">
+                        <button type="button" onclick="filterNyushiMaterials('all')" class="nyushi-filter-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-900 text-white transition-all shadow-xs" data-subject="all">すべて</button>
+                        <button type="button" onclick="filterNyushiMaterials('英語')" class="nyushi-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink-muted hover:bg-neutral-200 transition-all" data-subject="英語">英語</button>
+                        <button type="button" onclick="filterNyushiMaterials('数学')" class="nyushi-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink-muted hover:bg-neutral-200 transition-all" data-subject="数学">数学</button>
+                        <button type="button" onclick="filterNyushiMaterials('国語')" class="nyushi-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink-muted hover:bg-neutral-200 transition-all" data-subject="国語">国語</button>
+                        <button type="button" onclick="filterNyushiMaterials('理科')" class="nyushi-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink-muted hover:bg-neutral-200 transition-all" data-subject="理科">理科</button>
+                        <button type="button" onclick="filterNyushiMaterials('社会')" class="nyushi-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink-muted hover:bg-neutral-200 transition-all" data-subject="社会">社会</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教材グリッド -->
+            <div id="nyushi-materials-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-10">
+                <!-- JSで動的にレンダリング -->
+            </div>
+
+            <!-- タマベンAI 高校入試特訓サポートバナー -->
+            <div class="bg-gradient-to-r from-neutral-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+                <div class="space-y-2 text-center md:text-left">
+                    <div class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>タマベンAI 入試特訓アシスタント</span>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-black">高校入試の疑問やつまずきをAIに直接質問</h3>
+                    <p class="text-xs text-neutral-300 max-w-xl">
+                        「英語長文の解き方の手順は？」「数学の関数の融合問題のコツは？」など、入試直前の疑問に24時間即座に答えます。
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap justify-center shrink-0">
+                    <button type="button" onclick="openNyushiAiPrompt('高校入試の英語長文を速く正確に解くコツと時間配分を教えてください。')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold transition-all text-white active:scale-95">英語長文のコツ</button>
+                    <button type="button" onclick="openNyushiAiPrompt('高校入試数学の小問集合でミスを防ぎ確実に満点を取るポイントは？')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold transition-all text-white active:scale-95">数学小問のミス防止</button>
+                    <button type="button" onclick="navigate('#ai')" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-neutral-950 text-xs font-black transition-all shadow-sm active:scale-95">タマベンAIを開く &rarr;</button>
+                </div>
+            </div>
         </div>
 
         <!-- 05 全教科一覧ページ -->
@@ -1979,7 +2105,7 @@
                                 </button>
                             </div>
                         `;
-                        card.onclick = () => navigate(`#detail-${item.id}`);
+                        card.onclick = () => navigateToMaterial(item);
                         recGrid.appendChild(card);
                     });
                 }
@@ -2073,6 +2199,7 @@
                     '/data.json',
                     'data.json',
                     './data.json',
+                    '../data.json',
                     'https://tamaben.github.io/data.json'
                 ])].filter(u => u && u.trim() !== '');
 
@@ -2137,6 +2264,12 @@
             MATERIAL_DATA.forEach((item, index) => {
                 if (!item.id) item.id = `item-${index + 1}`; 
                 if (!item.unit) item.unit = item.title;
+                if (!item.slug) {
+                    item.slug = item.id ? item.id.replace(/^(chu\d-|j\d-|nyushi-)/, '') : `p${index + 1}`;
+                }
+                if (!item.gradeSlug) {
+                    item.gradeSlug = (item.tags && item.tags.includes('高校入試')) ? 'koukou-nyushi' : (item.grade && item.grade.includes('中1') ? 'chu1' : (item.grade && item.grade.includes('中2') ? 'chu2' : (item.grade && item.grade.includes('中3') ? 'chu3' : 'chu1')));
+                }
                 if (!item.pdfBasicAns && item.pdfAns) item.pdfBasicAns = item.pdfAns;
                 if (!item.pdfAdvAns) item.pdfAdvAns = "#";
             });
@@ -2598,6 +2731,17 @@
             if (heroList) {
                 heroList.innerHTML = '';
                 if (heroLabel) heroLabel.textContent = targetGrade ? `${targetGrade}のおすすめ単元:` : '人気の単元:';
+                
+                const nyushiBtn = document.createElement('button');
+                nyushiBtn.className = "text-rose-700 hover:text-rose-900 font-bold underline decoration-rose-300 hover:decoration-rose-700 transition-colors inline-flex items-center gap-1";
+                nyushiBtn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>高校入試対策`;
+                nyushiBtn.onclick = () => navigate('#nyushi');
+                heroList.appendChild(nyushiBtn);
+                const firstDot = document.createElement('span');
+                firstDot.className = "text-neutral-300";
+                firstDot.textContent = "•";
+                heroList.appendChild(firstDot);
+
                 selectedUnits.forEach((unit, idx) => {
                     const btn = document.createElement('button');
                     btn.className = "text-ink-light hover:text-ink font-medium underline decoration-neutral-300 hover:decoration-ink transition-colors";
@@ -2616,6 +2760,12 @@
 
             if (searchContainer) {
                 searchContainer.innerHTML = '';
+                const nyushiSearchBtn = document.createElement('button');
+                nyushiSearchBtn.className = "px-3 py-1.5 bg-rose-50 border border-rose-200 hover:border-rose-400 text-xs font-bold rounded-lg text-rose-800 transition-colors flex items-center gap-1.5 active:scale-95";
+                nyushiSearchBtn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>高校入試対策`;
+                nyushiSearchBtn.onclick = () => navigate('#nyushi');
+                searchContainer.appendChild(nyushiSearchBtn);
+
                 selectedUnits.forEach(unit => {
                     const btn = document.createElement('button');
                     btn.className = "px-3 py-1.5 bg-canvas border border-neutral-200 hover:border-ink text-xs font-bold rounded-lg text-ink transition-colors flex items-center gap-1.5 active:scale-95";
@@ -2811,7 +2961,7 @@
                         ${hasAnyMaterial ? `
                             <div class="hidden md:flex absolute inset-0 bg-neutral-900/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2 p-4">
                                 ${isRestricted ? `
-                                    <button onclick="event.stopPropagation(); navigate('#detail-${item.id}');" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
+                                    <button onclick="event.stopPropagation(); navigateToMaterial(item);" class="px-3 py-1.5 bg-white text-ink text-xs font-bold rounded shadow hover:bg-neutral-100 flex items-center gap-1.5 active:scale-95">
                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i> プレビューを見る
                                     </button>
                                 ` : `
@@ -2849,7 +2999,7 @@
                 `;
 
                 if (hasAnyMaterial) {
-                    card.onclick = () => navigate(`#detail-${item.id}`);
+                    card.onclick = () => navigateToMaterial(item);
                 }
                 container.appendChild(card);
 
@@ -3572,7 +3722,7 @@
                     `;
 
                     if (hasAnyMaterial) {
-                        card.onclick = () => navigate(`#detail-${item.id}`);
+                        card.onclick = () => navigateToMaterial(item);
                     }
                     resultsGrid.appendChild(card);
                     if (item.pdfBasic && item.pdfBasic !== "#") renderPDFThumbnail(item.pdfBasic, canvasId);
@@ -3582,25 +3732,250 @@
             lucide.createIcons();
         }
 
-        function navigate(hash) { window.location.hash = hash; }
+        function getMaterialRoute(item) {
+            if (!item) return { gradeSlug: 'chu1', slug: 'su1', path: '/chu1/', hash: '#su1', full: '/chu1/#su1' };
+            const isNyushi = (item.tags && item.tags.includes('高校入試')) || item.gradeSlug === 'koukou-nyushi';
+            let gradeSlug = item.gradeSlug;
+            if (!gradeSlug) {
+                if (isNyushi) gradeSlug = 'koukou-nyushi';
+                else if (item.grade && item.grade.includes('中1')) gradeSlug = 'chu1';
+                else if (item.grade && item.grade.includes('中2')) gradeSlug = 'chu2';
+                else if (item.grade && item.grade.includes('中3')) gradeSlug = 'chu3';
+                else gradeSlug = 'chu1';
+            }
+            let slug = item.slug;
+            if (!slug) {
+                if (item.id) {
+                    slug = item.id.replace(/^(chu\d-|j\d-|nyushi-)/, '');
+                } else {
+                    slug = 'su1';
+                }
+            }
+            return {
+                gradeSlug,
+                slug,
+                path: `/${gradeSlug}/`,
+                hash: `#${slug}`,
+                full: `/${gradeSlug}/#${slug}`
+            };
+        }
 
-        function updateNavActiveState(hash) {
-            document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black'));
+        function findMaterialByRoute(pathname = window.location.pathname, hash = window.location.hash) {
+            if (!Array.isArray(MATERIAL_DATA) || MATERIAL_DATA.length === 0) return null;
+
+            // 1. Check legacy #detail-<id>
+            if (hash && hash.startsWith('#detail-')) {
+                const id = decodeURIComponent(hash.replace('#detail-', ''));
+                const found = MATERIAL_DATA.find(m => String(m.id) === String(id));
+                if (found) return found;
+            }
+
+            // 2. Clean hash (e.g. #su1 -> su1)
+            const cleanHash = (hash || '').replace(/^#/, '').trim();
+            const systemViews = ['home', 'search', 'results', 'subjects', 'ai', 'nyushi', 'koukou-nyushi', 'users', 'parents', 'mypage', 'register', 'parents-report'];
+            if (!cleanHash || systemViews.includes(cleanHash)) {
+                return null;
+            }
+
+            // 3. Match by gradeSlug from pathname + slug
+            const pathGrade = pathname.includes('chu1') ? 'chu1' :
+                              pathname.includes('chu2') ? 'chu2' :
+                              pathname.includes('chu3') ? 'chu3' :
+                              pathname.includes('koukou-nyushi') ? 'koukou-nyushi' : null;
+
+            if (pathGrade) {
+                const match = MATERIAL_DATA.find(m => {
+                    const isGrade = m.gradeSlug === pathGrade || (pathGrade === 'koukou-nyushi' && m.tags && m.tags.includes('高校入試'));
+                    return isGrade && (m.slug === cleanHash || m.id === cleanHash);
+                });
+                if (match) return match;
+            }
+
+            // 4. Match by slug or id directly across all materials
+            const matchSlug = MATERIAL_DATA.find(m => m.slug === cleanHash || m.id === cleanHash);
+            if (matchSlug) return matchSlug;
+
+            return null;
+        }
+
+        function navigateToMaterial(item) {
+            if (!item) return;
+            const route = getMaterialRoute(item);
+            try {
+                history.pushState({ materialId: item.id }, '', route.full);
+            } catch(e) {
+                window.location.hash = route.slug;
+            }
+            handleHashChange(false, true);
+        }
+
+        function navigate(target) {
+            if (target === '#nyushi' || target === '#koukou-nyushi' || target === '/koukou-nyushi/') {
+                try {
+                    history.pushState(null, '', '/koukou-nyushi/');
+                } catch(e) {
+                    window.location.hash = '#nyushi';
+                }
+                handleHashChange(false, true);
+                return;
+            }
+            if (target === '#home') {
+                try {
+                    history.pushState(null, '', '/#home');
+                } catch(e) {
+                    window.location.hash = '#home';
+                }
+                handleHashChange(false, true);
+                return;
+            }
+            if (target.startsWith('#')) {
+                window.location.hash = target;
+            } else if (target.startsWith('/')) {
+                try {
+                    history.pushState(null, '', target);
+                } catch(e) {
+                    window.location.href = target;
+                    return;
+                }
+                handleHashChange(false, true);
+            }
+        }
+
+        function navigateBackFromDetail() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                const path = window.location.pathname || '';
+                if (path.includes('koukou-nyushi')) {
+                    navigate('#nyushi');
+                } else {
+                    navigate('#home');
+                }
+            }
+        }
+
+        let currentNyushiSubjectFilter = 'all';
+
+        function filterNyushiMaterials(subject) {
+            currentNyushiSubjectFilter = subject;
+            document.querySelectorAll('.nyushi-filter-btn').forEach(btn => {
+                const isMatch = btn.getAttribute('data-subject') === subject;
+                btn.classList.toggle('active', isMatch);
+                btn.classList.toggle('bg-neutral-900', isMatch);
+                btn.classList.toggle('text-white', isMatch);
+                btn.classList.toggle('bg-neutral-100', !isMatch);
+                btn.classList.toggle('text-ink-muted', !isMatch);
+            });
+            renderNyushiPage(subject);
+        }
+
+        function renderNyushiPage(subjectFilter = currentNyushiSubjectFilter) {
+            const grid = document.getElementById('nyushi-materials-grid');
+            if (!grid) return;
+
+            const list = Array.isArray(MATERIAL_DATA) ? MATERIAL_DATA : [];
+            const nyushiItems = list.filter(item => {
+                const hasTag = (item.tags && item.tags.includes('高校入試')) || item.gradeSlug === 'koukou-nyushi';
+                const matchSubject = (!subjectFilter || subjectFilter === 'all') ? true : item.subject === subjectFilter;
+                return hasTag && matchSubject;
+            });
+
+            if (nyushiItems.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center text-ink-muted font-bold text-xs flex flex-col items-center">
+                        <i data-lucide="inbox" class="w-8 h-8 mb-2 stroke-1"></i>
+                        該当する教科の高校入試教材は現在準備中です。
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            grid.innerHTML = '';
+            nyushiItems.forEach((item, index) => {
+                const hasAny = hasAnyPrintable(item);
+                const route = getMaterialRoute(item);
+                const card = document.createElement('div');
+                card.className = 'paper-card card-appear flex flex-col justify-between bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 hover:border-rose-300 hover:shadow-md transition-all group cursor-pointer';
+                card.style.animationDelay = `${Math.min(index * 0.04, 0.4)}s`;
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-black tracking-tight">高校入試 • ${item.subject}</span>
+                            <span class="text-[10px] font-mono font-bold text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">#${item.slug}</span>
+                        </div>
+                        <h3 class="text-sm font-black text-ink group-hover:text-rose-700 transition-colors leading-snug line-clamp-2 mb-1.5">${item.title}</h3>
+                        <p class="text-[11px] text-ink-muted font-medium mb-3 line-clamp-2">${item.unit || item.title}</p>
+                        
+                        <div class="flex items-center gap-1.5 text-[10px] text-rose-800 font-bold bg-rose-50/70 border border-rose-100 rounded-lg px-2.5 py-1.5 mb-3">
+                            <i data-lucide="target" class="w-3.5 h-3.5 text-rose-600"></i>
+                            <span>入試頻出度: ★★★ / 解答解説付き</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-neutral-100 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-bold text-ink-subtle flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full ${hasAny ? 'bg-emerald-500' : 'bg-neutral-300'}"></span>
+                            ${hasAny ? 'A4印刷対応' : '準備中'}
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="event.stopPropagation(); openNyushiAiPrompt('「${item.title}」について、高校入試での解き方のコツや注意点を教えてください。');" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold border border-amber-200 flex items-center gap-1 transition-colors active:scale-95" title="タマベンAIに質問">
+                                <i data-lucide="bot" class="w-3 h-3 text-amber-600"></i> AI特訓
+                            </button>
+                            <span class="px-2.5 py-1 rounded-lg bg-rose-600 group-hover:bg-rose-700 text-white text-[10px] font-bold shadow-xs transition-colors">
+                                詳細 &rarr;
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                card.onclick = () => navigateToMaterial(item);
+                grid.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        function openNyushiAiPrompt(promptText) {
+            navigate('#ai');
+            setTimeout(() => {
+                const input = document.getElementById('ai-chat-input');
+                if (input) {
+                    input.value = promptText;
+                    input.focus();
+                }
+                if (typeof sendAiMessage === 'function') {
+                    sendAiMessage();
+                }
+            }, 150);
+        }
+
+        function updateNavActiveState(hash, pathname = window.location.pathname) {
+            document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black', 'bg-rose-100/70', 'text-rose-800'));
             let activeId = 'nav-btn-home';
-            if (hash === '#subjects') activeId = 'nav-btn-subjects';
+            if (hash === '#nyushi' || hash === '#koukou-nyushi' || (pathname && pathname.includes('koukou-nyushi'))) activeId = 'nav-btn-nyushi';
+            else if (hash === '#subjects') activeId = 'nav-btn-subjects';
             else if (hash === '#search' || hash === '#results') activeId = 'nav-btn-search';
             else if (hash === '#ai') activeId = 'nav-btn-ai';
             else if (hash === '#users' || hash === '#parents') activeId = 'nav-btn-users';
             
             const activeNav = document.getElementById(activeId);
-            if (activeNav) activeNav.classList.add('bg-neutral-100', 'text-ink', 'font-black');
+            if (activeNav) {
+                if (activeId === 'nav-btn-nyushi') {
+                    activeNav.classList.add('bg-rose-100/70', 'text-rose-800', 'font-black');
+                } else {
+                    activeNav.classList.add('bg-neutral-100', 'text-ink', 'font-black');
+                }
+            }
 
             document.querySelectorAll('.mnav-item-btn').forEach(b => {
-                b.classList.remove('bg-neutral-900', 'text-white', 'font-bold');
-                b.classList.add('text-ink-muted');
+                b.classList.remove('bg-neutral-900', 'text-white', 'font-bold', 'bg-rose-600');
+                if (b.id !== 'mnav-btn-nyushi') b.classList.add('text-ink-muted');
             });
             let mActiveId = 'mnav-btn-home';
-            if (hash === '#subjects') mActiveId = 'mnav-btn-subjects';
+            if (hash === '#nyushi' || hash === '#koukou-nyushi' || (pathname && pathname.includes('koukou-nyushi'))) mActiveId = 'mnav-btn-nyushi';
+            else if (hash === '#subjects') mActiveId = 'mnav-btn-subjects';
             else if (hash === '#search' || hash === '#results') mActiveId = 'mnav-btn-search';
             else if (hash === '#ai') mActiveId = 'mnav-btn-ai';
             else if (hash === '#users' || hash === '#parents') mActiveId = 'mnav-btn-users';
@@ -3608,7 +3983,11 @@
             const activeMNav = document.getElementById(mActiveId);
             if (activeMNav) {
                 activeMNav.classList.remove('text-ink-muted');
-                activeMNav.classList.add('bg-neutral-900', 'text-white', 'font-bold');
+                if (mActiveId === 'mnav-btn-nyushi') {
+                    activeMNav.classList.add('bg-rose-600', 'text-white', 'font-bold');
+                } else {
+                    activeMNav.classList.add('bg-neutral-900', 'text-white', 'font-bold');
+                }
             }
         }
 
@@ -3616,29 +3995,31 @@
             if (!isLoaded) return;
             if (shouldReloadData) loadMaterials(true);
 
-            const hash = window.location.hash || '#home';
-            const isHashChanged = currentActiveHash !== hash;
-            currentActiveHash = hash;
+            const pathname = window.location.pathname || '/';
+            const hash = window.location.hash || '';
+            const routeKey = pathname + hash;
+            const isRouteChanged = currentActiveHash !== routeKey;
+            currentActiveHash = routeKey;
 
-            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-register', 'view-mypage', 'view-subjects', 'view-ai', 'view-users-info', 'view-parents-report'];
+            const views = ['view-home', 'view-search', 'view-search-results', 'view-detail', 'view-nyushi', 'view-register', 'view-mypage', 'view-subjects', 'view-ai', 'view-users-info', 'view-parents-report'];
 
             const updateDOM = () => {
                 views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
 
-                if (hash.startsWith('#detail-')) {
-                    const id = decodeURIComponent(hash.replace('#detail-', ''));
-                    const item = MATERIAL_DATA.find(m => String(m.id) === String(id)); 
-                    if (item) {
-                        const detailEl = document.getElementById('view-detail');
-                        if (detailEl) detailEl.classList.remove('hidden');
-                        const hasAny = hasAnyPrintable(item);
-                        openDetail(item, hasAny);
-                    } else {
-                        navigate('#home');
-                    }
+                const matchedMaterial = findMaterialByRoute(pathname, hash);
+
+                if (matchedMaterial) {
+                    const detailEl = document.getElementById('view-detail');
+                    if (detailEl) detailEl.classList.remove('hidden');
+                    const hasAny = hasAnyPrintable(matchedMaterial);
+                    openDetail(matchedMaterial, hasAny);
+                } else if (hash === '#nyushi' || hash === '#koukou-nyushi' || pathname.includes('koukou-nyushi')) {
+                    const nyushiEl = document.getElementById('view-nyushi');
+                    if (nyushiEl) nyushiEl.classList.remove('hidden');
+                    renderNyushiPage();
                 } else {
                     let targetView = 'view-home';
-                    if (hash === '#home' || hash === '') {
+                    if (hash === '#home' || hash === '' || pathname === '/') {
                         targetView = 'view-home';
                         renderMaterials();
                     } else if (hash === '#search') {
@@ -3655,16 +4036,28 @@
                     } else if (hash === '#users' || hash === '#parents') {
                         targetView = 'view-users-info';
                         updateParentsDashboard();
+                    } else if (pathname.includes('chu1') || hash === '#chu1') {
+                        targetView = 'view-home';
+                        currentTab = 'junior';
+                        renderMaterials();
+                    } else if (pathname.includes('chu2') || hash === '#chu2') {
+                        targetView = 'view-home';
+                        currentTab = 'junior';
+                        renderMaterials();
+                    } else if (pathname.includes('chu3') || hash === '#chu3') {
+                        targetView = 'view-home';
+                        currentTab = 'junior';
+                        renderMaterials();
                     }
                     const targetEl = document.getElementById(targetView);
                     if (targetEl) targetEl.classList.remove('hidden');
                 }
-                updateNavActiveState(hash);
-                updateSeoForRoute(hash);
+                updateNavActiveState(hash, pathname);
+                updateSeoForRoute(hash, matchedMaterial);
                 if (typeof syncAiFabVisibility === 'function') syncAiFabVisibility(hash);
                 requestAnimationFrame(() => renderVisibleAdSlots());
 
-                if (isHashChanged && shouldScroll) {
+                if (isRouteChanged && shouldScroll) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
@@ -3929,11 +4322,15 @@
             '#search': 'プリントを探す（学年・教科・単元・難易度から爆速検索）',
             '#results': '検索結果一覧',
             '#subjects': 'すべての教科・科目',
+            '#nyushi': '高校入試対策 特設ページ（長文読解・小問集合・頻出問題）',
             '#ai': 'タマベンAI（学習サポート・問題作成）',
             '#mypage': 'マイページ',
             '#register': 'マイページ',
             '#users': '学習者・保護者の方へ',
-            '#parents': '学習者・保護者の方へ'
+            '#parents': '学習者・保護者の方へ',
+            '#chu1': '中1（中学1年生）無料プリント一覧',
+            '#chu2': '中2（中学2年生）無料プリント一覧',
+            '#chu3': '中3（中学3年生）無料プリント一覧'
         };
 
         let AI_CATALOG_CONFIG = null;
@@ -4100,32 +4497,41 @@
             if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
         }
 
-        function updateSeoForRoute(hash) {
-            if (hash.startsWith('#detail-')) {
-                const id = decodeURIComponent(hash.replace('#detail-', ''));
-                const item = MATERIAL_DATA.find(m => String(m.id) === String(id));
-                if (item) {
-                    if (new URLSearchParams(window.location.search).get('id') !== String(item.id)) {
-                        history.replaceState(null, '', window.location.pathname + '?id=' + encodeURIComponent(item.id) + hash);
-                    }
-                    const aiEntry = AI_CATALOG_MAP[String(item.id)];
-                    const label = `${item.grade} ${item.subject}「${item.title}」`;
-                    const richDesc = (aiEntry && aiEntry.summary)
-                        ? aiEntry.summary
-                        : `${label}の無料学習プリントです。会員登録不要でPDFをダウンロード・印刷できます。答え・解説付きで家庭学習や授業の復習に。`;
-                    setSeoMeta(
-                        `${item.title}｜${item.grade} ${item.subject}の無料プリント（PDF・解答付き）- タマベン`,
-                        richDesc,
-                        `${SEO_BASE_URL}?id=${encodeURIComponent(item.id)}`
-                    );
-                    updateDynamicResourceJsonLd(item);
-                    return;
-                }
+        function updateSeoForRoute(hash, matchedMaterial) {
+            const pathname = window.location.pathname || '/';
+            const item = matchedMaterial || (typeof findMaterialByRoute === 'function' ? findMaterialByRoute(pathname, hash) : null);
+
+            if (item) {
+                const route = getMaterialRoute(item);
+                const canonicalUrl = `${SEO_BASE_URL.replace(/\/$/, '')}${route.full}`;
+                const aiEntry = (typeof AI_CATALOG_MAP !== 'undefined') ? AI_CATALOG_MAP[String(item.id)] : null;
+                const label = `${item.grade} ${item.subject}「${item.title}」`;
+                const richDesc = (aiEntry && aiEntry.summary)
+                    ? aiEntry.summary
+                    : `${label}の無料学習プリントです。会員登録不要でPDFをダウンロード・印刷できます。答え・解説付きで家庭学習や高校入試対策に。`;
+                setSeoMeta(
+                    `${item.title}｜${item.grade} ${item.subject}の無料プリント（PDF・解答付き）- タマベン`,
+                    richDesc,
+                    canonicalUrl
+                );
+                updateDynamicResourceJsonLd(item);
+                return;
             }
+
             updateDynamicResourceJsonLd(null);
             if (window.location.search.includes('id=')) {
                 history.replaceState(null, '', window.location.pathname + hash);
             }
+
+            if (hash === '#nyushi' || hash === '#koukou-nyushi' || pathname.includes('koukou-nyushi')) {
+                setSeoMeta(
+                    '高校入試対策 特設ページ（長文読解・小問集合・頻出問題）- タマベン',
+                    '公立・私立高校の入試頻出パターンを完全攻略。英語長文読解、数学小問・融合問題、作文・記述まで登録不要・無料PDFダウンロード＆タマベンAI連携。',
+                    `${SEO_BASE_URL.replace(/\/$/, '')}/koukou-nyushi/`
+                );
+                return;
+            }
+
             const viewTitle = SEO_VIEW_TITLES[hash];
             setSeoMeta(viewTitle ? `${viewTitle} - タマベン` : SEO_DEFAULT_TITLE, SEO_DEFAULT_DESC, SEO_BASE_URL);
         }
@@ -5036,11 +5442,24 @@
             const a = e.target.closest && e.target.closest('a[data-spa-id]');
             if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
             e.preventDefault();
-            navigate('#detail-' + encodeURIComponent(a.dataset.spaId));
+            const id = a.dataset.spaId;
+            const item = (Array.isArray(MATERIAL_DATA) ? MATERIAL_DATA : []).find(m => String(m.id) === String(id));
+            if (item) navigateToMaterial(item);
+            else navigate('#detail-' + encodeURIComponent(id));
         });
 
         window.addEventListener('hashchange', () => handleHashChange(true, true));
+        window.addEventListener('popstate', () => handleHashChange(true, true));
+
         document.addEventListener('DOMContentLoaded', async () => {
+            const savedPath = sessionStorage.getItem('tamaben_route_pathname');
+            if (savedPath) {
+                sessionStorage.removeItem('tamaben_route_pathname');
+                try {
+                    history.replaceState(null, '', savedPath + (window.location.hash || ''));
+                } catch(e) {}
+            }
+
             if (window.pdfjsLib) {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
             }
