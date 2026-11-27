@@ -1,6 +1,8 @@
 [
   {
     "id": "chu1-su1",
+    "slug": "su1",
+    "gradeSlug": "chu1",
     "tab": "junior",
     "grade": "中学1年生",
     "subject": "数学",
@@ -19,6 +21,7 @@
       "除法",
       "chu1-su1",
       "chu1su1",
+      "su1",
       "print/chu1-su1.pdf"
     ],
     "pdfBasic": "print/chu1-su1.pdf",
@@ -31,6 +34,8 @@
   },
   {
     "id": "chu1-su2",
+    "slug": "su2",
+    "gradeSlug": "chu1",
     "tab": "junior",
     "grade": "中学1年生",
     "subject": "数学",
@@ -46,7 +51,8 @@
       "項",
       "係数",
       "chu1-su2",
-      "chu1su2"
+      "chu1su2",
+      "su2"
     ],
     "pdfBasic": "#",
     "pdfAdv": "#",
@@ -58,6 +64,8 @@
   },
   {
     "id": "j3-e-01",
+    "slug": "en1",
+    "gradeSlug": "chu3",
     "tab": "junior",
     "grade": "中学3年生",
     "subject": "英語",
@@ -71,7 +79,8 @@
       "過去分詞",
       "be動詞",
       "chu3-en1",
-      "j3-e-01"
+      "j3-e-01",
+      "en1"
     ],
     "pdfBasic": "print/chu3-en1.pdf",
     "pdfAdv": "#",
@@ -83,6 +92,8 @@
   },
   {
     "id": "j3-e-02",
+    "slug": "en2",
+    "gradeSlug": "chu3",
     "tab": "junior",
     "grade": "中学3年生",
     "subject": "英語",
@@ -96,7 +107,8 @@
       "過去分詞",
       "have",
       "chu3-en2",
-      "j3-e-02"
+      "j3-e-02",
+      "en2"
     ],
     "pdfBasic": "print/chu3-en2.pdf",
     "pdfAdv": "#",
@@ -108,8 +120,10 @@
   },
   {
     "id": "j3-e-03",
+    "slug": "chu1",
+    "gradeSlug": "koukou-nyushi",
     "tab": "junior",
-    "grade": "中学3年生",
+    "grade": "高校入試対策",
     "subject": "英語",
     "unit": "長文読解",
     "title": "高校入試・英語長文対策(1)",
@@ -121,15 +135,19 @@
       "長文読解",
       "読解",
       "j3-e-03",
-      "Kou-eng-cho1",
-      "print/Kou-eng-cho1.pdf"
+      "chu1",
+      "cho1",
+      "Kou-eng-chu1",
+      "print/Kou-eng-chu1.pdf",
+      "Kou-eng-cho1-cota",
+      "print/Kou-eng-cho1-cota.pdf"
     ],
-    "pdfBasic": "print/Kou-eng-cho1.pdf",
+    "pdfBasic": "print/Kou-eng-chu1.pdf",
     "pdfAdv": "#",
-    "pdfAns": "#",
+    "pdfAns": "print/Kou-eng-cho1-cota.pdf",
     "textbook": "",
     "downloadRestricted": false,
-    "pdfBasicAns": "#",
+    "pdfBasicAns": "print/Kou-eng-cho1-cota.pdf",
     "pdfAdvAns": "#"
   }
 ]
