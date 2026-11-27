@@ -808,25 +808,25 @@
                                 <ul class="space-y-1.5">
                                     <li>
                                         <a href="./?id=chu1-su1" data-spa-id="chu1-su1" class="font-bold text-ink hover:underline">正の数・負の数</a>
-                                        <span class="text-ink-subtle">（<a href="./print/chu1-su1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="./print/chu1-su1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
+                                        <span class="text-ink-subtle">（<a href="/print/chu1-su1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="/print/chu1-su1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
                                     </li>
                                 </ul>
                                 <h4 class="font-bold text-ink-light mt-3 mb-1">中学3年生 英語</h4>
                                 <ul class="space-y-1.5">
                                     <li>
                                         <a href="./?id=j3-e-01" data-spa-id="j3-e-01" class="font-bold text-ink hover:underline">Unit 1 受動態</a>
-                                        <span class="text-ink-subtle">（<a href="./print/chu3-en1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="./print/chu3-en1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
+                                        <span class="text-ink-subtle">（<a href="/print/chu3-en1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="/print/chu3-en1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
                                     </li>
                                     <li>
                                         <a href="./?id=j3-e-02" data-spa-id="j3-e-02" class="font-bold text-ink hover:underline">Unit 2 現在完了形</a>
-                                        <span class="text-ink-subtle">（<a href="./print/chu3-en2.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="./print/chu3-en2-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
+                                        <span class="text-ink-subtle">（<a href="/print/chu3-en2.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="/print/chu3-en2-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
                                     </li>
                                 </ul>
                                 <h4 class="font-bold text-ink-light mt-3 mb-1">高校入試対策 英語</h4>
                                 <ul class="space-y-1.5">
                                     <li>
-                                        <a href="./koukou-nyushi/#chu1" data-spa-id="j3-e-03" class="font-bold text-ink hover:underline">高校入試・英語長文対策(1)</a>
-                                        <span class="text-ink-subtle">（<a href="./print/Kou-eng-chu1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="./print/Kou-eng-cho1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
+                                        <a href="/koukou-nyushi/#chu1" data-spa-id="j3-e-03" class="font-bold text-ink hover:underline">高校入試・英語長文対策(1)</a>
+                                        <span class="text-ink-subtle">（<a href="/print/Kou-eng-chu1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="/print/Kou-eng-cho1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
                                     </li>
                                 </ul>
                             </section>
@@ -2266,6 +2266,13 @@
                 if (!MATERIAL_DATA) MATERIAL_DATA = [];
             }
 
+            function normalizePdfUrl(path) {
+                if (!path || path === '#' || path.trim() === '') return '#';
+                if (path.startsWith('http://') || path.startsWith('https://')) return path;
+                const clean = path.replace(/^(\.\.\/|\.\/|\/)/, '');
+                return '/' + clean;
+            }
+
             MATERIAL_DATA.forEach((item, index) => {
                 if (!item.id) item.id = `item-${index + 1}`; 
                 if (!item.unit) item.unit = item.title;
@@ -2277,6 +2284,11 @@
                 }
                 if (!item.pdfBasicAns && item.pdfAns) item.pdfBasicAns = item.pdfAns;
                 if (!item.pdfAdvAns) item.pdfAdvAns = "#";
+                item.pdfBasic = normalizePdfUrl(item.pdfBasic);
+                item.pdfAns = normalizePdfUrl(item.pdfAns);
+                item.pdfBasicAns = normalizePdfUrl(item.pdfBasicAns);
+                item.pdfAdv = normalizePdfUrl(item.pdfAdv);
+                item.pdfAdvAns = normalizePdfUrl(item.pdfAdvAns);
             });
 
             const currentDataJson = JSON.stringify(MATERIAL_DATA);
