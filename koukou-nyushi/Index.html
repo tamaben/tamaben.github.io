@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校入試対策 特設ページ（英語長文読解・頻出対策）- タマベン</title>
+    <meta name="description" content="公立・私立高校入試の頻出パターンを完全攻略。英語長文読解をはじめとする入試英語対策プリントが登録不要・無料PDFダウンロード＆タマベンAI連携。">
+    <link rel="canonical" href="https://tamaben.github.io/koukou-nyushi/">
+
+    <!-- OGP / Twitter -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="高校入試対策 特設ページ（英語長文読解・頻出対策）- タマベン">
+    <meta property="og:description" content="公立・私立高校入試の頻出パターンを完全攻略。英語長文読解をはじめとする入試英語対策プリントが登録不要・無料PDFダウンロード＆タマベンAI連携。">
+    <meta property="og:url" content="https://tamaben.github.io/koukou-nyushi/">
+    <meta property="og:site_name" content="タマベン">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: {
+                            DEFAULT: '#171717',
+                            light: '#262626',
+                            muted: '#525252',
+                            subtle: '#737373',
+                            border: '#e5e5e5'
+                        },
+                        canvas: '#fafafa',
+                        paper: '#ffffff'
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                        mono: ['"Plus Jakarta Sans"', 'monospace']
+                    },
+                    boxShadow: {
+                        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                        '2xs': '0 1px 1px 0 rgba(0, 0, 0, 0.03)'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fafafa;
+            color: #171717;
+            -webkit-font-smoothing: antialiased;
+        }
+        .bg-grid-pattern {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        }
+        .card-appear {
+            animation: cardAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-canvas text-ink antialiased">
+
+    <!-- ヘッダー -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-2xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- ロゴ -->
+                <div class="flex items-center gap-3">
+                    <a href="../" class="flex items-center gap-2 group">
+                        <span class="text-xl sm:text-2xl font-black tracking-tight text-ink group-hover:text-neutral-700 transition-colors">タマベン</span>
+                    </a>
+                    <span class="hidden md:inline-block px-2 py-0.5 rounded-full bg-neutral-100 text-[10px] font-bold text-ink-muted border border-neutral-200">
+                        無料学習プリント
+                    </span>
+                </div>
+
+                <!-- ナビゲーション（PC） -->
+                <nav class="hidden md:flex items-center gap-1 text-xs font-bold text-ink-muted">
+                    <a href="../" class="px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all">教材トップ</a>
+                    <a href="./" class="px-3.5 py-2 rounded-lg bg-neutral-900 text-white font-bold transition-all shadow-xs">高校入試</a>
+                    <a href="../#subjects" class="px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all">全教科一覧</a>
+                    <a href="../#search" class="px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all">教材を検索</a>
+                    <button type="button" onclick="openAiDrawer('高校入試の英語長文を速く正確に解くコツを教えてください。')" class="px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all inline-flex items-center gap-1">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-600"></i> タマベンAI
+                    </button>
+                    <a href="../#users" class="px-3 py-2 rounded-lg hover:text-ink hover:bg-neutral-100 transition-all">学習者・保護者の方へ</a>
+                </nav>
+
+                <!-- 右側ボタン -->
+                <div class="flex items-center gap-2">
+                    <a href="../#mypage" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ink text-white hover:bg-neutral-800 text-xs font-bold shadow-2xs transition-all active:scale-95">
+                        <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        <span>マイページ</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- モバイル向けサブナビ -->
+            <div class="flex md:hidden items-center gap-1.5 overflow-x-auto py-2 border-t border-neutral-100 scrollbar-none text-[11px] font-bold text-ink-muted">
+                <a href="../" class="py-1 px-2.5 rounded-lg whitespace-nowrap hover:bg-neutral-100">教材トップ</a>
+                <a href="./" class="py-1 px-2.5 rounded-lg whitespace-nowrap bg-neutral-900 text-white font-bold">高校入試</a>
+                <a href="../#subjects" class="py-1 px-2.5 rounded-lg whitespace-nowrap hover:bg-neutral-100">全教科</a>
+                <a href="../#search" class="py-1 px-2.5 rounded-lg whitespace-nowrap hover:bg-neutral-100">検索</a>
+                <button type="button" onclick="openAiDrawer()" class="py-1 px-2.5 rounded-lg whitespace-nowrap hover:bg-neutral-100 inline-flex items-center gap-1 text-emerald-700">
+                    <i data-lucide="bot" class="w-3 h-3"></i> AI
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 w-full">
+        <!-- ナビゲーション戻る / コーナーバッジ -->
+        <div class="flex items-center justify-between gap-3 mb-6">
+            <a href="../" class="inline-flex items-center gap-1.5 text-xs font-bold text-ink-muted hover:text-ink transition-colors px-3 py-1.5 rounded-lg hover:bg-neutral-100 border border-neutral-200/80 bg-white shadow-2xs">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 教材トップへ戻る
+            </a>
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-ink-muted px-3 py-1 rounded-full bg-white border border-neutral-200 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 高校入試特設コーナー
+            </span>
+        </div>
+
+        <!-- 特設ヘッダーバナー -->
+        <div class="relative overflow-hidden rounded-3xl p-6 sm:p-10 mb-8 bg-neutral-900 text-white shadow-sm border border-neutral-800">
+            <div class="relative z-10 space-y-4 max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs border border-white/15 text-white text-xs font-bold">
+                    <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-neutral-200"></i>
+                    <span>高校入試 突破演習・頻出単元特訓</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight mb-3 text-white">
+                    高校入試対策 特設ページ
+                </h1>
+                <p class="text-xs sm:text-sm text-neutral-300 leading-relaxed mb-6 font-medium">
+                    公立・私立高校入試で合否を分ける「英語長文読解」をはじめとする厳選入試英語対策プリント。会員登録不要・無料PDFダウンロード＆タマベンAI連携ですぐに特訓できます。
+                </p>
+                <div class="flex items-center gap-2 flex-wrap text-[11px] font-bold">
+                    <span class="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-neutral-200 flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> 全問・解答解説つき
+                    </span>
+                    <span class="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-neutral-200 flex items-center gap-1.5">
+                        <i data-lucide="printer" class="w-3.5 h-3.5 text-neutral-300"></i> A4印刷最適化PDF
+                    </span>
+                    <span class="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-neutral-200 flex items-center gap-1.5">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-neutral-300"></i> タマベンAI質問対応
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 入試突破の3大攻略ポイント -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-neutral-100 text-ink font-black text-xs flex items-center justify-center border border-neutral-200 mb-3">1</div>
+                <h3 class="font-bold text-sm text-ink mb-1">入試頻出の重要単語・構文を定着</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                    長文読解の土台となる教科書レベルの重要文法や頻出熟語を確実に身につけ、文構造をすばやく見抜く力を養います。
+                </p>
+            </div>
+            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-neutral-100 text-ink font-black text-xs flex items-center justify-center border border-neutral-200 mb-3">2</div>
+                <h3 class="font-bold text-sm text-ink mb-1">英語長文は設問先読み＆速読</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                    本文を読む前に設問と選択肢をチェック。段落ごとのキーワードをマークして時間内に解き切る力を養います。
+                </p>
+            </div>
+            <div class="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-neutral-100 text-ink font-black text-xs flex items-center justify-center border border-neutral-200 mb-3">3</div>
+                <h3 class="font-bold text-sm text-ink mb-1">タマベンAIで英文解釈・記述添削</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                    つまずいた長文の和訳や文法構文、記述問題はタマベンAIに「添削して」「この文構造を教えて」といつでも質問できます。
+                </p>
+            </div>
+        </div>
+
+        <!-- 教科絞り込みタブ -->
+        <div class="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 mb-6 shadow-2xs">
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="filter" class="w-4 h-4 text-ink-muted"></i>
+                    <span class="text-xs font-bold text-ink">教科で絞り込み:</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-900 text-white transition-all shadow-xs">すべて (1)</button>
+                    <button type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 text-ink hover:bg-neutral-200 transition-all">英語 (1)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 教材グリッド -->
+        <div id="nyushi-materials-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            <!-- 高校入試・英語長文対策(1) -->
+            <div onclick="openMaterialModal()" class="flex flex-col justify-between bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 hover:border-ink hover:shadow-2xs transition-all group cursor-pointer card-appear">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="px-2 py-0.5 rounded-md bg-neutral-100 border border-neutral-200 text-ink font-bold text-[10px] tracking-tight">高校入試 • 英語</span>
+                        <span class="text-[10px] font-mono font-bold text-ink-muted bg-neutral-100 px-1.5 py-0.5 rounded">#chu1</span>
+                    </div>
+                    <h2 class="text-xs sm:text-sm font-bold text-ink group-hover:text-neutral-700 transition-colors leading-snug line-clamp-2 mb-1.5">
+                        高校入試・英語長文対策(1)
+                    </h2>
+                    <p class="text-[11px] text-ink-muted font-medium mb-3 line-clamp-2">長文読解</p>
+                    
+                    <div class="flex items-center gap-1.5 text-[10px] text-ink-muted font-medium bg-canvas border border-neutral-200 rounded-lg px-2.5 py-1.5 mb-3">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>入試頻出単元 / 解答解説付き</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-neutral-100 flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-medium text-ink-subtle flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> A4印刷対応
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="event.stopPropagation(); openAiDrawer('「高校入試・英語長文対策(1)」について、高校入試での解き方のコツや注意点を教えてください。');" class="px-2.5 py-1 rounded-lg bg-canvas hover:bg-neutral-100 text-ink text-[10px] font-bold border border-neutral-200 flex items-center gap-1 transition-colors active:scale-95" title="タマベンAIに質問">
+                            <i data-lucide="bot" class="w-3 h-3 text-emerald-600"></i> AI特訓
+                        </button>
+                        <span class="px-2.5 py-1 rounded-lg bg-ink group-hover:bg-neutral-800 text-white text-[10px] font-bold shadow-2xs transition-colors">
+                            詳細 &rarr;
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- タマベンAI サポートバナー -->
+        <div class="bg-white border border-neutral-200 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
+            <div class="space-y-1.5 text-center md:text-left">
+                <div class="inline-flex items-center gap-1.5 text-xs font-bold text-ink">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
+                    <span>タマベンAI 入試対策サポート</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-black text-ink">高校入試の疑問やつまずきをAIに直接質問</h3>
+                <p class="text-xs text-ink-muted max-w-xl">
+                    「英語長文の解き方の手順は？」「自由英作文の書き方のコツは？」など、入試直前の疑問に即座に答えます。
+                </p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap justify-center shrink-0">
+                <button type="button" onclick="openAiDrawer('高校入試の英語長文を速く正確に解くコツと時間配分を教えてください。')" class="px-3 py-1.5 rounded-lg bg-canvas hover:bg-neutral-100 border border-neutral-200 text-xs font-bold text-ink transition-all active:scale-95">英語長文の速読法</button>
+                <button type="button" onclick="openAiDrawer('高校入試の自由英作文で減点されない書き方や使える重要フレーズを教えてください。')" class="px-3 py-1.5 rounded-lg bg-canvas hover:bg-neutral-100 border border-neutral-200 text-xs font-bold text-ink transition-all active:scale-95">英作文のポイント</button>
+                <button type="button" onclick="openAiDrawer()" class="px-3.5 py-1.5 rounded-lg bg-ink hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-2xs active:scale-95">タマベンAIを開く &rarr;</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 教材詳細モーダル (#chu1) -->
+    <div id="material-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="bg-white border border-neutral-200 rounded-3xl max-w-4xl w-full p-5 sm:p-8 shadow-xl my-auto relative animate-in fade-in zoom-in-95 duration-150">
+            <!-- 閉じるボタン -->
+            <button type="button" onclick="closeMaterialModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-ink flex items-center justify-center transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+
+            <!-- モーダルヘッダー -->
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2.5 py-1 rounded-md bg-neutral-100 border border-neutral-200 text-ink font-bold text-xs">高校入試対策 • 英語</span>
+                <span class="px-2.5 py-1 rounded-md bg-canvas border border-neutral-200 text-ink-muted font-bold text-xs">単元: 長文読解</span>
+                <span class="text-xs font-mono font-bold text-ink-muted bg-neutral-100 px-2 py-0.5 rounded">#chu1</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-ink mb-4">高校入試・英語長文対策(1)</h2>
+
+            <!-- つまずき注意メモ -->
+            <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/60 text-xs text-emerald-950 mb-6 flex items-start gap-2.5">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                <div>
+                    <strong class="font-bold block mb-0.5">テスト前にここだけ確認！（つまずき注意メモ）</strong>
+                    本文を読む前に設問を先読みし、何が問われているかを把握してから本文へ進むと正答率と読解スピードが大幅に上がります。
+                </div>
+            </div>
+
+            <!-- PDFダウンロードセクション -->
+            <div class="space-y-3 mb-6">
+                <!-- 問題PDF -->
+                <div class="p-4 rounded-2xl bg-canvas border border-neutral-200 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center shrink-0">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-ink">高校入試 基本問題</h4>
+                            <p class="text-xs text-ink-muted">A4印刷最適化PDF（全問・設問つき）</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="../print/Kou-eng-chu1.pdf" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-bold shadow-2xs transition-all active:scale-95 inline-flex items-center gap-1.5">
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                            <span>問題PDFを印刷・開く</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 答えPDF -->
+                <div class="p-4 rounded-2xl bg-canvas border border-neutral-200 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white border border-neutral-200 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-ink">解答・全訳・解説</h4>
+                            <p class="text-xs text-ink-muted">解答一覧・全和訳・重要語句解説つき</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="../print/Kou-eng-cho1-cota.pdf" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-white hover:bg-neutral-100 text-ink border border-neutral-200 text-xs font-bold shadow-2xs transition-all active:scale-95 inline-flex items-center gap-1.5">
+                            <i data-lucide="file-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span>答えPDFを開く</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI特訓と戻る -->
+            <div class="pt-4 border-t border-neutral-100 flex items-center justify-between flex-wrap gap-3">
+                <button type="button" onclick="openAiDrawer('高校入試・英語長文対策(1)の全訳と重要語句のポイントを教えてください。');" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-canvas hover:bg-neutral-100 border border-neutral-200 text-xs font-bold text-ink transition-colors active:scale-95">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i> タマベンAIに質問する
+                </button>
+                <button type="button" onclick="closeMaterialModal()" class="px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-ink text-xs font-bold transition-colors">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- タマベンAI 右下スライドドロワー -->
+    <div id="ai-drawer-overlay" onclick="closeAiDrawer()" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-2xs hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="ai-drawer" class="fixed right-0 top-0 bottom-0 z-50 w-full sm:w-[440px] bg-white border-l border-neutral-200 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out">
+        <!-- ドロワーヘッダー -->
+        <div class="px-5 py-4 border-b border-neutral-200 flex items-center justify-between bg-canvas">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-ink text-white flex items-center justify-center">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-ink">タマベンAI</h3>
+                    <p class="text-[10px] text-ink-muted">入試英語の解き方・文法質問サポート</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeAiDrawer()" class="w-8 h-8 rounded-full hover:bg-neutral-200 text-ink-muted flex items-center justify-center transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- チャット履歴 -->
+        <div id="ai-drawer-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
+            <div class="p-3.5 rounded-2xl bg-canvas border border-neutral-200 text-ink leading-relaxed">
+                こんにちは！タマベンAIです。高校入試英語の長文読解のコツや文法構文、和訳のポイントなど何でも質問してください。
+            </div>
+        </div>
+
+        <!-- 入力フォーム -->
+        <form onsubmit="handleAiDrawerSubmit(event)" class="p-3 border-t border-neutral-200 bg-white">
+            <div class="flex items-center gap-2">
+                <input type="text" id="ai-drawer-input" placeholder="入試英語の疑問を入力..." class="flex-grow px-3 py-2 text-xs rounded-xl border border-neutral-200 bg-canvas focus:bg-white focus:outline-hidden focus:border-ink">
+                <button type="submit" id="ai-drawer-submit" class="px-4 py-2 rounded-xl bg-ink hover:bg-neutral-800 text-white font-bold text-xs shadow-2xs transition-all active:scale-95 shrink-0">
+                    送信
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- AI起動フローティングボタン (FAB) -->
+    <button type="button" onclick="openAiDrawer()" class="fixed bottom-5 right-5 z-40 px-3.5 py-2.5 rounded-2xl bg-neutral-900 hover:bg-black text-white text-xs font-bold shadow-lg border border-neutral-700/60 flex items-center gap-2 transition-all active:scale-95">
+        <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+        <span>タマベンAI</span>
+    </button>
+
+    <!-- フッター -->
+    <footer class="mt-auto border-t border-neutral-200 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-muted">
+            <div class="flex items-center gap-3">
+                <a href="../" class="font-bold text-ink">タマベン</a>
+                <span>高校入試対策 特設ページ</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../#users" class="hover:underline">利用規約</a>
+                <a href="../#users" class="hover:underline">プライバシーポリシー</a>
+                <a href="../#home" class="hover:underline">教材一覧</a>
+            </div>
+            <p>&copy; タマベンチーム All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- スクリプト -->
+    <script>
+        lucide.createIcons();
+
+        // モーダル制御
+        function openMaterialModal() {
+            const modal = document.getElementById('material-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                try {
+                    history.pushState(null, '', '#chu1');
+                } catch(e) {}
+            }
+        }
+
+        function closeMaterialModal() {
+            const modal = document.getElementById('material-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                try {
+                    history.pushState(null, '', window.location.pathname);
+                } catch(e) {}
+            }
+        }
+
+        // AIドロワー制御
+        function openAiDrawer(initialPrompt = '') {
+            const overlay = document.getElementById('ai-drawer-overlay');
+            const drawer = document.getElementById('ai-drawer');
+            if (overlay && drawer) {
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    overlay.classList.remove('opacity-0');
+                    drawer.classList.remove('translate-x-full');
+                });
+                if (initialPrompt) {
+                    const input = document.getElementById('ai-drawer-input');
+                    if (input) {
+                        input.value = initialPrompt;
+                        input.focus();
+                    }
+                }
+            }
+        }
+
+        function closeAiDrawer() {
+            const overlay = document.getElementById('ai-drawer-overlay');
+            const drawer = document.getElementById('ai-drawer');
+            if (overlay && drawer) {
+                overlay.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        async function handleAiDrawerSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-drawer-input');
+            const container = document.getElementById('ai-drawer-messages');
+            const btn = document.getElementById('ai-drawer-submit');
+            const query = (input?.value || '').trim();
+            if (!query) return;
+
+            // ユーザーメッセージ追加
+            const userMsg = document.createElement('div');
+            userMsg.className = 'p-3 rounded-2xl bg-neutral-900 text-white ml-auto max-w-[85%] leading-relaxed';
+            userMsg.textContent = query;
+            container.appendChild(userMsg);
+            input.value = '';
+
+            // AI考え中メッセージ
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'p-3.5 rounded-2xl bg-canvas border border-neutral-200 text-ink leading-relaxed';
+            aiMsg.innerHTML = '<span class="text-ink-muted">タマベンAIが回答を作成中...</span>';
+            container.appendChild(aiMsg);
+            container.scrollTop = container.scrollHeight;
+
+            if (btn) btn.disabled = true;
+
+            try {
+                // Free proxy endpoint fallback
+                const res = await fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: 'あなたは無料学習プリントサイト「タマベン」の高校入試英語専属学習AIアシスタント「タマベンAI」です。高校入試の長文読解、英文法、単語、自由英作文について、中学生に分かりやすく丁寧に回答してください。' },
+                            { role: 'user', content: query }
+                        ],
+                        model: 'openai'
+                    })
+                });
+                if (!res.ok) throw new Error('Proxy error');
+                const text = await res.text();
+                aiMsg.innerHTML = text.replace(/\n/g, '<br>');
+            } catch(err) {
+                aiMsg.innerHTML = `
+                    英語長文読解では、<strong>「設問のキーワードを本文から探す」「段落ごとの要点を1行で把握する」</strong>ことが最重要です。<br>
+                    タマベンのプリント『高校入試・英語長文対策(1)』の問題と全訳解説PDFをダウンロードして、時間を計って解いてみてください！
+                `;
+            } finally {
+                if (btn) btn.disabled = false;
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        // 初期ハッシュ判定（#chu1 または #cho1 でモーダル自動展開）
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash || '';
+            if (hash === '#chu1' || hash === '#cho1' || hash.includes('detail-j3-e-03') || hash === '#detail') {
+                openMaterialModal();
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash || '';
+            if (hash === '#chu1' || hash === '#cho1' || hash.includes('detail-j3-e-03')) {
+                openMaterialModal();
+            } else if (!hash) {
+                closeMaterialModal();
+            }
+        });
+    </script>
+</body>
+</html>
