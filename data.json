@@ -22,14 +22,15 @@
       "chu1-su1",
       "chu1su1",
       "su1",
+      "/print/chu1-su1.pdf",
       "print/chu1-su1.pdf"
     ],
-    "pdfBasic": "print/chu1-su1.pdf",
+    "pdfBasic": "/print/chu1-su1.pdf",
     "pdfAdv": "#",
-    "pdfAns": "print/chu1-su1-cota.pdf",
+    "pdfAns": "/print/chu1-su1-cota.pdf",
     "textbook": "",
     "downloadRestricted": false,
-    "pdfBasicAns": "print/chu1-su1-cota.pdf",
+    "pdfBasicAns": "/print/chu1-su1-cota.pdf",
     "pdfAdvAns": "#"
   },
   {
@@ -82,12 +83,12 @@
       "j3-e-01",
       "en1"
     ],
-    "pdfBasic": "print/chu3-en1.pdf",
+    "pdfBasic": "/print/chu3-en1.pdf",
     "pdfAdv": "#",
-    "pdfAns": "print/chu3-en1-cota.pdf",
+    "pdfAns": "/print/chu3-en1-cota.pdf",
     "textbook": "",
     "downloadRestricted": false,
-    "pdfBasicAns": "print/chu3-en1-cota.pdf",
+    "pdfBasicAns": "/print/chu3-en1-cota.pdf",
     "pdfAdvAns": "#"
   },
   {
@@ -110,12 +111,12 @@
       "j3-e-02",
       "en2"
     ],
-    "pdfBasic": "print/chu3-en2.pdf",
+    "pdfBasic": "/print/chu3-en2.pdf",
     "pdfAdv": "#",
-    "pdfAns": "print/chu3-en2-cota.pdf",
+    "pdfAns": "/print/chu3-en2-cota.pdf",
     "textbook": "",
     "downloadRestricted": false,
-    "pdfBasicAns": "print/chu3-en2-cota.pdf",
+    "pdfBasicAns": "/print/chu3-en2-cota.pdf",
     "pdfAdvAns": "#"
   },
   {
@@ -138,16 +139,18 @@
       "chu1",
       "cho1",
       "Kou-eng-chu1",
+      "/print/Kou-eng-chu1.pdf",
       "print/Kou-eng-chu1.pdf",
       "Kou-eng-cho1-cota",
+      "/print/Kou-eng-cho1-cota.pdf",
       "print/Kou-eng-cho1-cota.pdf"
     ],
-    "pdfBasic": "print/Kou-eng-chu1.pdf",
+    "pdfBasic": "/print/Kou-eng-chu1.pdf",
     "pdfAdv": "#",
-    "pdfAns": "print/Kou-eng-cho1-cota.pdf",
+    "pdfAns": "/print/Kou-eng-cho1-cota.pdf",
     "textbook": "",
     "downloadRestricted": false,
-    "pdfBasicAns": "print/Kou-eng-cho1-cota.pdf",
+    "pdfBasicAns": "/print/Kou-eng-cho1-cota.pdf",
     "pdfAdvAns": "#"
   }
 ]
