@@ -825,7 +825,7 @@
                                 <h4 class="font-bold text-ink-light mt-3 mb-1">高校入試対策 英語</h4>
                                 <ul class="space-y-1.5">
                                     <li>
-                                        <a href="/koukou-nyushi/#chu1" data-spa-id="j3-e-03" class="font-bold text-ink hover:underline">高校入試・英語長文対策(1)</a>
+                                        <a href="./?id=j3-e-03" data-spa-id="j3-e-03" class="font-bold text-ink hover:underline">高校入試・英語長文対策(1)</a>
                                         <span class="text-ink-subtle">（<a href="/print/Kou-eng-chu1.pdf" target="_blank" rel="noopener" class="hover:underline">問題PDF</a>・<a href="/print/Kou-eng-cho1-cota.pdf" target="_blank" rel="noopener" class="hover:underline">答えPDF</a>）</span>
                                     </li>
                                 </ul>
@@ -3750,72 +3750,49 @@
         }
 
         function getMaterialRoute(item) {
-            if (!item) return { gradeSlug: 'chu1', slug: 'su1', path: '/chu1/', hash: '#su1', full: '/chu1/#su1' };
-            const isNyushi = (item.tags && item.tags.includes('高校入試')) || item.gradeSlug === 'koukou-nyushi';
-            let gradeSlug = item.gradeSlug;
-            if (!gradeSlug) {
-                if (isNyushi) gradeSlug = 'koukou-nyushi';
-                else if (item.grade && item.grade.includes('中1')) gradeSlug = 'chu1';
-                else if (item.grade && item.grade.includes('中2')) gradeSlug = 'chu2';
-                else if (item.grade && item.grade.includes('中3')) gradeSlug = 'chu3';
-                else gradeSlug = 'chu1';
-            }
-            let slug = item.slug;
-            if (!slug) {
-                if (item.id) {
-                    slug = item.id.replace(/^(chu\d-|j\d-|nyushi-)/, '');
-                } else {
-                    slug = 'su1';
-                }
-            }
+            if (!item) return { slug: 'su1', hash: '#su1', full: '/#su1' };
+            const slug = item.slug || item.id;
             return {
-                gradeSlug,
-                slug,
-                path: `/${gradeSlug}/`,
+                slug: slug,
                 hash: `#${slug}`,
-                full: `/${gradeSlug}/#${slug}`
+                full: `/#${slug}`
             };
         }
 
         function findMaterialByRoute(pathname = window.location.pathname, hash = window.location.hash) {
             if (!Array.isArray(MATERIAL_DATA) || MATERIAL_DATA.length === 0) return null;
 
-            // 1. Check legacy #detail-<id>
+            // 1. Check query parameter ?id=<id>
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const queryId = params.get('id');
+                if (queryId) {
+                    const found = MATERIAL_DATA.find(m => String(m.id) === String(queryId));
+                    if (found) return found;
+                }
+            } catch(e) {}
+
+            // 2. Check #detail-<id>
             if (hash && hash.startsWith('#detail-')) {
                 const id = decodeURIComponent(hash.replace('#detail-', ''));
                 const found = MATERIAL_DATA.find(m => String(m.id) === String(id));
                 if (found) return found;
             }
 
-            // 2. Clean hash (e.g. #su1 -> su1)
+            // 3. Clean hash (e.g. #su1 -> su1)
             const cleanHash = (hash || '').replace(/^#/, '').trim();
             const systemViews = ['home', 'search', 'results', 'subjects', 'ai', 'nyushi', 'koukou-nyushi', 'users', 'parents', 'mypage', 'register', 'parents-report'];
             if (!cleanHash || systemViews.includes(cleanHash)) {
                 return null;
             }
 
-            // On root /, #chu1, #chu2, #chu3 represent grade views rather than material slugs
-            if (!pathname.includes('koukou-nyushi') && ['chu1', 'chu2', 'chu3'].includes(cleanHash)) {
-                return null;
-            }
-
-            // 3. Match by gradeSlug from pathname + slug
-            const pathGrade = pathname.includes('chu1') ? 'chu1' :
-                              pathname.includes('chu2') ? 'chu2' :
-                              pathname.includes('chu3') ? 'chu3' :
-                              pathname.includes('koukou-nyushi') ? 'koukou-nyushi' : null;
-
-            if (pathGrade) {
-                const match = MATERIAL_DATA.find(m => {
-                    const isGrade = m.gradeSlug === pathGrade || (pathGrade === 'koukou-nyushi' && m.tags && m.tags.includes('高校入試'));
-                    return isGrade && (m.slug === cleanHash || m.id === cleanHash || (cleanHash === 'cho1' && m.slug === 'chu1'));
-                });
-                if (match) return match;
-            }
-
             // 4. Match by slug or id directly across all materials
-            const matchSlug = MATERIAL_DATA.find(m => m.slug === cleanHash || m.id === cleanHash || (cleanHash === 'cho1' && m.slug === 'chu1'));
-            if (matchSlug) return matchSlug;
+            const match = MATERIAL_DATA.find(m => 
+                String(m.id) === cleanHash || 
+                m.slug === cleanHash || 
+                (cleanHash === 'cho1' && m.slug === 'chu1')
+            );
+            if (match) return match;
 
             return null;
         }
@@ -3823,43 +3800,41 @@
         function navigateToMaterial(item) {
             if (!item) return;
             const route = getMaterialRoute(item);
-            try {
-                history.pushState({ materialId: item.id }, '', route.full);
-            } catch(e) {
-                window.location.hash = route.slug;
-            }
-            handleHashChange(false, true);
+            navigate(route.hash);
         }
 
         function navigate(target) {
-            if (target === '#nyushi' || target === '#koukou-nyushi' || target === '/koukou-nyushi/') {
-                try {
-                    history.pushState(null, '', '/koukou-nyushi/');
-                } catch(e) {
-                    window.location.hash = '#nyushi';
-                }
-                handleHashChange(false, true);
-                return;
-            }
-            if (target === '#home') {
-                try {
-                    history.pushState(null, '', '/#home');
-                } catch(e) {
-                    window.location.hash = '#home';
-                }
-                handleHashChange(false, true);
-                return;
+            if (!target) target = '#home';
+            if (target === '/koukou-nyushi/' || target === '/koukou-nyushi' || target === 'koukou-nyushi') {
+                target = '#nyushi';
             }
             if (target.startsWith('#')) {
-                window.location.hash = target;
-            } else if (target.startsWith('/')) {
-                try {
-                    history.pushState(null, '', target);
-                } catch(e) {
-                    window.location.href = target;
+                // Ensure pathname is root / if it had a lingering subpath
+                if (window.location.pathname !== '/' && !window.location.pathname.endsWith('index.html')) {
+                    try {
+                        history.replaceState(null, '', '/' + target);
+                    } catch(e) {
+                        window.location.hash = target;
+                    }
+                    handleHashChange(false, true);
                     return;
                 }
-                handleHashChange(false, true);
+                if (window.location.hash === target) {
+                    handleHashChange(false, true);
+                } else {
+                    window.location.hash = target;
+                }
+            } else if (target.startsWith('/')) {
+                if (target.includes('#')) {
+                    const h = target.substring(target.indexOf('#'));
+                    navigate(h);
+                } else if (target === '/') {
+                    navigate('#home');
+                } else {
+                    window.location.href = target;
+                }
+            } else {
+                navigate('#' + target);
             }
         }
 
@@ -3867,12 +3842,7 @@
             if (window.history.length > 1) {
                 window.history.back();
             } else {
-                const path = window.location.pathname || '';
-                if (path.includes('koukou-nyushi')) {
-                    navigate('#nyushi');
-                } else {
-                    navigate('#home');
-                }
+                navigate('#home');
             }
         }
 
@@ -3973,14 +3943,14 @@
             }, 150);
         }
 
-        function updateNavActiveState(hash, pathname = window.location.pathname) {
+        function updateNavActiveState(hash) {
             document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('bg-neutral-100', 'text-ink', 'font-black'));
             let activeId = 'nav-btn-home';
-            if (hash === '#nyushi' || hash === '#koukou-nyushi' || (pathname && pathname.includes('koukou-nyushi'))) activeId = 'nav-btn-nyushi';
+            if (hash === '#nyushi' || hash === '#koukou-nyushi') activeId = 'nav-btn-nyushi';
             else if (hash === '#subjects') activeId = 'nav-btn-subjects';
             else if (hash === '#search' || hash === '#results') activeId = 'nav-btn-search';
             else if (hash === '#ai') activeId = 'nav-btn-ai';
-            else if (hash === '#users' || hash === '#parents') activeId = 'nav-btn-users';
+            else if (hash === '#users' || hash === '#parents' || hash === '#parents-report') activeId = 'nav-btn-users';
             
             const activeNav = document.getElementById(activeId);
             if (activeNav) {
@@ -3992,11 +3962,11 @@
                 b.classList.add('text-ink-muted');
             });
             let mActiveId = 'mnav-btn-home';
-            if (hash === '#nyushi' || hash === '#koukou-nyushi' || (pathname && pathname.includes('koukou-nyushi'))) mActiveId = 'mnav-btn-nyushi';
+            if (hash === '#nyushi' || hash === '#koukou-nyushi') mActiveId = 'mnav-btn-nyushi';
             else if (hash === '#subjects') mActiveId = 'mnav-btn-subjects';
             else if (hash === '#search' || hash === '#results') mActiveId = 'mnav-btn-search';
             else if (hash === '#ai') mActiveId = 'mnav-btn-ai';
-            else if (hash === '#users' || hash === '#parents') mActiveId = 'mnav-btn-users';
+            else if (hash === '#users' || hash === '#parents' || hash === '#parents-report') mActiveId = 'mnav-btn-users';
 
             const activeMNav = document.getElementById(mActiveId);
             if (activeMNav) {
@@ -4009,9 +3979,16 @@
             if (!isLoaded) return;
             if (shouldReloadData) loadMaterials(true);
 
+            // Clean any lingering subpath from previous versions
+            if (window.location.pathname !== '/' && !window.location.pathname.endsWith('index.html')) {
+                try {
+                    history.replaceState(null, '', '/' + (window.location.hash || ''));
+                } catch(e) {}
+            }
+
             const pathname = window.location.pathname || '/';
             const hash = window.location.hash || '';
-            const routeKey = pathname + hash;
+            const routeKey = hash || '#home';
             const isRouteChanged = currentActiveHash !== routeKey;
             currentActiveHash = routeKey;
 
@@ -4027,46 +4004,36 @@
                     if (detailEl) detailEl.classList.remove('hidden');
                     const hasAny = hasAnyPrintable(matchedMaterial);
                     openDetail(matchedMaterial, hasAny);
-                } else if (hash === '#nyushi' || hash === '#koukou-nyushi' || pathname.includes('koukou-nyushi')) {
+                } else if (hash === '#nyushi' || hash === '#koukou-nyushi') {
                     const nyushiEl = document.getElementById('view-nyushi');
                     if (nyushiEl) nyushiEl.classList.remove('hidden');
                     renderNyushiPage();
+                } else if (hash === '#search') {
+                    const searchEl = document.getElementById('view-search');
+                    if (searchEl) searchEl.classList.remove('hidden');
+                } else if (hash === '#results') {
+                    const resultsEl = document.getElementById('view-search-results');
+                    if (resultsEl) resultsEl.classList.remove('hidden');
+                } else if (hash === '#ai') {
+                    const aiEl = document.getElementById('view-ai');
+                    if (aiEl) aiEl.classList.remove('hidden');
+                } else if (hash === '#register' || hash === '#mypage') {
+                    const mypageEl = document.getElementById('view-mypage');
+                    if (mypageEl) mypageEl.classList.remove('hidden');
+                    renderMyPage();
+                } else if (hash === '#subjects') {
+                    const subjectsEl = document.getElementById('view-subjects');
+                    if (subjectsEl) subjectsEl.classList.remove('hidden');
+                } else if (hash === '#users' || hash === '#parents' || hash === '#parents-report') {
+                    const usersEl = document.getElementById('view-users-info');
+                    if (usersEl) usersEl.classList.remove('hidden');
+                    updateParentsDashboard();
                 } else {
-                    let targetView = 'view-home';
-                    if (hash === '#home' || hash === '' || pathname === '/') {
-                        targetView = 'view-home';
-                        renderMaterials();
-                    } else if (hash === '#search') {
-                        targetView = 'view-search';
-                    } else if (hash === '#results') {
-                        targetView = 'view-search-results';
-                    } else if (hash === '#ai') {
-                        targetView = 'view-ai';
-                    } else if (hash === '#register' || hash === '#mypage') {
-                        targetView = 'view-mypage';
-                        renderMyPage();
-                    } else if (hash === '#subjects') {
-                        targetView = 'view-subjects';
-                    } else if (hash === '#users' || hash === '#parents') {
-                        targetView = 'view-users-info';
-                        updateParentsDashboard();
-                    } else if (pathname.includes('chu1') || hash === '#chu1') {
-                        targetView = 'view-home';
-                        currentTab = 'junior';
-                        renderMaterials();
-                    } else if (pathname.includes('chu2') || hash === '#chu2') {
-                        targetView = 'view-home';
-                        currentTab = 'junior';
-                        renderMaterials();
-                    } else if (pathname.includes('chu3') || hash === '#chu3') {
-                        targetView = 'view-home';
-                        currentTab = 'junior';
-                        renderMaterials();
-                    }
-                    const targetEl = document.getElementById(targetView);
-                    if (targetEl) targetEl.classList.remove('hidden');
+                    const homeEl = document.getElementById('view-home');
+                    if (homeEl) homeEl.classList.remove('hidden');
+                    renderMaterials();
                 }
-                updateNavActiveState(hash, pathname);
+                updateNavActiveState(hash);
                 updateSeoForRoute(hash, matchedMaterial);
                 if (typeof syncAiFabVisibility === 'function') syncAiFabVisibility(hash);
                 requestAnimationFrame(() => renderVisibleAdSlots());
@@ -4534,14 +4501,16 @@
 
             updateDynamicResourceJsonLd(null);
             if (window.location.search.includes('id=')) {
-                history.replaceState(null, '', window.location.pathname + hash);
+                try {
+                    history.replaceState(null, '', window.location.pathname + (hash || ''));
+                } catch(e) {}
             }
 
-            if (hash === '#nyushi' || hash === '#koukou-nyushi' || pathname.includes('koukou-nyushi')) {
+            if (hash === '#nyushi' || hash === '#koukou-nyushi') {
                 setSeoMeta(
                     '高校入試対策 特設ページ（英語長文読解・頻出対策）- タマベン',
                     '公立・私立高校入試の頻出パターンを完全攻略。英語長文読解をはじめとする入試英語対策プリントが登録不要・無料PDFダウンロード＆タマベンAI連携。',
-                    `${SEO_BASE_URL.replace(/\/$/, '')}/koukou-nyushi/`
+                    `${SEO_BASE_URL.replace(/\/$/, '')}/#nyushi`
                 );
                 return;
             }
@@ -5466,13 +5435,12 @@
         window.addEventListener('popstate', () => handleHashChange(true, true));
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const savedPath = sessionStorage.getItem('tamaben_route_pathname');
-            if (savedPath) {
+            try {
                 sessionStorage.removeItem('tamaben_route_pathname');
-                try {
-                    history.replaceState(null, '', savedPath + (window.location.hash || ''));
-                } catch(e) {}
-            }
+                if (window.location.pathname !== '/' && !window.location.pathname.endsWith('index.html')) {
+                    history.replaceState(null, '', '/' + (window.location.hash || ''));
+                }
+            } catch(e) {}
 
             if (window.pdfjsLib) {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
